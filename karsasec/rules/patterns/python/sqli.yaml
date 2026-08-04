@@ -1,0 +1,52 @@
+rule:
+  id: KS-PY-0001
+
+metadata:
+  name: Python SQL Injection
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-89
+  owasp: A03:2021-Injection
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/89.html
+  tags:
+    - injection
+    - database
+    - python
+
+target:
+  languages:
+    - Python
+  frameworks:
+    - sqlite3
+    - psycopg2
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Python
+  ast_node_types:
+    - call
+    - statement
+
+condition:
+  symbol_triggers:
+    - cursor.execute
+    - db.engine.execute
+  pattern: "(?i)(f['\"]SELECT|SELECT[^\n]*%s|execute\\(f['\"]|execute\\([a-zA-Z0-9_]+\\s*\\+|SELECT[^\n]*\\+)"
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+    user_source: 30
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects execution of raw SQL queries vulnerable to SQL Injection.
+  remediation: Use parameterized query placeholders instead of string formatting.

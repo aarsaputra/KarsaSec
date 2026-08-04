@@ -1,0 +1,50 @@
+rule:
+  id: KS-PHP-0002
+
+metadata:
+  name: PHP SQL Injection
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-89
+  owasp: A03:2021-Injection
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/89.html
+  tags:
+    - sqli
+    - database
+    - php
+
+target:
+  languages:
+    - PHP
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: PHP
+  ast_node_types:
+    - function_call_expression
+    - call
+    - statement
+
+condition:
+  symbol_triggers:
+    - mysqli_query
+    - PDO::query
+    - ->query
+    - query
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects PHP database queries constructed via un-sanitized string concatenation.
+  remediation: Use prepared PDO statements with bindParam or mysqli prepare.

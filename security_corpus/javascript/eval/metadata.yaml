@@ -1,0 +1,6 @@
+rule_id: KS-JS-0001
+category: eval
+language: javascript
+cwe: CWE-95
+owasp: A03:2021-Injection
+description: JavaScript Eval Injection corpus test suite

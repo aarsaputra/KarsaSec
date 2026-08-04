@@ -1,0 +1,6 @@
+rule_id: KS-JS-0002
+category: xss
+language: javascript
+cwe: CWE-79
+owasp: A03:2021-Injection
+description: JavaScript DOM XSS corpus test suite

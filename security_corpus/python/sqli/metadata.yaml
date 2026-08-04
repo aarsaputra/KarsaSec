@@ -1,0 +1,6 @@
+rule_id: KS-PY-0001
+category: sqli
+language: python
+cwe: CWE-89
+owasp: A03:2021-Injection
+description: Python SQL Injection corpus test suite

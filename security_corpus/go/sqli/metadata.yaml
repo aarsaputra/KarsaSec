@@ -1,0 +1,6 @@
+rule_id: KS-GO-0001
+category: sqli
+language: go
+cwe: CWE-89
+owasp: A03:2021-Injection
+description: Go SQL Injection corpus test suite

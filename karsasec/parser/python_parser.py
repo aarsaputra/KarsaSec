@@ -1,11 +1,12 @@
-"""Python ParserPlugin implementation utilizing Tree-sitter & AST SymbolTable extraction."""
+"""Python ParserPlugin implementation utilizing Tree-sitter & AST SymbolTable extraction with native AST fallback."""
 
 import ast
 import time
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
+
 from karsasec.core.plugin import Diagnostic, ParseResult, ParserPlugin, SymbolTable
-from karsasec.parser.ast_nodes import FileNode
+from karsasec.parser.ast_nodes import ASTNode, FileNode, Position, generate_node_id
 from karsasec.parser.registry import parser_registry
 from karsasec.parser.tree_sitter import ts_engine
 
@@ -62,7 +63,7 @@ class PythonParserPlugin(ParserPlugin):
         code_bytes = path.read_bytes()
         file_node: Optional[FileNode] = ts_engine.parse_code(code_bytes, "python", file_path=path)
 
-        # Native Python AST symbol extraction for complete SymbolTable metadata
+        # Native Python AST symbol extraction and AST fallback if tree-sitter children are empty
         try:
             content = code_bytes.decode("utf-8", errors="ignore")
             py_ast = ast.parse(content, filename=str(path))
@@ -82,6 +83,10 @@ class PythonParserPlugin(ParserPlugin):
                     for target in node.targets:
                         if isinstance(target, ast.Name):
                             globals_list.append(target.id)
+
+            if file_node and not file_node.children:
+                file_node = self._build_from_native_ast(py_ast, path, code_bytes)
+
         except SyntaxError as se:
             diagnostics.append(
                 Diagnostic(
@@ -120,8 +125,82 @@ class PythonParserPlugin(ParserPlugin):
             diagnostics=diagnostics,
             parse_time_ms=round(elapsed_ms, 2),
             parser_version=self.version,
-            engine="Tree-sitter v0.25",
+            engine="Tree-sitter / Native Fallback",
         )
+
+    def _build_from_native_ast(self, py_ast: ast.AST, path: Path, code_bytes: bytes) -> FileNode:
+        """Converts native Python ast tree to KarsaSec FileNode and ASTNode structure."""
+        nodes_map: Dict[str, ASTNode] = {}
+
+        def _convert(py_node: ast.AST, parent_id: Optional[str]) -> ASTNode:
+            line_no = getattr(py_node, "lineno", 1)
+            col_no = getattr(py_node, "col_offset", 0)
+            end_line = getattr(py_node, "end_lineno", line_no)
+            end_col = getattr(py_node, "end_col_offset", col_no)
+
+            raw_type = py_node.__class__.__name__.lower()
+            if isinstance(py_node, ast.Call):
+                node_type = "call"
+            elif isinstance(py_node, ast.Attribute):
+                node_type = "attribute"
+            elif isinstance(py_node, ast.Name):
+                node_type = "name"
+            elif isinstance(py_node, ast.Constant):
+                node_type = "string" if isinstance(py_node.value, str) else "number"
+            elif isinstance(py_node, ast.FunctionDef):
+                node_type = "function_definition"
+            elif isinstance(py_node, ast.ClassDef):
+                node_type = "class_definition"
+            else:
+                node_type = raw_type
+
+            node_id = generate_node_id(path, line_no, col_no, node_type)
+
+            children_ids: List[str] = []
+            for field_name, child in ast.iter_fields(py_node):
+                if isinstance(child, ast.AST):
+                    c_node = _convert(child, node_id)
+                    children_ids.append(c_node.node_id)
+                elif isinstance(child, list):
+                    for item in child:
+                        if isinstance(item, ast.AST):
+                            c_node = _convert(item, node_id)
+                            children_ids.append(c_node.node_id)
+
+            ast_node = ASTNode(
+                node_id=node_id,
+                parent_id=parent_id,
+                node_type=node_type,
+                language="Python",
+                file_path=path,
+                byte_start=0,
+                byte_end=len(code_bytes),
+                start=Position(line=line_no, column=col_no),
+                end=Position(line=end_line, column=end_col),
+                children=children_ids,
+            )
+            nodes_map[node_id] = ast_node
+            return ast_node
+
+        root_ast_node = _convert(py_ast, None)
+
+        total_lines = len(code_bytes.splitlines())
+        file_node = FileNode(
+            node_id=root_ast_node.node_id,
+            parent_id=None,
+            node_type="file",
+            language="Python",
+            file_path=path,
+            byte_start=0,
+            byte_end=len(code_bytes),
+            start=Position(1, 0),
+            end=Position(total_lines or 1, 0),
+            children=root_ast_node.children,
+            total_lines=total_lines,
+            nodes_map=nodes_map,
+        )
+
+        return file_node
 
 # Register default Python parser instance
 python_parser_plugin = PythonParserPlugin()

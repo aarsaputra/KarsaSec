@@ -1,0 +1,49 @@
+rule:
+  id: KS-JS-0002
+
+metadata:
+  name: JavaScript DOM XSS
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-79
+  owasp: A03:2021-Injection
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/79.html
+  tags:
+    - xss
+    - dom
+    - frontend
+
+target:
+  languages:
+    - JavaScript
+    - TypeScript
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: JavaScript
+  ast_node_types:
+    - assignment_expression
+    - assignment
+    - call
+
+condition:
+  symbol_triggers:
+    - innerHTML
+    - document.write
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects assignment of un-sanitized string content to DOM innerHTML or document.write.
+  remediation: Use textContent or DOMPurify.sanitize before injecting HTML.

@@ -28,7 +28,7 @@ def test_python_parser_plugin_parse_result(tmp_path: Path) -> None:
     assert result.root is not None
     assert result.root.node_type == "file"
     assert result.parser_version == "0.1.0"
-    assert result.engine == "Tree-sitter v0.25"
+    assert "Tree-sitter" in result.engine
 
     assert "calculate" in result.symbol_table.functions
     assert "MyClass" in result.symbol_table.classes

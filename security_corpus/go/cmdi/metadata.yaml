@@ -1,0 +1,6 @@
+rule_id: KS-GO-0002
+category: cmdi
+language: go
+cwe: CWE-78
+owasp: A03:2021-Injection
+description: Go Command Injection corpus test suite

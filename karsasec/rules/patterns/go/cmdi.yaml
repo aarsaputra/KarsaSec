@@ -1,0 +1,48 @@
+rule:
+  id: KS-GO-0002
+
+metadata:
+  name: Go Command Injection
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-78
+  owasp: A03:2021-Injection
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/78.html
+  tags:
+    - cmdi
+    - exec
+    - go
+
+target:
+  languages:
+    - Go
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Go
+  ast_node_types:
+    - call_expression
+    - call
+
+condition:
+  symbol_triggers:
+    - exec.Command
+    - exec.CommandContext
+  pattern: "exec\\.(Command|CommandContext)\\([^)]*input[^)]*\\)"
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects OS command execution using un-sanitized external input.
+  remediation: Validate command arguments strictly and avoid passing untrusted strings directly into shell interpreters.

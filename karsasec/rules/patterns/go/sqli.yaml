@@ -1,0 +1,50 @@
+rule:
+  id: KS-GO-0001
+
+metadata:
+  name: Go SQL Injection
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-89
+  owasp: A03:2021-Injection
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/89.html
+  tags:
+    - sqli
+    - database
+    - go
+
+target:
+  languages:
+    - Go
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Go
+  ast_node_types:
+    - call_expression
+    - call
+    - statement
+
+condition:
+  symbol_triggers:
+    - db.Query
+    - db.Exec
+    - tx.Exec
+  pattern: "(?i)(fmt\\.Sprintf|db\\.(Query|Exec)\\([^)]*\\+|Sprintf|rawQuery)"
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects execution of raw formatted SQL query strings in Go database calls.
+  remediation: Use parameterized query arguments (e.g., db.Query("SELECT * FROM users WHERE id = ?", userID)).

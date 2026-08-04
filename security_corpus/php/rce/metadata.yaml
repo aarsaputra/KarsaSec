@@ -1,0 +1,6 @@
+rule_id: KS-PHP-0001
+category: rce
+language: php
+cwe: CWE-78
+owasp: A03:2021-Injection
+description: PHP Remote Code Execution corpus test suite

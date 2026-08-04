@@ -66,7 +66,9 @@ htmlcov/
 ehthumbs.db
 Thumbs.db
 
-# KarsaSec Runtime & Cache Artifacts
+# KarsaSec Runtime, Reports & Cache Artifacts
 *.db
 codebase_memory.db
 .karsasec_cache/
+*.sarif
+.karsasec-baseline.json

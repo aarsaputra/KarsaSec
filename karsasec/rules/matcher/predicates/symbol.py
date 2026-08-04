@@ -1,5 +1,6 @@
 """SymbolPredicate plugin evaluating symbol triggers against AST node text and SymbolTable metadata."""
 
+import re
 from typing import Optional, Tuple
 from karsasec.parser.ast.context import VisitorContext
 from karsasec.parser.ast_nodes import ASTNode
@@ -29,9 +30,11 @@ class SymbolPredicate(BasePredicate):
         stats.predicates_checked += 1
         node_text = node.get_text(source_bytes)
 
-        # 1. Direct text search for symbol trigger in node_text
+        # 1. Exact or word-boundary text search for symbol trigger in node_text
         for trigger in triggers:
-            if trigger in node_text:
+            # If trigger contains dots (e.g. cursor.execute or exec.Command) or special chars, escape it
+            pattern = r"(?:\b|_)" + re.escape(trigger) + r"(?:\b|_)" if "." not in trigger else re.escape(trigger)
+            if re.search(pattern, node_text):
                 return True, trigger, node_text
 
         # 2. SymbolTable metadata search

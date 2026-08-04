@@ -1,0 +1,6 @@
+rule_id: KS-PY-0002
+category: cmdi
+language: python
+cwe: CWE-78
+owasp: A03:2021-Injection
+description: Python Command Injection corpus test suite

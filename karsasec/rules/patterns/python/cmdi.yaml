@@ -1,0 +1,48 @@
+rule:
+  id: KS-PY-0002
+
+metadata:
+  name: Python Command Injection
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-78
+  owasp: A03:2021-Injection
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/78.html
+  tags:
+    - injection
+    - command
+    - os
+
+target:
+  languages:
+    - Python
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Python
+  ast_node_types:
+    - call
+
+condition:
+  symbol_triggers:
+    - os.system
+    - os.popen
+    - subprocess.call
+    - subprocess.Popen
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects OS command execution using un-sanitized input.
+  remediation: Avoid shell execution. Pass command arguments as a list to subprocess.run.

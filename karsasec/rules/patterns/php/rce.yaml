@@ -1,0 +1,50 @@
+rule:
+  id: KS-PHP-0001
+
+metadata:
+  name: PHP Remote Code Execution
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-78
+  owasp: A03:2021-Injection
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/78.html
+  tags:
+    - rce
+    - eval
+    - php
+
+target:
+  languages:
+    - PHP
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: PHP
+  ast_node_types:
+    - function_call_expression
+    - call
+
+condition:
+  symbol_triggers:
+    - eval
+    - system
+    - exec
+    - passthru
+    - shell_exec
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 50
+
+output:
+  severity: CRITICAL
+  confidence: CONFIDENT
+  message: Detects execution of system commands or PHP code strings from user input.
+  remediation: Avoid shell execution functions. Validate and sanitize inputs strictly using escapeshellarg.

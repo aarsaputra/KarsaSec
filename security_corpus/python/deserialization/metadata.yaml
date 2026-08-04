@@ -1,0 +1,6 @@
+rule_id: KS-PY-0003
+category: deserialization
+language: python
+cwe: CWE-502
+owasp: A08:2021-Integrity
+description: Python Unsafe Deserialization corpus test suite
