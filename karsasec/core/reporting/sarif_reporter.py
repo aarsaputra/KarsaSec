@@ -1,0 +1,90 @@
+"""SARIFReporter generating compliant SARIF 2.1.0 format with rule taxonomy deduplication."""
+
+import json
+from typing import Dict, List
+from karsasec.core.execution.result import ExecutionResult
+from karsasec.core.finding.collection import FindingCollection
+from karsasec.core.reporting.mapping import SARIF_SCORE_MAP, SARIF_SEVERITY_MAP
+from karsasec.core.reporting.reporter import Reporter
+from karsasec.core.reporting.target import ReportTarget
+
+class SARIFReporter(Reporter):
+    """Generates standard SARIF 2.1.0 security reports for GitHub Security & CI/CD integration."""
+
+    def generate(self, result: ExecutionResult, target: ReportTarget) -> None:
+        collection = FindingCollection(result.findings)
+
+        # 1. Deduplicate Rules for tool.driver.rules
+        rule_registry: Dict[str, int] = {}
+        sarif_rules: List[dict] = []
+
+        for finding in collection.findings:
+            if finding.rule_id not in rule_registry:
+                rule_idx = len(sarif_rules)
+                rule_registry[finding.rule_id] = rule_idx
+
+                score = SARIF_SCORE_MAP.get(finding.severity, 5.0)
+                sarif_rules.append({
+                    "id": finding.rule_id,
+                    "name": finding.title,
+                    "shortDescription": {"text": finding.title},
+                    "fullDescription": {"text": finding.description},
+                    "help": {"text": f"{finding.description}\n\nRemediation:\n{finding.remediation}"},
+                    "properties": {
+                        "cwe": [finding.cwe_id],
+                        "owasp": [finding.owasp],
+                        "precision": finding.confidence.name.lower(),
+                        "security-severity": f"{score:.1f}",
+                    },
+                })
+
+        # 2. Build SARIF Results
+        sarif_results: List[dict] = []
+        for finding in collection.findings:
+            rule_idx = rule_registry[finding.rule_id]
+            level = SARIF_SEVERITY_MAP.get(finding.severity, "warning")
+            uri = str(finding.file_path).replace("\\", "/")
+
+            sarif_results.append({
+                "ruleId": finding.rule_id,
+                "ruleIndex": rule_idx,
+                "level": level,
+                "message": {"text": finding.description},
+                "locations": [{
+                    "physicalLocation": {
+                        "artifactLocation": {"uri": uri},
+                        "region": {
+                            "startLine": finding.evidence.line,
+                            "startColumn": finding.evidence.column,
+                            "snippet": {"text": finding.evidence.snippet},
+                        },
+                    },
+                }],
+                "partialFingerprints": {
+                    "primaryLocationLineHash": finding.fingerprint,
+                },
+                "properties": {
+                    "finding_id": finding.finding_id,
+                    "remediation": finding.remediation,
+                },
+            })
+
+        # 3. Assemble SARIF 2.1.0 Object
+        sarif_payload = {
+            "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+            "version": "2.1.0",
+            "runs": [{
+                "tool": {
+                    "driver": {
+                        "name": "KarsaSec",
+                        "semanticVersion": "0.1.0",
+                        "rules": sarif_rules,
+                    },
+                },
+                "results": sarif_results,
+            }],
+        }
+
+        content = json.dumps(sarif_payload, indent=2)
+        target.write(content)
+        target.close()

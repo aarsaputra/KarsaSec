@@ -15,6 +15,9 @@ class Confidence(str, Enum):
     CONFIDENT = "CONFIDENT"
     LIKELY = "LIKELY"
     POSSIBLE = "POSSIBLE"
+    HIGH = "CONFIDENT"
+    MEDIUM = "LIKELY"
+    LOW = "POSSIBLE"
 
 class LanguageEnum(str, Enum):
     """Supported target programming languages."""

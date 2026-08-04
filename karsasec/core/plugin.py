@@ -3,9 +3,11 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 from karsasec.core.context import AnalysisContext
-from karsasec.parser.ast_nodes import FileNode
+
+if TYPE_CHECKING:
+    from karsasec.parser.ast_nodes import FileNode
 
 @dataclass
 class Diagnostic:
@@ -30,7 +32,7 @@ class ParseResult:
     """Contract returned by ParserPlugin parsing operations containing AST, diagnostics, and metrics."""
     language: str
     file_path: Path
-    root: Optional[FileNode] = None
+    root: Optional["FileNode"] = None
     symbol_table: SymbolTable = field(default_factory=SymbolTable)
     diagnostics: List[Diagnostic] = field(default_factory=list)
     parse_time_ms: float = 0.0

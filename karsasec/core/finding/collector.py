@@ -1,12 +1,12 @@
-"""EvidenceCollector module for extracting code evidence and context lines from source code."""
+"""EvidenceCollector extracting source snippet and context window lines from ASTNode and source_bytes."""
 
 from typing import Optional, Tuple
-from karsasec.core.execution.errors import EvidenceUnavailableError
+from karsasec.core.finding.errors import EvidenceUnavailableError
 from karsasec.core.finding.evidence import Evidence
 from karsasec.parser.ast_nodes import ASTNode
 
 class EvidenceCollector:
-    """Extracts vulnerable code snippets and context lines from raw source bytes."""
+    """Decoupled evidence collector extracting line, column, snippet, and context lines."""
 
     def extract_evidence(
         self,
@@ -14,34 +14,39 @@ class EvidenceCollector:
         source_bytes: Optional[bytes],
         context_window: int = 2,
     ) -> Evidence:
-        """Extracts Evidence from source bytes for a given ASTNode.
+        """Extracts Evidence DTO from an ASTNode and source bytes.
 
         Raises:
-            EvidenceUnavailableError: If source_bytes is None.
+            EvidenceUnavailableError: If source_bytes is None or node byte offsets are invalid.
         """
         if source_bytes is None:
-            raise EvidenceUnavailableError("Mandatory source_bytes parameter is missing.")
+            raise EvidenceUnavailableError("source_bytes is required for evidence collection")
 
-        line = node.start.line if node.start and node.start.line > 0 else 1
-        column = node.start.column if node.start else 0
+        if node.byte_start < 0 or node.byte_end > len(source_bytes) or node.byte_start > node.byte_end:
+            raise EvidenceUnavailableError(
+                f"Invalid node byte range [{node.byte_start}:{node.byte_end}] for source length {len(source_bytes)}"
+            )
 
-        # Decode snippet
-        snippet = node.get_text(source_bytes)
-        if not snippet:
-            snippet = f"/* AST node {node.node_type} at line {line} */"
+        snippet_raw = source_bytes[node.byte_start:node.byte_end]
+        snippet = snippet_raw.decode("utf-8", errors="ignore").strip()
 
-        # Decode context lines
-        text_lines = source_bytes.decode("utf-8", errors="ignore").splitlines()
-        start_idx = max(0, line - 1 - context_window)
-        end_idx = min(len(text_lines), line + context_window)
-        context_lines: Tuple[str, ...] = tuple(text_lines[start_idx:end_idx])
+        source_text = source_bytes.decode("utf-8", errors="ignore")
+        lines = source_text.splitlines()
+
+        line_num = node.start.line if node.start else 1
+        col_num = node.start.column if node.start else 0
+
+        # Calculate context lines
+        start_idx = max(0, line_num - 1 - context_window)
+        end_idx = min(len(lines), line_num + context_window)
+        context_lines: Tuple[str, ...] = tuple(lines[start_idx:end_idx])
 
         return Evidence(
-            snippet=snippet,
-            line=line,
-            column=column,
+            snippet=snippet if snippet else node.node_type,
+            line=line_num,
+            column=col_num,
             context_lines=context_lines,
         )
 
-# Global default collector instance
+# Global default instance
 evidence_collector = EvidenceCollector()
