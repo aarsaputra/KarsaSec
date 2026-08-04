@@ -1,7 +1,8 @@
 """KarsaSec Security Rule Engine Package."""
 
+from karsasec.core.execution import ExecutionResult, RuleExecutor, ScanContext, rule_executor
+from karsasec.core.finding import Evidence, EvidenceCollector, Finding, FindingFactory, evidence_collector, finding_factory
 from karsasec.rules.enums import Confidence, LanguageEnum, OWASPCategory, Severity
-from karsasec.rules.finding import Finding
 from karsasec.rules.loader import RuleCache, YAMLRuleLoader
 from karsasec.rules.matcher import ASTMatcher, CompiledRule, MatcherContext, MatcherStatistics, RuleMatch, ast_matcher
 from karsasec.rules.registry import RuleRegistry, rule_registry
@@ -13,6 +14,15 @@ __all__ = [
     "LanguageEnum",
     "OWASPCategory",
     "Finding",
+    "Evidence",
+    "EvidenceCollector",
+    "evidence_collector",
+    "FindingFactory",
+    "finding_factory",
+    "ScanContext",
+    "RuleExecutor",
+    "rule_executor",
+    "ExecutionResult",
     "Rule",
     "RuleMetadata",
     "RuleCondition",
