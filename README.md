@@ -89,6 +89,24 @@ python3 -m pytest tests/ -v
 
 ---
 
+## ⚙️ How KarsaSec Engine Works (Cara Kerja Engine)
+
+KarsaSec menganalisis berkas kode melalui 4 tahapan eksekusi deterministik:
+
+1. **📄 Multi-Language Ingestion & AST Parsing**:
+   Setiap berkas proyek diidentifikasi oleh `ParserRegistry` dan diubah menjadi pohon AST (`FileNode` & `ASTNode`) menggunakan parser C-Tree-sitter atau parser fallback native.
+
+2. **🔍 Deterministic Predicate Matching**:
+   `ASTWalker` menelusuri simpul AST secara streaming. Pipeline predikat (`NodeTypePredicate`, `SymbolPredicate` dengan regex word boundary `\b`, `RegexPredicate`, `LiteralPredicate`) mencocokkan pola aturan secara cepat (*short-circuiting*).
+
+3. **📊 Evidence Collection & Hybrid Confidence Scoring**:
+   `EvidenceCollector` mengekstrak cuplikan kode dan konteks baris. `ConfidenceCalculator` menghitung nilai keyakinan berbasis akumulasi pembobotan bukti kerentanan (*sink*, *source*, *hardcoded string*).
+
+4. **📄 Fingerprinting, Baseline & Standard Reporting**:
+   Setiap temuan diberi sidik jari SHA-256 unik oleh `FindingFactory` untuk mencegah duplikasi. Mesin pembanding baseline memisahkan temuan menjadi `NEW`, `EXISTING`, `FIXED`, atau `REGRESSED` dan mengekspornya ke format **SARIF 2.1.0**, **JSON**, atau **Console CLI**.
+
+---
+
 ## 🏗️ Core Architecture
 
 ```
@@ -128,6 +146,12 @@ python3 -m pytest tests/ -v
                                    ┌──────────────────────┐
                                    │ Finding & Reporters  │
                                    │ (SARIF, JSON, CLI)   │
+                                   └──────────┬───────────┘
+                                              │
+                                              ▼
+                                   ┌──────────────────────┐
+                                   │ Differential Baseline│
+                                   │ (.karsasec-baseline) │
                                    └──────────────────────┘
 ```
 
