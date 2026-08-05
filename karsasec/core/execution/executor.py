@@ -17,6 +17,7 @@ from karsasec.parser.ast import ASTWalker, VisitorContext
 from karsasec.parser.ast_nodes import FileNode
 from karsasec.rules.matcher import ASTMatcher, CompiledRule, ast_matcher
 from karsasec.rules.schema import Rule
+from karsasec.semantic.resolver import SemanticResolver
 
 class RuleExecutor:
     """Orchestrates streaming AST traversal, indexed rule evaluation, evidence collection, and finding deduplication."""
@@ -52,11 +53,15 @@ class RuleExecutor:
         start_time = time.perf_counter()
 
         indexer = RuleIndexer(rules)
+        resolver = SemanticResolver()
+        semantic_graph = resolver.resolve_file(scan_context.file_node)
+
         visitor_ctx = VisitorContext(
             file_node=scan_context.file_node,
             symbol_table=scan_context.symbol_table,
             language=scan_context.language,
             file_path=scan_context.file_path,
+            semantic_graph=semantic_graph,
         )
 
         file_path = scan_context.file_path or scan_context.file_node.file_path or Path("unknown")

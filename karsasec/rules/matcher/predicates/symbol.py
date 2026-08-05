@@ -30,14 +30,27 @@ class SymbolPredicate(BasePredicate):
         stats.predicates_checked += 1
         node_text = node.get_text(source_bytes)
 
-        # 1. Exact or word-boundary text search for symbol trigger in node_text
+        # 1. Query semantic graph for resolved symbol (aliases, scopes, imports)
+        if getattr(context, "semantic_graph", None):
+            resolved_symbol = context.semantic_graph.resolve_node(node.node_id)
+            if resolved_symbol:
+                for trigger in triggers:
+                    if (
+                        trigger == resolved_symbol
+                        or resolved_symbol.endswith("." + trigger)
+                        or resolved_symbol.startswith(trigger + ".")
+                        or trigger.endswith("." + resolved_symbol)
+                    ):
+                        return True, trigger, resolved_symbol
+
+        # 2. Exact or word-boundary text search for symbol trigger in node_text
         for trigger in triggers:
             # If trigger contains dots (e.g. cursor.execute or exec.Command) or special chars, escape it
             pattern = r"(?:\b|_)" + re.escape(trigger) + r"(?:\b|_)" if "." not in trigger else re.escape(trigger)
             if re.search(pattern, node_text):
                 return True, trigger, node_text
 
-        # 2. SymbolTable metadata search
+        # 3. SymbolTable metadata search
         if context.symbol_table:
             # Check function definitions or calls in symbol table
             if hasattr(context.symbol_table, "functions") and context.symbol_table.functions:

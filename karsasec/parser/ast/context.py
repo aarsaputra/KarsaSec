@@ -15,3 +15,5 @@ class VisitorContext:
     file_path: Optional[Path] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
     user_state: Dict[str, Any] = field(default_factory=dict)
+    semantic_graph: Optional[Any] = None
+
