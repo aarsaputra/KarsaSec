@@ -1,8 +1,9 @@
 """Enhanced immutable Finding model for security vulnerabilities with stable fingerprint identity."""
 
 import hashlib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any, Dict
 from karsasec.core.finding.evidence import Evidence
 from karsasec.rules.enums import Confidence, Severity
 
@@ -37,3 +38,4 @@ class Finding:
     description: str
     remediation: str
     rule_version: str = "1.0"
+    metadata: Dict[str, Any] = field(default_factory=dict)

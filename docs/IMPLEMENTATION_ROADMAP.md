@@ -22,7 +22,7 @@ Roadmap ini memandu pengembangan **KarsaSec** dari fondasi repositori hingga pla
 | **Sprint 3** | Deterministic Rule Engine | YAML Rule Matcher (Loader, Validator, Matcher, Executor), Semgrep Adapter | ✅ Completed |
 | **Sprint 4** | Code Property Graph (CPG) & Dataflow | SQLite-based graph storage, Call Graph, Data Flow Graph (DFG) traversal | ✅ Completed |
 | **PQP v1.0** | Taint Analysis & Guard Verifier | Precision Engine, Static Sink Downgrade, Whitelist Guard Verification, IaC Exemption | ✅ Completed |
-| **Sprint 5** | Hybrid RAG Search Engine | `Model2Vec` static embeddings, BM25 lexical search, Reciprocal Rank Fusion | ⚙️ In Progress |
+| **Sprint 5** | Hybrid RAG Search Engine | `Model2Vec` static embeddings, BM25 lexical search, Reciprocal Rank Fusion | ✅ Completed |
 | **Sprint 6** | AI Provider Gateway Interface | Interface `AIProvider` (OpenAI, Gemini, Anthropic, Ollama), LiteLLM Adapter | ⏳ Planned |
 | **Sprint 7** | 4-Agent Orchestrator State Machine | Core 4-Agent Pipeline (`Planner`, `Analyzer`, `Remediator`, `Reporter`) via State Machine | ⏳ Planned |
 | **Sprint 8** | Auto-Patch Generator & Verification | AST Validation, Linting, Formatting, Unified Diff Patch Synthesizer | ⏳ Planned |
@@ -84,6 +84,7 @@ Roadmap ini memandu pengembangan **KarsaSec** dari fondasi repositori hingga pla
   - `karsasec/rag/model2vec.py`: Static embedding CPU-bound (`Model2Vec`)
   - `karsasec/rag/hybrid.py`: Fusion via Reciprocal Rank Fusion (RRF)
 - **Output:** Retrieval chunk kode dan referensi CWE/CVE dengan latensi mendekati 0ms.
+- **Status:** Initial hybrid retrieval engine implemented; CLI support for `karsasec scan --rag` added and local corpus indexing enabled from `security_corpus/`.
 
 ### Sprint 6: AI Provider Gateway Interface
 - **Fokus:** Abstraksi lapisan komunikasi LLM agar tidak terikat langsung ke penyedia tertentu.

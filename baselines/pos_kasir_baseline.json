@@ -1,0 +1,14 @@
+{
+  "scanner_version": "0.1.0",
+  "created_at": "2026-08-06T00:00:00Z",
+  "total_findings": 7,
+  "findings": [
+    {"fingerprint": "56dd953b3fd118f1a47499a3be3ccd34", "rule_id": "KS-PHP-0002", "severity": "HIGH", "file_path": "/home/lota1337/web/pos_kasir/backend/app/Http/Controllers/ActivityLogController.php", "created_at": "2026-08-06T00:00:00Z"},
+    {"fingerprint": "6f4e7c74be225b7f1f5527d2e0f2bfc1", "rule_id": "KS-PHP-0002", "severity": "HIGH", "file_path": "/home/lota1337/web/pos_kasir/backend/app/Http/Controllers/ActivityLogController.php", "created_at": "2026-08-06T00:00:00Z"},
+    {"fingerprint": "24ff4231cdc34914f373dae9ef5f3894", "rule_id": "KS-PHP-0002", "severity": "HIGH", "file_path": "/home/lota1337/web/pos_kasir/backend/app/Http/Controllers/ActivityLogController.php", "created_at": "2026-08-06T00:00:00Z"},
+    {"fingerprint": "db76f2908b883009fd6c4121089e3e35", "rule_id": "KS-PHP-0002", "severity": "HIGH", "file_path": "/home/lota1337/web/pos_kasir/backend/app/Http/Controllers/ActivityLogController.php", "created_at": "2026-08-06T00:00:00Z"},
+    {"fingerprint": "a5409b8e36aba3c7b1921f3365500612", "rule_id": "KS-PHP-0002", "severity": "HIGH", "file_path": "/home/lota1337/web/pos_kasir/backend/app/Http/Controllers/ActivityLogController.php", "created_at": "2026-08-06T00:00:00Z"},
+    {"fingerprint": "a2473d37c30bc6ba8a95e46b4bbe6394", "rule_id": "KS-PHP-0002", "severity": "HIGH", "file_path": "/home/lota1337/web/pos_kasir/backend/app/Http/Controllers/ActivityLogController.php", "created_at": "2026-08-06T00:00:00Z"},
+    {"fingerprint": "3acb74917c137ad384c1f8b2e062cd9f", "rule_id": "KS-PHP-0002", "severity": "HIGH", "file_path": "/home/lota1337/web/pos_kasir/backend/app/Http/Controllers/ActivityLogController.php", "created_at": "2026-08-06T00:00:00Z"}
+  ]
+}

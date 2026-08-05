@@ -1,7 +1,9 @@
 """Dependency Injection Container for managing application components."""
 
 import threading
+from pathlib import Path
 from typing import Any, Callable, Dict, Type, TypeVar
+from karsasec.core.registry import rag_registry
 
 T = TypeVar("T")
 
@@ -22,7 +24,15 @@ class Container:
         """Registers a factory callable that creates a new instance on resolve."""
         with self._lock:
             self._factories[interface] = factory
-    
+
+    def register_rag_service(self, corpus_root: Path, force_rebuild: bool = False) -> None:
+        """Registers the RAGService singleton built from a local corpus path."""
+        from karsasec.rag.service import RAGService
+
+        service = RAGService.from_directory(corpus_root, force_rebuild=force_rebuild)
+        self.register_singleton(RAGService, service)
+        rag_registry.register(RAGService.__name__, RAGService)
+
     def resolve(self, interface: Type[T]) -> T:
         """Resolves a registered service or raises KeyError if unregistered."""
         with self._lock:

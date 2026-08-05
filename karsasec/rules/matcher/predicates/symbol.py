@@ -71,7 +71,12 @@ class SymbolPredicate(BasePredicate):
 
         # Step 1: Per-file SemanticGraph resolution
         if getattr(context, "semantic_graph", None):
-            resolved_symbol = context.semantic_graph.resolve_node(node.node_id)
+            try:
+                resolved_symbol = context.semantic_graph.resolve_node(node.node_id)
+            except RecursionError:
+                # Protect against pathological semantic graphs causing recursion
+                resolved_symbol = None
+
             if resolved_symbol:
                 for trigger in triggers:
                     if (

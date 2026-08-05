@@ -6,6 +6,7 @@ from typing import Dict, List, Optional
 
 from karsasec.core.plugin import ParseResult, ParserPlugin, SymbolTable
 from karsasec.parser.ast_nodes import ASTNode, FileNode, Position, generate_node_id
+from karsasec.parser.registry import parser_registry
 
 
 class DockerParserPlugin(ParserPlugin):
@@ -118,3 +119,4 @@ class DockerParserPlugin(ParserPlugin):
 
 
 docker_parser_plugin = DockerParserPlugin()
+parser_registry.register(docker_parser_plugin, ["dockerfile", ".dockerfile"])

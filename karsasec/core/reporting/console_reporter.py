@@ -47,6 +47,17 @@ class ConsoleReporter(Reporter):
             if count > 0:
                 sev_str = self.formatter.format_severity(sev)
                 lines.append(f"  {sev_str:<25} : {count}")
+
+        if result.rag_context:
+            lines.append("-" * 60)
+            lines.append("RAG CONTEXT RETRIEVAL:")
+            for idx, context in enumerate(result.rag_context, start=1):
+                lines.append(f"{idx}. {context.get('document_id')} (score={context.get('score'):.4f})")
+                lines.append(f"   Source: {context.get('source_path')}")
+                text_snippet = str(context.get('text', '')).strip().replace('\n', ' ')
+                lines.append(f"   Snippet: {text_snippet[:200]}")
+                lines.append("")
+
         lines.append("=" * 60 + "\n")
 
         content = "\n".join(lines)

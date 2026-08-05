@@ -63,6 +63,7 @@ class JSONReporter(Reporter):
                 "severity_counts": sev_summary,
             },
             "findings": findings_payload,
+            "rag_context": [dict(ctx) for ctx in result.rag_context],
             "errors": list(result.errors),
         }
 

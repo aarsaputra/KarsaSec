@@ -1,7 +1,7 @@
 """ExecutionResult model storing scan telemetry, deduplicated findings, errors, and performance metrics."""
 
 from dataclasses import dataclass, field
-from typing import Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 from karsasec.core.finding.model import Finding
 from karsasec.rules.matcher.statistics import MatcherStatistics
 
@@ -18,3 +18,4 @@ class ExecutionResult:
     errors: Tuple[str, ...] = field(default_factory=tuple)
     warnings: Tuple[str, ...] = field(default_factory=tuple)
     statistics: Optional[MatcherStatistics] = None
+    rag_context: Tuple[Dict[str, Any], ...] = field(default_factory=tuple)

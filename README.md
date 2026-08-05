@@ -34,6 +34,7 @@
 - **🔌 Extensible Plugin SDK**: Versioned Analysis API (`v1`, `v2`, `v3`) for third-party parser, rule pack, and reporter extensions (`karsasec/sdk/`).
 - **📜 Rule Schema v2 Engine**: Advanced rule definitions featuring `TargetSpec`, `AnalysisSpec` (`requires: ["ast", "semantic"]`), `EvidenceSpec`, and CWE/OWASP taxonomy mapping.
 - **📊 Hybrid Evidence & Confidence Engine**: Evaluates evidence telemetry dynamically to assign high-precision confidence levels (`CONFIDENT`, `HIGH`, `MEDIUM`, `LOW`).
+- **🔍 Local Hybrid RAG Retrieval**: Use `karsasec scan --rag` or `karsasec scan --context-search` to attach contextual references from the local security corpus during scan.
 - **🌐 Multi-Language & IaC Support**: Built-in AST and pattern detection for **Python**, **JavaScript / TypeScript**, **PHP**, **Go**, **Rust**, **Java**, **Dockerfile**, **Kubernetes**, **GitHub Actions**, **Terraform**, and **Helm**.
 - **📄 Enterprise Reporting & Baseline**: Generates **SARIF 2.1.0**, **JSON**, and interactive **Console** reports, with deterministic 32-character SHA-256 fingerprinting (`compute_stable_finding_fingerprint`).
 
@@ -79,6 +80,17 @@ pip install -e .
 ```bash
 # Scan a project workspace
 karsasec scan .
+
+# Run a scan with hybrid context retrieval from local RAG corpus
+karsasec scan . --rag
+karsasec scan . --rag --rag-query "server-side request forgery"
+
+# Use a custom external corpus directory, for example a public repo checkout or downloaded security corpus
+# Example: clone a public security corpus repository then pass its path to --rag-corpus
+# git clone https://github.com/OWASP/CheatSheetSeries.git /tmp/owasp-corpus
+karsasec scan . --rag --rag-corpus /tmp/owasp-corpus
+
+Note: Sprint 5 — Hybrid RAG integration is complete. Retrieved RAG context is now available to the analysis engine via `VisitorContext.rag_context`, and rules can opt-in to RAG-aware predicates (see `karsasec.rules.matcher.predicates.rag.RAGPredicate`).
 
 # Export scan results to SARIF or JSON
 karsasec scan . -f sarif -o report.sarif.json

@@ -72,6 +72,28 @@ def scan(
         "-b",
         help="Path to baseline file for vulnerability diff comparison.",
     ),
+    use_rag: bool = typer.Option(
+        False,
+        "--rag",
+        "--context-search",
+        help="Enable hybrid RAG retrieval context during scan.",
+    ),
+    rag_query: Optional[str] = typer.Option(
+        None,
+        "--rag-query",
+        "--context-query",
+        help="Explicit text query used for RAG context retrieval.",
+    ),
+    rag_corpus: Optional[Path] = typer.Option(
+        None,
+        "--rag-corpus",
+        help="Path to an external RAG corpus directory, e.g. a local clone of a public security/code corpus.",
+    ),
+    rag_rebuild: bool = typer.Option(
+        False,
+        "--rag-rebuild",
+        help="Force rebuild the RAG corpus index before retrieval.",
+    ),
     no_color: bool = typer.Option(
         False,
         "--no-color",
@@ -84,6 +106,10 @@ def scan(
         format_type=format,
         output_path=output,
         baseline_path=baseline,
+        use_rag=use_rag,
+        rag_query=rag_query,
+        rag_corpus=rag_corpus,
+        rag_rebuild=rag_rebuild,
         no_color=no_color,
     )
     raise typer.Exit(code=exit_code)

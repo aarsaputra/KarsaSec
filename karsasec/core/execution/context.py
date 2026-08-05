@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
 from karsasec.core.plugin import SymbolTable
 from karsasec.parser.ast_nodes import FileNode
 
@@ -32,6 +32,7 @@ class ScanContext:
     language: str = ""
     file_path: Optional[Path] = None
     call_graph: Optional[object] = None  # CallGraph — typed as object to avoid circular imports at runtime
+    rag_context: Tuple[Dict[str, Any], ...] = ()
 
     def __post_init__(self) -> None:
         if not self.language and self.file_node:

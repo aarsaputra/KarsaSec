@@ -35,7 +35,14 @@ condition:
     - mysqli_query
     - PDO::query
     - ->query
-    - query
+    - DB::select
+    - DB::statement
+    - DB::insert
+    - DB::update
+    - DB::delete
+    - DB::raw
+    - PDO::prepare
+    - mysqli::prepare
 
 evidence:
   require:

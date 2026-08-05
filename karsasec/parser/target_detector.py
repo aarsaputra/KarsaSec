@@ -22,7 +22,7 @@ class TargetDetector:
         ext = path.suffix.lower()
 
         # 1. Dockerfile / Containerfile (High Certainty 1.0)
-        if filename == "dockerfile" or filename.startswith("dockerfile.") or filename == "containerfile":
+        if filename == "dockerfile" or filename.startswith("dockerfile.") or ext == ".dockerfile" or filename == "containerfile":
             return TargetDetectionResult(TargetKindEnum.IAC, TargetFormatEnum.DOCKERFILE, "DockerParser", confidence=1.0)
 
         # 2. GitHub Actions Workflow (Path certainty 0.95, Content 0.85)

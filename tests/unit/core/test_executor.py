@@ -102,6 +102,41 @@ def test_rule_executor_single_match() -> None:
     assert finding.severity == Severity.CRITICAL
     assert finding.evidence.snippet == "eval(user_input)"
 
+def test_rule_executor_preserves_rag_context() -> None:
+    source = b"eval(user_input)"
+    call_node = ASTNode(
+        node_id="n1",
+        node_type="call_expression",
+        byte_start=0,
+        byte_end=len(source),
+        start=Position(line=1, column=0),
+    )
+    root = FileNode(node_id="r1", language="Python", children=["n1"], file_path=Path("main.py"))
+    root.nodes_map = {"r1": root, "n1": call_node}
+
+    rag_context = (
+        {
+            "document_id": "doc-1",
+            "score": 0.95,
+            "source_path": "security_corpus/example.txt",
+            "text": "RAG context sample",
+        },
+    )
+
+    scan_ctx = ScanContext(
+        file_node=root,
+        source_bytes=source,
+        language="python",
+        file_path=Path("main.py"),
+        rag_context=rag_context,
+    )
+    rule = create_sample_rule()
+
+    executor = RuleExecutor()
+    result = executor.execute_scan(scan_ctx, [rule])
+
+    assert result.rag_context == rag_context
+
 def test_rule_executor_duplicate_findings_deduplicated() -> None:
     source = b"eval(user_input)"
     call_node = ASTNode(

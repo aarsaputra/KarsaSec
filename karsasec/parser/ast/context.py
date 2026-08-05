@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
 from karsasec.core.plugin import SymbolTable
 from karsasec.parser.ast_nodes import FileNode
 
@@ -34,3 +34,4 @@ class VisitorContext:
     user_state: Dict[str, Any] = field(default_factory=dict)
     semantic_graph: Optional[Any] = None
     call_graph: Optional[Any] = None  # CallGraph — typed as Any to avoid circular imports at runtime
+    rag_context: Tuple[Dict[str, Any], ...] = field(default_factory=tuple)

@@ -70,16 +70,21 @@ class SARIFReporter(Reporter):
             })
 
         # 3. Assemble SARIF 2.1.0 Object
+        tool_driver = {
+            "name": "KarsaSec",
+            "semanticVersion": "0.1.0",
+            "rules": sarif_rules,
+        }
+
+        if result.rag_context:
+            tool_driver["properties"] = {"rag_context": [dict(ctx) for ctx in result.rag_context]}
+
         sarif_payload = {
             "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
             "version": "2.1.0",
             "runs": [{
                 "tool": {
-                    "driver": {
-                        "name": "KarsaSec",
-                        "semanticVersion": "0.1.0",
-                        "rules": sarif_rules,
-                    },
+                    "driver": tool_driver,
                 },
                 "results": sarif_results,
             }],

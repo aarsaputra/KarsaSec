@@ -31,9 +31,17 @@ class ParserRegistry:
         return self._extension_map.get(ext_key)
 
     def get_parser_for_file(self, file_path: Union[str, Path]) -> Optional[ParserPlugin]:
-        """Retrieves parser plugin appropriate for a given file path based on suffix."""
+        """Retrieves parser plugin appropriate for a given file path based on suffix or known filename patterns."""
         path = Path(file_path)
-        return self.get_parser_by_extension(path.suffix)
+        parser = self.get_parser_by_extension(path.suffix)
+        if parser:
+            return parser
+
+        filename = path.name.lower()
+        if filename in {"dockerfile", "containerfile"}:
+            return self.get_parser_by_extension(".dockerfile") or self.get_parser_by_language("Dockerfile")
+
+        return None
 
     def list_parsers(self) -> List[ParserPlugin]:
         """Lists all registered ParserPlugin instances."""

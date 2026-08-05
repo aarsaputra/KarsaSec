@@ -3,6 +3,8 @@
 import hashlib
 import uuid
 from pathlib import Path
+from typing import Any, Dict, Optional
+
 from karsasec.core.finding.evidence import Evidence
 from karsasec.core.finding.model import Finding
 from karsasec.parser.ast_nodes import ASTNode
@@ -26,6 +28,7 @@ class FindingFactory:
         file_path: Path,
         evidence: Evidence,
         match_result: RuleMatch,
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> Finding:
         """Assembles an immutable Finding instance from Rule evaluation metadata."""
         finding_id = f"finding-{uuid.uuid4().hex[:8]}"
@@ -79,6 +82,7 @@ class FindingFactory:
             description=description,
             remediation=remediation,
             rule_version=str(getattr(rule.metadata, "version", "1.0")),
+            metadata=metadata or {},
         )
 
 # Global default factory instance

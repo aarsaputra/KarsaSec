@@ -9,6 +9,7 @@ from karsasec.rules.matcher.predicates.literal import LiteralPredicate
 from karsasec.rules.matcher.predicates.node_type import NodeTypePredicate
 from karsasec.rules.matcher.predicates.regex import RegexPredicate
 from karsasec.rules.matcher.predicates.symbol import SymbolPredicate
+from karsasec.rules.matcher.predicates.rag import RAGPredicate
 from karsasec.rules.matcher.statistics import MatcherStatistics
 
 class PredicatePipeline:
@@ -18,6 +19,7 @@ class PredicatePipeline:
         self.predicates: List[BasePredicate] = predicates or [
             NodeTypePredicate(),
             SymbolPredicate(),
+            RAGPredicate(),
             RegexPredicate(),
             LiteralPredicate(),
         ]

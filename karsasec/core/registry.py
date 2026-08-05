@@ -1,6 +1,6 @@
 """Component Registry for registering Parsers, Rules, and AI Adapters."""
 
-from typing import Dict, Generic, List, Optional, Type, TypeVar
+from typing import Any, Dict, Generic, List, Optional, Type, TypeVar
 
 T = TypeVar("T")
 
@@ -26,3 +26,6 @@ class ComponentRegistry(Generic[T]):
     def clear(self) -> None:
         """Clears registered components."""
         self._components.clear()
+
+# Global registry for pluggable components such as hybrid RAG services.
+rag_registry: ComponentRegistry[Any] = ComponentRegistry("RAGComponents")
