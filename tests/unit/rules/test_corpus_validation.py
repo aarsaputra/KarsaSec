@@ -6,8 +6,9 @@ import pytest
 from karsasec.rules.loader import YAMLRuleLoader
 from karsasec.rules.testing import RuleTestCase, RuleTestRunner
 
-CORPUS_DIR = Path("/home/lota1337/python/KarsaSec/security_corpus")
-RULES_DIR = Path("/home/lota1337/python/KarsaSec/karsasec/rules/patterns")
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
+CORPUS_DIR = REPO_ROOT / "security_corpus"
+RULES_DIR = REPO_ROOT / "karsasec" / "rules" / "patterns"
 
 RULE_CORPUS_MAP = {
     "KS-PY-0001": CORPUS_DIR / "python" / "sqli",
