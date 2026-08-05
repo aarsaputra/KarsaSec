@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from karsasec.core.execution import ScanContext, rule_executor
 from karsasec.rules.enums import Severity
-from karsasec.rules.finding import Finding
+from karsasec.core.finding.model import Finding
 from karsasec.rules.loader import YAMLRuleLoader
 from karsasec.parser.docker_parser import docker_parser_plugin
 from karsasec.parser.k8s_parser import k8s_parser_plugin

@@ -82,7 +82,7 @@ def test_pass_manager_telemetry_records_crash():
     telemetry = mgr.get_telemetry()
     assert len(telemetry) == 1
     assert telemetry[0].success is False
-    assert "Simulated parser crash" in telemetry[0].error_message
+    assert "Simulated parser crash" in (telemetry[0].error_message or "")
     assert telemetry[0].elapsed_ms >= 0
 
 

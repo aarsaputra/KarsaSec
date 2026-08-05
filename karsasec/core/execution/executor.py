@@ -4,7 +4,7 @@ import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Sequence, Union
 
 from karsasec.core.execution.context import ScanContext
 from karsasec.core.execution.errors import ExecutionError
@@ -37,7 +37,7 @@ class RuleExecutor:
     def execute_scan(
         self,
         scan_context: ScanContext,
-        rules: List[Union[Rule, CompiledRule]],
+        rules: Sequence[Union[Rule, CompiledRule]],
     ) -> ExecutionResult:
         """Executes static analysis scan over a ScanContext.
 
