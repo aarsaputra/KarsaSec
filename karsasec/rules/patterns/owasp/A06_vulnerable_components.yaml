@@ -1,0 +1,45 @@
+rule:
+  id: KS-OWASP-A06
+
+metadata:
+  name: OWASP A06 - Vulnerable and Outdated Components (Multi-language)
+  author: KarsaSec Team
+  version: "1.0"
+  cwe: CWE-1104
+  owasp: A06:2021-Vulnerable and Outdated Components
+  created: "2026-08-05"
+  tags:
+    - scc
+
+target:
+  languages:
+    - PHP
+    - Python
+    - JavaScript
+    - Go
+
+analysis:
+  engine: PATTERN
+  behavior: PATTERN
+
+match:
+  language: generic
+  ast_node_types:
+    - statement
+
+condition:
+  symbol_triggers:
+    - composer.json
+    - requirements.txt
+    - package.json
+    - go.mod
+  pattern: "(?i)(composer\.json|package\.json|requirements\.txt|go\.mod)"
+
+evidence:
+  require: []
+
+output:
+  severity: MEDIUM
+  confidence: MEDIUM
+  message: Detects usage of manifest files; integrate with SCA toolchain to lookup known vulnerable dependencies.
+  remediation: Run SCA scanning and upgrade or mitigate vulnerable packages.

@@ -1,0 +1,50 @@
+rule:
+  id: KS-OWASP-A10
+
+metadata:
+  name: OWASP A10 - Server-Side Request Forgery (Multi-language)
+  author: KarsaSec Team
+  version: "1.0"
+  cwe: CWE-918
+  owasp: A10:2021-Server-Side Request Forgery
+  created: "2026-08-05"
+  tags:
+    - ssrf
+
+target:
+  languages:
+    - PHP
+    - Python
+    - JavaScript
+    - Go
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: generic
+  ast_node_types:
+    - call
+    - statement
+
+condition:
+  symbol_triggers:
+    - file_get_contents
+    - requests
+    - http_get
+    - axios
+    - fetch
+  pattern: "(?i)(file_get_contents\(|requests\.get\(|axios\.|fetch\(|http\.Get\()"
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: HIGH
+  confidence: LIKELY
+  message: Detects potential SSRF when untrusted input is used to construct outbound requests or file reads.
+  remediation: Validate and whitelist destination hosts and use network-level egress controls.

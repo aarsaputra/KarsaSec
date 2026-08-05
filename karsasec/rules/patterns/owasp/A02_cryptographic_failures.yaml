@@ -1,0 +1,50 @@
+rule:
+  id: KS-OWASP-A02
+
+metadata:
+  name: OWASP A02 - Cryptographic Failures (Multi-language)
+  author: KarsaSec Team
+  version: "1.0"
+  cwe: CWE-326
+  owasp: A02:2021-Cryptographic Failures
+  created: "2026-08-05"
+  tags:
+    - crypto
+
+target:
+  languages:
+    - PHP
+    - Python
+    - JavaScript
+    - Go
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: generic
+  ast_node_types:
+    - call
+    - statement
+
+condition:
+  symbol_triggers:
+    - md5
+    - sha1
+    - base64_encode
+    - crypt
+    - openssl_encrypt
+    - random
+  pattern: "(?i)(md5\(|sha1\(|base64_encode\(|crypt\(|rng|rand\(|Random|InsecureRandom|InsecureSkipVerify|DES|ECB)"
+
+evidence:
+  require: []
+  score_weights:
+    dangerous_sink: 30
+
+output:
+  severity: HIGH
+  confidence: LIKELY
+  message: Detects use of weak or insecure cryptographic primitives or insecure randomness.
+  remediation: Use modern, vetted crypto libraries and secure random number generators for secrets and tokens.

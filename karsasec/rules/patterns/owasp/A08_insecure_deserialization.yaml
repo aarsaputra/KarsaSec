@@ -1,0 +1,49 @@
+rule:
+  id: KS-OWASP-A08
+
+metadata:
+  name: OWASP A08 - Insecure Deserialization (Multi-language)
+  author: KarsaSec Team
+  version: "1.0"
+  cwe: CWE-502
+  owasp: A08:2021-Insecure Deserialization
+  created: "2026-08-05"
+  tags:
+    - deserialization
+
+target:
+  languages:
+    - PHP
+    - Python
+    - JavaScript
+    - Go
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: generic
+  ast_node_types:
+    - call
+    - statement
+
+condition:
+  symbol_triggers:
+    - unserialize
+    - pickle
+    - json_decode
+    - yaml_load
+  pattern: "(?i)(unserialize\(|pickle\.loads|yaml\.load|JSON\.parse|eval\()"
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects deserialization or eval-like operations on potentially untrusted input.
+  remediation: Avoid deserializing untrusted input; use safe parsers and validation.

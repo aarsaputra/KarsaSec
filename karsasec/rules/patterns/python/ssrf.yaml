@@ -38,7 +38,8 @@ condition:
     - requests.post
     - urllib.request.urlopen
     - httpx.get
-  pattern: "(?i)(requests\\.(?:get|post|request)\\([^)]*\\+|(?:get|post)\\([^)]*user_input|urlopen\\([^)]*req)"
+  pattern: >-
+    (?i)(requests\.(?:get|post|request)\([^)]*|urllib\.request\.urlopen\([^)]*|httpx\.get\([^)]*)
 
 evidence:
   require:

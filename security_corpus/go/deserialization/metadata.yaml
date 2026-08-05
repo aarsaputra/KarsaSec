@@ -1,0 +1,6 @@
+rule_id: KS-GO-0008
+category: deserialization
+language: go
+cwe: CWE-502
+owasp: A08:2021-Integrity
+description: Go unsafe deserialization corpus test suite

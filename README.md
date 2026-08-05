@@ -181,6 +181,14 @@ Detailed architectural documentation is organized in `docs/`:
 - 🤝 **[Contributing Guide](docs/guides/CONTRIBUTING.md)** — Contribution workflow & guidelines
 - 🧪 **[Testing Strategy](docs/guides/TESTING.md)** — Automated testing strategy & corpus specifications
 
+## Recent Additions
+
+- Added OWASP Top-10 rule coverage expansion for Python, JavaScript, and Go.
+- New rules: `KS-PY-0004`, `KS-PY-0010`, `KS-JS-0006`, `KS-GO-0008` with accompanying security_corpus samples and unit tests.
+- Continuous validation CI workflow: `.github/workflows/corpus-validation.yml` runs corpus validation and multi-language rule tests on PRs.
+
+If you want these added to project documentation pages, I can generate a short changelog fragment or PR-ready summary.
+
 ---
 
 ## 🛡️ License

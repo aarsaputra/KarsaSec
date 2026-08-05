@@ -1,10 +1,12 @@
 package main
 
 import (
-	"context"
-	"os/exec"
+    "context"
+    "os"
+    "os/exec"
 )
 
-func runContextRegression(ctx context.Context, inputTarget string) {
-	exec.CommandContext(ctx, "ping", inputTarget)
+func runContextRegression(ctx context.Context) {
+    inputTarget := os.Args[1]
+    exec.CommandContext(ctx, "ping", inputTarget)
 }

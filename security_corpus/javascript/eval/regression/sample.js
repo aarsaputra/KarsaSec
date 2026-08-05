@@ -1,5 +1,5 @@
 const vm = require('vm');
 
-function runInContextRegression(codeStr) {
-    vm.runInThisContext(codeStr);
+function runInContextRegression(req) {
+    vm.runInThisContext(req.body.script);
 }

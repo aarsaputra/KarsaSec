@@ -1,0 +1,58 @@
+rule:
+  id: KS-PHP-0008
+
+metadata:
+  name: PHP Broken Access Control
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-285
+  owasp: A01:2021-Broken Access Control
+  created: "2026-08-05"
+  references:
+    - https://owasp.org/Top10/
+    - https://cwe.mitre.org/data/definitions/285.html
+  tags:
+    - broken_access_control
+    - authorization
+    - php
+
+target:
+  languages:
+    - PHP
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: PHP
+  ast_node_types:
+    - function_call_expression
+    - call_expression
+    - call
+    - assignment
+    - statement
+
+condition:
+  symbol_triggers:
+    - mysqli_query
+    - mysqli_prepare
+    - $_GET
+    - $_COOKIE
+    - preg_match
+    - intval
+  pattern: >-
+    (?i)(\$_GET\[['"](?:user_id|token)['"]\]|\$_COOKIE\[['"](?:user_id|user_role)['"]\]|dvwaCurrentUser\(\)|user_role|access_denied|unauthorized_access)
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 30
+    user_source: 30
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects PHP access control decisions that depend on unsanitized request-controlled user identifiers or tokens.
+  remediation: Use server-side authorization checks based on authenticated session state and avoid using request-controlled IDs or cookies directly for access control.

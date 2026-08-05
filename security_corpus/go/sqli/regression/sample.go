@@ -1,7 +1,11 @@
 package main
 
-import "database/sql"
+import (
+    "database/sql"
+    "os"
+)
 
-func execUserRegression(db *sql.DB, rawQuery string) {
-	db.Exec(rawQuery)
+func execUserRegression(db *sql.DB) {
+    rawQuery := os.Args[1]
+    db.Exec(rawQuery)
 }

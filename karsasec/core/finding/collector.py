@@ -12,7 +12,7 @@ class EvidenceCollector:
         self,
         node: ASTNode,
         source_bytes: Optional[bytes],
-        context_window: int = 2,
+        context_window: int = 10,
     ) -> Evidence:
         """Extracts Evidence DTO from an ASTNode and source bytes.
 

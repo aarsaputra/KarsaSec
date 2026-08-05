@@ -1,0 +1,53 @@
+rule:
+  id: KS-GO-0008
+
+metadata:
+  name: Go Unsafe Deserialization
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-502
+  owasp: A08:2021-Integrity
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/502.html
+  tags:
+    - deserialization
+    - gob
+    - go
+
+target:
+  languages:
+    - Go
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Go
+  ast_node_types:
+    - call_expression
+    - call
+    - statement
+
+condition:
+  symbol_triggers:
+    - gob.NewDecoder
+    - decoder.Decode
+    - yaml.Unmarshal
+    - protobuf.Unmarshal
+  pattern: >-
+    (?i)(gob\.NewDecoder|decoder\.Decode|yaml\.Unmarshal|protobuf\.Unmarshal)
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+    user_source: 30
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects deserialization of untrusted data in Go applications.
+  remediation: Use safe parsing methods, validate serialized payloads, and avoid decoding untrusted input directly.

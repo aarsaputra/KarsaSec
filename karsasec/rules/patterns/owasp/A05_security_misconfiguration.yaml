@@ -1,0 +1,44 @@
+rule:
+  id: KS-OWASP-A05
+
+metadata:
+  name: OWASP A05 - Security Misconfiguration (Multi-language)
+  author: KarsaSec Team
+  version: "1.0"
+  cwe: CWE-933
+  owasp: A05:2021-Security Misconfiguration
+  created: "2026-08-05"
+  tags:
+    - security_configuration
+
+target:
+  languages:
+    - PHP
+    - Python
+    - JavaScript
+    - Go
+
+analysis:
+  engine: GENERIC
+  behavior: PATTERN
+
+match:
+  language: generic
+  ast_node_types:
+    - statement
+
+condition:
+  symbol_triggers:
+    - ini_set
+    - error_reporting
+    - display_errors
+  pattern: "(?i)(display_errors\s*:\s*on|error_reporting\(|ini_set\(|DEBUG\s*=\s*True|allow_url_include)"
+
+evidence:
+  require: []
+
+output:
+  severity: MEDIUM
+  confidence: LIKELY
+  message: Detects potential security misconfiguration flags or debug settings in code/configuration.
+  remediation: Disable debug/display in production and ensure secure default configurations.

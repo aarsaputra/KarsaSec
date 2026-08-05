@@ -1,0 +1,6 @@
+rule_id: KS-PY-0010
+category: ssrf
+language: python
+cwe: CWE-918
+owasp: A10:2021-Server-Side Request Forgery (SSRF)
+description: Python SSRF corpus test suite

@@ -1,0 +1,46 @@
+rule:
+  id: KS-PHP-SSRF-0001
+
+metadata:
+  name: PHP SSRF
+  author: KarsaSec Team
+  version: "1.0"
+  cwe: CWE-918
+  owasp: A10:2021-Server-Side Request Forgery
+  created: "2026-08-05"
+  tags:
+    - ssrf
+
+target:
+  languages:
+    - PHP
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: PHP
+  ast_node_types:
+    - call
+    - statement
+
+condition:
+  symbol_triggers:
+    - file_get_contents
+    - curl_exec
+    - fopen
+  pattern: >-
+    (?i)(file_get_contents\(|curl_exec\(|fopen\()
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: HIGH
+  confidence: LIKELY
+  message: Detects potential SSRF when untrusted input is used to make outbound requests or file reads.
+  remediation: Whitelist destination hosts and validate URLs; avoid direct use of user-controlled URLs.

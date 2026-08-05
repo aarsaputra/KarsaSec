@@ -1,0 +1,43 @@
+rule:
+  id: KS-PHP-AUTH-0001
+
+metadata:
+  name: PHP Identification and Authentication Failures
+  author: KarsaSec Team
+  version: "1.0"
+  cwe: CWE-287
+  owasp: A07:2021-Identification and Authentication Failures
+  created: "2026-08-05"
+  tags:
+    - authentication
+
+target:
+  languages:
+    - PHP
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: PHP
+  ast_node_types:
+    - call
+    - statement
+
+condition:
+  symbol_triggers:
+    - password_hash
+    - password_verify
+    - md5
+  pattern: >-
+    (?i)(password_hash\(|password_verify\(|md5\(|sha1\()
+
+evidence:
+  require: []
+
+output:
+  severity: HIGH
+  confidence: LIKELY
+  message: Detects potentially insecure authentication handling or weak password hashing calls.
+  remediation: Use `password_hash`/`password_verify` or modern KDFs and avoid MD5/SHA1 for password storage.

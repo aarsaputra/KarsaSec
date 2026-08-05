@@ -1,0 +1,47 @@
+rule:
+  id: KS-PY-0004
+
+metadata:
+  name: Python Weak Cryptography
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-327
+  owasp: A02:2021-Cryptographic Failures
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/327.html
+  tags:
+    - crypto
+    - hash
+    - python
+
+target:
+  languages:
+    - Python
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Python
+  ast_node_types:
+    - call
+
+condition:
+  symbol_triggers:
+    - hashlib.md5
+    - hashlib.sha1
+    - md5
+    - sha1
+  pattern: "(?i)(hashlib\\.(md5|sha1)|\\b(md5|sha1)\\()"
+
+evidence:
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: MEDIUM
+  confidence: CONFIDENT
+  message: Detects usage of weak hashing algorithms in Python code.
+  remediation: Replace MD5/SHA1 with secure algorithms such as SHA256, bcrypt, or Argon2.

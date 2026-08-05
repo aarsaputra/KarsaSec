@@ -1,11 +1,13 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
+    "database/sql"
+    "fmt"
+    "os"
 )
 
-func getUser(db *sql.DB, username string) {
-	query := fmt.Sprintf("SELECT * FROM users WHERE name = '%s'", username)
-	db.Query(query)
+func getUser(db *sql.DB) {
+    username := os.Args[1]
+    query := fmt.Sprintf("SELECT * FROM users WHERE name = '%s'", username)
+    db.Query(query)
 }

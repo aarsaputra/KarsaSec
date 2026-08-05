@@ -1,0 +1,53 @@
+rule:
+  id: KS-OWASP-A01
+
+metadata:
+  name: OWASP A01 - Broken Access Control (Multi-language)
+  author: KarsaSec Team
+  version: "1.0"
+  cwe: CWE-284
+  owasp: A01:2021-Broken Access Control
+  created: "2026-08-05"
+  tags:
+    - broken_access_control
+    - authorization
+
+target:
+  languages:
+    - PHP
+    - Python
+    - JavaScript
+    - Go
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: generic
+  ast_node_types:
+    - call
+    - statement
+    - assignment
+
+condition:
+  symbol_triggers:
+    - setcookie
+    - $_COOKIE
+    - session
+    - jwt
+    - token
+  pattern: "(?i)(cookie|session|token|auth|role|permission|access_denied|unauthorized|is_admin|is_authorized)"
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 20
+    user_source: 20
+
+output:
+  severity: HIGH
+  confidence: LIKELY
+  message: Detects code paths making access control decisions based on request-controlled values or weak token checks.
+  remediation: Use server-side authoritative identity checks and avoid using client-controlled cookies or request parameters for authorization.

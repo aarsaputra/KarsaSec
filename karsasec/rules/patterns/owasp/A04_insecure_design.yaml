@@ -1,0 +1,41 @@
+rule:
+  id: KS-OWASP-A04
+
+metadata:
+  name: OWASP A04 - Insecure Design (Multi-language)
+  author: KarsaSec Team
+  version: "1.0"
+  cwe: CWE-000
+  owasp: A04:2021-Insecure Design
+  created: "2026-08-05"
+  tags:
+    - insecure_design
+
+target:
+  languages:
+    - PHP
+    - Python
+    - JavaScript
+    - Go
+
+analysis:
+  engine: GENERIC
+  behavior: PATTERN
+
+match:
+  language: generic
+  ast_node_types:
+    - statement
+
+condition:
+  symbol_triggers: []
+  pattern: "(?i)(TODO|XXX|FIXME|insecure by design|magic authentication|hardcoded policy)"
+
+evidence:
+  require: []
+
+output:
+  severity: MEDIUM
+  confidence: LIKELY
+  message: Detects code comments or markers indicating potential insecure design decisions requiring architecture review.
+  remediation: Perform threat modeling and design remediation; avoid shipping TODO security bypasses.

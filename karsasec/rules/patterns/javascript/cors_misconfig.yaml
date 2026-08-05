@@ -1,0 +1,49 @@
+rule:
+  id: KS-JS-0006
+
+metadata:
+  name: JavaScript CORS Misconfiguration
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-942
+  owasp: A05:2021-Security Misconfiguration
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/942.html
+  tags:
+    - cors
+    - security-misconfiguration
+    - javascript
+
+target:
+  languages:
+    - JavaScript
+    - TypeScript
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: JavaScript
+  ast_node_types:
+    - call
+    - assignment_expression
+    - assignment
+
+condition:
+  symbol_triggers:
+    - cors
+    - app.use
+  pattern: >-
+    (?i)(app\.use\(\s*cors\(|cors\(\s*\{[^}]*origin\s*:\s*(?:\*|true))
+
+evidence:
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: MEDIUM
+  confidence: CONFIDENT
+  message: Detects permissive CORS configuration in JavaScript/Node.js applications.
+  remediation: Restrict CORS origins to explicit trusted domains and avoid wildcard origin settings.

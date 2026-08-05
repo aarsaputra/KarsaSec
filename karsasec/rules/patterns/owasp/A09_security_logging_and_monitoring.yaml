@@ -1,0 +1,44 @@
+rule:
+  id: KS-OWASP-A09
+
+metadata:
+  name: OWASP A09 - Security Logging and Monitoring Failures (Multi-language)
+  author: KarsaSec Team
+  version: "1.0"
+  cwe: CWE-778
+  owasp: A09:2021-Security Logging and Monitoring Failures
+  created: "2026-08-05"
+  tags:
+    - logging
+
+target:
+  languages:
+    - PHP
+    - Python
+    - JavaScript
+    - Go
+
+analysis:
+  engine: GENERIC
+  behavior: PATTERN
+
+match:
+  language: generic
+  ast_node_types:
+    - statement
+
+condition:
+  symbol_triggers:
+    - log
+    - logging
+    - error_log
+  pattern: "(?i)(log\(|logging\.|error_log\(|audit|bac_log|security_event)"
+
+evidence:
+  require: []
+
+output:
+  severity: INFO
+  confidence: LOW
+  message: Detects logging/auditing code paths; ensure sensitive information is not logged and events are monitored.
+  remediation: Avoid logging secrets, ensure logs are shipped to a monitored system and retained appropriately.

@@ -1,7 +1,11 @@
 package main
 
-import "os/exec"
+import (
+    "os"
+    "os/exec"
+)
 
-func runCmd(inputStr string) {
-	exec.Command("sh", "-c", inputStr)
+func runCmd() {
+    inputStr := os.Args[1]
+    exec.Command("sh", "-c", inputStr)
 }

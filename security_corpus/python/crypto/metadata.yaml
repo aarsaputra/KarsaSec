@@ -1,0 +1,6 @@
+rule_id: KS-PY-0004
+category: crypto
+language: python
+cwe: CWE-327
+owasp: A02:2021-Cryptographic Failures
+description: Python weak cryptography corpus test suite

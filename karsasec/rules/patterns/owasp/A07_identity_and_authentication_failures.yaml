@@ -1,0 +1,45 @@
+rule:
+  id: KS-OWASP-A07
+
+metadata:
+  name: OWASP A07 - Identification and Authentication Failures (Multi-language)
+  author: KarsaSec Team
+  version: "1.0"
+  cwe: CWE-287
+  owasp: A07:2021-Identification and Authentication Failures
+  created: "2026-08-05"
+  tags:
+    - authentication
+
+target:
+  languages:
+    - PHP
+    - Python
+    - JavaScript
+    - Go
+
+analysis:
+  engine: GENERIC
+  behavior: SINK
+
+match:
+  language: generic
+  ast_node_types:
+    - call
+    - statement
+
+condition:
+  symbol_triggers:
+    - password
+    - bcrypt
+    - compare_hash
+  pattern: "(?i)(password|bcrypt|verify_password|check_password|login|authenticate)"
+
+evidence:
+  require: []
+
+output:
+  severity: HIGH
+  confidence: LIKELY
+  message: Detects potential insecure authentication handling or suspicious password operations.
+  remediation: Use proven authentication frameworks, secure password storage and multifactor when applicable.

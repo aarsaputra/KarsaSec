@@ -13,6 +13,7 @@ from karsasec.core.execution.result import ExecutionResult
 from karsasec.core.finding.collector import EvidenceCollector, evidence_collector
 from karsasec.core.finding.factory import FindingFactory, finding_factory
 from karsasec.core.finding.model import Finding
+from karsasec.graph.taint_verifier import taint_verifier
 from karsasec.parser.ast import ASTWalker, VisitorContext
 from karsasec.parser.ast_nodes import FileNode
 from karsasec.rules.matcher import ASTMatcher, CompiledRule, ast_matcher
@@ -85,6 +86,22 @@ class RuleExecutor:
 
                     if match_res.matched:
                         evidence = self.collector.extract_evidence(node, scan_context.source_bytes)
+
+                        # Enforce rule evidence requirements for taint-sensitive rules.
+                        evidence_require = getattr(compiled_rule.rule.evidence, "require", []) if compiled_rule.rule.evidence else []
+                        if "user_input" in evidence_require:
+                            taint_res = taint_verifier.verify_sink(
+                                node=node,
+                                snippet=evidence.snippet,
+                                context_text="\n".join(evidence.context_lines),
+                                source_text=scan_context.source_bytes.decode("utf-8", errors="ignore"),
+                                language=scan_context.language,
+                                base_severity=compiled_rule.rule.output.severity,
+                                base_confidence=compiled_rule.rule.output.confidence,
+                            )
+                            if not taint_res.has_taint_source:
+                                continue
+
                         finding = self.factory.create_finding(
                             rule=compiled_rule.rule,
                             file_path=file_path,

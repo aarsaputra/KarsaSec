@@ -1,4 +1,4 @@
-function executeUserCode(userInput) {
-    // Vulnerable eval call
-    return eval(userInput);
+function executeUserCode(req, res) {
+    // Vulnerable eval call from untrusted request body
+    return eval(req.body.code);
 }

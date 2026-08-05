@@ -1,0 +1,44 @@
+rule:
+  id: KS-PHP-CRYPTO-0001
+
+metadata:
+  name: PHP Weak Cryptography
+  author: KarsaSec Team
+  version: "1.0"
+  cwe: CWE-326
+  owasp: A02:2021-Cryptographic Failures
+  created: "2026-08-05"
+  tags:
+    - crypto
+
+target:
+  languages:
+    - PHP
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: PHP
+  ast_node_types:
+    - call
+    - statement
+
+condition:
+  symbol_triggers:
+    - md5
+    - sha1
+    - base64_encode
+    - openssl_encrypt
+  pattern: >-
+    (?i)(md5\(|sha1\(|base64_encode\(|openssl_encrypt\()
+
+evidence:
+  require: []
+
+output:
+  severity: HIGH
+  confidence: LIKELY
+  message: Detects use of weak or insecure cryptographic primitives in PHP.
+  remediation: Use modern crypto APIs like `password_hash`/`password_verify` and libs for encryption.

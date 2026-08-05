@@ -84,8 +84,10 @@ class SymbolPredicate(BasePredicate):
 
         # Step 2: Exact or word-boundary text search for symbol trigger in node_text
         for trigger in triggers:
-            # If trigger contains dots (e.g. cursor.execute or exec.Command) or special chars, escape it
-            pattern = r"(?:\b|_)" + re.escape(trigger) + r"(?:\b|_)" if "." not in trigger else re.escape(trigger)
+            if any(separator in trigger for separator in (".", "->", "::")):
+                pattern = re.escape(trigger)
+            else:
+                pattern = r"(?<!\w)" + re.escape(trigger) + r"(?!\w)"
             if re.search(pattern, node_text):
                 return True, trigger, node_text
 

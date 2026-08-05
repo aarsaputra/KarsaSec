@@ -1,0 +1,43 @@
+rule:
+  id: KS-PHP-0009
+
+metadata:
+  name: PHP Security Misconfiguration Flags
+  author: KarsaSec Team
+  version: "1.0"
+  cwe: CWE-933
+  owasp: A05:2021-Security Misconfiguration
+  created: "2026-08-05"
+  tags:
+    - security_configuration
+
+target:
+  languages:
+    - PHP
+
+analysis:
+  engine: GENERIC
+  behavior: PATTERN
+
+match:
+  language: PHP
+  ast_node_types:
+    - statement
+    - call
+
+condition:
+  symbol_triggers:
+    - ini_set
+    - error_reporting
+    - display_errors
+  pattern: >-
+    (?i)(ini_set\s*\(|error_reporting\s*\(|display_errors)
+
+evidence:
+  require: []
+
+output:
+  severity: MEDIUM
+  confidence: CONFIDENT
+  message: Detects debug or insecure configuration flags in PHP source.
+  remediation: Disable debug flags and ensure secure production configuration.

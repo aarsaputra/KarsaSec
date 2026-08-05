@@ -1,0 +1,6 @@
+rule_id: KS-JS-0006
+category: cors
+language: javascript
+cwe: CWE-942
+owasp: A05:2021-Security Misconfiguration
+description: JavaScript CORS misconfiguration corpus test suite

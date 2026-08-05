@@ -1,0 +1,52 @@
+rule:
+  id: KS-OWASP-A03
+
+metadata:
+  name: OWASP A03 - Injection (Multi-language)
+  author: KarsaSec Team
+  version: "1.0"
+  cwe: CWE-77
+  owasp: A03:2021-Injection
+  created: "2026-08-05"
+  tags:
+    - injection
+
+target:
+  languages:
+    - PHP
+    - Python
+    - JavaScript
+    - Go
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: generic
+  ast_node_types:
+    - call
+    - statement
+    - assignment
+
+condition:
+  symbol_triggers:
+    - exec
+    - system
+    - subprocess
+    - mysqli_query
+    - query
+    - format
+  pattern: "(?i)(exec\(|system\(|popen\(|mysqli_query\(|\+\s*\$|f\"|sprintf\(|format\(|\+\s*user_input)"
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects potential injection when untrusted input is used in command or query construction.
+  remediation: Use prepared statements, parameterized queries, or validated allow-lists.

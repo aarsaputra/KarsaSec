@@ -1,0 +1,28 @@
+name: Corpus Validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  corpus-validation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -e .[dev]
+
+      - name: Run corpus validation tests
+        run: python -m pytest tests/unit/rules/test_corpus_validation.py -q
+
+      - name: Run multi-language rule tests
+        run: python -m pytest tests/unit/rules/test_multi_language_rules.py -q
