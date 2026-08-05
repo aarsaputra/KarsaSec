@@ -19,7 +19,7 @@
 
 ## 📌 Overview
 
-**KarsaSec** is a high-performance, production-grade static application security testing (SAST) platform. Built from the ground up to power modern DevSecOps pipelines, KarsaSec combines deterministic **Abstract Syntax Tree (AST) matching**, **Schema v2 security rules**, **hybrid evidence scoring**, and **SARIF standard reporting** with multi-language support (**Python, JavaScript/TypeScript, PHP, Go**) and Infrastructure-as-Code (**Dockerfile, Kubernetes, GitHub Actions, Terraform, Helm**).
+**KarsaSec** is a high-performance, production-grade static application security testing (SAST) platform. Built from the ground up to power modern DevSecOps pipelines, KarsaSec combines deterministic **Abstract Syntax Tree (AST) matching**, **Schema v2 security rules**, **hybrid evidence scoring**, and **SARIF standard reporting** with multi-language support (**Python, JavaScript/TypeScript, PHP, Go, Rust, Java**) and Infrastructure-as-Code (**Dockerfile, Kubernetes, GitHub Actions, Terraform, Helm**).
 
 ---
 
@@ -34,7 +34,7 @@
 - **🔌 Extensible Plugin SDK**: Versioned Analysis API (`v1`, `v2`, `v3`) for third-party parser, rule pack, and reporter extensions (`karsasec/sdk/`).
 - **📜 Rule Schema v2 Engine**: Advanced rule definitions featuring `TargetSpec`, `AnalysisSpec` (`requires: ["ast", "semantic"]`), `EvidenceSpec`, and CWE/OWASP taxonomy mapping.
 - **📊 Hybrid Evidence & Confidence Engine**: Evaluates evidence telemetry dynamically to assign high-precision confidence levels (`CONFIDENT`, `HIGH`, `MEDIUM`, `LOW`).
-- **🌐 Multi-Language & IaC Support**: Built-in AST and pattern detection for **Python**, **JavaScript / TypeScript**, **PHP**, **Go**, **Dockerfile**, **Kubernetes**, **GitHub Actions**, **Terraform**, and **Helm**.
+- **🌐 Multi-Language & IaC Support**: Built-in AST and pattern detection for **Python**, **JavaScript / TypeScript**, **PHP**, **Go**, **Rust**, **Java**, **Dockerfile**, **Kubernetes**, **GitHub Actions**, **Terraform**, and **Helm**.
 - **📄 Enterprise Reporting & Baseline**: Generates **SARIF 2.1.0**, **JSON**, and interactive **Console** reports, with deterministic 32-character SHA-256 fingerprinting (`compute_stable_finding_fingerprint`).
 
 ---
@@ -52,6 +52,8 @@
 | **PHP** | `KS-PHP-0002` | SQL Injection (`mysqli`, `PDO`) | CWE-89 | A03:2021-Injection |
 | **Go** | `KS-GO-0001` | SQL Injection (`db.Query`, `db.Exec`) | CWE-89 | A03:2021-Injection |
 | **Go** | `KS-GO-0002` | Command Injection (`exec.Command`) | CWE-78 | A03:2021-Injection |
+| **Rust** | `KS-RUST-0001` | Server-Side Request Forgery (`reqwest`, `ureq`) | CWE-918 | A10:2021-SSRF |
+| **Java** | `KS-JAVA-0001` | Server-Side Request Forgery (`HttpURLConnection`, `HttpClient`) | CWE-918 | A10:2021-SSRF |
 | **Dockerfile** | `KS-DOCKER-0001` | Root User Execution (`USER root`) | CWE-250 | A05:2021-Security Misconfig |
 | **Kubernetes** | `KS-K8S-0001` | Privileged Container Execution (`privileged: true`) | CWE-250 | A05:2021-Security Misconfig |
 | **GitHub Actions** | `KS-GHA-0001` | Unchecked Script Injection (`github.event`) | CWE-94 | A03:2021-Injection |
@@ -183,7 +185,7 @@ Detailed architectural documentation is organized in `docs/`:
 
 ## Recent Additions
 
-- Added OWASP Top-10 rule coverage expansion for Python, JavaScript, and Go.
+- Added OWASP Top-10 rule coverage expansion for Python, JavaScript, Go, Rust, and Java.
 - New rules: `KS-PY-0004`, `KS-PY-0010`, `KS-JS-0006`, `KS-GO-0008` with accompanying security_corpus samples and unit tests.
 - Continuous validation CI workflow: `.github/workflows/corpus-validation.yml` runs corpus validation and multi-language rule tests on PRs.
 

@@ -6,14 +6,14 @@ Dokumen resmi mengenai tingkat dukungan semantik, fitur parsial program graph, d
 
 ## 1. Feature Capability Matrix
 
-| Feature | Python | JavaScript / Node | Go | PHP |
-|---|:---:|:---:|:---:|:---:|
-| **AST Native Parsing** | ✅ 100% | ✅ 100% | ✅ 100% | ✅ 100% |
-| **Semantic Scope & Binding** | ✅ 100% | ✅ 100% | ✅ 90% | ✅ 90% |
-| **Alias Import Resolution** | ✅ Transitive | ✅ Named/Default | ✅ Package & Alias | ✅ Namespace & Alias |
-| **Namespace Handling** | N/A (Module) | ⚠️ Partial | ✅ Full Package | ✅ Full Namespace |
-| **Call Graph Construction** | ✅ Complete | ✅ Complete | ✅ Complete | ✅ Complete |
-| **Dataflow Engine** | ✅ Complete | ✅ Complete | ✅ Flow Trace | ✅ Flow Trace |
+| Feature | Python | JavaScript / Node | Go | PHP | Rust | Java |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **AST Native Parsing** | ✅ 100% | ✅ 100% | ✅ 100% | ✅ 100% | ✅ 90% | ✅ 90% |
+| **Semantic Scope & Binding** | ✅ 100% | ✅ 100% | ✅ 90% | ✅ 90% | ⚠️ Partial | ⚠️ Partial |
+| **Alias Import Resolution** | ✅ Transitive | ✅ Named/Default | ✅ Package & Alias | ✅ Namespace & Alias | ✅ Package & Alias | ✅ Package & Alias |
+| **Namespace Handling** | N/A (Module) | ⚠️ Partial | ✅ Full Package | ✅ Full Namespace | ✅ Full Module Path | ✅ Full Package |
+| **Call Graph Construction** | ✅ Complete | ✅ Complete | ✅ Complete | ✅ Complete | ✅ Complete | ✅ Complete |
+| **Dataflow Engine** | ✅ Complete | ✅ Complete | ✅ Flow Trace | ✅ Flow Trace | ✅ Flow Trace | ✅ Flow Trace |
 
 *Keterangan: ✅ Complete (Dukung penuh), ⚠️ Partial (Dukung sebagian), 🚧 In Development.*
 
@@ -29,6 +29,8 @@ Metrik performa dan akurasi terukur untuk aturan deteksi per bahasa:
 | **JavaScript** | 4 Rules | 16 Files | 92.1% | 88.9% | 1.3 ms | < 5 MB |
 | **Go** | 5 Rules | 10 Files | 93.5% | 90.0% | 0.9 ms | < 4 MB |
 | **PHP** | 5 Rules | 10 Files | 92.8% | 89.5% | 1.0 ms | < 4 MB |
+| **Rust** | 1 Rule | 3 Files | 88.0% | 80.0% | 1.0 ms | < 5 MB |
+| **Java** | 1 Rule | 3 Files | 88.0% | 80.0% | 1.0 ms | < 5 MB |
 
 ---
 
