@@ -27,7 +27,7 @@ IGNORE_DIRS = {".git", ".venv", "venv", ".pytest_cache", "__pycache__", "build",
 
 SUPPORTED_EXTENSIONS = {
     ".py", ".pyi", ".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs",
-    ".php", ".inc", ".phtml", ".go", ".yaml", ".yml", ".json", ".tf", ".tfvars"
+    ".php", ".inc", ".phtml", ".go", ".rs", ".java", ".yaml", ".yml", ".json", ".tf", ".tfvars"
 }
 SUPPORTED_FILENAMES = {"dockerfile", "containerfile"}
 

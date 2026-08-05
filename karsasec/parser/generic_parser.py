@@ -78,9 +78,38 @@ class GenericParserPlugin(ParserPlugin):
             offset += len(line.encode("utf-8", errors="ignore"))
             line_offsets.append(offset)
 
+        in_block_comment = False
+
+        def strip_comments_from_line(line: str, in_block: bool) -> tuple[str, bool]:
+            if in_block:
+                end_idx = line.find("*/")
+                if end_idx == -1:
+                    return "", True
+                line = line[end_idx + 2 :]
+                in_block = False
+
+            while True:
+                start_idx = line.find("/*")
+                if start_idx == -1:
+                    break
+                end_idx = line.find("*/", start_idx + 2)
+                if end_idx == -1:
+                    line = line[:start_idx]
+                    in_block = True
+                    break
+                line = line[:start_idx] + line[end_idx + 2 :]
+
+            for token in ("//", "#"):
+                idx = line.find(token)
+                if idx != -1:
+                    line = line[:idx]
+
+            return line, in_block
+
         for idx, line in enumerate(lines, start=1):
-            stripped = line.strip()
-            if not stripped or stripped.startswith("//") or stripped.startswith("#"):
+            line_code, in_block_comment = strip_comments_from_line(line, in_block_comment)
+            stripped = line_code.strip()
+            if not stripped:
                 continue
 
             node_type = "statement"
@@ -89,7 +118,7 @@ class GenericParserPlugin(ParserPlugin):
             elif "=" in stripped:
                 node_type = "assignment"
 
-            clean_line = line.rstrip("\r\n")
+            clean_line = line_code.rstrip("\r\n")
             line_start = line_offsets[idx - 1]
 
             node_id = generate_node_id(path, idx, 0, node_type)
@@ -124,13 +153,17 @@ class GenericParserPlugin(ParserPlugin):
             nodes_map=nodes_map,
         )
 
-# Register generic parser instances for JS, PHP, Go
+# Register generic parser instances for JS, PHP, Go, Rust, Java, and common file formats
 js_parser = GenericParserPlugin("JavaScript", [".js", ".jsx", ".ts", ".tsx"])
 php_parser = GenericParserPlugin("PHP", [".php", ".phtml"])
 go_parser = GenericParserPlugin("Go", [".go"])
+rust_parser = GenericParserPlugin("Rust", [".rs"])
+java_parser = GenericParserPlugin("Java", [".java"])
 common_parser = GenericParserPlugin("Common", [".txt", ".env", ".yaml", ".yml", ".json"])
 
 parser_registry.register(js_parser, [".js", ".jsx", ".ts", ".tsx"])
 parser_registry.register(php_parser, [".php", ".phtml"])
 parser_registry.register(go_parser, [".go"])
+parser_registry.register(rust_parser, [".rs"])
+parser_registry.register(java_parser, [".java"])
 parser_registry.register(common_parser, [".txt", ".env", ".yaml", ".yml", ".json"])

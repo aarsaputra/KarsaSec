@@ -26,6 +26,8 @@ class LanguageEnum(str, Enum):
     TYPESCRIPT = "TypeScript"
     PHP = "PHP"
     GO = "Go"
+    RUST = "Rust"
+    JAVA = "Java"
     GENERIC = "Generic"
 
 class TargetKindEnum(str, Enum):
@@ -43,6 +45,8 @@ class TargetFormatEnum(str, Enum):
     TYPESCRIPT = "TypeScript"
     PHP = "PHP"
     GO = "Go"
+    RUST = "Rust"
+    JAVA = "Java"
     DOCKERFILE = "Dockerfile"
     KUBERNETES = "Kubernetes"
     GITHUB_ACTIONS = "GitHub-Actions"

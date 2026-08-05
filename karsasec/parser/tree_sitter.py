@@ -44,6 +44,12 @@ class TreeSitterEngine:
                 elif lang_key == "go":
                     import tree_sitter_go as tsgo
                     lang_obj = Language(tsgo.language())
+                elif lang_key == "rust":
+                    import tree_sitter_rust as tsrust
+                    lang_obj = Language(tsrust.language())
+                elif lang_key == "java":
+                    import tree_sitter_java as tsjava
+                    lang_obj = Language(tsjava.language())
 
                 if lang_obj:
                     self._languages[lang_key] = lang_obj

@@ -55,6 +55,10 @@ class TargetDetector:
             return TargetDetectionResult(TargetKindEnum.SOURCE_CODE, TargetFormatEnum.GO, "GoParser", confidence=0.90)
         elif ext == ".php":
             return TargetDetectionResult(TargetKindEnum.SOURCE_CODE, TargetFormatEnum.PHP, "PHPParser", confidence=0.90)
+        elif ext == ".rs":
+            return TargetDetectionResult(TargetKindEnum.SOURCE_CODE, TargetFormatEnum.RUST, "RustParser", confidence=0.90)
+        elif ext == ".java":
+            return TargetDetectionResult(TargetKindEnum.SOURCE_CODE, TargetFormatEnum.JAVA, "JavaParser", confidence=0.90)
 
         return TargetDetectionResult(TargetKindEnum.CONFIG, TargetFormatEnum.PYTHON, "GenericParser", confidence=0.40)
 

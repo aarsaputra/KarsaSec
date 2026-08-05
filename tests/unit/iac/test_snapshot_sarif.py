@@ -30,6 +30,14 @@ def test_target_detector_heuristics() -> None:
     assert res4.target_kind == TargetKindEnum.IAC
     assert res4.target_format == TargetFormatEnum.TERRAFORM
 
+    res5 = detector.detect(Path("/repo/src/main.rs"))
+    assert res5.target_kind == TargetKindEnum.SOURCE_CODE
+    assert res5.target_format == TargetFormatEnum.RUST
+
+    res6 = detector.detect(Path("/repo/src/Main.java"))
+    assert res6.target_kind == TargetKindEnum.SOURCE_CODE
+    assert res6.target_format == TargetFormatEnum.JAVA
+
 
 def test_golden_corpus_regression_scan() -> None:
     """Verify scanner execution against tests/golden/ benchmark suite."""
