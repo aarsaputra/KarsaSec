@@ -1,0 +1,48 @@
+rule:
+  id: KS-PHP-0007
+
+metadata:
+  name: PHP Unsafe File Upload
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-434
+  owasp: A03:2021-Injection
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/434.html
+  tags:
+    - upload
+    - php
+
+target:
+  languages:
+    - PHP
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: PHP
+  ast_node_types:
+    - function_call_expression
+    - call_expression
+    - statement
+    - call
+
+condition:
+  symbol_triggers:
+    - move_uploaded_file
+  pattern: "(?i)move_uploaded_file\\s*\\("
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects move_uploaded_file calls saving uploaded files using original extensions or unvalidated filenames.
+  remediation: Rename uploaded files to randomly generated UUIDs and validate extensions against a strict whitelist.

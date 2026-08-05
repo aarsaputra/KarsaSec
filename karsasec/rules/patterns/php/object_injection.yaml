@@ -1,0 +1,49 @@
+rule:
+  id: KS-PHP-0006
+
+metadata:
+  name: PHP Object Injection (unserialize)
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-502
+  owasp: A08:2021-Software and Data Integrity Failures
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/502.html
+  tags:
+    - deserialization
+    - object_injection
+    - php
+
+target:
+  languages:
+    - PHP
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: PHP
+  ast_node_types:
+    - function_call_expression
+    - call_expression
+    - statement
+    - call
+
+condition:
+  symbol_triggers:
+    - unserialize
+  pattern: "(?i)unserialize\\s*\\("
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 50
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects unserialize calls on user-supplied strings, leading to PHP Object Injection and potential RCE.
+  remediation: Avoid unserialize on untrusted input; use JSON format (json_decode) or specify allowed_classes option.

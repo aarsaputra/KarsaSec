@@ -68,8 +68,15 @@ class GenericParserPlugin(ParserPlugin):
     def _build_pattern_ast(self, path: Path, code_bytes: bytes) -> FileNode:
         """Fallback AST node builder extracting call, assignment, and string nodes from source text."""
         nodes_map: Dict[str, ASTNode] = {}
-        lines = code_bytes.decode("utf-8", errors="ignore").splitlines()
+        lines = code_bytes.decode("utf-8", errors="ignore").splitlines(keepends=True)
         children_ids: List[str] = []
+
+        # Build line offset table for byte calculation
+        line_offsets = [0]
+        offset = 0
+        for line in lines:
+            offset += len(line.encode("utf-8", errors="ignore"))
+            line_offsets.append(offset)
 
         for idx, line in enumerate(lines, start=1):
             stripped = line.strip()
@@ -82,6 +89,9 @@ class GenericParserPlugin(ParserPlugin):
             elif "=" in stripped:
                 node_type = "assignment"
 
+            clean_line = line.rstrip("\r\n")
+            line_start = line_offsets[idx - 1]
+
             node_id = generate_node_id(path, idx, 0, node_type)
             ast_node = ASTNode(
                 node_id=node_id,
@@ -89,10 +99,10 @@ class GenericParserPlugin(ParserPlugin):
                 node_type=node_type,
                 language=self.supported_language,
                 file_path=path,
-                byte_start=0,
-                byte_end=len(code_bytes),
+                byte_start=line_start,
+                byte_end=line_start + len(clean_line.encode("utf-8", errors="ignore")),
                 start=Position(line=idx, column=0),
-                end=Position(line=idx, column=len(line)),
+                end=Position(line=idx, column=len(clean_line)),
             )
             nodes_map[node_id] = ast_node
             children_ids.append(node_id)

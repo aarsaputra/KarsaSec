@@ -1,0 +1,46 @@
+rule:
+  id: KS-K8S-0004
+
+metadata:
+  name: Kubernetes Run as Non-Root Disabled
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-250
+  owasp: A05:2021-Security Misconfiguration
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/250.html
+  tags:
+    - k8s
+    - root
+    - iac
+
+target:
+  languages:
+    - Kubernetes
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Kubernetes
+  ast_node_types:
+    - statement
+    - call
+
+condition:
+  symbol_triggers:
+    - runAsNonRoot
+  pattern: "(?i)runAsNonRoot\\s*:\\s*false"
+
+evidence:
+  require: []
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Pod securityContext explicitly sets runAsNonRoot to false.
+  remediation: Set securityContext.runAsNonRoot to true to prevent root container execution.

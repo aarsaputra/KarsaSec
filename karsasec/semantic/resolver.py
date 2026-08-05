@@ -1,5 +1,27 @@
-"""Semantic symbol resolution engine and semantic graph builder."""
+"""Semantic symbol resolution engine and semantic graph builder.
 
+# Parser Reliability Boundary (Sprint 4B Fix 5)
+# ================================================
+# The following table documents which languages use AST-native resolution
+# vs regex-over-text fallback. This is critical for understanding rule
+# accuracy limits when adding new detection rules.
+#
+# Language | Import Resolution | Assignment Resolution | Notes
+# -------- | ----------------- | -------------------- | -----
+# Python   | AST-native        | AST-native (ast.get_source_segment) | Highest accuracy
+# Go       | Regex fallback    | Regex fallback        | import() block handled
+# PHP      | Regex fallback    | Regex fallback        | Basic use/require patterns
+# JS/TS    | Regex fallback    | Regex fallback        | import/require both handled
+# Generic  | Regex fallback    | Regex fallback        | Tokenizer-based, lowest accuracy
+#
+# Rule authors should be aware that:
+# - Rules for non-Python languages may miss complex aliasing patterns
+# - Cross-file resolution is best-effort via CallGraph (Sprint 5+)
+# - Regex fallback for imports handles common patterns but not edge cases
+#   (e.g., dynamic require(), conditional imports, __import__())
+"""
+
+import ast
 import re
 from pathlib import Path
 from typing import Dict, List, Optional, Set
@@ -14,8 +36,10 @@ def get_node_text(node: ASTNode, source_bytes: bytes) -> str:
         return ""
     if node.node_type == "file":
         return source_bytes.decode("utf-8", errors="ignore")
-    if getattr(node, "byte_start", 0) > 0 or getattr(node, "byte_end", 0) < len(source_bytes):
-        return source_bytes[node.byte_start:node.byte_end].decode("utf-8", errors="ignore")
+    byte_start = getattr(node, "byte_start", 0)
+    byte_end = getattr(node, "byte_end", 0)
+    if byte_end > byte_start:
+        return source_bytes[byte_start:byte_end].decode("utf-8", errors="ignore")
     try:
         lines = source_bytes.decode("utf-8", errors="ignore").splitlines()
         start_line = node.start.line - 1
@@ -164,23 +188,59 @@ class SemanticResolver:
 
     def _process_imports(self, node: ASTNode, node_text: str, scope: Scope, graph: SemanticGraph) -> bool:
         """Parses import declarations across Python, JS, Go, and PHP, registering scope bindings."""
-        # Python: import module [as alias]
-        py_imp_match = re.match(r"^\s*import\s+([a-zA-Z0-9_\.]+)(?:\s+as\s+([a-zA-Z0-9_]+))?", node_text)
-        if py_imp_match:
-            module, alias = py_imp_match.groups()
-            bound_name = alias if alias else module
-            scope.define(bound_name, module)
-            graph.alias_tracker.register_alias(bound_name, module)
+        # Python-specific AST parsing (robust for parenthesized, multi-line, multi-name)
+        if getattr(node, "language", "").lower() == "python":
+            try:
+                tree = ast.parse(node_text)
+                matched = False
+                for ast_node in ast.walk(tree):
+                    if isinstance(ast_node, ast.Import):
+                        for alias in ast_node.names:
+                            bound_name = alias.asname if alias.asname else alias.name
+                            scope.define(bound_name, alias.name)
+                            graph.alias_tracker.register_alias(bound_name, alias.name)
+                        matched = True
+                    elif isinstance(ast_node, ast.ImportFrom):
+                        module = ast_node.module or ""
+                        for alias in ast_node.names:
+                            name = alias.name
+                            bound_name = alias.asname if alias.asname else name
+                            fqn = f"{module}.{name}" if module else name
+                            scope.define(bound_name, fqn)
+                            graph.alias_tracker.register_alias(bound_name, fqn)
+                        matched = True
+                if matched:
+                    return True
+            except Exception:
+                pass
+
+        # JS/TS: import * as alias from 'module'
+        js_star_match = re.match(r'^\s*import\s+\*\s+as\s+([a-zA-Z0-9_]+)\s+from\s+[\'"]([^\'"]+)[\'"]', node_text)
+        if js_star_match:
+            alias, module = js_star_match.groups()
+            scope.define(alias, module)
+            graph.alias_tracker.register_alias(alias, module)
             return True
 
-        # Python: from module import name [as alias]
-        py_from_match = re.match(r"^\s*from\s+([a-zA-Z0-9_\.]+)\s+import\s+([a-zA-Z0-9_]+)(?:\s+as\s+([a-zA-Z0-9_]+))?", node_text)
-        if py_from_match:
-            module, name, alias = py_from_match.groups()
-            bound_name = alias if alias else name
-            fqn = f"{module}.{name}"
-            scope.define(bound_name, fqn)
-            graph.alias_tracker.register_alias(bound_name, fqn)
+        # JS/TS: import { name [as alias] } from 'module'
+        js_curly_match = re.match(r'^\s*import\s*\{([^}]+)\}\s*from\s*[\'"]([^\'"]+)[\'"]', node_text)
+        if js_curly_match:
+            names_str, module = js_curly_match.groups()
+            for item in names_str.split(","):
+                item = item.strip()
+                if not item:
+                    continue
+                if " as " in item:
+                    orig, alias = item.split(" as ", 1)
+                    orig, alias = orig.strip(), alias.strip()
+                    fqn = f"{module}.{orig}"
+                    scope.define(alias, fqn)
+                    graph.alias_tracker.register_alias(alias, fqn)
+                else:
+                    name = item.strip()
+                    fqn = f"{module}.{name}"
+                    scope.define(name, fqn)
+                    graph.alias_tracker.register_alias(name, fqn)
             return True
 
         # JS/TS: import name from 'module'
@@ -203,46 +263,83 @@ class SemanticResolver:
                 graph.alias_tracker.register_alias(name, module)
             return True
 
-        # Go: import "module" or import alias "module"
-        go_imp_match = re.match(r'^\s*import\s+(?:([a-zA-Z0-9_]+)\s+)?[\'"]([^\'"]+)[\'"]', node_text)
-        if go_imp_match:
-            alias, module = go_imp_match.groups()
-            bound_name = alias if alias else module.split("/")[-1]
-            scope.define(bound_name, module)
-            graph.alias_tracker.register_alias(bound_name, module)
-            return True
+        # Go: import "module" or import alias "module" or block import (...)
+        if "import" in node_text and getattr(node, "language", "").lower() in ("go", "generic"):
+            go_imp_match = re.match(r'^\s*import\s+(?:([a-zA-Z0-9_]+)\s+)?[\'"]([^\'"]+)[\'"]', node_text)
+            if go_imp_match:
+                alias, module = go_imp_match.groups()
+                bound_name = alias if alias else module.split("/")[-1]
+                scope.define(bound_name, module)
+                graph.alias_tracker.register_alias(bound_name, module)
+                return True
+            # Go block import: import ( ... )
+            go_block_matches = re.findall(r'(?:([a-zA-Z0-9_]+)\s+)?[\'"]([^\'"]+)[\'"]', node_text)
+            if go_block_matches:
+                for alias, module in go_block_matches:
+                    bound_name = alias if alias else module.split("/")[-1]
+                    scope.define(bound_name, module)
+                    graph.alias_tracker.register_alias(bound_name, module)
+                return True
 
-        # PHP: use Namespace as Alias
-        php_use_match = re.match(r"^\s*use\s+([a-zA-Z0-9_\\]+)(?:\s+as\s+([a-zA-Z0-9_]+))?;", node_text)
-        if php_use_match:
-            ns, alias = php_use_match.groups()
-            normalized_ns = ns.replace("\\", ".")
-            bound_name = alias if alias else normalized_ns.split(".")[-1]
-            scope.define(bound_name, normalized_ns)
-            graph.alias_tracker.register_alias(bound_name, normalized_ns)
-            return True
+        # PHP: use Namespace\Class as Alias; or use Namespace\{ClassA, ClassB as Alias};
+        if "use" in node_text and getattr(node, "language", "").lower() in ("php", "generic"):
+            php_use_match = re.match(r"^\s*use\s+([a-zA-Z0-9_\\]+)(?:\s+as\s+([a-zA-Z0-9_]+))?;?", node_text)
+            if php_use_match:
+                ns, alias = php_use_match.groups()
+                normalized_ns = ns.replace("\\", ".")
+                bound_name = alias if alias else normalized_ns.split(".")[-1]
+                scope.define(bound_name, normalized_ns)
+                graph.alias_tracker.register_alias(bound_name, normalized_ns)
+                return True
 
         return False
 
     def _process_assignments(self, node: ASTNode, node_text: str, scope: Scope, graph: SemanticGraph) -> None:
         """Parses assignment statements across languages, tracking variable aliasing."""
+        # Python-specific AST parsing (robust for assignments)
+        if getattr(node, "language", "").lower() == "python":
+            try:
+                tree = ast.parse(node_text)
+                for ast_node in ast.walk(tree):
+                    if isinstance(ast_node, ast.Assign):
+                        for target in ast_node.targets:
+                            if isinstance(target, ast.Name):
+                                target_name = target.id
+                                val_text = ast.get_source_segment(node_text, ast_node.value)
+                                if val_text:
+                                    resolved_value = val_text.strip()
+                                    # Try to resolve transitive alias
+                                    parts = resolved_value.split(".", 1)
+                                    if parts:
+                                        base = parts[0]
+                                        resolved_base = scope.lookup(base) or graph.alias_tracker.resolve(base)
+                                        if resolved_base and resolved_base != base:
+                                            resolved_value = ".".join([resolved_base] + parts[1:])
+                                    scope.define(target_name, resolved_value)
+                                    graph.alias_tracker.register_alias(target_name, resolved_value)
+                return
+            except Exception:
+                pass
+
         # Generic assignment matching: target = value
-        # Python / JS: runner = os.system
-        assign_match = re.match(r"^\s*(?:const\s+|let\s+|var\s+)?([a-zA-Z0-9_\$]+)\s*(?::=|=)\s*([a-zA-Z0-9_\.]+)", node_text)
-        if assign_match:
+        # Ensure target is a valid variable identifier (no parentheses or function calls)
+        assign_match = re.match(r"^\s*(?:const\s+|let\s+|var\s+)?([a-zA-Z0-9_\$]+)\s*(?::=|=)\s*([^=].*)$", node_text)
+        if assign_match and "(" not in node_text.split("=")[0]:
             target, value = assign_match.groups()
-            
-            # Strip standard JS/PHP prefixes
             target_clean = target.replace("const ", "").replace("let ", "").replace("var ", "").replace("$", "").strip()
+            value_clean = value.strip().rstrip(";")
             
-            # Resolve value in scope or alias tracker
-            parts = value.split(".")
-            resolved_base = scope.lookup(parts[0]) or graph.alias_tracker.resolve(parts[0])
-            
-            if resolved_base and resolved_base != parts[0]:
-                resolved_value = ".".join([resolved_base] + parts[1:])
+            # Resolve transitively if possible
+            parts = value_clean.split(".", 1)
+            if parts:
+                base = parts[0]
+                resolved_base = scope.lookup(base) or graph.alias_tracker.resolve(base)
+                if resolved_base and resolved_base != base:
+                    resolved_value = ".".join([resolved_base] + parts[1:])
+                else:
+                    resolved_value = value_clean
             else:
-                resolved_value = value
+                resolved_value = value_clean
 
             scope.define(target_clean, resolved_value)
             graph.alias_tracker.register_alias(target_clean, resolved_value)

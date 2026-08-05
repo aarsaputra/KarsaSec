@@ -1,0 +1,546 @@
+{
+  "karsasec.core.execution": {
+    "EvidenceUnavailableError": {
+      "type": "class",
+      "methods": []
+    },
+    "ExecutionError": {
+      "type": "class",
+      "methods": []
+    },
+    "ExecutionResult": {
+      "type": "class",
+      "methods": []
+    },
+    "RuleError": {
+      "type": "class",
+      "methods": []
+    },
+    "RuleExecutor": {
+      "type": "class",
+      "methods": [
+        "execute_scan(self, scan_context: karsasec.core.execution.context.ScanContext, rules: List[Union[karsasec.rules.schema.Rule, karsasec.rules.matcher.compiler.CompiledRule]]) -> karsasec.core.execution.result.ExecutionResult"
+      ]
+    },
+    "RuleIndexer": {
+      "type": "class",
+      "methods": [
+        "get_candidate_rules(self, node_type: str) -> List[karsasec.rules.matcher.compiler.CompiledRule]",
+        "index_rules(self, rules: List[Union[karsasec.rules.schema.Rule, karsasec.rules.matcher.compiler.CompiledRule]]) -> None"
+      ]
+    },
+    "ScanContext": {
+      "type": "class",
+      "methods": []
+    }
+  },
+  "karsasec.core.finding.model": {
+    "Confidence": {
+      "type": "class",
+      "methods": []
+    },
+    "Evidence": {
+      "type": "class",
+      "methods": []
+    },
+    "Finding": {
+      "type": "class",
+      "methods": []
+    },
+    "Path": {
+      "type": "class",
+      "methods": [
+        "absolute(self)",
+        "as_posix(self)",
+        "as_uri(self)",
+        "chmod(self, mode, *, follow_symlinks=True)",
+        "exists(self, *, follow_symlinks=True)",
+        "expanduser(self)",
+        "full_match(self, pattern, *, case_sensitive=None)",
+        "glob(self, pattern, *, case_sensitive=None, recurse_symlinks=False)",
+        "group(self, *, follow_symlinks=True)",
+        "hardlink_to(self, target)",
+        "is_absolute(self)",
+        "is_block_device(self)",
+        "is_char_device(self)",
+        "is_dir(self, *, follow_symlinks=True)",
+        "is_fifo(self)",
+        "is_file(self, *, follow_symlinks=True)",
+        "is_junction(self)",
+        "is_mount(self)",
+        "is_relative_to(self, other, /, *_deprecated)",
+        "is_reserved(self)",
+        "is_socket(self)",
+        "is_symlink(self)",
+        "iterdir(self)",
+        "joinpath(self, *pathsegments)",
+        "lchmod(self, mode)",
+        "lstat(self)",
+        "match(self, path_pattern, *, case_sensitive=None)",
+        "mkdir(self, mode=511, parents=False, exist_ok=False)",
+        "open(self, mode='r', buffering=-1, encoding=None, errors=None, newline=None)",
+        "owner(self, *, follow_symlinks=True)",
+        "read_bytes(self)",
+        "read_text(self, encoding=None, errors=None, newline=None)",
+        "readlink(self)",
+        "relative_to(self, other, /, *_deprecated, walk_up=False)",
+        "rename(self, target)",
+        "replace(self, target)",
+        "resolve(self, strict=False)",
+        "rglob(self, pattern, *, case_sensitive=None, recurse_symlinks=False)",
+        "rmdir(self)",
+        "samefile(self, other_path)",
+        "stat(self, *, follow_symlinks=True)",
+        "symlink_to(self, target, target_is_directory=False)",
+        "touch(self, mode=438, exist_ok=True)",
+        "unlink(self, missing_ok=False)",
+        "walk(self, top_down=True, on_error=None, follow_symlinks=False)",
+        "with_name(self, name)",
+        "with_segments(self, *pathsegments)",
+        "with_stem(self, stem)",
+        "with_suffix(self, suffix)",
+        "write_bytes(self, data)",
+        "write_text(self, data, encoding=None, errors=None, newline=None)"
+      ]
+    },
+    "Severity": {
+      "type": "class",
+      "methods": []
+    },
+    "compute_stable_finding_fingerprint": {
+      "type": "function",
+      "signature": "compute_stable_finding_fingerprint(rule_id: str, file_path: pathlib._local.Path, snippet: str, line: int, cwe_id: str = 'CWE-20') -> str"
+    },
+    "dataclass": {
+      "type": "function",
+      "signature": "dataclass(cls=None, /, *, init=True, repr=True, eq=True, order=False, unsafe_hash=False, frozen=False, match_args=True, kw_only=False, slots=False, weakref_slot=False)"
+    }
+  },
+  "karsasec.parser.registry": {
+    "ParserPlugin": {
+      "type": "class",
+      "methods": [
+        "can_parse(self, file_extension: str) -> bool",
+        "parse_file(self, file_path: pathlib._local.Path) -> karsasec.core.plugin.ParseResult"
+      ]
+    },
+    "ParserRegistry": {
+      "type": "class",
+      "methods": [
+        "get_parser_by_extension(self, extension: str) -> Optional[karsasec.core.plugin.ParserPlugin]",
+        "get_parser_by_language(self, language_name: str) -> Optional[karsasec.core.plugin.ParserPlugin]",
+        "get_parser_for_file(self, file_path: Union[str, pathlib._local.Path]) -> Optional[karsasec.core.plugin.ParserPlugin]",
+        "list_parsers(self) -> List[karsasec.core.plugin.ParserPlugin]",
+        "register(self, plugin: karsasec.core.plugin.ParserPlugin, extensions: Optional[List[str]] = None) -> None"
+      ]
+    },
+    "Path": {
+      "type": "class",
+      "methods": [
+        "absolute(self)",
+        "as_posix(self)",
+        "as_uri(self)",
+        "chmod(self, mode, *, follow_symlinks=True)",
+        "exists(self, *, follow_symlinks=True)",
+        "expanduser(self)",
+        "full_match(self, pattern, *, case_sensitive=None)",
+        "glob(self, pattern, *, case_sensitive=None, recurse_symlinks=False)",
+        "group(self, *, follow_symlinks=True)",
+        "hardlink_to(self, target)",
+        "is_absolute(self)",
+        "is_block_device(self)",
+        "is_char_device(self)",
+        "is_dir(self, *, follow_symlinks=True)",
+        "is_fifo(self)",
+        "is_file(self, *, follow_symlinks=True)",
+        "is_junction(self)",
+        "is_mount(self)",
+        "is_relative_to(self, other, /, *_deprecated)",
+        "is_reserved(self)",
+        "is_socket(self)",
+        "is_symlink(self)",
+        "iterdir(self)",
+        "joinpath(self, *pathsegments)",
+        "lchmod(self, mode)",
+        "lstat(self)",
+        "match(self, path_pattern, *, case_sensitive=None)",
+        "mkdir(self, mode=511, parents=False, exist_ok=False)",
+        "open(self, mode='r', buffering=-1, encoding=None, errors=None, newline=None)",
+        "owner(self, *, follow_symlinks=True)",
+        "read_bytes(self)",
+        "read_text(self, encoding=None, errors=None, newline=None)",
+        "readlink(self)",
+        "relative_to(self, other, /, *_deprecated, walk_up=False)",
+        "rename(self, target)",
+        "replace(self, target)",
+        "resolve(self, strict=False)",
+        "rglob(self, pattern, *, case_sensitive=None, recurse_symlinks=False)",
+        "rmdir(self)",
+        "samefile(self, other_path)",
+        "stat(self, *, follow_symlinks=True)",
+        "symlink_to(self, target, target_is_directory=False)",
+        "touch(self, mode=438, exist_ok=True)",
+        "unlink(self, missing_ok=False)",
+        "walk(self, top_down=True, on_error=None, follow_symlinks=False)",
+        "with_name(self, name)",
+        "with_segments(self, *pathsegments)",
+        "with_stem(self, stem)",
+        "with_suffix(self, suffix)",
+        "write_bytes(self, data)",
+        "write_text(self, data, encoding=None, errors=None, newline=None)"
+      ]
+    }
+  },
+  "karsasec.parser.target_detector": {
+    "Path": {
+      "type": "class",
+      "methods": [
+        "absolute(self)",
+        "as_posix(self)",
+        "as_uri(self)",
+        "chmod(self, mode, *, follow_symlinks=True)",
+        "exists(self, *, follow_symlinks=True)",
+        "expanduser(self)",
+        "full_match(self, pattern, *, case_sensitive=None)",
+        "glob(self, pattern, *, case_sensitive=None, recurse_symlinks=False)",
+        "group(self, *, follow_symlinks=True)",
+        "hardlink_to(self, target)",
+        "is_absolute(self)",
+        "is_block_device(self)",
+        "is_char_device(self)",
+        "is_dir(self, *, follow_symlinks=True)",
+        "is_fifo(self)",
+        "is_file(self, *, follow_symlinks=True)",
+        "is_junction(self)",
+        "is_mount(self)",
+        "is_relative_to(self, other, /, *_deprecated)",
+        "is_reserved(self)",
+        "is_socket(self)",
+        "is_symlink(self)",
+        "iterdir(self)",
+        "joinpath(self, *pathsegments)",
+        "lchmod(self, mode)",
+        "lstat(self)",
+        "match(self, path_pattern, *, case_sensitive=None)",
+        "mkdir(self, mode=511, parents=False, exist_ok=False)",
+        "open(self, mode='r', buffering=-1, encoding=None, errors=None, newline=None)",
+        "owner(self, *, follow_symlinks=True)",
+        "read_bytes(self)",
+        "read_text(self, encoding=None, errors=None, newline=None)",
+        "readlink(self)",
+        "relative_to(self, other, /, *_deprecated, walk_up=False)",
+        "rename(self, target)",
+        "replace(self, target)",
+        "resolve(self, strict=False)",
+        "rglob(self, pattern, *, case_sensitive=None, recurse_symlinks=False)",
+        "rmdir(self)",
+        "samefile(self, other_path)",
+        "stat(self, *, follow_symlinks=True)",
+        "symlink_to(self, target, target_is_directory=False)",
+        "touch(self, mode=438, exist_ok=True)",
+        "unlink(self, missing_ok=False)",
+        "walk(self, top_down=True, on_error=None, follow_symlinks=False)",
+        "with_name(self, name)",
+        "with_segments(self, *pathsegments)",
+        "with_stem(self, stem)",
+        "with_suffix(self, suffix)",
+        "write_bytes(self, data)",
+        "write_text(self, data, encoding=None, errors=None, newline=None)"
+      ]
+    },
+    "TargetDetectionResult": {
+      "type": "class",
+      "methods": []
+    },
+    "TargetDetector": {
+      "type": "class",
+      "methods": [
+        "detect(self, file_path: pathlib._local.Path, content: Optional[str] = None) -> karsasec.parser.target_detector.TargetDetectionResult"
+      ]
+    },
+    "TargetFormatEnum": {
+      "type": "class",
+      "methods": []
+    },
+    "TargetKindEnum": {
+      "type": "class",
+      "methods": []
+    },
+    "NamedTuple": {
+      "type": "function",
+      "signature": "NamedTuple(typename, fields=<sentinel>, /, **kwargs)"
+    }
+  },
+  "karsasec.rules.enums": {
+    "AnalysisCapability": {
+      "type": "class",
+      "methods": []
+    },
+    "Confidence": {
+      "type": "class",
+      "methods": []
+    },
+    "Enum": {
+      "type": "class",
+      "methods": []
+    },
+    "IaCTaxonomyEnum": {
+      "type": "class",
+      "methods": []
+    },
+    "LanguageEnum": {
+      "type": "class",
+      "methods": []
+    },
+    "OWASPCategory": {
+      "type": "class",
+      "methods": []
+    },
+    "Severity": {
+      "type": "class",
+      "methods": []
+    },
+    "TargetFormatEnum": {
+      "type": "class",
+      "methods": []
+    },
+    "TargetKindEnum": {
+      "type": "class",
+      "methods": []
+    }
+  },
+  "karsasec.rules.schema": {
+    "AnalysisBehavior": {
+      "type": "class",
+      "methods": []
+    },
+    "AnalysisEngine": {
+      "type": "class",
+      "methods": []
+    },
+    "AnalysisSpec": {
+      "type": "class",
+      "methods": []
+    },
+    "Any": {
+      "type": "class",
+      "methods": []
+    },
+    "Confidence": {
+      "type": "class",
+      "methods": []
+    },
+    "Enum": {
+      "type": "class",
+      "methods": []
+    },
+    "EvidenceSpec": {
+      "type": "class",
+      "methods": []
+    },
+    "LanguageEnum": {
+      "type": "class",
+      "methods": []
+    },
+    "OWASPCategory": {
+      "type": "class",
+      "methods": []
+    },
+    "Rule": {
+      "type": "class",
+      "methods": []
+    },
+    "RuleCondition": {
+      "type": "class",
+      "methods": []
+    },
+    "RuleMatch": {
+      "type": "class",
+      "methods": []
+    },
+    "RuleMetadata": {
+      "type": "class",
+      "methods": []
+    },
+    "RuleMetadataV2": {
+      "type": "class",
+      "methods": []
+    },
+    "RuleOutput": {
+      "type": "class",
+      "methods": []
+    },
+    "Severity": {
+      "type": "class",
+      "methods": []
+    },
+    "TargetFormatEnum": {
+      "type": "class",
+      "methods": []
+    },
+    "TargetSpec": {
+      "type": "class",
+      "methods": []
+    },
+    "dataclass": {
+      "type": "function",
+      "signature": "dataclass(cls=None, /, *, init=True, repr=True, eq=True, order=False, unsafe_hash=False, frozen=False, match_args=True, kw_only=False, slots=False, weakref_slot=False)"
+    },
+    "field": {
+      "type": "function",
+      "signature": "field(*, default=<dataclasses._MISSING_TYPE object at 0x7f34761b97f0>, default_factory=<dataclasses._MISSING_TYPE object at 0x7f34761b97f0>, init=True, repr=True, hash=None, compare=True, metadata=None, kw_only=<dataclasses._MISSING_TYPE object at 0x7f34761b97f0>)"
+    },
+    "validate_rule_dict": {
+      "type": "function",
+      "signature": "validate_rule_dict(raw_data: Dict[str, Any]) -> karsasec.rules.schema.Rule"
+    }
+  },
+  "karsasec.runtime.pass_manager": {
+    "ABC": {
+      "type": "class",
+      "methods": []
+    },
+    "AnalysisCapability": {
+      "type": "class",
+      "methods": []
+    },
+    "AnalysisPass": {
+      "type": "class",
+      "methods": [
+        "run(self, store: karsasec.runtime.artifact_store.ArtifactStore) -> bool"
+      ]
+    },
+    "ArtifactStore": {
+      "type": "class",
+      "methods": [
+        "clear(self) -> None",
+        "get(self, key: str, expected_type: Optional[Type[~T]] = None) -> Optional[~T]",
+        "has(self, key: str) -> bool",
+        "put(self, key: str, artifact: Any) -> None"
+      ]
+    },
+    "PassDescriptor": {
+      "type": "class",
+      "methods": []
+    },
+    "PassManager": {
+      "type": "class",
+      "methods": [
+        "get_telemetry(self) -> List[karsasec.runtime.pass_manager.PassTelemetry]",
+        "register_pass(self, pass_instance: karsasec.runtime.pass_manager.AnalysisPass) -> None",
+        "run_passes(self, store: karsasec.runtime.artifact_store.ArtifactStore) -> Dict[str, bool]"
+      ]
+    },
+    "PassTelemetry": {
+      "type": "class",
+      "methods": []
+    },
+    "abstractmethod": {
+      "type": "function",
+      "signature": "abstractmethod(funcobj)"
+    },
+    "dataclass": {
+      "type": "function",
+      "signature": "dataclass(cls=None, /, *, init=True, repr=True, eq=True, order=False, unsafe_hash=False, frozen=False, match_args=True, kw_only=False, slots=False, weakref_slot=False)"
+    },
+    "field": {
+      "type": "function",
+      "signature": "field(*, default=<dataclasses._MISSING_TYPE object at 0x7f34761b97f0>, default_factory=<dataclasses._MISSING_TYPE object at 0x7f34761b97f0>, init=True, repr=True, hash=None, compare=True, metadata=None, kw_only=<dataclasses._MISSING_TYPE object at 0x7f34761b97f0>)"
+    }
+  },
+  "karsasec.runtime.artifact_store": {
+    "Any": {
+      "type": "class",
+      "methods": []
+    },
+    "ArtifactStore": {
+      "type": "class",
+      "methods": [
+        "clear(self) -> None",
+        "get(self, key: str, expected_type: Optional[Type[~T]] = None) -> Optional[~T]",
+        "has(self, key: str) -> bool",
+        "put(self, key: str, artifact: Any) -> None"
+      ]
+    },
+    "TypeVar": {
+      "type": "class",
+      "methods": []
+    }
+  },
+  "karsasec.runtime.artifact_validator": {
+    "Any": {
+      "type": "class",
+      "methods": []
+    },
+    "ArtifactValidator": {
+      "type": "class",
+      "methods": [
+        "validate_ast(self, root_node: karsasec.parser.ast_nodes.FileNode) -> karsasec.runtime.artifact_validator.ValidationReport",
+        "validate_call_graph(self, call_graph_data: Dict[str, Any]) -> karsasec.runtime.artifact_validator.ValidationReport",
+        "validate_cfg(self, cfg_data: Dict[str, Any]) -> karsasec.runtime.artifact_validator.ValidationReport",
+        "validate_dataflow(self, dataflow_engine: karsasec.graph.dataflow.DataflowEngine) -> karsasec.runtime.artifact_validator.ValidationReport",
+        "validate_findings(self, findings: List[karsasec.core.finding.model.Finding]) -> karsasec.runtime.artifact_validator.ValidationReport"
+      ]
+    },
+    "DataflowEngine": {
+      "type": "class",
+      "methods": [
+        "add_flow(self, source_id: str, target_id: str, edge_type: karsasec.graph.dataflow.DataflowEdgeType = <DataflowEdgeType.ASSIGNMENT: 'ASSIGNMENT'>, label: str = '') -> karsasec.graph.dataflow.DataflowEdge",
+        "add_node(self, node: karsasec.graph.dataflow.DataflowNode) -> None",
+        "find_sinks(self, source_id: str) -> List[karsasec.graph.dataflow.DataflowNode]",
+        "find_sources(self, sink_id: str) -> List[karsasec.graph.dataflow.DataflowNode]",
+        "trace_flow(self, source_id: str, sink_id: str) -> List[karsasec.graph.dataflow.DataflowPath]"
+      ]
+    },
+    "FileNode": {
+      "type": "class",
+      "methods": [
+        "get_text(self, source_bytes: bytes) -> str"
+      ]
+    },
+    "Finding": {
+      "type": "class",
+      "methods": []
+    },
+    "ValidationReport": {
+      "type": "class",
+      "methods": []
+    },
+    "dataclass": {
+      "type": "function",
+      "signature": "dataclass(cls=None, /, *, init=True, repr=True, eq=True, order=False, unsafe_hash=False, frozen=False, match_args=True, kw_only=False, slots=False, weakref_slot=False)"
+    },
+    "field": {
+      "type": "function",
+      "signature": "field(*, default=<dataclasses._MISSING_TYPE object at 0x7f34761b97f0>, default_factory=<dataclasses._MISSING_TYPE object at 0x7f34761b97f0>, init=True, repr=True, hash=None, compare=True, metadata=None, kw_only=<dataclasses._MISSING_TYPE object at 0x7f34761b97f0>)"
+    }
+  },
+  "karsasec.sdk.negotiator": {
+    "AnalysisAPIVersion": {
+      "type": "class",
+      "methods": []
+    },
+    "CapabilityNegotiator": {
+      "type": "class",
+      "methods": [
+        "negotiate(self, manifest: karsasec.sdk.api.PluginManifest) -> karsasec.sdk.negotiator.NegotiationResult"
+      ]
+    },
+    "NegotiationResult": {
+      "type": "class",
+      "methods": []
+    },
+    "PluginManifest": {
+      "type": "class",
+      "methods": []
+    },
+    "dataclass": {
+      "type": "function",
+      "signature": "dataclass(cls=None, /, *, init=True, repr=True, eq=True, order=False, unsafe_hash=False, frozen=False, match_args=True, kw_only=False, slots=False, weakref_slot=False)"
+    },
+    "field": {
+      "type": "function",
+      "signature": "field(*, default=<dataclasses._MISSING_TYPE object at 0x7f34761b97f0>, default_factory=<dataclasses._MISSING_TYPE object at 0x7f34761b97f0>, init=True, repr=True, hash=None, compare=True, metadata=None, kw_only=<dataclasses._MISSING_TYPE object at 0x7f34761b97f0>)"
+    }
+  }
+}

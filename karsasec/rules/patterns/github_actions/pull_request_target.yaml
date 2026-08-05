@@ -1,0 +1,46 @@
+rule:
+  id: KS-GHA-0002
+
+metadata:
+  name: GitHub Actions Dangerous pull_request_target Event
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-269
+  owasp: A05:2021-Security Misconfiguration
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/269.html
+  tags:
+    - github_actions
+    - trigger
+    - iac
+
+target:
+  languages:
+    - GitHub-Actions
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: GitHub-Actions
+  ast_node_types:
+    - statement
+    - call
+
+condition:
+  symbol_triggers:
+    - pull_request_target
+  pattern: "(?i)pull_request_target"
+
+evidence:
+  require: []
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Workflow triggered by pull_request_target runs with write permissions and access to repository secrets.
+  remediation: Ensure PR code checkout is avoided or restricted to safe non-executing steps.

@@ -1,0 +1,46 @@
+rule:
+  id: KS-K8S-0001
+
+metadata:
+  name: Kubernetes Privileged Container Execution
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-250
+  owasp: A05:2021-Security Misconfiguration
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/250.html
+  tags:
+    - k8s
+    - privileged
+    - iac
+
+target:
+  languages:
+    - Kubernetes
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Kubernetes
+  ast_node_types:
+    - statement
+    - call
+
+condition:
+  symbol_triggers:
+    - privileged
+  pattern: "(?i)privileged\\s*:\\s*true"
+
+evidence:
+  require: []
+  score_weights:
+    dangerous_sink: 50
+
+output:
+  severity: CRITICAL
+  confidence: CONFIDENT
+  message: "Container configured with privileged: true, allowing host root access."
+  remediation: "Set securityContext.privileged to false to enforce pod isolation."

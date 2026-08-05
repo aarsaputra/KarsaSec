@@ -1,0 +1,50 @@
+rule:
+  id: KS-GO-0006
+
+metadata:
+  name: Go Weak Pseudo-Random Number Generator
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-330
+  owasp: A02:2021-Cryptographic Failures
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/330.html
+  tags:
+    - random
+    - crypto
+    - go
+
+target:
+  languages:
+    - Go
+  frameworks:
+    - math/rand
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Go
+  ast_node_types:
+    - call_expression
+    - call
+
+condition:
+  symbol_triggers:
+    - rand.Intn
+    - rand.Float64
+    - rand.Read
+  pattern: "(?i)rand\\.(?:Intn|Float64|Int32|Read)"
+
+evidence:
+  require: []
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: MEDIUM
+  confidence: CONFIDENT
+  message: Detects usage of non-cryptographic math/rand for randomness generation.
+  remediation: Use crypto/rand package for security-sensitive tokens, keys, or nonces.

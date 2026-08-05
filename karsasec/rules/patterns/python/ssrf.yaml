@@ -1,0 +1,54 @@
+rule:
+  id: KS-PY-0010
+
+metadata:
+  name: Python Server-Side Request Forgery (SSRF)
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-918
+  owasp: A10:2021-Server-Side Request Forgery (SSRF)
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/918.html
+  tags:
+    - ssrf
+    - network
+    - python
+
+target:
+  languages:
+    - Python
+  frameworks:
+    - requests
+    - urllib
+    - httpx
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Python
+  ast_node_types:
+    - call
+
+condition:
+  symbol_triggers:
+    - requests.get
+    - requests.post
+    - urllib.request.urlopen
+    - httpx.get
+  pattern: "(?i)(requests\\.(?:get|post|request)\\([^)]*\\+|(?:get|post)\\([^)]*user_input|urlopen\\([^)]*req)"
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+    user_source: 30
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects HTTP requests constructed with unvalidated user input, potentially leading to SSRF.
+  remediation: Validate and whitelist target URL domains before initiating outbound HTTP requests.

@@ -1,0 +1,9 @@
+name: Golden CI Workflow
+on:
+  pull_request_target:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo "PR title: ${{ github.event.issue.title }}"

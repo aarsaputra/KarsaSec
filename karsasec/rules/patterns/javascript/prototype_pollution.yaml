@@ -1,0 +1,48 @@
+rule:
+  id: KS-JS-0010
+
+metadata:
+  name: JavaScript Prototype Pollution
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-1321
+  owasp: A08:2021-Software and Data Integrity Failures
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/1321.html
+  tags:
+    - prototype_pollution
+    - javascript
+
+target:
+  languages:
+    - JavaScript
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: JavaScript
+  ast_node_types:
+    - call
+    - statement
+
+condition:
+  symbol_triggers:
+    - Object.assign
+    - lodash.merge
+  pattern: "(?i)(__proto__|prototype\\[|Object\\.assign\\([^)]*req\\.body|merge\\([^)]*req\\.body)"
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+    user_source: 30
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects recursive merge or property assignments that modify Object.prototype.
+  remediation: Freeze Object.prototype or sanitize object keys to reject '__proto__' and 'constructor'.

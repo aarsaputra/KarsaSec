@@ -5,6 +5,7 @@ import uuid
 from pathlib import Path
 from karsasec.core.finding.evidence import Evidence
 from karsasec.core.finding.model import Finding
+from karsasec.parser.ast_nodes import ASTNode
 from karsasec.rules.enums import Confidence, OWASPCategory, Severity
 from karsasec.rules.matcher.result import RuleMatch
 from karsasec.rules.schema import Rule
@@ -31,9 +32,30 @@ class FindingFactory:
         fingerprint = self.compute_fingerprint(rule.id, file_path, evidence.line, evidence.snippet)
 
         # Resolve severity & confidence
-        severity = rule.output.severity if hasattr(rule.output, "severity") else Severity.HIGH
+        raw_severity = rule.output.severity if hasattr(rule.output, "severity") else Severity.HIGH
         raw_conf = getattr(rule.output, "confidence", "CONFIDENT")
-        confidence = Confidence[raw_conf.upper()] if isinstance(raw_conf, str) and raw_conf.upper() in Confidence.__members__ else Confidence.CONFIDENT
+        base_confidence = Confidence[raw_conf.upper()] if isinstance(raw_conf, str) and raw_conf.upper() in Confidence.__members__ else Confidence.CONFIDENT
+
+        # Apply TaintVerifier to adjust severity & confidence based on source taint & static guards
+        from karsasec.graph.taint_verifier import taint_verifier
+        context_text = "\n".join(evidence.context_lines) if evidence.context_lines else evidence.snippet
+        rule_lang = getattr(rule.match, "language", "Generic")
+        if hasattr(rule_lang, "value"):
+            rule_lang = rule_lang.value
+        elif hasattr(rule_lang, "name"):
+            rule_lang = rule_lang.name
+
+        taint_res = taint_verifier.verify_sink(
+            node=ASTNode(node_id=match_result.node_id, node_type="sink", start=None, end=None),
+            snippet=evidence.snippet,
+            context_text=context_text,
+            language=str(rule_lang),
+            base_severity=raw_severity,
+            base_confidence=base_confidence,
+        )
+
+        severity = taint_res.adjusted_severity
+        confidence = taint_res.adjusted_confidence
 
         cwe_id = getattr(rule.metadata, "cwe", "CWE-20")
         owasp_raw = getattr(rule.metadata, "owasp", "A03:2021-Injection")

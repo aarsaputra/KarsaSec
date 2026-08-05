@@ -2,7 +2,6 @@
 
 from karsasec.rules.enums import Confidence, LanguageEnum, OWASPCategory, Severity
 from karsasec.rules.loader import RuleCache, YAMLRuleLoader
-from karsasec.rules.matcher import ASTMatcher, CompiledRule, MatcherContext, MatcherStatistics, RuleMatch, ast_matcher
 from karsasec.rules.registry import RuleRegistry, rule_registry
 from karsasec.rules.schema import Rule, RuleCondition, RuleMetadata, RuleOutput, validate_rule_dict
 
@@ -20,10 +19,4 @@ __all__ = [
     "YAMLRuleLoader",
     "RuleRegistry",
     "rule_registry",
-    "ASTMatcher",
-    "ast_matcher",
-    "RuleMatch",
-    "MatcherContext",
-    "MatcherStatistics",
-    "CompiledRule",
 ]

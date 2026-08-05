@@ -1,0 +1,49 @@
+rule:
+  id: KS-GO-0007
+
+metadata:
+  name: Go Arbitrary File Disclosure via http.ServeFile
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-552
+  owasp: A01:2021-Broken Access Control
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/552.html
+  tags:
+    - disclosure
+    - web
+    - go
+
+target:
+  languages:
+    - Go
+  frameworks:
+    - net/http
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Go
+  ast_node_types:
+    - call_expression
+    - call
+
+condition:
+  symbol_triggers:
+    - http.ServeFile
+  pattern: "(?i)http\\.ServeFile"
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects http.ServeFile calls passing unvalidated user-controlled filenames, exposing arbitrary local files.
+  remediation: Validate requested filenames against a strict whitelist or use http.Dir with proper scope constraints.

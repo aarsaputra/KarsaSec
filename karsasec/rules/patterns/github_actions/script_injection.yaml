@@ -1,0 +1,46 @@
+rule:
+  id: KS-GHA-0001
+
+metadata:
+  name: GitHub Actions Inline Script Injection
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-78
+  owasp: A03:2021-Injection
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/78.html
+  tags:
+    - github_actions
+    - injection
+    - iac
+
+target:
+  languages:
+    - GitHub-Actions
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: GitHub-Actions
+  ast_node_types:
+    - statement
+    - call
+
+condition:
+  symbol_triggers:
+    - run
+  pattern: "(?i)run\\s*:.*\\$\\{\\{\\s*github\\.event"
+
+evidence:
+  require: []
+  score_weights:
+    dangerous_sink: 50
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Unescaped github.event expression expanded directly inside inline shell script.
+  remediation: Pass github.event values into environment variables (env:) before using in run script.

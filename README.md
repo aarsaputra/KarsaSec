@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="img/KarsaSec.png" alt="KarsaSec Banner" width="100%">
+  <img src="img/KarsaSec.webp" alt="KarsaSec Banner" width="100%">
 </p>
 
 <h1 align="center">🛡️ KarsaSec</h1>
@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/aarsaputra/KarsaSec"><img src="https://img.shields.io/badge/Status-Sprint%203C%20Completed-brightgreen?style=for-the-badge" alt="Status"></a>
+  <a href="https://github.com/aarsaputra/KarsaSec"><img src="https://img.shields.io/badge/Status-Sprint%209.7%20Completed-brightgreen?style=for-the-badge" alt="Status"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue?style=for-the-badge" alt="License"></a>
   <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python" alt="Python"></a>
   <a href="docs/IMPLEMENTATION_ROADMAP.md"><img src="https://img.shields.io/badge/Rules-Schema%20v2-orange?style=for-the-badge" alt="Schema v2"></a>
@@ -19,24 +19,29 @@
 
 ## 📌 Overview
 
-**KarsaSec** is a high-performance, production-grade static application security testing (SAST) platform. Built from the ground up to power modern DevSecOps pipelines, KarsaSec combines deterministic **Abstract Syntax Tree (AST) matching**, **Schema v2 security rules**, **hybrid evidence scoring**, and **SARIF standard reporting** with multi-language support (**Python, JavaScript/TypeScript, PHP, Go**).
+**KarsaSec** is a high-performance, production-grade static application security testing (SAST) platform. Built from the ground up to power modern DevSecOps pipelines, KarsaSec combines deterministic **Abstract Syntax Tree (AST) matching**, **Schema v2 security rules**, **hybrid evidence scoring**, and **SARIF standard reporting** with multi-language support (**Python, JavaScript/TypeScript, PHP, Go**) and Infrastructure-as-Code (**Dockerfile, Kubernetes, GitHub Actions, Terraform, Helm**).
 
 ---
 
 ## ✨ Key Features & Capabilities
 
 - **🚀 Dual-Engine AST & Token Matching**: High-throughput streaming AST traversal (`ASTWalker`) backed by Tree-sitter bindings and native parser fallbacks.
-- **📜 Rule Schema v2 Engine**: Advanced rule definitions featuring `TargetSpec`, `AnalysisSpec` (AST, Pattern, CPG), `EvidenceSpec`, and CWE/OWASP taxonomy mapping with 100% Schema v1 backward compatibility.
-- **📊 Hybrid Evidence & Confidence Engine**: Evaluates evidence telemetry (sinks, sources, hardcoded strings) dynamically to assign high-precision confidence levels (`CONFIDENT`, `HIGH`, `MEDIUM`, `LOW`).
-- **🛡️ Standardized Security Corpus**: Includes positive control (`vulnerable/`), negative control (`safe/`), and `regression/` suites per vulnerability pattern to guarantee **zero false positives**.
-- **🌐 Multi-Language Support**: Built-in AST and pattern detection for **Python**, **JavaScript / TypeScript**, **PHP**, **Go**, and **Common Credentials/Secrets**.
-- **📄 Enterprise Reporting & Baseline**: Generates **SARIF 2.1.0**, **JSON**, and interactive **Console** reports, with baseline differential scanning to track `NEW`, `EXISTING`, `FIXED`, and `REGRESSED` findings.
+- **🛡️ Taint Analysis & Guard Verification**: Eliminates SAST false positives by verifying untrusted data flows (`$_GET`, `$_POST`, etc.), filtering out hardcoded static sinks, and checking switch-case whitelist guards.
+- **🧱 Language-Agnostic Generic IR**: Built-in Intermediate Representation (`karsasec/ir/`) decoupling security rules from language-specific AST structures.
+- **⚡ Dedicated Runtime & Capability DAG Scheduler**: Autonomous DAG planner (`karsasec/runtime/`) for dynamic lazy analysis pass resolution (`AST -> SEMANTIC -> CALLGRAPH -> DATAFLOW`).
+- **🎯 Intelligent Target Detector**: Auto-detects target kinds and formats via path heuristics and structural content inspection (`TargetDetector`).
+- **🗂️ Persistent Symbol Store**: Enterprise project symbol database (`karsasec/index/`) for cross-file symbol indexing and instant reference lookup.
+- **🔌 Extensible Plugin SDK**: Versioned Analysis API (`v1`, `v2`, `v3`) for third-party parser, rule pack, and reporter extensions (`karsasec/sdk/`).
+- **📜 Rule Schema v2 Engine**: Advanced rule definitions featuring `TargetSpec`, `AnalysisSpec` (`requires: ["ast", "semantic"]`), `EvidenceSpec`, and CWE/OWASP taxonomy mapping.
+- **📊 Hybrid Evidence & Confidence Engine**: Evaluates evidence telemetry dynamically to assign high-precision confidence levels (`CONFIDENT`, `HIGH`, `MEDIUM`, `LOW`).
+- **🌐 Multi-Language & IaC Support**: Built-in AST and pattern detection for **Python**, **JavaScript / TypeScript**, **PHP**, **Go**, **Dockerfile**, **Kubernetes**, **GitHub Actions**, **Terraform**, and **Helm**.
+- **📄 Enterprise Reporting & Baseline**: Generates **SARIF 2.1.0**, **JSON**, and interactive **Console** reports, with deterministic 32-character SHA-256 fingerprinting (`compute_stable_finding_fingerprint`).
 
 ---
 
 ## 📊 Supported Vulnerability Taxonomies (Rule Pack)
 
-| Language | Rule ID | Vulnerability | CWE | OWASP |
+| Language / Format | Rule ID | Vulnerability | CWE | OWASP |
 | :--- | :--- | :--- | :--- | :--- |
 | **Python** | `KS-PY-0001` | SQL Injection (`sqlite3`, `psycopg2`) | CWE-89 | A03:2021-Injection |
 | **Python** | `KS-PY-0002` | Command Injection (`subprocess`, `os`) | CWE-78 | A03:2021-Injection |
@@ -47,6 +52,9 @@
 | **PHP** | `KS-PHP-0002` | SQL Injection (`mysqli`, `PDO`) | CWE-89 | A03:2021-Injection |
 | **Go** | `KS-GO-0001` | SQL Injection (`db.Query`, `db.Exec`) | CWE-89 | A03:2021-Injection |
 | **Go** | `KS-GO-0002` | Command Injection (`exec.Command`) | CWE-78 | A03:2021-Injection |
+| **Dockerfile** | `KS-DOCKER-0001` | Root User Execution (`USER root`) | CWE-250 | A05:2021-Security Misconfig |
+| **Kubernetes** | `KS-K8S-0001` | Privileged Container Execution (`privileged: true`) | CWE-250 | A05:2021-Security Misconfig |
+| **GitHub Actions** | `KS-GHA-0001` | Unchecked Script Injection (`github.event`) | CWE-94 | A03:2021-Injection |
 | **Common** | `KS-COMMON-0001` | Hardcoded Secrets & Credentials | CWE-798 | A07:2021-Identification & Auth |
 
 ---
@@ -70,6 +78,10 @@ pip install -e .
 # Scan a project workspace
 karsasec scan .
 
+# Export scan results to SARIF or JSON
+karsasec scan . -f sarif -o report.sarif.json
+karsasec scan . -f json -o report.json
+
 # Run a deep security review
 karsasec review .
 
@@ -80,10 +92,10 @@ karsasec doctor
 karsasec --version
 ```
 
-### Run Tests & Security Corpus Validation
+### Run Tests & Platform Verification
 
 ```bash
-# Execute unit test suite & security corpus verification (70/70 passing)
+# Execute unit test suite & platform verification (137/137 passing)
 python3 -m pytest tests/ -v
 ```
 

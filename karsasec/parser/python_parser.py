@@ -131,6 +131,23 @@ class PythonParserPlugin(ParserPlugin):
     def _build_from_native_ast(self, py_ast: ast.AST, path: Path, code_bytes: bytes) -> FileNode:
         """Converts native Python ast tree to KarsaSec FileNode and ASTNode structure."""
         nodes_map: Dict[str, ASTNode] = {}
+        
+        # Build line offset table for byte calculation
+        line_offsets = [0]
+        offset = 0
+        for line in code_bytes.splitlines(keepends=True):
+            offset += len(line)
+            line_offsets.append(offset)
+
+        def get_byte_offset(line: int, col: int) -> int:
+            if line < 1:
+                return 0
+            idx = line - 1
+            if idx >= len(line_offsets):
+                return len(code_bytes)
+            line_start = line_offsets[idx]
+            line_end = line_offsets[idx + 1] if idx + 1 < len(line_offsets) else len(code_bytes)
+            return min(line_start + col, line_end)
 
         def _convert(py_node: ast.AST, parent_id: Optional[str]) -> ASTNode:
             line_no = getattr(py_node, "lineno", 1)
@@ -173,8 +190,8 @@ class PythonParserPlugin(ParserPlugin):
                 node_type=node_type,
                 language="Python",
                 file_path=path,
-                byte_start=0,
-                byte_end=len(code_bytes),
+                byte_start=get_byte_offset(line_no, col_no),
+                byte_end=get_byte_offset(end_line, end_col),
                 start=Position(line=line_no, column=col_no),
                 end=Position(line=end_line, column=end_col),
                 children=children_ids,

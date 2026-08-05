@@ -1,0 +1,46 @@
+rule:
+  id: KS-DOCKER-0004
+
+metadata:
+  name: Dockerfile Pipe Remote Script to Shell (curl | sh)
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-829
+  owasp: A08:2021-Software and Data Integrity Failures
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/829.html
+  tags:
+    - docker
+    - rce
+    - iac
+
+target:
+  languages:
+    - Dockerfile
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Dockerfile
+  ast_node_types:
+    - statement
+    - call
+
+condition:
+  symbol_triggers:
+    - RUN
+  pattern: "(?i)(curl|wget)[^|]*\\|\\s*(sh|bash)"
+
+evidence:
+  require: []
+  score_weights:
+    dangerous_sink: 50
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: RUN instruction pipes remote network scripts directly into shell interpreter without integrity check.
+  remediation: Download script to file, verify SHA256 checksum, and inspect before executing.

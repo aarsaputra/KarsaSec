@@ -1,0 +1,49 @@
+rule:
+  id: KS-GO-0005
+
+metadata:
+  name: Go Insecure TLS Configuration (InsecureSkipVerify)
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-295
+  owasp: A02:2021-Cryptographic Failures
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/295.html
+  tags:
+    - tls
+    - crypto
+    - go
+
+target:
+  languages:
+    - Go
+  frameworks:
+    - crypto/tls
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Go
+  ast_node_types:
+    - assignment
+    - statement
+    - call
+
+condition:
+  symbol_triggers:
+    - InsecureSkipVerify
+  pattern: "(?i)InsecureSkipVerify\\s*:\\s*true"
+
+evidence:
+  require: []
+  score_weights:
+    dangerous_sink: 50
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects TLS configurations explicitly setting InsecureSkipVerify to true, bypassing SSL certificate verification.
+  remediation: Set InsecureSkipVerify to false and properly configure CA certificate pools for server validation.

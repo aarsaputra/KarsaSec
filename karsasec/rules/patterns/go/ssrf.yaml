@@ -1,0 +1,53 @@
+rule:
+  id: KS-GO-0003
+
+metadata:
+  name: Go Server-Side Request Forgery (SSRF)
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-918
+  owasp: A10:2021-Server-Side Request Forgery (SSRF)
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/918.html
+  tags:
+    - ssrf
+    - network
+    - go
+
+target:
+  languages:
+    - Go
+  frameworks:
+    - net/http
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Go
+  ast_node_types:
+    - call_expression
+    - call
+    - statement
+
+condition:
+  symbol_triggers:
+    - http.Get
+    - http.Post
+    - http.NewRequest
+  pattern: "(?i)(http\\.(?:Get|Post|NewRequest))"
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+    user_source: 30
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects outbound HTTP requests constructed with unvalidated URL strings in Go applications.
+  remediation: Parse and validate the destination URL host against a trusted whitelist before sending HTTP requests.

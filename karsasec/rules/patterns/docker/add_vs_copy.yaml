@@ -1,0 +1,46 @@
+rule:
+  id: KS-DOCKER-0003
+
+metadata:
+  name: Dockerfile Use of ADD Instead of COPY
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-703
+  owasp: A05:2021-Security Misconfiguration
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/703.html
+  tags:
+    - docker
+    - add
+    - iac
+
+target:
+  languages:
+    - Dockerfile
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Dockerfile
+  ast_node_types:
+    - statement
+    - call
+
+condition:
+  symbol_triggers:
+    - ADD
+  pattern: "(?i)ADD\\s+(?!https?://)"
+
+evidence:
+  require: []
+  score_weights:
+    dangerous_sink: 30
+
+output:
+  severity: LOW
+  confidence: CONFIDENT
+  message: Use of ADD instruction for local file copying instead of COPY.
+  remediation: Replace ADD with COPY for local files to avoid unexpected tar auto-extraction or remote URL fetches.

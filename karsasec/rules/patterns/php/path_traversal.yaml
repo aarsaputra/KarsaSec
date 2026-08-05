@@ -1,0 +1,53 @@
+rule:
+  id: KS-PHP-0003
+
+metadata:
+  name: PHP Unsafe File Inclusion and Path Traversal
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-22
+  owasp: A01:2021-Broken Access Control
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/22.html
+  tags:
+    - path_traversal
+    - include
+    - php
+
+target:
+  languages:
+    - PHP
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: PHP
+  ast_node_types:
+    - function_call_expression
+    - call_expression
+    - statement
+    - call
+
+condition:
+  symbol_triggers:
+    - include
+    - require
+    - file_get_contents
+    - readfile
+  pattern: "(?i)(include|require|file_get_contents|readfile)"
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+    user_source: 30
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects dynamic file inclusion or file reading utilizing unsanitized global request variables in PHP.
+  remediation: Avoid passing user input to file inclusion functions; use strict whitelist mapping instead.

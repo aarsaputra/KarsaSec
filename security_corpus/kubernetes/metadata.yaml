@@ -1,0 +1,13 @@
+domain: kubernetes
+description: Security corpus for Kubernetes manifests security risks.
+rules:
+  - rule_id: KS-K8S-0001
+    name: Privileged Container Execution
+    severity: CRITICAL
+    cwe: CWE-250
+    owasp: A05:2021-Security Misconfiguration
+  - rule_id: KS-K8S-0003
+    name: Host Network Access
+    severity: HIGH
+    cwe: CWE-668
+    owasp: A05:2021-Security Misconfiguration

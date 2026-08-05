@@ -1,0 +1,50 @@
+rule:
+  id: KS-PHP-0004
+
+metadata:
+  name: PHP Local File Inclusion (LFI)
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-98
+  owasp: A03:2021-Injection
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/98.html
+  tags:
+    - lfi
+    - include
+    - php
+
+target:
+  languages:
+    - PHP
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: PHP
+  ast_node_types:
+    - function_call_expression
+    - call_expression
+    - statement
+    - call
+
+condition:
+  symbol_triggers:
+    - include_once
+    - require_once
+  pattern: "(?i)(include_once|require_once)"
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects dynamic file inclusion via include_once or require_once with user inputs.
+  remediation: Hardcode allowed file targets or resolve inputs via an array lookup whitelist.

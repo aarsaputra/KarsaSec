@@ -1,0 +1,46 @@
+rule:
+  id: KS-GHA-0003
+
+metadata:
+  name: GitHub Actions Unpinned Third-Party Action
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-829
+  owasp: A08:2021-Software and Data Integrity Failures
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/829.html
+  tags:
+    - github_actions
+    - supply_chain
+    - iac
+
+target:
+  languages:
+    - GitHub-Actions
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: GitHub-Actions
+  ast_node_types:
+    - statement
+    - call
+
+condition:
+  symbol_triggers:
+    - uses
+  pattern: "(?i)uses\\s*:\\s*[a-zA-Z0-9_\\-]+/[a-zA-Z0-9_\\-]+@v[0-9]"
+
+evidence:
+  require: []
+  score_weights:
+    dangerous_sink: 30
+
+output:
+  severity: MEDIUM
+  confidence: CONFIDENT
+  message: Action uses mutable version tag instead of full 40-character commit SHA digest.
+  remediation: Pin action reference to a full commit SHA hash (e.g. actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11).

@@ -1,0 +1,46 @@
+rule:
+  id: KS-K8S-0002
+
+metadata:
+  name: Kubernetes Missing Resource Limits
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-770
+  owasp: A05:2021-Security Misconfiguration
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/770.html
+  tags:
+    - k8s
+    - resources
+    - iac
+
+target:
+  languages:
+    - Kubernetes
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Kubernetes
+  ast_node_types:
+    - statement
+    - call
+
+condition:
+  symbol_triggers:
+    - resources
+  pattern: "(?i)resources\\s*:\\s*\\{\\s*\\}"
+
+evidence:
+  require: []
+  score_weights:
+    dangerous_sink: 30
+
+output:
+  severity: MEDIUM
+  confidence: CONFIDENT
+  message: Container spec lacks CPU and Memory resource limits, making node vulnerable to DoS.
+  remediation: Specify resources.limits.cpu and resources.limits.memory for all container specs.

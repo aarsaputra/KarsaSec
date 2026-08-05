@@ -17,11 +17,30 @@ from karsasec.core.reporting import (
     SARIFReporter,
     StreamTarget,
 )
-from karsasec.parser.python_parser import PythonParserPlugin
+from karsasec.parser.generic_parser import GenericParserPlugin
+from karsasec.parser.registry import parser_registry
+from karsasec.parser.target_detector import TargetDetector
 from karsasec.rules.loader import YAMLRuleLoader
 from karsasec.rules.patterns import get_default_rules_directory
 
-IGNORE_DIRS = {".git", ".venv", "venv", ".pytest_cache", "__pycache__", "build", "dist", ".gemini"}
+IGNORE_DIRS = {".git", ".venv", "venv", ".pytest_cache", "__pycache__", "build", "dist", ".gemini", "node_modules"}
+
+SUPPORTED_EXTENSIONS = {
+    ".py", ".pyi", ".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs",
+    ".php", ".inc", ".phtml", ".go", ".yaml", ".yml", ".json", ".tf", ".tfvars"
+}
+SUPPORTED_FILENAMES = {"dockerfile", "containerfile"}
+
+
+def is_scannable_file(path: Path) -> bool:
+    """Returns True if file path matches supported source/config extensions and is not ignored."""
+    if any(part in IGNORE_DIRS or part.startswith(".") for part in path.parts):
+        return False
+    name_lower = path.name.lower()
+    if name_lower in SUPPORTED_FILENAMES or name_lower.startswith("dockerfile."):
+        return True
+    return path.suffix.lower() in SUPPORTED_EXTENSIONS
+
 
 def execute_scan_command(
     target_path: Path,
@@ -31,7 +50,7 @@ def execute_scan_command(
     no_color: bool = False,
     executor: Optional[RuleExecutor] = None,
 ) -> int:
-    """Executes deterministic security scan on target_path.
+    """Executes deterministic security scan on target_path across multi-language source & IaC files.
 
     Returns:
         int: Semantic exit code (0 = clean, 1 = findings detected, 2 = execution error, 3 = rule load error).
@@ -59,8 +78,8 @@ def execute_scan_command(
     else:
         files_to_scan = [
             p
-            for p in resolved_path.glob("**/*.py")
-            if not any(part in IGNORE_DIRS or part.startswith(".") for part in p.parts)
+            for p in resolved_path.rglob("*")
+            if p.is_file() and is_scannable_file(p)
         ]
 
     all_findings = []
@@ -69,12 +88,22 @@ def execute_scan_command(
     total_time_ms = 0.0
     scan_errors = []
 
-    parser_plugin = PythonParserPlugin()
+    target_detector = TargetDetector()
 
     for file_path in files_to_scan:
         try:
             source_bytes = file_path.read_bytes()
-            parse_res = parser_plugin.parse_file(file_path)
+            source_text = source_bytes.decode("utf-8", errors="ignore")
+
+            detection = target_detector.detect(file_path, source_text)
+            detected_lang = detection.target_format.value  # e.g., "Python", "JavaScript", "PHP", "Go", "Dockerfile"
+
+            # Select parser plugin via registry or instantiate generic parser
+            parser = parser_registry.get_parser_for_file(file_path) or parser_registry.get_parser_by_language(detected_lang)
+            if not parser:
+                parser = GenericParserPlugin(detected_lang, [file_path.suffix or file_path.name])
+
+            parse_res = parser.parse_file(file_path)
 
             if parse_res.root:
                 scan_ctx = ScanContext(
@@ -82,7 +111,7 @@ def execute_scan_command(
                     source_bytes=source_bytes,
                     file_path=file_path,
                     symbol_table=parse_res.symbol_table,
-                    language="python",
+                    language=detected_lang,
                 )
                 res = exec_engine.execute_scan(scan_ctx, rules)
                 all_findings.extend(res.findings)

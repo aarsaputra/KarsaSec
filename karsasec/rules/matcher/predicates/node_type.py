@@ -28,8 +28,8 @@ class NodeTypePredicate(BasePredicate):
 
         # 1. Language Scope check
         if context.language:
-            rule_lang = rule.match.language.value if isinstance(rule.match.language, LanguageEnum) else str(rule.match.language)
-            if rule_lang.lower() != context.language.lower():
+            rule_lang = rule.match.language.value if hasattr(rule.match.language, "value") else str(rule.match.language)
+            if rule_lang.lower() != context.language.lower() and rule_lang.lower() != "generic" and context.language.lower() != "generic":
                 stats.short_circuit += 1
                 return False, None, None
 

@@ -1,0 +1,46 @@
+rule:
+  id: KS-DOCKER-0001
+
+metadata:
+  name: Dockerfile Container Running as Root
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-250
+  owasp: A05:2021-Security Misconfiguration
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/250.html
+  tags:
+    - docker
+    - root
+    - iac
+
+target:
+  languages:
+    - Dockerfile
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Dockerfile
+  ast_node_types:
+    - statement
+    - call
+
+condition:
+  symbol_triggers:
+    - USER
+  pattern: "(?i)(^USER\\s+root|^USER\\s+0)"
+
+evidence:
+  require: []
+  score_weights:
+    dangerous_sink: 50
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Container explicitly sets execution user to root or 0.
+  remediation: Specify a dedicated non-root user (e.g. USER appuser) in your Dockerfile.

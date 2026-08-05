@@ -1,8 +1,8 @@
 # 🗺️ KarsaSec — Implementation Roadmap
 
 **Platform:** KarsaSec AI Application Security Operating System (SecOS)  
-**Versi Roadmap:** 1.0.0 | **Terakhir Diperbarui:** 2026-08-04  
-**Strategi MVP:** 4 Core Agents (`Planner` → `Analyzer` → `Remediator` → `Reporter`)
+**Versi Roadmap:** 1.1.0 | **Terakhir Diperbarui:** 2026-08-05  
+**Strategi MVP:** 4 Core Agents (`Planner` → `Analyzer` → `Remediator` → `Reporter`) + Dynamic Taint/Guard Verification
 
 ---
 
@@ -16,16 +16,17 @@ Roadmap ini memandu pengembangan **KarsaSec** dari fondasi repositori hingga pla
 
 | Sprint | Nama Sprint | Fokus Utama & Output Kunci | Status |
 |---|---|---|---|
-| **Sprint 0** | Repository Foundation | `pyproject.toml` (Hatchling), Ruff, Mypy, Pytest, pre-commit, CI Actions | ⚙️ In Progress |
-| **Sprint 1** | CLI Core & Dependency Container | `typer` CLI, Rich UI, `Pydantic-Settings`, Core DI Container & Plugin Registry | ⏳ Planned |
-| **Sprint 2** | AST Parser & Language Detector | Engine `tree-sitter` Python bindings, multi-language detection | ⏳ Planned |
-| **Sprint 3** | Deterministic Rule Engine | YAML Rule Matcher (Loader, Validator, Matcher, Executor), Semgrep Adapter | ⏳ Planned |
-| **Sprint 4** | Code Property Graph (CPG) | SQLite-based graph storage, Call Graph, Data Flow Graph (DFG) traversal | ⏳ Planned |
-| **Sprint 5** | Hybrid RAG Search Engine | `Model2Vec` static embeddings, BM25 lexical search, Reciprocal Rank Fusion | ⏳ Planned |
+| **Sprint 0** | Repository Foundation | `pyproject.toml` (Hatchling), Ruff, Mypy, Pytest, pre-commit, CI Actions | ✅ Completed |
+| **Sprint 1** | CLI Core & Dependency Container | `typer` CLI, Rich UI, `Pydantic-Settings`, Core DI Container & Plugin Registry | ✅ Completed |
+| **Sprint 2** | AST Parser & Language Detector | Engine `tree-sitter` Python bindings, multi-language detection | ✅ Completed |
+| **Sprint 3** | Deterministic Rule Engine | YAML Rule Matcher (Loader, Validator, Matcher, Executor), Semgrep Adapter | ✅ Completed |
+| **Sprint 4** | Code Property Graph (CPG) & Dataflow | SQLite-based graph storage, Call Graph, Data Flow Graph (DFG) traversal | ✅ Completed |
+| **PQP v1.0** | Taint Analysis & Guard Verifier | Precision Engine, Static Sink Downgrade, Whitelist Guard Verification, IaC Exemption | ✅ Completed |
+| **Sprint 5** | Hybrid RAG Search Engine | `Model2Vec` static embeddings, BM25 lexical search, Reciprocal Rank Fusion | ⚙️ In Progress |
 | **Sprint 6** | AI Provider Gateway Interface | Interface `AIProvider` (OpenAI, Gemini, Anthropic, Ollama), LiteLLM Adapter | ⏳ Planned |
 | **Sprint 7** | 4-Agent Orchestrator State Machine | Core 4-Agent Pipeline (`Planner`, `Analyzer`, `Remediator`, `Reporter`) via State Machine | ⏳ Planned |
 | **Sprint 8** | Auto-Patch Generator & Verification | AST Validation, Linting, Formatting, Unified Diff Patch Synthesizer | ⏳ Planned |
-| **Sprint 9** | Enterprise Output, SARIF & CI/CD | SARIF v2.1 export, GitHub Action runner, JSON/Markdown reporting | ⏳ Planned |
+| **Sprint 9** | Enterprise Output, SARIF & CI/CD | SARIF v2.1 export, GitHub Action runner, JSON/Markdown reporting | ✅ Completed |
 
 ---
 

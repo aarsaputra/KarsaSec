@@ -1,0 +1,13 @@
+domain: docker
+description: Security corpus for Dockerfile misconfigurations and security risks.
+rules:
+  - rule_id: KS-DOCKER-0001
+    name: Container Running as Root
+    severity: HIGH
+    cwe: CWE-250
+    owasp: A05:2021-Security Misconfiguration
+  - rule_id: KS-DOCKER-0002
+    name: Unpinned Base Image Tag
+    severity: MEDIUM
+    cwe: CWE-1104
+    owasp: A05:2021-Security Misconfiguration

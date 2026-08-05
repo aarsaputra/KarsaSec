@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 from karsasec.core.context import AnalysisContext
 
 if TYPE_CHECKING:
@@ -27,17 +27,31 @@ class SymbolTable:
     imports: List[str] = field(default_factory=list)
     globals: List[str] = field(default_factory=list)
 
-@dataclass
+from karsasec.rules.enums import AnalysisCapability
+
+@dataclass(frozen=True)
 class ParseResult:
-    """Contract returned by ParserPlugin parsing operations containing AST, diagnostics, and metrics."""
+    """Contract returned by ParserPlugin parsing operations containing AST, diagnostics, and metrics (Immutable)."""
     language: str
     file_path: Path
     root: Optional["FileNode"] = None
     symbol_table: SymbolTable = field(default_factory=SymbolTable)
-    diagnostics: List[Diagnostic] = field(default_factory=list)
+    diagnostics: Tuple[Diagnostic, ...] = field(default_factory=tuple)
     parse_time_ms: float = 0.0
     parser_version: str = "0.1.0"
     engine: str = "Tree-sitter v0.25"
+    target_kind: str = "SOURCE_CODE"
+    target_format: str = "Python"
+    capabilities: Tuple[AnalysisCapability, ...] = field(
+        default_factory=lambda: (
+            AnalysisCapability.AST,
+            AnalysisCapability.POSITION,
+            AnalysisCapability.COMMENTS,
+            AnalysisCapability.HIERARCHY,
+        )
+    )
+
+ParsedDocument = ParseResult
 
 class BasePlugin(ABC):
     """Abstract base class for all KarsaSec plugins."""

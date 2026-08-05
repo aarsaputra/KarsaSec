@@ -1,4 +1,12 @@
-"""SymbolPredicate plugin evaluating symbol triggers against AST node text and SymbolTable metadata."""
+"""SymbolPredicate plugin evaluating symbol triggers against AST node text and SymbolTable metadata.
+
+# Resolution order (highest to lowest confidence):
+# 0. Cross-file CallGraph resolution — checks if the node's call site is a known callee
+#    in the project-wide CallGraph, resolving to the qualified symbol (e.g. 'module.Class.method')
+# 1. Per-file SemanticGraph resolution — resolves aliases, imports, scopes for the current file
+# 2. AST node text word-boundary search — direct text match for quick pattern detection
+# 3. SymbolTable metadata search — function definitions and import declarations
+"""
 
 import re
 from typing import Optional, Tuple
@@ -30,7 +38,38 @@ class SymbolPredicate(BasePredicate):
         stats.predicates_checked += 1
         node_text = node.get_text(source_bytes)
 
-        # 1. Query semantic graph for resolved symbol (aliases, scopes, imports)
+        # Step 0: Cross-file CallGraph resolution
+        # Query if this call site is a known edge in the project-wide CallGraph
+        call_graph = getattr(context, "call_graph", None)
+        if call_graph is not None:
+            edge = getattr(call_graph, "call_site_to_edge", {}).get(node.node_id)
+            if edge is not None:
+                resolved_qname = getattr(edge, "resolved_symbol", None)
+                callee_id = getattr(edge, "callee_id", None)
+                # Also try to get the full qualified name from the callee node
+                callee_node = call_graph.get_node(callee_id) if callee_id and callee_id != "external" else None
+                callee_qname = getattr(callee_node, "qualified_name", None) if callee_node else None
+
+                for trigger in triggers:
+                    # Match against resolved symbol string
+                    if resolved_qname:
+                        if (
+                            trigger == resolved_qname
+                            or resolved_qname.endswith("." + trigger)
+                            or resolved_qname.startswith(trigger + ".")
+                        ):
+                            return True, trigger, resolved_qname
+                    # Match against callee qualified name (cross-file)
+                    if callee_qname:
+                        if (
+                            trigger == callee_qname
+                            or callee_qname.endswith("." + trigger)
+                            or callee_qname.startswith(trigger + ".")
+                            or trigger.endswith("." + callee_qname.split(".")[-1])
+                        ):
+                            return True, trigger, callee_qname
+
+        # Step 1: Per-file SemanticGraph resolution
         if getattr(context, "semantic_graph", None):
             resolved_symbol = context.semantic_graph.resolve_node(node.node_id)
             if resolved_symbol:
@@ -43,14 +82,14 @@ class SymbolPredicate(BasePredicate):
                     ):
                         return True, trigger, resolved_symbol
 
-        # 2. Exact or word-boundary text search for symbol trigger in node_text
+        # Step 2: Exact or word-boundary text search for symbol trigger in node_text
         for trigger in triggers:
             # If trigger contains dots (e.g. cursor.execute or exec.Command) or special chars, escape it
             pattern = r"(?:\b|_)" + re.escape(trigger) + r"(?:\b|_)" if "." not in trigger else re.escape(trigger)
             if re.search(pattern, node_text):
                 return True, trigger, node_text
 
-        # 3. SymbolTable metadata search
+        # Step 3: SymbolTable metadata search
         if context.symbol_table:
             # Check function definitions or calls in symbol table
             if hasattr(context.symbol_table, "functions") and context.symbol_table.functions:

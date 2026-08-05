@@ -1,0 +1,46 @@
+rule:
+  id: KS-DOCKER-0002
+
+metadata:
+  name: Dockerfile Unpinned Base Image Tag
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-1104
+  owasp: A05:2021-Security Misconfiguration
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/1104.html
+  tags:
+    - docker
+    - image
+    - iac
+
+target:
+  languages:
+    - Dockerfile
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Dockerfile
+  ast_node_types:
+    - statement
+    - call
+
+condition:
+  symbol_triggers:
+    - FROM
+  pattern: "(?i)(FROM\\s+[a-zA-Z0-9_\\-\\./]+:latest|FROM\\s+[a-zA-Z0-9_\\-\\./]+(?![:@]))"
+
+evidence:
+  require: []
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: MEDIUM
+  confidence: CONFIDENT
+  message: Base image tag is missing or set to latest, leading to non-deterministic builds.
+  remediation: Pin base image to an explicit version tag or immutable SHA digest.

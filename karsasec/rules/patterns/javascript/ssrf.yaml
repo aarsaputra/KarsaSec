@@ -1,0 +1,52 @@
+rule:
+  id: KS-JS-0005
+
+metadata:
+  name: JavaScript/Node.js Server-Side Request Forgery (SSRF)
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-918
+  owasp: A10:2021-Server-Side Request Forgery (SSRF)
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/918.html
+  tags:
+    - ssrf
+    - network
+    - javascript
+
+target:
+  languages:
+    - JavaScript
+  frameworks:
+    - axios
+    - node-fetch
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: JavaScript
+  ast_node_types:
+    - call
+
+condition:
+  symbol_triggers:
+    - axios.get
+    - axios.post
+    - fetch
+  pattern: "(?i)(axios\\.(?:get|post)\\([^)]*req\\.|fetch\\([^)]*req\\.query|fetch\\([^)]*user_input)"
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+    user_source: 30
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects outbound HTTP requests constructed from untrusted user input in Node.js.
+  remediation: Enforce strict URL domain whitelisting and disable dynamic URL construction.

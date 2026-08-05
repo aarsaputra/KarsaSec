@@ -4,7 +4,7 @@ import re
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional
-from karsasec.rules.enums import Confidence, LanguageEnum, OWASPCategory, Severity
+from karsasec.rules.enums import Confidence, LanguageEnum, OWASPCategory, Severity, TargetFormatEnum
 
 RULE_ID_PATTERN = re.compile(r"^KS-[A-Z0-9_-]{2,10}-\d{4}$")
 
@@ -28,9 +28,10 @@ class TargetSpec:
 
 @dataclass(slots=True)
 class AnalysisSpec:
-    """Analysis engine and behavior specification (Schema v2)."""
+    """Analysis engine, behavior, and required capabilities specification (Schema v2)."""
     engine: AnalysisEngine = AnalysisEngine.AST
     behavior: AnalysisBehavior = AnalysisBehavior.SINK
+    requires: List[str] = field(default_factory=lambda: ["ast"])
 
 @dataclass(slots=True)
 class EvidenceSpec:
@@ -177,8 +178,11 @@ def validate_rule_dict(raw_data: Dict[str, Any]) -> Rule:
     try:
         language = LanguageEnum(raw_lang)
     except ValueError:
-        valid_langs = [l.value for l in LanguageEnum]
-        raise ValueError(f"Invalid language '{raw_lang}'. Supported languages: {valid_langs}")
+        try:
+            language = TargetFormatEnum(raw_lang)
+        except ValueError:
+            valid_langs = [l.value for l in LanguageEnum] + [f.value for f in TargetFormatEnum]
+            raise ValueError(f"Invalid language or target format '{raw_lang}'. Supported: {valid_langs}")
 
     if language not in target_languages:
         target_languages.append(language)
@@ -211,9 +215,16 @@ def validate_rule_dict(raw_data: Dict[str, Any]) -> Rule:
         if raw_behavior in AnalysisBehavior.__members__:
             behavior_val = AnalysisBehavior[raw_behavior]
 
+        reqs = analysis_sec.get("requires", ["ast"])
+        if isinstance(reqs, list):
+            requires_val = [str(r).lower() for r in reqs]
+        else:
+            requires_val = ["ast"]
+
     analysis_obj = AnalysisSpec(
         engine=engine_val,
         behavior=behavior_val,
+        requires=requires_val,
     )
 
     # Validate Condition

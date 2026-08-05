@@ -62,6 +62,7 @@ class RuleExecutor:
             language=scan_context.language,
             file_path=scan_context.file_path,
             semantic_graph=semantic_graph,
+            call_graph=getattr(scan_context, "call_graph", None),
         )
 
         file_path = scan_context.file_path or scan_context.file_node.file_path or Path("unknown")

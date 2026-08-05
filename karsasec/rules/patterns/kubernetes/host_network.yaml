@@ -1,0 +1,46 @@
+rule:
+  id: KS-K8S-0003
+
+metadata:
+  name: Kubernetes Host Network Access (hostNetwork)
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-668
+  owasp: A05:2021-Security Misconfiguration
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/668.html
+  tags:
+    - k8s
+    - host_network
+    - iac
+
+target:
+  languages:
+    - Kubernetes
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Kubernetes
+  ast_node_types:
+    - statement
+    - call
+
+condition:
+  symbol_triggers:
+    - hostNetwork
+  pattern: "(?i)hostNetwork\\s*:\\s*true"
+
+evidence:
+  require: []
+  score_weights:
+    dangerous_sink: 50
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: "Pod configured with hostNetwork: true, exposing node network namespace to pod."
+  remediation: "Set hostNetwork to false unless explicitly required for network CNI components."

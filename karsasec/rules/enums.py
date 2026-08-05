@@ -26,6 +26,50 @@ class LanguageEnum(str, Enum):
     TYPESCRIPT = "TypeScript"
     PHP = "PHP"
     GO = "Go"
+    GENERIC = "Generic"
+
+class TargetKindEnum(str, Enum):
+    """Broad category classification of analysis targets."""
+    SOURCE_CODE = "SOURCE_CODE"
+    CONFIG = "CONFIG"
+    PIPELINE = "PIPELINE"
+    IAC = "IAC"
+    MANIFEST = "MANIFEST"
+
+class TargetFormatEnum(str, Enum):
+    """File format/specification identifier."""
+    PYTHON = "Python"
+    JAVASCRIPT = "JavaScript"
+    TYPESCRIPT = "TypeScript"
+    PHP = "PHP"
+    GO = "Go"
+    DOCKERFILE = "Dockerfile"
+    KUBERNETES = "Kubernetes"
+    GITHUB_ACTIONS = "GitHub-Actions"
+    TERRAFORM = "Terraform"
+    HELM = "Helm"
+
+class IaCTaxonomyEnum(str, Enum):
+    """Taxonomy categories for Infrastructure as Code security risks."""
+    MISCONFIGURATION = "misconfiguration"
+    PRIVILEGE = "privilege"
+    SECRETS = "secrets"
+    SUPPLY_CHAIN = "supply_chain"
+    NETWORKING = "networking"
+    RUNTIME = "runtime"
+    POLICY = "policy"
+
+class AnalysisCapability(str, Enum):
+    """Strongly-typed capabilities exported by parsers and required by security rules."""
+    AST = "ast"
+    POSITION = "position"
+    COMMENTS = "comments"
+    HIERARCHY = "hierarchy"
+    SEMANTIC = "semantic"
+    TYPE_INFO = "type_info"
+    CONTROL_FLOW = "control_flow"
+    DATAFLOW = "dataflow"
+    CALLGRAPH = "callgraph"
 
 class OWASPCategory(str, Enum):
     """OWASP Top 10 (2025/2026 & 2021) and OWASP API Category Mappings."""
