@@ -14,12 +14,18 @@ RULE_CORPUS_MAP = {
     "KS-PY-0001": CORPUS_DIR / "python" / "sqli",
     "KS-PY-0002": CORPUS_DIR / "python" / "cmdi",
     "KS-PY-0003": CORPUS_DIR / "python" / "deserialization",
+    "KS-PY-0004": CORPUS_DIR / "python" / "crypto",
+    "KS-PY-0010": CORPUS_DIR / "python" / "ssrf",
     "KS-JS-0001": CORPUS_DIR / "javascript" / "eval",
     "KS-JS-0002": CORPUS_DIR / "javascript" / "xss",
+    "KS-JS-0006": CORPUS_DIR / "javascript" / "cors",
     "KS-PHP-0001": CORPUS_DIR / "php" / "rce",
     "KS-PHP-0002": CORPUS_DIR / "php" / "sqli",
     "KS-GO-0001": CORPUS_DIR / "go" / "sqli",
     "KS-GO-0002": CORPUS_DIR / "go" / "cmdi",
+    "KS-GO-0008": CORPUS_DIR / "go" / "deserialization",
+    "KS-RUST-0001": CORPUS_DIR / "rust" / "ssrf",
+    "KS-JAVA-0001": CORPUS_DIR / "java" / "ssrf",
     "KS-COMMON-0001": CORPUS_DIR / "common" / "secret",
 }
 

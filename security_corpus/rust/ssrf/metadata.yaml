@@ -1,0 +1,6 @@
+rule_id: KS-RUST-0001
+category: ssrf
+language: rust
+cwe: CWE-918
+owasp: A10:2021-Server-Side Request Forgery (SSRF)
+description: Rust SSRF corpus test suite

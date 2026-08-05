@@ -1,0 +1,55 @@
+rule:
+  id: KS-JAVA-0001
+
+metadata:
+  name: Java Server-Side Request Forgery (SSRF)
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-918
+  owasp: A10:2021-Server-Side Request Forgery (SSRF)
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/918.html
+  tags:
+    - ssrf
+    - network
+    - java
+
+target:
+  languages:
+    - Java
+  frameworks:
+    - java.net
+    - okhttp3
+    - apache-httpclient
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Java
+  ast_node_types:
+    - call
+    - statement
+
+condition:
+  symbol_triggers:
+    - new URL
+    - HttpURLConnection
+    - HttpClient
+    - new HttpGet
+  pattern: "(?i)(new\\s+URL\\(|HttpURLConnection|HttpClient|new\\s+HttpGet|okhttp3\\.OkHttpClient)"
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+    user_source: 30
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects outbound HTTP requests constructed from untrusted inputs in Java applications.
+  remediation: Validate and whitelist destination URLs before sending HTTP requests.

@@ -1,0 +1,55 @@
+rule:
+  id: KS-RUST-0001
+
+metadata:
+  name: Rust Server-Side Request Forgery (SSRF)
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-918
+  owasp: A10:2021-Server-Side Request Forgery (SSRF)
+  created: "2026-08-05"
+  references:
+    - https://cwe.mitre.org/data/definitions/918.html
+  tags:
+    - ssrf
+    - network
+    - rust
+
+target:
+  languages:
+    - Rust
+  frameworks:
+    - reqwest
+    - ureq
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Rust
+  ast_node_types:
+    - call
+    - statement
+
+condition:
+  symbol_triggers:
+    - reqwest::blocking::get
+    - reqwest::get
+    - ureq::get
+    - ureq::post
+    - Url::parse
+  pattern: "(?i)(reqwest::(?:blocking::)?(?:get|post)|ureq::(?:get|post)|Url::parse)"
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+    user_source: 30
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects outbound HTTP requests constructed from untrusted inputs in Rust applications.
+  remediation: Validate, sanitize, and whitelist destination URLs before making outbound requests.

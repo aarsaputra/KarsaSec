@@ -1,0 +1,6 @@
+rule_id: KS-JAVA-0001
+category: ssrf
+language: java
+cwe: CWE-918
+owasp: A10:2021-Server-Side Request Forgery (SSRF)
+description: Java SSRF corpus test suite
