@@ -1,0 +1,163 @@
+rules:
+  - rule:
+      id: KS-PHP-0020
+    metadata:
+      name: Laravel Query Builder Raw SQL Injection
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-89
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+      tags:
+        - sqli
+        - laravel
+        - framework
+    target:
+      languages:
+        - PHP
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: PHP
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - DB::raw
+        - whereRaw
+        - selectRaw
+        - orderByRaw
+        - havingRaw
+      pattern: "(?i)(DB::raw|whereRaw|selectRaw|orderByRaw|havingRaw)\\s*\\([^)]*\\$(?:request|GET|POST)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 50
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Using DB::raw() or raw query clauses with concatenated request data introduces SQL injection.
+      remediation: Use array bindings or parameterized placeholders in raw Laravel query clauses.
+
+  - rule:
+      id: KS-PHP-0021
+    metadata:
+      name: Laravel Debug Mode Enabled
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-215
+      owasp: A05:2021-Security Misconfiguration
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/215.html
+      tags:
+        - misconfig
+        - laravel
+    target:
+      languages:
+        - PHP
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: PHP
+      ast_node_types:
+        - statement
+        - assignment
+    condition:
+      symbol_triggers:
+        - APP_DEBUG
+      pattern: "(?i)APP_DEBUG\\s*=\\s*true"
+    evidence:
+      score_weights:
+        dangerous_sink: 30
+    output:
+      severity: MEDIUM
+      confidence: CONFIDENT
+      message: APP_DEBUG=true exposes full stack traces, database credentials, and secret keys on application errors.
+      remediation: Set APP_DEBUG=false in production environment configurations.
+
+  - rule:
+      id: KS-PHP-0022
+    metadata:
+      name: Laravel Mass Assignment Vulnerability
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-915
+      owasp: A08:2021-Software and Data Integrity Failures
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/915.html
+      tags:
+        - mass_assignment
+        - laravel
+    target:
+      languages:
+        - PHP
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: PHP
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - fill
+        - create
+        - update
+      pattern: "(?i)->(fill|create|update)\\s*\\(\\s*\\$request->(all|input)\\(\\)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 40
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Passing unvalidated $request->all() directly into Eloquent fill() or create() allows unauthorized field mutation.
+      remediation: Use FormRequest validation or $request->only([...]) / $request->validated() to restrict mass-assignable attributes.
+
+  - rule:
+      id: KS-PHP-0023
+    metadata:
+      name: Laravel Unescaped Blade Output XSS
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-79
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+      tags:
+        - xss
+        - blade
+        - laravel
+    target:
+      languages:
+        - PHP
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: PHP
+      ast_node_types:
+        - statement
+    condition:
+      symbol_triggers:
+        - raw_blade
+      pattern: "\\{\\!\\!\\s*\\$(?:request|user|input|GET|POST)[^!]*\\!\\!\\}"
+    evidence:
+      score_weights:
+        dangerous_sink: 40
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Using unescaped Blade tags {!! $var !!} bypasses HTML entity encoding, creating Cross-Site Scripting vulnerabilities.
+      remediation: Use standard Blade escaping syntax {{ $var }} unless raw HTML rendering is explicitly sanitized.

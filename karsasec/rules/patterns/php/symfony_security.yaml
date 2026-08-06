@@ -1,0 +1,80 @@
+rules:
+  - rule:
+      id: KS-PHP-0026
+    metadata:
+      name: Symfony Expression Language Injection
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-94
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/94.html
+      tags:
+        - rce
+        - symfony
+        - expression_language
+    target:
+      languages:
+        - PHP
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: PHP
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - ExpressionLanguage
+        - evaluate
+      pattern: "(?i)(?:ExpressionLanguage|->evaluate)\\s*\\([^)]*\\$(?:_GET|_POST|_REQUEST)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 50
+        user_source: 30
+    output:
+      severity: CRITICAL
+      confidence: CONFIDENT
+      message: Evaluating untrusted user expressions via Symfony ExpressionLanguage permits arbitrary code execution.
+      remediation: Restrict expression language input to static predefined configuration strings.
+
+  - rule:
+      id: KS-PHP-0027
+    metadata:
+      name: Symfony Twig Template Unescaped Raw Output SSTI
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-1336
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/1336.html
+      tags:
+        - ssti
+        - twig
+        - symfony
+    target:
+      languages:
+        - PHP
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: PHP
+      ast_node_types:
+        - statement
+    condition:
+      symbol_triggers:
+        - twig_raw
+      pattern: "(?i)\\{\\{\\s*\\$(?:request|GET|POST)[^}]*\\|\\s*raw\\s*\\}\\}"
+    evidence:
+      score_weights:
+        dangerous_sink: 40
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Applying the raw filter to request input in Twig templates allows XSS and template injection.
+      remediation: Remove the raw filter and rely on Twig auto-escaping or sanitize HTML content beforehand.

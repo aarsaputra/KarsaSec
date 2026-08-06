@@ -1,0 +1,122 @@
+rules:
+  - rule:
+      id: KS-PHP-0014
+    metadata:
+      name: PHP Phar Stream Deserialization
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-502
+      owasp: A08:2021-Software and Data Integrity Failures
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+      tags:
+        - deserialization
+        - phar
+        - rce
+        - php
+    target:
+      languages:
+        - PHP
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: PHP
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - file_exists
+        - is_file
+        - file_get_contents
+        - filesize
+      pattern: "(?i)(file_exists|is_file|file_get_contents|filesize|is_readable)\\s*\\([^)]*[\"']phar://"
+    evidence:
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: CRITICAL
+      confidence: CONFIDENT
+      message: Accessing phar:// URIs in filesystem functions triggers automatic metadata object deserialization.
+      remediation: Restrict protocol wrappers in filesystem calls and disable phar stream wrapper if unused.
+
+  - rule:
+      id: KS-PHP-0015
+    metadata:
+      name: PHP Zip Slip Archive Extraction
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-22
+      owasp: A01:2021-Broken Access Control
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+      tags:
+        - zip_slip
+        - path_traversal
+        - php
+    target:
+      languages:
+        - PHP
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: PHP
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - ZipArchive
+        - extractTo
+      pattern: "(?i)ZipArchive::extractTo|->extractTo\\s*\\("
+    evidence:
+      score_weights:
+        dangerous_sink: 40
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Extracting ZIP archives without validating individual file entry paths risks overwriting arbitrary system files.
+      remediation: Validate that extracted target paths remain inside the intended destination directory before writing files.
+
+  - rule:
+      id: KS-PHP-0016
+    metadata:
+      name: PHP Unrestricted File Upload
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-434
+      owasp: A04:2021-Insecure Design
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/434.html
+      tags:
+        - upload
+        - rce
+        - php
+    target:
+      languages:
+        - PHP
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: PHP
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - move_uploaded_file
+      pattern: "(?i)move_uploaded_file\\s*\\([^)]*\\$_FILES"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 40
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Moving uploaded files into public web root without strict extension and MIME validation can allow executable PHP web shell deployment.
+      remediation: Re-encode images, generate random file names, enforce extension allowlists, and store uploads outside document root.

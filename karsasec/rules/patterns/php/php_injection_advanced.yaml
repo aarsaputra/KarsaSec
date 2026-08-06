@@ -1,0 +1,175 @@
+rules:
+  - rule:
+      id: KS-PHP-0010
+    metadata:
+      name: PHP Command Injection Flaw
+      author: KarsaSec Team
+      version: "2.0"
+      cwe: CWE-78
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+      tags:
+        - cmdi
+        - rce
+        - php
+    target:
+      languages:
+        - PHP
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: PHP
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - exec
+        - shell_exec
+        - passthru
+        - system
+        - proc_open
+        - popen
+      pattern: "(?i)\\b(exec|shell_exec|passthru|system|proc_open|popen)\\s*\\([^)]*\\$_(?:GET|POST|REQUEST|COOKIE)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 50
+        user_source: 30
+    output:
+      severity: CRITICAL
+      confidence: CONFIDENT
+      message: Passing unsanitized user inputs into system execution functions (exec, shell_exec, passthru) enables arbitrary OS command execution.
+      remediation: Escape parameters with escapeshellarg() or escapeshellcmd(), or avoid invoking system shells.
+
+  - rule:
+      id: KS-PHP-0011
+    metadata:
+      name: PHP LDAP Injection
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-90
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/90.html
+      tags:
+        - ldap
+        - injection
+        - php
+    target:
+      languages:
+        - PHP
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: PHP
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - ldap_search
+        - ldap_bind
+        - ldap_list
+      pattern: "(?i)\\b(ldap_search|ldap_bind|ldap_list)\\s*\\([^)]*\\$_(?:GET|POST|REQUEST)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 40
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Constructing LDAP queries directly from request parameters allows attackers to alter LDAP filter logic.
+      remediation: Sanitize inputs using ldap_escape() before supplying arguments to ldap_search or ldap_bind.
+
+  - rule:
+      id: KS-PHP-0012
+    metadata:
+      name: PHP XPath Injection
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-643
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/643.html
+      tags:
+        - xpath
+        - injection
+        - php
+    target:
+      languages:
+        - PHP
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: PHP
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - DOMXPath
+        - SimpleXMLElement
+        - xpath
+      pattern: "(?i)(xpath|DOMXPath::query)\\s*\\([^)]*\\$_(?:GET|POST|REQUEST)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 40
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Untrusted user input in XPath expressions permits unauthorized extraction of XML document nodes.
+      remediation: Use parameterized XPath queries or strictly validate inputs against alphanumeric allowlists.
+
+  - rule:
+      id: KS-PHP-0013
+    metadata:
+      name: PHP NoSQL Injection
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-943
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/943.html
+      tags:
+        - nosql
+        - injection
+        - php
+    target:
+      languages:
+        - PHP
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: PHP
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - MongoDB
+        - find
+        - executeQuery
+      pattern: "(?i)(MongoDB\\\\Driver|->find\\(|->executeQuery\\()[^)]*\\$_(?:GET|POST|REQUEST)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 40
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Passing unvalidated array inputs into MongoDB queries can alter operator logic (e.g. $ne, $gt) leading to authentication bypass.
+      remediation: Cast request parameters to string or validate types prior to querying NoSQL databases.
