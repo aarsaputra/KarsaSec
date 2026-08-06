@@ -32,7 +32,7 @@ match:
 condition:
   symbol_triggers:
     - FROM
-  pattern: "(?i)(FROM\\s+[a-zA-Z0-9_\\-\\./]+:latest|FROM\\s+[a-zA-Z0-9_\\-\\./]+(?![:@]))"
+  pattern: '(?i)(FROM\s+[a-zA-Z0-9_/-]+:latest|FROM\s+[a-zA-Z0-9_/-]+(?:\s+AS|\s*$))'
 
 evidence:
   require: []

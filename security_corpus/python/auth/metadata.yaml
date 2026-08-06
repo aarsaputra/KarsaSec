@@ -1,0 +1,9 @@
+rules:
+  - rule_id: KS-PY-0018
+  - rule_id: KS-PY-0019
+  - rule_id: KS-PY-0020
+category: auth
+language: python
+cwe: CWE-798
+owasp: A07:2021-Identification and Authentication Failures
+description: Python authentication and session corpus test suite

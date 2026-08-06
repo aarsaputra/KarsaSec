@@ -1,0 +1,83 @@
+rules:
+  - rule:
+      id: KS-PY-0027
+    metadata:
+      name: Django CSRF Protection Exempt Decorator (@csrf_exempt)
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-352
+      owasp: A01:2021-Broken Access Control
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/352.html
+      tags:
+        - django
+        - csrf
+        - decorator
+        - python
+    target:
+      languages:
+        - Python
+      frameworks:
+        - Django
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - decorator
+        - function_definition
+    condition:
+      pattern: '(?i)@csrf_exempt'
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 40
+    output:
+      severity: MEDIUM
+      confidence: CONFIDENT
+      message: Disabling CSRF protection with @csrf_exempt exposes endpoint to Cross-Site Request Forgery.
+      remediation: Remove @csrf_exempt and use standard Django CSRF token verification.
+
+  - rule:
+      id: KS-PY-0028
+    metadata:
+      name: Django Disabled SSL Redirect (SECURE_SSL_REDIRECT = False)
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-319
+      owasp: A05:2021-Security Misconfiguration
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/319.html
+      tags:
+        - django
+        - ssl
+        - redirect
+        - python
+    target:
+      languages:
+        - Python
+      frameworks:
+        - Django
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - assignment
+    condition:
+      pattern: '(?i)SECURE_SSL_REDIRECT\s*=\s*False'
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 40
+    output:
+      severity: MEDIUM
+      confidence: CONFIDENT
+      message: SECURE_SSL_REDIRECT set to False allows HTTP cleartext connections in production.
+      remediation: Set SECURE_SSL_REDIRECT = True to force HTTPS redirection in production settings.

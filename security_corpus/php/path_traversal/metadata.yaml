@@ -1,0 +1,6 @@
+rule_id: KS-PHP-0003
+category: path_traversal
+language: php
+cwe: CWE-22
+owasp: A01:2021-Broken Access Control
+description: PHP Path Traversal corpus test suite

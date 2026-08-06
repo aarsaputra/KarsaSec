@@ -1,0 +1,85 @@
+rules:
+  - rule:
+      id: KS-PY-0025
+    metadata:
+      name: Insecure RSA Key Size (<2048 bits)
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-326
+      owasp: A02:2021-Cryptographic Failures
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/326.html
+      tags:
+        - rsa
+        - crypto
+        - key_size
+        - python
+    target:
+      languages:
+        - Python
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - rsa.generate_private_key
+        - RSA.generate
+      pattern: '(?i)(generate_private_key\s*\([^)]*key_size\s*=\s*(1024|512)|RSA\.generate\s*\(\s*(1024|512))'
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: RSA key size under 2048 bits is vulnerable to key factorization attacks.
+      remediation: Use RSA key sizes of 2048 or 4096 bits.
+
+  - rule:
+      id: KS-PY-0026
+    metadata:
+      name: Constant or Static Cryptographic IV / Nonce
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-329
+      owasp: A02:2021-Cryptographic Failures
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/329.html
+      tags:
+        - iv
+        - nonce
+        - crypto
+        - python
+    target:
+      languages:
+        - Python
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - assignment
+        - call
+    condition:
+      symbol_triggers:
+        - AES.new
+        - Cipher
+      pattern: '(?i)(iv|nonce)\s*=\s*b?[''"][0-9a-fA-F]{8,}[''"]'
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 40
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Hardcoded static IV or nonce reuses keystreams causing cipher breakage.
+      remediation: Generate a fresh cryptographically random IV (e.g. os.urandom(16)) for each encryption operation.

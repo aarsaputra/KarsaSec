@@ -1,0 +1,6 @@
+rule_id: KS-GO-0007
+category: ssrf
+language: go
+cwe: CWE-918
+owasp: A10:2021-Server-Side Request Forgery (SSRF)
+description: Go SSRF corpus test suite

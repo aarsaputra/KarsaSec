@@ -1,0 +1,134 @@
+rules:
+  - rule:
+      id: KS-PY-0018
+    metadata:
+      name: Hardcoded JWT Secret Key
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-798
+      owasp: A07:2021-Identification and Authentication Failures
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/798.html
+      tags:
+        - jwt
+        - secret
+        - auth
+        - python
+    target:
+      languages:
+        - Python
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - call
+        - assignment
+    condition:
+      symbol_triggers:
+        - jwt.encode
+        - jwt.decode
+      pattern: '(?i)(jwt\.encode\s*\([^)]*key\s*=\s*[''"][^''"]+[''"]|jwt\.decode\s*\([^)]*key\s*=\s*[''"][^''"]+[''"])'
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Hardcoded JWT secret key detected in code.
+      remediation: Use environment variables or a secret vault to supply JWT secret keys.
+
+  - rule:
+      id: KS-PY-0019
+    metadata:
+      name: Insecure Session Cookie Configuration (Missing Secure/HttpOnly/SameSite)
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-614
+      owasp: A05:2021-Security Misconfiguration
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/614.html
+      tags:
+        - cookie
+        - session
+        - flask
+        - django
+        - python
+    target:
+      languages:
+        - Python
+      frameworks:
+        - Flask
+        - Django
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - assignment
+        - call
+    condition:
+      symbol_triggers:
+        - SESSION_COOKIE_SECURE
+        - SESSION_COOKIE_HTTPONLY
+        - SESSION_COOKIE_SAMESITE
+        - set_cookie
+      pattern: '(?i)(SESSION_COOKIE_SECURE\s*=\s*False|SESSION_COOKIE_HTTPONLY\s*=\s*False|httponly\s*=\s*False|secure\s*=\s*False)'
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 40
+    output:
+      severity: MEDIUM
+      confidence: CONFIDENT
+      message: Session cookies configured without Secure or HttpOnly flags.
+      remediation: Set SESSION_COOKIE_SECURE = True and SESSION_COOKIE_HTTPONLY = True in production.
+
+  - rule:
+      id: KS-PY-0020
+    metadata:
+      name: Weak Password Hashing Algorithm (MD5/SHA1)
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-916
+      owasp: A02:2021-Cryptographic Failures
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/916.html
+      tags:
+        - password
+        - hash
+        - crypto
+        - python
+    target:
+      languages:
+        - Python
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - hashlib.md5
+        - hashlib.sha1
+      pattern: '(?i)(password|pass|pwd|token)\s*=\s*.*hashlib\.(md5|sha1)\s*\('
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Fast cryptographic hash function (MD5/SHA1) used for password hashing.
+      remediation: Use slow salted password hashing algorithms like bcrypt, Argon2id, or PBKDF2.

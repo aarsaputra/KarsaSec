@@ -1,0 +1,88 @@
+rules:
+  - rule:
+      id: KS-PY-0023
+    metadata:
+      name: Disabled SSL/TLS Certificate Verification (verify=False)
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-295
+      owasp: A07:2021-Identification and Authentication Failures
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/295.html
+      tags:
+        - ssl
+        - tls
+        - requests
+        - networking
+        - python
+    target:
+      languages:
+        - Python
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - requests.get
+        - requests.post
+        - requests.request
+        - ssl._create_unverified_context
+      pattern: '(?i)(verify\s*=\s*False|_create_unverified_context\s*\()'
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Disabling TLS/SSL certificate verification permits Man-in-the-Middle (MitM) attacks.
+      remediation: Enable SSL verification (verify=True) and supply valid CA certificate bundles.
+
+  - rule:
+      id: KS-PY-0024
+    metadata:
+      name: Cleartext Network Protocol Usage (FTP / Telnet)
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-319
+      owasp: A02:2021-Cryptographic Failures
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/319.html
+      tags:
+        - telnet
+        - ftp
+        - cleartext
+        - networking
+        - python
+    target:
+      languages:
+        - Python
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - ftplib.FTP
+        - telnetlib.Telnet
+      pattern: '(?i)(ftplib\.FTP\s*\(|telnetlib\.Telnet\s*\()'
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 40
+    output:
+      severity: MEDIUM
+      confidence: CONFIDENT
+      message: Cleartext protocols (FTP / Telnet) transmit credentials and data unencrypted.
+      remediation: Upgrade to encrypted protocols such as FTPS, SFTP, or SSH (paramiko).

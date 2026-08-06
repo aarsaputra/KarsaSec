@@ -1,4 +1,6 @@
-rule_id: KS-PY-0005
+rules:
+  - rule_id: KS-PY-0005
+  - rule_id: KS-OWASP-0005
 category: framework
 language: python
 cwe: CWE-798

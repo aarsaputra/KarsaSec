@@ -1,0 +1,82 @@
+rules:
+  - rule:
+      id: KS-PY-0021
+    metadata:
+      name: Insecure File Permissions (chmod 777)
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-732
+      owasp: A01:2021-Broken Access Control
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/732.html
+      tags:
+        - chmod
+        - permissions
+        - filesystem
+        - python
+    target:
+      languages:
+        - Python
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - os.chmod
+      pattern: '(?i)os\.chmod\s*\([^)]*(0o777|0777|stat\.S_IRWXU\s*\|\s*stat\.S_IRWXG\s*\|\s*stat\.S_IRWXO)'
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 40
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: World-writable and readable file permissions (chmod 777) assigned.
+      remediation: Restrict file permissions to minimum required access (e.g. 0o600 or 0o700).
+
+  - rule:
+      id: KS-PY-0022
+    metadata:
+      name: Unsafe Symlink Following / Symbolic Link Creation
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-59
+      owasp: A01:2021-Broken Access Control
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/59.html
+      tags:
+        - symlink
+        - filesystem
+        - python
+    target:
+      languages:
+        - Python
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - os.symlink
+      pattern: '(?i)os\.symlink\s*\([^)]*request\.'
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 40
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Creating symbolic links with user-controlled target paths allows symlink bypass attacks.
+      remediation: Resolve canonical paths with os.path.realpath() and validate target directory boundary.
