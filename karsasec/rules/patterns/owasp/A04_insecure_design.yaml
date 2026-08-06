@@ -2,6 +2,8 @@ rule:
   id: KS-OWASP-0004
 
 metadata:
+  references:
+    - https://owasp.org/Top10/
   name: OWASP A04 - Insecure Design (Multi-language)
   author: KarsaSec Team
   version: "1.0"

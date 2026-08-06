@@ -2,6 +2,8 @@ rule:
   id: KS-OWASP-0009
 
 metadata:
+  references:
+    - https://owasp.org/Top10/
   name: OWASP A09 - Security Logging and Monitoring Failures
   author: KarsaSec Team
   version: "1.0"

@@ -2,6 +2,8 @@ rule:
   id: KS-OWASP-0002
 
 metadata:
+  references:
+    - https://owasp.org/Top10/
   name: OWASP A02 - Cryptographic Failures (Multi-language)
   author: KarsaSec Team
   version: "1.0"

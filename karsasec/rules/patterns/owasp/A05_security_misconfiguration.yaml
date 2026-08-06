@@ -2,6 +2,8 @@ rule:
   id: KS-OWASP-0005
 
 metadata:
+  references:
+    - https://owasp.org/Top10/
   name: OWASP A05 - Security Misconfiguration (Multi-language)
   author: KarsaSec Team
   version: "1.0"

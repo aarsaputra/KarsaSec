@@ -2,6 +2,8 @@ rule:
   id: KS-PHP-CRYPTO-0001
 
 metadata:
+  references:
+    - https://owasp.org/Top10/
   name: PHP Weak Cryptography
   author: KarsaSec Team
   version: "1.0"

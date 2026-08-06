@@ -2,6 +2,8 @@ rule:
   id: KS-OWASP-0001
 
 metadata:
+  references:
+    - https://owasp.org/Top10/
   name: OWASP A01 - Broken Access Control (Multi-language)
   author: KarsaSec Team
   version: "1.0"

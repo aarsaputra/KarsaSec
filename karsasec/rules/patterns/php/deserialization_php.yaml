@@ -2,6 +2,8 @@ rule:
   id: KS-PHP-DESER-0001
 
 metadata:
+  references:
+    - https://owasp.org/Top10/
   name: PHP Insecure Deserialization
   author: KarsaSec Team
   version: "1.0"

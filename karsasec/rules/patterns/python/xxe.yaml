@@ -1,6 +1,6 @@
 rules:
   - rule:
-      id: KS-PY-0011
+      id: KS-PY-0030
     metadata:
       name: Python XML External Entity (XXE) Processing
       author: KarsaSec Team

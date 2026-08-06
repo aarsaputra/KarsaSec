@@ -2,6 +2,8 @@ rule:
   id: KS-OWASP-0003
 
 metadata:
+  references:
+    - https://owasp.org/Top10/
   name: OWASP A03 - Injection (Multi-language)
   author: KarsaSec Team
   version: "1.0"

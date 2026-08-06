@@ -1,5 +1,5 @@
 rule:
-  id: KS-JS-0010
+  id: KS-JS-0007
 
 metadata:
   name: JavaScript Prototype Pollution

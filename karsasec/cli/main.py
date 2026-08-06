@@ -8,16 +8,19 @@ from rich.panel import Panel
 from rich.table import Table
 
 from karsasec import __version__
+from karsasec.cli.commands.rules import rules_app
 from karsasec.cli.commands.scan import execute_scan_command
 from karsasec.config import settings
 from karsasec.utils.logging import console, logger
 
 app = typer.Typer(
     name="karsasec",
-    help="🛡️ Autonomous Application Security Operating System (SecOS)",
+    help="Autonomous Application Security Operating System (SecOS)",
     add_completion=False,
     no_args_is_help=True,
 )
+
+app.add_typer(rules_app, name="rules")
 
 def version_callback(value: bool) -> None:
     """Callback for printing the CLI version."""

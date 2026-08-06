@@ -2,6 +2,8 @@ rule:
   id: KS-OWASP-0010
 
 metadata:
+  references:
+    - https://owasp.org/Top10/
   name: OWASP A10 - Server-Side Request Forgery (SSRF)
   author: KarsaSec Team
   version: "1.0"

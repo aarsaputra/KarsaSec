@@ -2,6 +2,8 @@ rule:
   id: KS-OWASP-0006
 
 metadata:
+  references:
+    - https://owasp.org/Top10/
   name: OWASP A06 - Vulnerable and Outdated Components (Multi-language)
   author: KarsaSec Team
   version: "1.0"

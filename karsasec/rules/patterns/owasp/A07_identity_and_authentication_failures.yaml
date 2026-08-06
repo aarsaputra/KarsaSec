@@ -2,6 +2,8 @@ rule:
   id: KS-OWASP-0007
 
 metadata:
+  references:
+    - https://owasp.org/Top10/
   name: OWASP A07 - Identification and Authentication Failures (Multi-language)
   author: KarsaSec Team
   version: "1.0"
