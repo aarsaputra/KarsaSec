@@ -1,34 +1,67 @@
-# KarsaSec v1.0 Roadmap — Compiler Pipeline & Code Property Graph (CPG) SAST Platform
+# KarsaSec v1.0 Roadmap — Decoupled Compiler Pipeline & Code Property Graph (CPG) Platform
 
 Platform: KarsaSec Secure Code Analysis Platform (SecOS)
-Versi Roadmap: 2.1.0 (Compiler Pipeline & CPG Enterprise Focus) | Status: Milestone 2 Active
-Visi Utama: "Evolusi KarsaSec menjadi Compiler Pipeline & Code Property Graph (CPG) SAST Engine berskala enterprise dengan tahapan pipeline linier deterministik dan multi-tenant SaaS readiness."
+Versi Roadmap: 2.2.0 (Pass Manager, Universal IR, CFG, SSA & CPG Query Engine Focus) | Status: Milestone 2 Active
+Visi Utama: "Evolusi KarsaSec menjadi Compiler Pipeline & CPG SAST Engine berskala enterprise dengan Pass Manager, Universal IR, CFG, Dominance Sanitizer Verifier, SSA Builder, dan CPG Query Engine."
 
 ---
 
 ## Linear Compiler Pipeline Architecture
 
 ```
-Source Code → Language Detection → Tree-sitter Parser → AST → Symbol Resolution → CFG → Call Graph → Dataflow → Taint Analysis → Code Property Graph (CPG) → Rule Engine → Finding Engine → SARIF / HTML / JSON → AI Advisory
+Source Code
+    ↓
+Parser Pass (Tree-sitter)
+    ↓
+Universal IR Pass (IRFunction/IRStatement/IRExpression)
+    ↓
+Symbol Pass (SymbolGraph)
+    ↓
+CallGraph Pass (CallGraph)
+    ↓
+CFG Pass (Control Flow Graph & Validator)
+    ↓
+Dominator Pass (Immediate Dominator & Sanitizer Dominance)
+    ↓
+SSA Pass (Static Single Assignment & Phi Nodes)
+    ↓
+Dataflow Pass (Def-Use / Use-Def Chains)
+    ↓
+Taint Analysis Pass (Intra & Interprocedural Taint)
+    ↓
+Code Property Graph Pass (CPG Fusion)
+    ↓
+Query Engine (CPG Query Matcher)
+    ↓
+SARIF / HTML / JSON Reports → AI Security Advisory
 ```
 
 ---
 
 ## Strategic Phase & Sprint Schedule
 
-| Fase | Sprint | Fokus Utama | Output & Artifact Utama |
+| Sprint | Fokus Utama | Priority Level | Deliverable & Artifact Utama |
 |---|---|---|---|
-| **Fase 1** | **Sprint E1** | **Call Graph Engine** | `CallNode`, `CallEdge`, `CallGraphBuilder` (`analysis.callgraph.json`) (**COMPLETED**) |
-| | **Sprint E2** | **Symbol Resolution Engine** | `SymbolTable`, `ScopeResolver`, `ImportResolver`, `QualifiedNameResolver` (`analysis.symbol.json`) (**ACTIVE NEXT**) |
-| | **Sprint E3** | **CFG Builder Engine** | Basic Block Builder, Control Flow Edges for conditionals/loops/returns (`analysis.cfg.json`) |
-| | **Sprint E4** | **Dominator Analysis** | Dominator Tree, Post Dominator, Reachability & Immediate Dominator (`analysis.dominator.json`) |
-| **Fase 2** | **Sprint E5** | **Dataflow Analysis** | Def-Use / Use-Def chains, Constant & Copy propagation (`analysis.dataflow.json`) |
-| | **Sprint E6** | **Taint Engine** | Intraprocedural Taint propagation tracking (`analysis.taint.json`) |
-| | **Sprint E7** | **Interprocedural Analysis** | Cross-function parameter and return value taint tracking (`analysis.interprocedural_taint.json`) |
-| **Fase 3** | **Sprint E8** | **Framework Semantic Model** | Framework routing models (Laravel, Django, Flask, FastAPI, Express, Next.js, Gin, Actix, Axum, Spring, ASP.NET) |
-| | **Sprint E9** | **Dependency Analyzer** | Lockfile parsing (`package.json`, `composer.json`, `Cargo.toml`, `go.mod`, `pom.xml`, `requirements.txt`) |
-| | **Sprint E10**| **Manifest Intelligence** | Automatic framework rule auto-activation based on project manifests |
-| **Fase 4** | **Sprint E11**| **Advanced Rule Engine** | Stateful rules, multi-file rules, cross-file & cross-language rules |
-| | **Sprint E12**| **Code Property Graph (CPG)** | Unified graph fusion of AST + CFG + CallGraph + Dataflow + Symbol Graph (`cpg.json`) |
-| **Fase 5** | **Enterprise**| **Enterprise Capability** | Incremental scan, Parallel analysis, Artifact cache, Baseline management, Full SARIF v2.1.0, CI/CD, SaaS API |
-| **Fase 6** | **AI Layer** | **AI Security Copilot** | Post-processing finding explanation, risk prioritization, fix draft, PR review assistant |
+| **E1** | **Call Graph Engine** | Completed | `CallNode`, `CallEdge`, `CallGraphBuilder` (`analysis.callgraph.json`) (**COMPLETED**) |
+| **E2** | **Symbol Resolution Engine** | Completed | `SymbolTable`, `ScopeResolver`, `ImportResolver` (`analysis.symbol.json`) (**COMPLETED**) |
+| **E2.5**| **Pass Manager & Artifact Store**| Sangat Tinggi | `PassManager`, `ArtifactStore`, `AnalysisPass` (`karsasec/core/pipeline/`) (**ACTIVE NEXT**) |
+| **E2.6**| **Universal IR Builder** | Sangat Tinggi | Universal Language-Agnostic IR (`karsasec/ir/`) |
+| **E3** | **CFG Builder & Validator** | Sangat Tinggi | BasicBlock, CFGEdges, Reachability Validator (`analysis.cfg.json`) |
+| **E4** | **Dominator Analysis** | Sangat Tinggi | Dominance Frontier, Sanitizer Dominance Verifier (`analysis.dominator.json`) |
+| **E4.5**| **SSA Builder Engine** | Sangat Tinggi | Variable Renaming, Phi Nodes (`analysis.ssa.json`) |
+| **E5** | **Dataflow Analysis** | Sangat Tinggi | Def-Use / Use-Def chains, Constant & Copy propagation (`analysis.dataflow.json`) |
+| **E6** | **Intraprocedural Taint Engine**| Tinggi | Local scope taint propagation (`analysis.taint.json`) |
+| **E7** | **Interprocedural Taint Engine**| Tinggi | Cross-function parameter and return value tracking (`analysis.interprocedural_taint.json`) |
+| **E8** | **Framework Semantic Registry**| Tinggi | Routing & framework model semantics (Laravel, Django, Flask, Express, Next.js, Gin, Spring, ASP.NET) |
+| **E9** | **Dependency & Manifest Intelligence**| Menengah | Lockfile parsing (`package.json`, `composer.json`, `Cargo.toml`, `go.mod`, `pom.xml`, `requirements.txt`) |
+| **E10**| **Framework Auto Resolver** | Menengah | Automatic rule pack auto-activation based on project manifests |
+| **E11**| **Rule Engine v2 (Semantic Rules)**| Tinggi | Stateful rules, multi-file rules, cross-file & cross-language rules |
+| **E12**| **Code Property Graph (CPG)** | Sangat Tinggi | 3-Layer Graph Fusion: AST Layer + CFG Layer + Semantic Layer (`cpg.json`) |
+
+---
+
+## Milestone 3 Preview: CPG Query Engine
+
+Target pasca-E12 adalah **KarsaSec CPG Query Engine**:
+- Menulis rule keamanan kompleks sebagai query deklaratif di atas CPG (serupa CodeQL tetapi dioptimalkan untuk KarsaSec).
+- Mengintegrasikan rule multi-file dan cross-language dalam satu CPG query string.
