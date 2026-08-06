@@ -82,7 +82,7 @@ def test_sanitizer_dominance_verifier() -> None:
     verifier = SanitizerDominanceVerifier(dom)
 
     # Find statement node containing sanitizer and sink
-    stmt_node_id = [nid for nid, n in cfg.nodes.items() if n.node_type.value == "STATEMENT" and "Statement Block" in n.label][0]
+    stmt_node_id = [nid for nid, n in cfg.nodes.items() if n.node_type.value == "STATEMENT"][0]
 
     # Sanitizer block dominates sink execution -> SAFE
     assert verifier.is_sanitized(stmt_node_id, cfg.exit_node_id) is True

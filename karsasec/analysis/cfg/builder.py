@@ -74,12 +74,20 @@ class CFGBuilder:
                     idx += 1
 
                 stmt_id = f"{ir_func.id}::stmt::{stmt.line_number}::{idx}"
+                labels = []
+                for s in block_stmts:
+                    if isinstance(s, IRAssignment):
+                        labels.append(f"{s.target} = {s.value_expression}")
+                    elif isinstance(s, IRCall):
+                        args_str = ", ".join(s.arguments) if hasattr(s, "arguments") and s.arguments else ""
+                        labels.append(f"{s.callee_name}({args_str})")
+
                 stmt_node = CFGNode(
                     id=stmt_id,
                     node_type=CFGNodeType.STATEMENT,
                     line_number=stmt.line_number,
                     statements=block_stmts,
-                    label=f"Statement Block ({len(block_stmts)} instrs)",
+                    label="; ".join(labels) if labels else f"Statement Block ({len(block_stmts)} instrs)",
                 )
                 cfg.add_node(stmt_node)
                 cfg.add_edge(prev_id, stmt_id, CFGEdgeType.NORMAL)
