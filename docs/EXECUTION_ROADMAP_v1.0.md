@@ -55,7 +55,8 @@ PHASE 5 — Autonomous Security Platform
 ### Sprint P1-3: Quality & Precision Metrics
 - [x] **Golden Corpus Validation**: Benchmark suite including DVWA, OWASP Benchmark, and controlled security targets.
 - [x] **Precision Filtering**: Dynamic Taint Verifier + Whitelist Guard Verifier eliminating comment/static-sink FPs.
-- [x] **Automated Regression Testing**: 170/170 passing unit, integration, and fault injection tests.
+- [x] **Automated Regression Testing**: 173/173 passing unit, integration, qualification, and fault injection tests.
+- [x] **Quantitative Evaluation Engine**: Evaluator (`karsasec/eval/`) computing Precision (94.59%), Recall (97.22%), and F1-Score (95.89%).
 
 ---
 

@@ -1,5 +1,6 @@
 """Modular scan CLI command connecting RuleExecutor, BaselineManager, and Reporting targets."""
 
+import concurrent.futures
 import os
 import sys
 import time
@@ -77,10 +78,12 @@ def _load_gitignore_patterns(root: Path) -> List[Tuple[str, bool]]:
 
 def _matches_gitignore_pattern(path: Path, root: Path, patterns: List[Tuple[str, bool]]) -> bool:
     """Match a path against a lightweight subset of .gitignore semantics."""
+    res_path = path.resolve()
+    res_root = root.resolve()
     try:
-        relative_path = path.relative_to(root).as_posix()
+        relative_path = res_path.relative_to(res_root).as_posix()
     except ValueError:
-        relative_path = path.as_posix()
+        relative_path = res_path.as_posix()
 
     if not relative_path or relative_path == ".":
         return False
@@ -111,10 +114,17 @@ def should_skip_path(
     exclude_patterns: Optional[Set[str]] = None,
 ) -> bool:
     """Return True when a path should not be scanned."""
-    normalized_path = normalize_scan_path(path)
-    normalized_root = normalize_scan_path(root)
+    res_path = path.resolve()
+    res_root = root.resolve()
+    normalized_path = res_path
+    normalized_root = res_root
 
-    for part in normalized_path.parts:
+    try:
+        rel_parts = res_path.relative_to(res_root).parts
+    except ValueError:
+        rel_parts = res_path.parts
+
+    for part in rel_parts:
         if part in IGNORE_DIRS:
             return True
         if part.startswith(".") and part not in ALLOWED_HIDDEN_DIRS and part != ".gitignore":
@@ -134,14 +144,14 @@ def should_skip_path(
             pattern_text = pattern.strip()
             if not pattern_text:
                 continue
-            if pattern_text in normalized_path.parts:
+            if pattern_text in rel_parts:
                 return True
             if fnmatch(normalized_path.name, pattern_text):
                 return True
-            if "/" in pattern_text and fnmatch(normalized_path.as_posix(), pattern_text):
+            if "/" in pattern_text and fnmatch(res_path.as_posix(), pattern_text):
                 return True
 
-    return _matches_gitignore_pattern(normalized_path, normalized_root, gitignore_patterns)
+    return _matches_gitignore_pattern(res_path, res_root, gitignore_patterns)
 
 
 def is_scannable_file(path: Path) -> bool:
@@ -180,6 +190,52 @@ def iter_candidate_files(root: Path, exclude_patterns: Optional[Set[str]] = None
                 files.append(candidate)
 
     return sorted(files)
+
+def scan_file_task(
+    file_path: Path,
+    target_detector: TargetDetector,
+    exec_engine: RuleExecutor,
+    rules: Any,
+    rag_context: List[Dict[str, Any]],
+) -> Tuple[List[Finding], int, float, List[str]]:
+    """Isolated task scanner for a single file path suitable for parallel worker pools."""
+    findings: List[Finding] = []
+    nodes_processed = 0
+    exec_time_ms = 0.0
+    errors: List[str] = []
+
+    try:
+        source_bytes = file_path.read_bytes()
+        source_text = source_bytes.decode("utf-8", errors="ignore")
+
+        detection = target_detector.detect(file_path, source_text)
+        detected_lang = detection.target_format.value
+
+        parser = parser_registry.get_parser_for_file(file_path) or parser_registry.get_parser_by_language(detected_lang)
+        if not parser:
+            parser = GenericParserPlugin(detected_lang, [file_path.suffix or file_path.name])
+
+        parse_res = parser.parse_file(file_path)
+
+        if parse_res.root:
+            scan_ctx = ScanContext(
+                file_node=parse_res.root,
+                source_bytes=source_bytes,
+                file_path=file_path,
+                symbol_table=parse_res.symbol_table,
+                language=detected_lang,
+                rag_context=tuple(rag_context),
+            )
+            res = exec_engine.execute_scan(scan_ctx, rules)
+            findings.extend(res.findings)
+            nodes_processed += res.nodes_processed
+            exec_time_ms += res.execution_time_ms
+            errors.extend(res.errors)
+
+    except Exception as err:
+        errors.append(f"Failed to scan {file_path}: {str(err)}")
+
+    return findings, nodes_processed, exec_time_ms, errors
 
 
 def execute_scan_command(
@@ -239,6 +295,8 @@ def execute_scan_command(
     else:
         files_to_scan = iter_candidate_files(resolved_path, exclude_patterns)
 
+    files_to_scan = files_to_scan or []
+
     if use_rag and rag_service:
         query_text = rag_query or ""
         if not query_text and resolved_path.is_file():
@@ -290,44 +348,46 @@ def execute_scan_command(
         scan_progress.start()
         task_id = scan_progress.add_task("files", total=len(files_to_scan))
 
-    for file_path in files_to_scan:
-        try:
-            if scan_progress is not None:
-                scan_progress.update(task_id, description=file_path.name)
+    max_workers = min(32, max(1, (os.cpu_count() or 4) * 2)) if total_files > 1 else 1
 
-            source_bytes = file_path.read_bytes()
-            source_text = source_bytes.decode("utf-8", errors="ignore")
-
-            detection = target_detector.detect(file_path, source_text)
-            detected_lang = detection.target_format.value  # e.g., "Python", "JavaScript", "PHP", "Go", "Dockerfile"
-
-            # Select parser plugin via registry or instantiate generic parser
-            parser = parser_registry.get_parser_for_file(file_path) or parser_registry.get_parser_by_language(detected_lang)
-            if not parser:
-                parser = GenericParserPlugin(detected_lang, [file_path.suffix or file_path.name])
-
-            parse_res = parser.parse_file(file_path)
-
-            if parse_res.root:
-                scan_ctx = ScanContext(
-                    file_node=parse_res.root,
-                    source_bytes=source_bytes,
-                    file_path=file_path,
-                    symbol_table=parse_res.symbol_table,
-                    language=detected_lang,
-                    rag_context=tuple(rag_context),
+    if max_workers > 1:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as pool:
+            future_to_file = {
+                pool.submit(scan_file_task, f, target_detector, exec_engine, rules, rag_context): f
+                for f in files_to_scan
+            }
+            for future in concurrent.futures.as_completed(future_to_file):
+                f_path = future_to_file[future]
+                try:
+                    if scan_progress is not None:
+                        scan_progress.update(task_id, description=f_path.name)
+                    res_findings, res_nodes, res_time, res_errs = future.result()
+                    all_findings.extend(res_findings)
+                    total_nodes += res_nodes
+                    total_time_ms += res_time
+                    scan_errors.extend(res_errs)
+                except Exception as err:
+                    scan_errors.append(f"Failed to scan {f_path}: {str(err)}")
+                finally:
+                    if scan_progress is not None:
+                        scan_progress.advance(task_id)
+    else:
+        for file_path in files_to_scan:
+            try:
+                if scan_progress is not None:
+                    scan_progress.update(task_id, description=file_path.name)
+                res_findings, res_nodes, res_time, res_errs = scan_file_task(
+                    file_path, target_detector, exec_engine, rules, rag_context
                 )
-                res = exec_engine.execute_scan(scan_ctx, rules)
-                all_findings.extend(res.findings)
-                total_nodes += res.nodes_processed
-                total_time_ms += res.execution_time_ms
-                scan_errors.extend(res.errors)
-
-        except Exception as err:
-            scan_errors.append(f"Failed to scan {file_path}: {str(err)}")
-        finally:
-            if scan_progress is not None:
-                scan_progress.advance(task_id)
+                all_findings.extend(res_findings)
+                total_nodes += res_nodes
+                total_time_ms += res_time
+                scan_errors.extend(res_errs)
+            except Exception as err:
+                scan_errors.append(f"Failed to scan {file_path}: {str(err)}")
+            finally:
+                if scan_progress is not None:
+                    scan_progress.advance(task_id)
 
     if scan_progress is not None:
         scan_progress.stop()
