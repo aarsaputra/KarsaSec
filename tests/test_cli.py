@@ -5,6 +5,7 @@ from pathlib import Path
 from typer.testing import CliRunner
 from karsasec import __version__
 from karsasec.cli import app
+from karsasec.cli.commands.scan import execute_scan_command
 
 runner = CliRunner()
 
@@ -128,6 +129,61 @@ def test_cli_scan_with_context_search_alias(tmp_path: Path) -> None:
         set(item) >= {"document_id", "score", "source_path", "text"}
         for item in report["rag_context"]
     )
+
+
+def test_scan_respects_gitignore_and_generated_file_exclusion(tmp_path: Path, capsys) -> None:
+    """Scan should skip paths ignored by .gitignore and generated files by default."""
+    repo_root = tmp_path / "repo"
+    repo_root.mkdir()
+    (repo_root / ".gitignore").write_text("vendor/\nnode_modules/\n*.generated.py\n", encoding="utf-8")
+
+    (repo_root / "app.py").write_text("print('ok')\n", encoding="utf-8")
+    (repo_root / "vendor").mkdir()
+    (repo_root / "vendor" / "secret.py").write_text("print('skip')\n", encoding="utf-8")
+    (repo_root / "node_modules").mkdir()
+    (repo_root / "node_modules" / "pkg.js").write_text("console.log('skip')\n", encoding="utf-8")
+    (repo_root / "generated.generated.py").write_text("print('skip')\n", encoding="utf-8")
+
+    exit_code = execute_scan_command(repo_root, format_type="json", no_color=True)
+    captured = capsys.readouterr()
+
+    assert exit_code in (0, 1)
+    assert "\"files_scanned\": 1" in captured.out
+
+
+def test_cli_config() -> None:
+    """Test karsasec config command output."""
+    result = runner.invoke(app, ["config"])
+    assert result.exit_code == 0
+    assert "default_llm_provider" in result.stdout
+
+
+def test_scan_respects_yaml_exclude_config(tmp_path: Path, capsys) -> None:
+    """Scan should honor exclude rules from a YAML config file."""
+    repo_root = tmp_path / "repo"
+    repo_root.mkdir()
+    (repo_root / "karsasec.yaml").write_text(
+        "scan:\n  exclude:\n    - vendor\n",
+        encoding="utf-8",
+    )
+    (repo_root / "app.py").write_text("print('ok')\n", encoding="utf-8")
+    (repo_root / "vendor").mkdir()
+    (repo_root / "vendor" / "secret.py").write_text("print('skip')\n", encoding="utf-8")
+
+    exit_code = execute_scan_command(repo_root, format_type="json", no_color=True)
+    captured = capsys.readouterr()
+
+    assert exit_code in (0, 1)
+    assert '"files_scanned": 1' in captured.out
+
+
+def test_cli_init_creates_config_file(tmp_path: Path) -> None:
+    """Test karsasec init command writes a default configuration file."""
+    config_path = tmp_path / "karsasec.yaml"
+    result = runner.invoke(app, ["init", str(config_path)])
+    assert result.exit_code == 0
+    assert config_path.exists()
+    assert "scan:" in config_path.read_text(encoding="utf-8")
 
 
 def test_cli_review() -> None:

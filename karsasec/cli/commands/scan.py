@@ -1,14 +1,20 @@
 """Modular scan CLI command connecting RuleExecutor, BaselineManager, and Reporting targets."""
 
+import os
 import sys
+import time
 import uuid
 from dataclasses import replace
 from datetime import datetime, timezone
+from fnmatch import fnmatch
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+from rich.progress import BarColumn, Progress, TextColumn, TimeElapsedColumn
 
 from rich.panel import Panel
 
+from karsasec.config import get_scan_exclusions, load_project_config
 from karsasec.core.baseline import baseline_manager
 from karsasec.core.container import container
 from karsasec.core.execution import RuleExecutor, ScanContext, rule_executor
@@ -30,7 +36,9 @@ from karsasec.rules.loader import YAMLRuleLoader
 from karsasec.rules.patterns import get_default_rules_directory
 from karsasec.utils.logging import console
 
-IGNORE_DIRS = {".git", ".venv", "venv", ".pytest_cache", "__pycache__", "build", "dist", ".gemini", "node_modules"}
+IGNORE_DIRS = {".git", ".hg", ".svn", ".venv", "venv", ".pytest_cache", "__pycache__", "build", "dist", ".gemini", "node_modules", "vendor"}
+ALLOWED_HIDDEN_DIRS = {".github", ".vscode", ".devcontainer"}
+DEFAULT_IGNORED_FILES = {"package-lock.json", "yarn.lock", "pnpm-lock.yaml", "poetry.lock", "Cargo.lock"}
 
 SUPPORTED_EXTENSIONS = {
     ".py", ".pyi", ".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs",
@@ -39,14 +47,139 @@ SUPPORTED_EXTENSIONS = {
 SUPPORTED_FILENAMES = {"dockerfile", "containerfile"}
 
 
+def normalize_scan_path(path: Path) -> Path:
+    """Return a normalized path that is safe to traverse across platforms."""
+    return Path(os.path.normpath(str(path))).expanduser()
+
+
+def _load_gitignore_patterns(root: Path) -> List[Tuple[str, bool]]:
+    """Load simple .gitignore-style patterns from the project root."""
+    patterns: List[Tuple[str, bool]] = []
+    if not root.exists():
+        return patterns
+
+    for gitignore in sorted(root.rglob(".gitignore")):
+        if not gitignore.is_file():
+            continue
+        try:
+            for raw_line in gitignore.read_text(encoding="utf-8", errors="ignore").splitlines():
+                line = raw_line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                is_negation = line.startswith("!")
+                if is_negation:
+                    line = line[1:]
+                patterns.append((line.rstrip("/"), is_negation))
+        except OSError:
+            continue
+    return patterns
+
+
+def _matches_gitignore_pattern(path: Path, root: Path, patterns: List[Tuple[str, bool]]) -> bool:
+    """Match a path against a lightweight subset of .gitignore semantics."""
+    try:
+        relative_path = path.relative_to(root).as_posix()
+    except ValueError:
+        relative_path = path.as_posix()
+
+    if not relative_path or relative_path == ".":
+        return False
+
+    normalized_parts = [part for part in relative_path.split("/") if part]
+    basename = normalized_parts[-1] if normalized_parts else ""
+    for pattern, is_negation in patterns:
+        if not pattern:
+            continue
+        if pattern.endswith("/"):
+            pattern = pattern.rstrip("/")
+        if "/" in pattern:
+            match_value = relative_path
+            if pattern.startswith("**/"):
+                pattern = pattern[3:]
+            if fnmatch(relative_path, pattern):
+                return not is_negation
+        else:
+            if fnmatch(basename, pattern) or any(fnmatch(part, pattern) for part in normalized_parts):
+                return not is_negation
+    return False
+
+
+def should_skip_path(
+    path: Path,
+    root: Path,
+    gitignore_patterns: List[Tuple[str, bool]],
+    exclude_patterns: Optional[Set[str]] = None,
+) -> bool:
+    """Return True when a path should not be scanned."""
+    normalized_path = normalize_scan_path(path)
+    normalized_root = normalize_scan_path(root)
+
+    for part in normalized_path.parts:
+        if part in IGNORE_DIRS:
+            return True
+        if part.startswith(".") and part not in ALLOWED_HIDDEN_DIRS and part != ".gitignore":
+            return True
+
+    if normalized_path.name.lower() in DEFAULT_IGNORED_FILES or normalized_path.name.lower() in {"karsasec.yaml", "karsasec.yml"}:
+        return True
+
+    if normalized_path.suffix.lower() == ".pyc":
+        return True
+
+    if normalized_path.name.lower().endswith(".generated.py"):
+        return True
+
+    if exclude_patterns:
+        for pattern in exclude_patterns:
+            pattern_text = pattern.strip()
+            if not pattern_text:
+                continue
+            if pattern_text in normalized_path.parts:
+                return True
+            if fnmatch(normalized_path.name, pattern_text):
+                return True
+            if "/" in pattern_text and fnmatch(normalized_path.as_posix(), pattern_text):
+                return True
+
+    return _matches_gitignore_pattern(normalized_path, normalized_root, gitignore_patterns)
+
+
 def is_scannable_file(path: Path) -> bool:
     """Returns True if file path matches supported source/config extensions and is not ignored."""
-    if any(part in IGNORE_DIRS or part.startswith(".") for part in path.parts):
-        return False
     name_lower = path.name.lower()
     if name_lower in SUPPORTED_FILENAMES or name_lower.startswith("dockerfile."):
         return True
     return path.suffix.lower() in SUPPORTED_EXTENSIONS
+
+
+def iter_candidate_files(root: Path, exclude_patterns: Optional[Set[str]] = None) -> List[Path]:
+    """Collect candidate files while respecting ignore rules and common production exclusions."""
+    normalized_root = normalize_scan_path(root)
+    gitignore_patterns = _load_gitignore_patterns(normalized_root)
+    files: List[Path] = []
+    effective_excludes = exclude_patterns or set()
+
+    if not normalized_root.exists():
+        return files
+
+    for dirpath, dirnames, filenames in os.walk(normalized_root, topdown=True, followlinks=False):
+        current_dir = Path(dirpath)
+        filtered_dirnames: List[str] = []
+        for dirname in dirnames:
+            child_path = current_dir / dirname
+            if should_skip_path(child_path, normalized_root, gitignore_patterns, effective_excludes):
+                continue
+            filtered_dirnames.append(dirname)
+        dirnames[:] = filtered_dirnames
+
+        for filename in filenames:
+            candidate = current_dir / filename
+            if should_skip_path(candidate, normalized_root, gitignore_patterns, effective_excludes):
+                continue
+            if is_scannable_file(candidate):
+                files.append(candidate)
+
+    return sorted(files)
 
 
 def execute_scan_command(
@@ -98,14 +231,13 @@ def execute_scan_command(
             rag_service = None
 
     # Read target file or directory
+    project_config = load_project_config(search_root=resolved_path)
+    exclude_patterns = {pattern for pattern in get_scan_exclusions(project_config)}
+
     if resolved_path.is_file():
-        files_to_scan = [resolved_path]
+        files_to_scan = [resolved_path] if not should_skip_path(resolved_path, resolved_path.parent, [], exclude_patterns) else []
     else:
-        files_to_scan = [
-            p
-            for p in resolved_path.rglob("*")
-            if p.is_file() and is_scannable_file(p)
-        ]
+        files_to_scan = iter_candidate_files(resolved_path, exclude_patterns)
 
     if use_rag and rag_service:
         query_text = rag_query or ""
@@ -143,9 +275,26 @@ def execute_scan_command(
     scan_errors = []
 
     target_detector = TargetDetector()
+    scan_started = time.perf_counter()
+
+    scan_progress: Optional[Progress] = None
+    if format_type.lower() == "console" and files_to_scan:
+        scan_progress = Progress(
+            TextColumn("[bold blue]Scanning[/bold blue]"),
+            BarColumn(),
+            TextColumn("{task.completed}/{task.total}"),
+            TimeElapsedColumn(),
+            console=console,
+            transient=True,
+        )
+        scan_progress.start()
+        task_id = scan_progress.add_task("files", total=len(files_to_scan))
 
     for file_path in files_to_scan:
         try:
+            if scan_progress is not None:
+                scan_progress.update(task_id, description=file_path.name)
+
             source_bytes = file_path.read_bytes()
             source_text = source_bytes.decode("utf-8", errors="ignore")
 
@@ -176,6 +325,14 @@ def execute_scan_command(
 
         except Exception as err:
             scan_errors.append(f"Failed to scan {file_path}: {str(err)}")
+        finally:
+            if scan_progress is not None:
+                scan_progress.advance(task_id)
+
+    if scan_progress is not None:
+        scan_progress.stop()
+
+    scan_duration_ms = round((time.perf_counter() - scan_started) * 1000, 2)
 
     # Handle Baseline Comparison if requested
     findings_tuple = tuple(all_findings)
@@ -217,6 +374,18 @@ def execute_scan_command(
         reporter = ConsoleReporter(no_color=no_color)
 
     reporter.generate(combined_res, target)
+
+    if format_type.lower() == "console":
+        console.print(
+            Panel(
+                f"Files scanned: [bold cyan]{len(files_to_scan)}[/bold cyan]\n"
+                f"Findings: [bold red]{len(findings_tuple)}[/bold red]\n"
+                f"Errors: [bold yellow]{len(scan_errors)}[/bold yellow]\n"
+                f"Duration: [bold green]{scan_duration_ms:.2f} ms[/bold green]",
+                title="Scan Summary",
+                border_style="green",
+            )
+        )
 
     if scan_errors:
         return 2

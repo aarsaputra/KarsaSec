@@ -144,5 +144,56 @@ def doctor() -> None:
 
     console.print(table)
 
+
+@app.command("config")
+def config() -> None:
+    """Print a starter configuration template for KarsaSec."""
+    config_template = """scan:
+  format: console
+  baseline: null
+  rag: false
+  rag_query: null
+  rag_corpus: null
+  exclude:
+    - vendor
+    - node_modules
+    - dist
+    - build
+
+runtime:
+  default_llm_provider: litellm
+  default_llm_model: gemini-2.5-flash
+  max_token_budget_per_scan: 50000
+"""
+    console.print(config_template)
+
+
+@app.command("init")
+def init_config(path: Optional[Path] = typer.Argument(None, help="Path to write the default configuration file.")) -> None:
+    """Create a starter karsasec.yaml configuration file."""
+    output_path = path or Path("karsasec.yaml")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        """scan:
+  format: console
+  baseline: null
+  rag: false
+  rag_query: null
+  rag_corpus: null
+  exclude:
+    - vendor
+    - node_modules
+    - dist
+    - build
+
+runtime:
+  default_llm_provider: litellm
+  default_llm_model: gemini-2.5-flash
+  max_token_budget_per_scan: 50000
+""",
+        encoding="utf-8",
+    )
+    console.print(f"Created configuration file at [bold green]{output_path.resolve()}[/bold green]")
+
 if __name__ == "__main__":
     app()
