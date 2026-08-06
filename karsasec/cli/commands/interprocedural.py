@@ -1,4 +1,4 @@
-"""CLI Commands for Interprocedural Taint Analysis (build, export, visualize)."""
+"""CLI Commands for Interprocedural Taint Analysis (build, export, visualize, summary, stats)."""
 
 from __future__ import annotations
 
@@ -34,13 +34,7 @@ def _parse_file(p: Path) -> FileNode | None:
     return None
 
 
-@interprocedural_app.command("build")
-def build_interprocedural(
-    target_path: Path = typer.Argument(Path("."), help="Source file or directory to build InterproceduralTaintGraph for."),
-) -> None:
-    """Builds Interprocedural (cross-function) TaintGraphs across target source code files."""
-    console.print(f"[bold magenta]Building Interprocedural Taint Analysis for:[/bold magenta] {target_path}")
-
+def _build_itg_from_path(target_path: Path):
     file_nodes: list[FileNode] = []
     if target_path.is_file():
         fn = _parse_file(target_path)
@@ -54,8 +48,7 @@ def build_interprocedural(
                     file_nodes.append(fn)
 
     if not file_nodes:
-        console.print("[yellow]No supported source files parsed for Interprocedural Analysis.[/yellow]")
-        raise typer.Exit(code=0)
+        return None
 
     ir_funcs = IRBuilder().build_from_file_nodes(file_nodes)
     cfgs = CFGBuilder().build_cfg_for_functions(ir_funcs)
@@ -74,8 +67,20 @@ def build_interprocedural(
         taint_graphs[name] = tg
         dfg_map[name] = dfg
 
-    inter_engine = InterproceduralTaintEngine()
-    itg = inter_engine.analyze_program(taint_graphs, dfg_map)
+    return InterproceduralTaintEngine().analyze_program(taint_graphs, dfg_map)
+
+
+@interprocedural_app.command("build")
+def build_interprocedural(
+    target_path: Path = typer.Argument(Path("."), help="Source file or directory to build InterproceduralTaintGraph for."),
+) -> None:
+    """Builds Interprocedural (cross-function) TaintGraphs across target source code files."""
+    console.print(f"[bold magenta]Building Interprocedural Taint Analysis for:[/bold magenta] {target_path}")
+
+    itg = _build_itg_from_path(target_path)
+    if not itg:
+        console.print("[yellow]No supported source files parsed for Interprocedural Analysis.[/yellow]")
+        raise typer.Exit(code=0)
 
     console.print("\n[bold white]Interprocedural Taint Analysis Summary:[/bold white]")
     console.print(f"Total Function Summaries: {len(itg.function_summaries)}")
@@ -89,24 +94,11 @@ def export_interprocedural(
     output_path: Path = typer.Option(Path("interprocedural_export.json"), "--output", "-o", help="Output JSON artifact file path."),
 ) -> None:
     """Exports InterproceduralTaintGraph artifact as JSON."""
-    fn = _parse_file(target_path)
-    if not fn:
+    itg = _build_itg_from_path(target_path)
+    if not itg:
         console.print(f"[bold red]Failed to parse target:[/bold red] {target_path}")
         raise typer.Exit(code=1)
 
-    ir_funcs = IRBuilder().build_from_file_nodes([fn])
-    cfgs = CFGBuilder().build_cfg_for_functions(ir_funcs)
-
-    taint_graphs = {}
-    dfg_map = {}
-    for name, cfg in cfgs.items():
-        ssa = SSABuilder().build_ssa(cfg)
-        dfg = DataFlowBuilder().build_dataflow_graph(cfg, ssa)
-        tg = IntraproceduralTaintEngine().analyze_function(cfg, ssa, dfg)
-        taint_graphs[name] = tg
-        dfg_map[name] = dfg
-
-    itg = InterproceduralTaintEngine().analyze_program(taint_graphs, dfg_map)
     output_path.write_text(itg.to_json(indent=2))
     console.print(f"[bold green]Exported InterproceduralTaintGraph JSON:[/bold green] {output_path}")
 
@@ -117,24 +109,42 @@ def visualize_interprocedural(
     output_html: Path = typer.Option(Path("interprocedural_visualizer.html"), "--output", "-o", help="Output HTML file path."),
 ) -> None:
     """Generates an interactive HTML page rendering cross-function call chains."""
-    fn = _parse_file(target_path)
-    if not fn:
+    itg = _build_itg_from_path(target_path)
+    if not itg:
         console.print(f"[bold red]Failed to parse target:[/bold red] {target_path}")
         raise typer.Exit(code=1)
 
-    ir_funcs = IRBuilder().build_from_file_nodes([fn])
-    cfgs = CFGBuilder().build_cfg_for_functions(ir_funcs)
-
-    taint_graphs = {}
-    dfg_map = {}
-    for name, cfg in cfgs.items():
-        ssa = SSABuilder().build_ssa(cfg)
-        dfg = DataFlowBuilder().build_dataflow_graph(cfg, ssa)
-        tg = IntraproceduralTaintEngine().analyze_function(cfg, ssa, dfg)
-        taint_graphs[name] = tg
-        dfg_map[name] = dfg
-
-    itg = InterproceduralTaintEngine().analyze_program(taint_graphs, dfg_map)
     html_content = reporter.render_html_report(itg)
     output_html.write_text(html_content)
     console.print(f"[bold green][SUCCESS] Exported Interprocedural Visualizer HTML:[/bold green] {output_html}")
+
+
+@interprocedural_app.command("summary")
+def summary_interprocedural(
+    target_path: Path = typer.Argument(Path("."), help="Source code path to print function summaries for."),
+) -> None:
+    """Displays compiled FunctionSummary contracts for all functions."""
+    itg = _build_itg_from_path(target_path)
+    if not itg:
+        console.print("[yellow]No function summaries found.[/yellow]")
+        raise typer.Exit(code=0)
+
+    console.print("\n[bold cyan]Compiled Function Summaries:[/bold cyan]")
+    for fn_name, s in itg.function_summaries.items():
+        console.print(f"- [bold white]{fn_name}[/bold white]: Source={s.contains_source}, Sink={s.contains_sink}, Sanitizer={s.contains_sanitizer}")
+
+
+@interprocedural_app.command("stats")
+def stats_interprocedural(
+    target_path: Path = typer.Argument(Path("."), help="Source code path to print interprocedural analysis statistics for."),
+) -> None:
+    """Displays interprocedural taint statistics."""
+    itg = _build_itg_from_path(target_path)
+    if not itg:
+        console.print("[yellow]No stats available.[/yellow]")
+        raise typer.Exit(code=0)
+
+    console.print("\n[bold yellow]Interprocedural Taint Engine Statistics:[/bold yellow]")
+    console.print(f"Total Summaries Cached: {len(itg.function_summaries)}")
+    console.print(f"Vulnerable Paths: {len(itg.vulnerable_paths)}")
+    console.print(f"Safe Paths: {len(itg.safe_paths)}")

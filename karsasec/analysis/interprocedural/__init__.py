@@ -6,10 +6,12 @@ from karsasec.analysis.interprocedural.interprocedural_pass import Interprocedur
 from karsasec.analysis.interprocedural.models import (
     CallContext,
     CallSite,
+    FunctionEffect,
     FunctionSummary,
     InterproceduralTaintGraph,
     InterproceduralTaintPath,
     ParameterSummary,
+    RecursionState,
     ReturnSummary,
 )
 from karsasec.analysis.interprocedural.parameter_mapping import ParameterMapper
@@ -22,6 +24,8 @@ __all__ = [
     "CallContext",
     "ParameterSummary",
     "ReturnSummary",
+    "FunctionEffect",
+    "RecursionState",
     "FunctionSummary",
     "InterproceduralTaintPath",
     "InterproceduralTaintGraph",

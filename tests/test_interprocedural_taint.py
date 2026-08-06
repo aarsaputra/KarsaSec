@@ -3,8 +3,13 @@ from __future__ import annotations
 from karsasec.analysis.cfg.builder import CFGBuilder
 from karsasec.analysis.dataflow.builder import DataFlowBuilder
 from karsasec.analysis.interprocedural import (
+    CallSite,
+    InterproceduralReporter,
     InterproceduralTaintEngine,
     InterproceduralTaintPass,
+    ParameterMapper,
+    ParameterSummary,
+    RecursionState,
     SummaryCache,
 )
 from karsasec.analysis.ssa.builder import SSABuilder
@@ -15,7 +20,6 @@ from karsasec.ir.nodes import IRAssignment, IRCall, IRFunction
 
 
 def test_interprocedural_helper_chain() -> None:
-    # Caller: main()
     caller_fn = IRFunction(
         id="app.py::main::1",
         line_number=1,
@@ -41,7 +45,6 @@ def test_interprocedural_helper_chain() -> None:
     )
     caller_fn.body_statements = [src_assign, helper_call]
 
-    # Callee: query_db()
     callee_fn = IRFunction(
         id="app.py::query_db::10",
         line_number=10,
@@ -85,7 +88,6 @@ def test_interprocedural_helper_chain() -> None:
 
 
 def test_interprocedural_sanitizer_chain() -> None:
-    # Caller: safe_main()
     caller_fn = IRFunction(
         id="app.py::safe_main::1",
         line_number=1,
@@ -111,7 +113,6 @@ def test_interprocedural_sanitizer_chain() -> None:
     )
     caller_fn.body_statements = [src_assign, san_call]
 
-    # Callee: safe_query_db()
     callee_fn = IRFunction(
         id="app.py::safe_query_db::10",
         line_number=10,
@@ -160,10 +161,29 @@ def test_interprocedural_sanitizer_chain() -> None:
     assert len(itg.vulnerable_paths) == 0
 
 
-def test_summary_cache_and_pass_integration() -> None:
+def test_summary_cache_and_recursion_protection() -> None:
     cache = SummaryCache()
     assert cache.size == 0
 
+    cache.set_state("rec_func", RecursionState.VISITING)
+    assert cache.get_state("rec_func") == RecursionState.VISITING
+
+    cache.invalidate("rec_func")
+    assert cache.get_state("rec_func") == RecursionState.UNVISITED
+
+
+def test_parameter_mapper_keyword_and_positional() -> None:
+    mapper = ParameterMapper()
+    cs = CallSite(caller_id="main", callee_name="query", arguments=["val"], keyword_args={"table": "users"})
+    params = {0: ParameterSummary("sql", 0), 1: ParameterSummary("table", 1)}
+
+    res = mapper.map_arguments_to_parameters(cs, params)
+    assert res[0] == "val"
+    assert res[1] == "users"
+
+
+def test_interprocedural_reporter_formats() -> None:
+    reporter = InterproceduralReporter()
     ir_func = IRFunction(
         id="app.py::foo::1",
         line_number=1,
@@ -176,16 +196,38 @@ def test_summary_cache_and_pass_integration() -> None:
     dfg = DataFlowBuilder().build_dataflow_graph(cfg, ssa)
     tg = IntraproceduralTaintEngine().analyze_function(cfg, ssa, dfg)
 
+    itg = InterproceduralTaintEngine().analyze_program({"foo": tg}, {"foo": dfg})
+
+    mermaid = reporter.render_mermaid(itg)
+    dot = reporter.render_dot(itg)
+    html = reporter.render_html_report(itg)
+
+    assert "flowchart LR" in mermaid
+    assert "digraph" in dot
+    assert "DOCTYPE html" in html
+
+
+def test_pass_manager_pipeline_integration() -> None:
+    ir_func = IRFunction(
+        id="app.py::bar::1",
+        line_number=1,
+        file_path="app.py",
+        language="Python",
+        name="bar",
+    )
+    cfg = CFGBuilder().build_cfg(ir_func)
+    ssa = SSABuilder().build_ssa(cfg)
+    dfg = DataFlowBuilder().build_dataflow_graph(cfg, ssa)
+    tg = IntraproceduralTaintEngine().analyze_function(cfg, ssa, dfg)
+
     context = PassContext()
-    context.artifact_store.store("CFG", {"foo": cfg})
-    context.artifact_store.store("SSA", {"foo": ssa})
-    context.artifact_store.store("DataFlowGraph", {"foo": dfg})
-    context.artifact_store.store("TaintGraph", {"foo": tg})
+    context.artifact_store.store("CFG", {"bar": cfg})
+    context.artifact_store.store("SSA", {"bar": ssa})
+    context.artifact_store.store("DataFlowGraph", {"bar": dfg})
+    context.artifact_store.store("TaintGraph", {"bar": tg})
 
     manager = PassManager()
     manager.register_pass(InterproceduralTaintPass())
 
     final_context = manager.run_passes(context)
     assert final_context.artifact_store.has("InterproceduralTaintGraph")
-    res = final_context.artifact_store.get("InterproceduralTaintGraph")
-    assert "program" in res

@@ -4,9 +4,18 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Any
 
 from karsasec.analysis.taint.models import TaintCategory, TaintNode
+
+
+class RecursionState(str, Enum):
+    """Recursion tracking state during call graph traversal."""
+
+    UNVISITED = "UNVISITED"
+    VISITING = "VISITING"
+    VISITED = "VISITED"
 
 
 @dataclass
@@ -16,6 +25,7 @@ class CallSite:
     caller_id: str
     callee_name: str
     arguments: list[str] = field(default_factory=list)
+    keyword_args: dict[str, str] = field(default_factory=dict)
     line_number: int = 1
 
     def to_dict(self) -> dict[str, Any]:
@@ -23,6 +33,7 @@ class CallSite:
             "caller_id": self.caller_id,
             "callee_name": self.callee_name,
             "arguments": self.arguments,
+            "keyword_args": self.keyword_args,
             "line_number": self.line_number,
         }
 
@@ -37,9 +48,9 @@ class CallContext:
     def depth(self) -> int:
         return len(self.call_stack)
 
-    def push(self) -> CallContext:
+    def push(self, fn_name: str) -> CallContext:
         """Pushes a call frame and returns a new context object."""
-        return CallContext(call_stack=list(self.call_stack))
+        return CallContext(call_stack=list(self.call_stack) + [fn_name])
 
     def contains(self, fn_name: str) -> bool:
         return fn_name in self.call_stack
@@ -83,6 +94,22 @@ class ReturnSummary:
 
 
 @dataclass
+class FunctionEffect:
+    """Side effect executed within a function body (mutations, sinks, checks)."""
+
+    effect_type: str
+    target: str
+    line_number: int = 1
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "effect_type": self.effect_type,
+            "target": self.target,
+            "line_number": self.line_number,
+        }
+
+
+@dataclass
 class FunctionSummary:
     """Compact reusable summary of a function's taint contract."""
 
@@ -90,6 +117,11 @@ class FunctionSummary:
     file_path: str = ""
     parameters: dict[int, ParameterSummary] = field(default_factory=dict)
     return_summary: ReturnSummary = field(default_factory=ReturnSummary)
+    sources: list[str] = field(default_factory=list)
+    sanitizers: list[str] = field(default_factory=list)
+    sinks: list[str] = field(default_factory=list)
+    tainted_parameters: list[int] = field(default_factory=list)
+    effects: list[FunctionEffect] = field(default_factory=list)
     contains_source: bool = False
     contains_sink: bool = False
     contains_sanitizer: bool = False
@@ -101,11 +133,19 @@ class FunctionSummary:
             "file_path": self.file_path,
             "parameters": {idx: p.to_dict() for idx, p in self.parameters.items()},
             "return_summary": self.return_summary.to_dict(),
+            "sources": self.sources,
+            "sanitizers": self.sanitizers,
+            "sinks": self.sinks,
+            "tainted_parameters": self.tainted_parameters,
+            "effects": [e.to_dict() for e in self.effects],
             "contains_source": self.contains_source,
             "contains_sink": self.contains_sink,
             "contains_sanitizer": self.contains_sanitizer,
             "has_recursive_calls": self.has_recursive_calls,
         }
+
+    def to_json(self, indent: int = 2) -> str:
+        return json.dumps(self.to_dict(), indent=indent)
 
 
 @dataclass

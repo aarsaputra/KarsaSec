@@ -1,4 +1,4 @@
-"""Interprocedural Taint Visualizer rendering cross-function flow chains in HTML/JSON."""
+"""Interprocedural Taint Visualizer rendering cross-function flow chains in HTML, JSON, Mermaid, and DOT formats."""
 
 from __future__ import annotations
 
@@ -6,10 +6,10 @@ from karsasec.analysis.interprocedural.models import InterproceduralTaintGraph
 
 
 class InterproceduralReporter:
-    """Exports interactive HTML and JSON visualizations for InterproceduralTaintGraph artifacts."""
+    """Exports interactive HTML, JSON, Mermaid, and DOT visualizations for InterproceduralTaintGraph artifacts."""
 
-    def render_html_report(self, itg: InterproceduralTaintGraph) -> str:
-        """Generates self-contained interactive HTML page highlighting cross-function call chains."""
+    def render_mermaid(self, itg: InterproceduralTaintGraph) -> str:
+        """Generates Mermaid flowchart diagram for cross-function taint flows."""
         mermaid_lines = ["flowchart LR", "    %% Cross-Function Interprocedural Flow Chain"]
 
         for idx, path in enumerate(itg.vulnerable_paths):
@@ -23,7 +23,28 @@ class InterproceduralReporter:
             mermaid_lines.append(f'        {snk_func}_snk["Sink: {path.sink_func}"]')
             mermaid_lines.append("    end")
 
-        mermaid_code = "\n".join(mermaid_lines)
+        return "\n".join(mermaid_lines)
+
+    def render_dot(self, itg: InterproceduralTaintGraph) -> str:
+        """Generates DOT Graphviz representation for cross-function taint flows."""
+        dot_lines = ["digraph InterproceduralTaint {", '    rankdir="LR";', '    node [shape="box", style="filled", fillcolor="#1e293b", fontcolor="#ffffff"];']
+
+        for path in itg.vulnerable_paths:
+            src = path.source_func.replace("::", "_").replace(".", "_")
+            snk = path.sink_func.replace("::", "_").replace(".", "_")
+            dot_lines.append(f'    "{src}" -> "{snk}" [color="red", label="vulnerable"];')
+
+        for path in itg.safe_paths:
+            src = path.source_func.replace("::", "_").replace(".", "_")
+            snk = path.sink_func.replace("::", "_").replace(".", "_")
+            dot_lines.append(f'    "{src}" -> "{snk}" [color="green", label="sanitized"];')
+
+        dot_lines.append("}")
+        return "\n".join(dot_lines)
+
+    def render_html_report(self, itg: InterproceduralTaintGraph) -> str:
+        """Generates self-contained interactive HTML page highlighting cross-function call chains."""
+        mermaid_code = self.render_mermaid(itg)
         json_data = itg.to_json(indent=2)
 
         return f"""<!DOCTYPE html>
