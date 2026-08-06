@@ -4,8 +4,8 @@ Orchestrates analysis pipelines, DAG execution planners, capability dependency s
 artifact caching, and incremental analysis execution.
 """
 
-from karsasec.runtime.planner import ExecutionPlanner, CapabilityDependencyPlanner
 from karsasec.runtime.pipeline import AnalysisPipeline
+from karsasec.runtime.planner import CapabilityDependencyPlanner, ExecutionPlanner
 
 __all__ = [
     "ExecutionPlanner",

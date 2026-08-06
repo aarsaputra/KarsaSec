@@ -2,7 +2,7 @@
 
 import hashlib
 from pathlib import Path
-from karsasec.cli.commands.scan import execute_scan_command
+
 from karsasec.core.execution import RuleExecutor, ScanContext
 from karsasec.parser.python_parser import PythonParserPlugin
 from karsasec.rules.loader import YAMLRuleLoader

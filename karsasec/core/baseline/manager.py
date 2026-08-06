@@ -1,20 +1,21 @@
 """BaselineManager for loading, saving, and comparing vulnerability baselines with regression detection."""
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Dict, List, Tuple
+
 from karsasec.core.baseline.models import Baseline, BaselineFinding, ComparisonResult
 from karsasec.core.finding.collection import SEVERITY_WEIGHTS
 from karsasec.core.finding.model import Finding
 
+
 class BaselineManager:
     """Manages creation, persistence, and lifecycle comparison of vulnerability baselines."""
 
-    def save_baseline(self, findings: Tuple[Finding, ...], target_file: Path) -> Baseline:
+    def save_baseline(self, findings: tuple[Finding, ...], target_file: Path) -> Baseline:
         """Serializes current scan findings into a baseline JSON file."""
-        now_iso = datetime.now(timezone.utc).isoformat()
-        baseline_findings: Dict[str, BaselineFinding] = {}
+        now_iso = datetime.now(UTC).isoformat()
+        baseline_findings: dict[str, BaselineFinding] = {}
 
         for f in findings:
             bf = BaselineFinding(
@@ -57,10 +58,10 @@ class BaselineManager:
         if not path.exists():
             raise FileNotFoundError(f"Baseline file not found at {path}")
 
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             data = json.load(f)
 
-        findings_dict: Dict[str, BaselineFinding] = {}
+        findings_dict: dict[str, BaselineFinding] = {}
         for item in data.get("findings", []):
             bf = BaselineFinding(
                 fingerprint=item["fingerprint"],
@@ -77,7 +78,7 @@ class BaselineManager:
             scanner_version=data.get("scanner_version", "0.1.0"),
         )
 
-    def compare(self, current_findings: Tuple[Finding, ...], baseline: Baseline) -> ComparisonResult:
+    def compare(self, current_findings: tuple[Finding, ...], baseline: Baseline) -> ComparisonResult:
         """Compares current scan findings against an existing baseline.
 
         Returns:
@@ -86,9 +87,9 @@ class BaselineManager:
         current_map = {f.fingerprint: f for f in current_findings}
         baseline_map = baseline.findings
 
-        new_findings: List[Finding] = []
-        existing_findings: List[Finding] = []
-        regressed_findings: List[Finding] = []
+        new_findings: list[Finding] = []
+        existing_findings: list[Finding] = []
+        regressed_findings: list[Finding] = []
 
         for fp, curr in current_map.items():
             if fp not in baseline_map:
@@ -103,7 +104,7 @@ class BaselineManager:
                 else:
                     existing_findings.append(curr)
 
-        fixed_findings: List[BaselineFinding] = [
+        fixed_findings: list[BaselineFinding] = [
             base_entry for fp, base_entry in baseline_map.items() if fp not in current_map
         ]
 

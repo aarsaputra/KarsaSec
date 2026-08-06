@@ -3,7 +3,7 @@
 import inspect
 import json
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import karsasec.cli.commands.scan
 import karsasec.core.execution
@@ -38,9 +38,9 @@ TARGET_MODULES = [
 class APIStabilityVerifier:
     """Extracts public API symbols and verifies against frozen JSON API snapshot."""
 
-    def extract_api_snapshot(self) -> Dict[str, Any]:
+    def extract_api_snapshot(self) -> dict[str, Any]:
         """Scans public classes, methods, functions, and enums to construct a signature hash map."""
-        snapshot: Dict[str, Any] = {}
+        snapshot: dict[str, Any] = {}
 
         for mod in TARGET_MODULES:
             mod_name = mod.__name__
@@ -74,7 +74,7 @@ class APIStabilityVerifier:
         target_path.parent.mkdir(parents=True, exist_ok=True)
         target_path.write_text(json.dumps(snapshot, indent=2), encoding="utf-8")
 
-    def verify_api_stability(self, snapshot_path: Path = SNAPSHOT_FILE_PATH) -> List[str]:
+    def verify_api_stability(self, snapshot_path: Path = SNAPSHOT_FILE_PATH) -> list[str]:
         """Compares current API against frozen snapshot file. Returns list of breaking changes/diffs."""
         if not snapshot_path.exists():
             return [f"API Snapshot file '{snapshot_path}' missing."]

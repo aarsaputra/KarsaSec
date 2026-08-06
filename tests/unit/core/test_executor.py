@@ -1,14 +1,21 @@
 """Comprehensive unit and integration test suite for RuleExecutor, RuleIndexer, EvidenceCollector, and FindingFactory."""
 
-import pytest
 from pathlib import Path
 
-from karsasec.core.execution import EvidenceUnavailableError, ExecutionResult, RuleExecutor, RuleIndexer, ScanContext
-from karsasec.core.finding import Evidence, EvidenceCollector, Finding, FindingFactory
+import pytest
+
+from karsasec.core.execution import (
+    EvidenceUnavailableError,
+    ExecutionResult,
+    RuleExecutor,
+    RuleIndexer,
+    ScanContext,
+)
+from karsasec.core.finding import EvidenceCollector, FindingFactory
 from karsasec.parser.ast_nodes import ASTNode, FileNode, Position
-from karsasec.rules.enums import Confidence, LanguageEnum, Severity
-from karsasec.rules.matcher import rule_compiler
+from karsasec.rules.enums import LanguageEnum, Severity
 from karsasec.rules.schema import Rule, RuleCondition, RuleMatch, RuleMetadata, RuleOutput
+
 
 def create_sample_rule(
     rule_id: str = "KS-PY-0001",

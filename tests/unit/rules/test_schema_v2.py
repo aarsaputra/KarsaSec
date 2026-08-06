@@ -1,13 +1,13 @@
 """Unit tests for Rule Schema v2 and Schema v1 backward compatibility."""
 
-import pytest
-from karsasec.rules.enums import Confidence, LanguageEnum, Severity
+from karsasec.rules.enums import LanguageEnum, Severity
 from karsasec.rules.schema import (
     AnalysisBehavior,
     AnalysisEngine,
     Rule,
     validate_rule_dict,
 )
+
 
 def test_schema_v1_backward_compatibility() -> None:
     raw_v1 = {

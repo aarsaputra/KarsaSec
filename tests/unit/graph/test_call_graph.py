@@ -5,12 +5,14 @@ import tempfile
 import threading
 import weakref
 from pathlib import Path
-from karsasec.parser.python_parser import python_parser_plugin
-from karsasec.semantic.resolver import SemanticResolver, Scope, ScopeType
-from karsasec.graph.types import CallType
+
 from karsasec.graph.builder import CallGraphBuilder
+from karsasec.graph.types import CallType
+from karsasec.parser.python_parser import python_parser_plugin
 from karsasec.rules.registry import RuleRegistry
-from karsasec.rules.schema import Rule, validate_rule_dict
+from karsasec.rules.schema import validate_rule_dict
+from karsasec.semantic.resolver import Scope, ScopeType, SemanticResolver
+
 
 def test_scope_weakref_garbage_collection() -> None:
     """Verifies that Scope hierarchical parent links use weakref and don't leak memory."""
@@ -204,7 +206,7 @@ class MyService:
         # Verify edge from perform_action to log_event
         callees = cg.get_callees(action_node.node_id)
         assert log_node.node_id in [c.node_id for c in callees]
-        
+
         edges = cg.caller_to_edges.get(action_node.node_id, [])
         assert len(edges) == 1
         assert edges[0].call_type == CallType.DYNAMIC

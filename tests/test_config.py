@@ -2,6 +2,7 @@
 
 from karsasec.config import Settings
 
+
 def test_default_settings() -> None:
     """Test default settings initialization."""
     settings = Settings()

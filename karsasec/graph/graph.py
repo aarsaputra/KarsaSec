@@ -1,22 +1,22 @@
 """Graph representations holding nodes, edges, and index mappings for ProjectGraph and CallGraph."""
 
-from typing import Dict, List, Optional, Set
-from karsasec.graph.node import GraphNode
 from karsasec.graph.edge import GraphEdge
+from karsasec.graph.node import GraphNode
 from karsasec.graph.types import CallEdge, CallNode
+
 
 class ProjectGraph:
     """Project-wide Code Property Graph storing structural, call, and dataflow relations."""
 
     def __init__(self) -> None:
-        self.nodes: Dict[str, GraphNode] = {}
-        self.edges: List[GraphEdge] = []
+        self.nodes: dict[str, GraphNode] = {}
+        self.edges: list[GraphEdge] = []
 
         # Index maps for fast O(1) graph traversal
-        self.node_by_qname: Dict[str, GraphNode] = {}
-        self.call_site_to_edge: Dict[str, GraphEdge] = {}
-        self.outgoing_edges: Dict[str, List[GraphEdge]] = {}
-        self.incoming_edges: Dict[str, List[GraphEdge]] = {}
+        self.node_by_qname: dict[str, GraphNode] = {}
+        self.call_site_to_edge: dict[str, GraphEdge] = {}
+        self.outgoing_edges: dict[str, list[GraphEdge]] = {}
+        self.incoming_edges: dict[str, list[GraphEdge]] = {}
 
     def add_node(self, node: GraphNode) -> None:
         """Adds a GraphNode to the graph and indexes by UUID and qualified name."""
@@ -33,19 +33,19 @@ class ProjectGraph:
         self.outgoing_edges.setdefault(edge.caller_id, []).append(edge)
         self.incoming_edges.setdefault(edge.callee_id, []).append(edge)
 
-    def get_node(self, uuid: str) -> Optional[GraphNode]:
+    def get_node(self, uuid: str) -> GraphNode | None:
         """Retrieves a node by its UUID."""
         return self.nodes.get(uuid)
 
-    def get_node_by_qname(self, qualified_name: str) -> Optional[GraphNode]:
+    def get_node_by_qname(self, qualified_name: str) -> GraphNode | None:
         """Retrieves a node by its fully qualified name."""
         return self.node_by_qname.get(qualified_name)
 
-    def get_outgoing(self, node_id: str) -> List[GraphEdge]:
+    def get_outgoing(self, node_id: str) -> list[GraphEdge]:
         """Returns outgoing edges from the specified node."""
         return self.outgoing_edges.get(node_id, [])
 
-    def get_incoming(self, node_id: str) -> List[GraphEdge]:
+    def get_incoming(self, node_id: str) -> list[GraphEdge]:
         """Returns incoming edges to the specified node."""
         return self.incoming_edges.get(node_id, [])
 
@@ -57,13 +57,13 @@ class CallGraph:
     """
 
     def __init__(self) -> None:
-        self.nodes: Dict[str, CallNode] = {}
-        self.edges: List[CallEdge] = []
+        self.nodes: dict[str, CallNode] = {}
+        self.edges: list[CallEdge] = []
 
         # Indexes for fast lookup
-        self.call_site_to_edge: Dict[str, CallEdge] = {}
-        self.caller_to_edges: Dict[str, List[CallEdge]] = {}
-        self.callee_to_edges: Dict[str, List[CallEdge]] = {}
+        self.call_site_to_edge: dict[str, CallEdge] = {}
+        self.caller_to_edges: dict[str, list[CallEdge]] = {}
+        self.callee_to_edges: dict[str, list[CallEdge]] = {}
 
     def add_node(self, node: CallNode) -> None:
         """Adds a CallNode to the graph."""
@@ -78,11 +78,11 @@ class CallGraph:
         self.caller_to_edges.setdefault(edge.caller_id, []).append(edge)
         self.callee_to_edges.setdefault(edge.callee_id, []).append(edge)
 
-    def get_node(self, node_id: str) -> Optional[CallNode]:
+    def get_node(self, node_id: str) -> CallNode | None:
         """Retrieves a node by its ID."""
         return self.nodes.get(node_id)
 
-    def get_callers(self, callee_id: str) -> List[CallNode]:
+    def get_callers(self, callee_id: str) -> list[CallNode]:
         """Returns the list of nodes that invoke the specified callee."""
         edges = self.callee_to_edges.get(callee_id, [])
         callers = []
@@ -92,7 +92,7 @@ class CallGraph:
                 callers.append(caller)
         return callers
 
-    def get_callees(self, caller_id: str) -> List[CallNode]:
+    def get_callees(self, caller_id: str) -> list[CallNode]:
         """Returns the list of nodes invoked by the specified caller."""
         edges = self.caller_to_edges.get(caller_id, [])
         callees = []

@@ -2,7 +2,7 @@
 
 import threading
 from pathlib import Path
-from typing import Dict, List, Optional
+
 import yaml
 
 from karsasec.rules.schema import Rule, validate_rule_dict
@@ -12,10 +12,10 @@ class RuleCache:
     """Thread-safe in-memory cache for parsed and validated Rule objects."""
 
     def __init__(self) -> None:
-        self._cache: Dict[str, Rule] = {}
+        self._cache: dict[str, Rule] = {}
         self._lock = threading.Lock()
 
-    def get(self, key: str) -> Optional[Rule]:
+    def get(self, key: str) -> Rule | None:
         """Retrieves a cached Rule by key."""
         with self._lock:
             return self._cache.get(key)
@@ -34,7 +34,7 @@ class RuleCache:
 class YAMLRuleLoader:
     """Parses and validates security rules defined in single or multi-rule YAML files."""
 
-    def __init__(self, cache: Optional[RuleCache] = None) -> None:
+    def __init__(self, cache: RuleCache | None = None) -> None:
         self.cache = cache or RuleCache()
 
     def load_file(self, file_path: Path) -> Rule:
@@ -44,7 +44,7 @@ class YAMLRuleLoader:
             raise ValueError(f"No valid rule found in {file_path}")
         return rules[0]
 
-    def load_file_multi(self, file_path: Path) -> List[Rule]:
+    def load_file_multi(self, file_path: Path) -> list[Rule]:
         """Loads and validates one or multiple YAML rules from a file."""
         resolved_path = file_path.resolve()
         cache_key = str(resolved_path)
@@ -65,7 +65,7 @@ class YAMLRuleLoader:
         if not raw_data or not isinstance(raw_data, dict):
             raise ValueError("YAML content must evaluate to a dictionary.")
 
-        rules: List[Rule] = []
+        rules: list[Rule] = []
         if "rules" in raw_data and isinstance(raw_data["rules"], list):
             for idx, item in enumerate(raw_data["rules"]):
                 if isinstance(item, dict):
@@ -88,7 +88,7 @@ class YAMLRuleLoader:
 
         return rules
 
-    def load_string(self, yaml_content: str, cache_key: Optional[str] = None) -> Rule:
+    def load_string(self, yaml_content: str, cache_key: str | None = None) -> Rule:
         """Parses and validates a YAML rule from a string."""
         if cache_key:
             cached_rule = self.cache.get(cache_key)
@@ -110,10 +110,10 @@ class YAMLRuleLoader:
 
         return rule
 
-    def load_directory(self, dir_path: Path) -> List[Rule]:
+    def load_directory(self, dir_path: Path) -> list[Rule]:
         """Recursively scans directory for .yaml/.yml rule files and returns loaded rules."""
         resolved_dir = dir_path.resolve()
-        rules: List[Rule] = []
+        rules: list[Rule] = []
 
         if not resolved_dir.exists() or not resolved_dir.is_dir():
             return rules

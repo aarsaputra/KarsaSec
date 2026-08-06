@@ -1,10 +1,11 @@
 """Unit tests for BaselineManager, loading, saving, and diff comparison."""
 
-import pytest
 from pathlib import Path
-from karsasec.core.baseline import BaselineManager, baseline_manager
+
+from karsasec.core.baseline import baseline_manager
 from karsasec.core.finding import Evidence, Finding
 from karsasec.rules.enums import Confidence, Severity
+
 
 def create_sample_finding(fp: str, rule_id: str = "R1", severity: Severity = Severity.HIGH) -> Finding:
     return Finding(

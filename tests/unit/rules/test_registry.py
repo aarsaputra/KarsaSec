@@ -1,9 +1,11 @@
 """Unit tests for RuleRegistry."""
 
 import pytest
+
 from karsasec.rules.enums import LanguageEnum, Severity
 from karsasec.rules.registry import RuleRegistry
 from karsasec.rules.schema import Rule, RuleCondition, RuleMatch, RuleMetadata, RuleOutput
+
 
 def create_sample_rule(rule_id: str, language: LanguageEnum = LanguageEnum.PYTHON, node_types: list = None, enabled: bool = True) -> Rule:
     return Rule(

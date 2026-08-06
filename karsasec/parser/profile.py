@@ -1,13 +1,13 @@
 """Project Profiler module for aggregating workspace metadata, LOC, package managers, and capabilities."""
 
 from pathlib import Path
-from typing import List, Set, Tuple
+
 from karsasec.core.context import ProjectCapabilities, ProjectProfile
 from karsasec.parser.framework import FrameworkDetector
-from karsasec.parser.language import LanguageDetector, MANIFEST_LANGUAGE_MAP
+from karsasec.parser.language import MANIFEST_LANGUAGE_MAP, LanguageDetector
 
 # Directory names to skip when profiling
-SKIP_DIRS: Set[str] = {
+SKIP_DIRS: set[str] = {
     ".git", ".hg", ".svn", ".venv", "venv", "node_modules",
     "dist", "build", "__pycache__", ".pytest_cache", ".next", "vendor"
 }
@@ -30,11 +30,11 @@ class ProjectProfiler:
 
     def __init__(
         self,
-        language_detector: LanguageDetector = LanguageDetector(),
-        framework_detector: FrameworkDetector = FrameworkDetector()
+        language_detector: LanguageDetector | None = None,
+        framework_detector: FrameworkDetector | None = None
     ) -> None:
-        self.language_detector = language_detector
-        self.framework_detector = framework_detector
+        self.language_detector = language_detector or LanguageDetector()
+        self.framework_detector = framework_detector or FrameworkDetector()
 
     def profile(self, root_path: Path) -> ProjectProfile:
         """Executes full workspace profiling on target root_path."""
@@ -43,10 +43,10 @@ class ProjectProfiler:
         if not resolved_root.exists():
             return ProjectProfile(root=resolved_root)
 
-        source_files: List[Path] = []
-        ignored_files: List[Path] = []
-        manifests: List[Path] = []
-        package_managers: Set[str] = set()
+        source_files: list[Path] = []
+        ignored_files: list[Path] = []
+        manifests: list[Path] = []
+        package_managers: set[str] = set()
 
         total_files = 0
         total_loc = 0

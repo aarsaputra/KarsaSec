@@ -1,7 +1,7 @@
 """Comprehensive unit test suite for ASTMatcher, PredicatePipeline, and RuleMatch models."""
 
+
 import pytest
-from pathlib import Path
 
 from karsasec.core.plugin import SymbolTable
 from karsasec.parser.ast import VisitorContext
@@ -10,13 +10,14 @@ from karsasec.rules.enums import LanguageEnum, Severity
 from karsasec.rules.matcher import (
     ASTMatcher,
     CompiledRule,
-    MatcherStatistics,
     RuleIncompatibleError,
     RuleMatch,
     check_rule_compatibility,
     rule_compiler,
 )
-from karsasec.rules.schema import Rule, RuleCondition, RuleMatch as RuleMatchSchema, RuleMetadata, RuleOutput
+from karsasec.rules.schema import Rule, RuleCondition, RuleMetadata, RuleOutput
+from karsasec.rules.schema import RuleMatch as RuleMatchSchema
+
 
 def create_dummy_rule(
     rule_id: str = "KS-PY-0001",

@@ -1,5 +1,7 @@
-import jwt
 import hashlib
+
+import jwt
+
 
 def login_user(password):
     token = jwt.encode({"user": "admin"}, key="super_secret_jwt_key_123")

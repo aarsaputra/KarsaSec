@@ -2,6 +2,7 @@
 
 from enum import Enum
 
+
 class Severity(str, Enum):
     """Vulnerability severity levels."""
     CRITICAL = "CRITICAL"

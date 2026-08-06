@@ -2,10 +2,10 @@
 
 from pathlib import Path
 
-from karsasec.rules.schema import Rule, RuleCondition, RuleMatch, RuleMetadataV2, RuleOutput
-from karsasec.rules.enums import LanguageEnum, Severity, Confidence
+from karsasec.core.execution import ExecutionResult, RuleExecutor, ScanContext
 from karsasec.parser.ast_nodes import ASTNode, FileNode, Position
-from karsasec.core.execution import ScanContext, RuleExecutor, ExecutionResult
+from karsasec.rules.enums import Confidence, LanguageEnum, Severity
+from karsasec.rules.schema import Rule, RuleCondition, RuleMatch, RuleMetadataV2, RuleOutput
 
 
 def test_rag_predicate_allows_rule_only_when_rag_contains_text() -> None:

@@ -1,15 +1,14 @@
 from __future__ import annotations
 
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, Iterator, List, Optional
 
 from karsasec.config import settings
 from karsasec.rag.bm25 import BM25Document
 from karsasec.rag.hybrid import HybridRAGIndex, RAGResult
 from karsasec.rag.indexer import RAGCorpusBuilder
 from karsasec.rag.utils import chunk_text
-
 
 TEXT_FILE_EXTENSIONS = {
     ".py", ".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".php", ".go", ".rs", ".java",
@@ -21,7 +20,7 @@ TEXT_FILE_EXTENSIONS = {
 class RAGDocument:
     document_id: str
     text: str
-    metadata: Dict[str, str]
+    metadata: dict[str, str]
 
 
 class RAGService:
@@ -34,7 +33,7 @@ class RAGService:
         )
 
     @classmethod
-    def from_directory(cls, corpus_path: Path, cache_dir: Optional[Path] = None, force_rebuild: bool = False) -> "RAGService":
+    def from_directory(cls, corpus_path: Path, cache_dir: Path | None = None, force_rebuild: bool = False) -> RAGService:
         cache_root = cache_dir or settings.cache_dir / "rag"
         builder = RAGCorpusBuilder(corpus_path, cache_dir=cache_root)
         documents = builder.build(force_rebuild=force_rebuild)
@@ -69,5 +68,5 @@ class RAGService:
                     },
                 )
 
-    def retrieve(self, query: str, top_k: int = 5) -> List[RAGResult]:
+    def retrieve(self, query: str, top_k: int = 5) -> list[RAGResult]:
         return self.hybrid_index.retrieve(query, top_k=top_k)

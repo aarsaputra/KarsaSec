@@ -5,6 +5,7 @@ from karsasec.rules.enums import Confidence
 from karsasec.rules.evidence import ConfidenceCalculator, EvidenceCollector
 from karsasec.rules.schema import validate_rule_dict
 
+
 def test_evidence_collector_and_calculator() -> None:
     rule_dict = {
         "rule": {"id": "KS-PY-0001"},

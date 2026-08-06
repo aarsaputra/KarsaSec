@@ -23,12 +23,11 @@
 
 import ast
 import re
-from pathlib import Path
-from typing import Dict, List, Optional, Set
 
 from karsasec.parser.ast_nodes import ASTNode, FileNode
-from karsasec.semantic.scope import Scope, ScopeType
 from karsasec.semantic.alias_tracker import AliasTracker
+from karsasec.semantic.scope import Scope, ScopeType
+
 
 def get_node_text(node: ASTNode, source_bytes: bytes) -> str:
     """Extracts node text accurately using byte offsets or falling back to line slicing."""
@@ -65,11 +64,11 @@ class SemanticGraph:
     __slots__ = ("node_symbols", "scopes", "alias_tracker")
 
     def __init__(self) -> None:
-        self.node_symbols: Dict[str, str] = {}  # Maps node_id to fully-qualified resolved symbol
-        self.scopes: Dict[str, Scope] = {}      # Maps block/function node_id to its Scope
+        self.node_symbols: dict[str, str] = {}  # Maps node_id to fully-qualified resolved symbol
+        self.scopes: dict[str, Scope] = {}      # Maps block/function node_id to its Scope
         self.alias_tracker = AliasTracker()
 
-    def resolve_node(self, node_id: str) -> Optional[str]:
+    def resolve_node(self, node_id: str) -> str | None:
         """Resolves the fully qualified symbol name for a given node ID."""
         return self.node_symbols.get(node_id)
 
@@ -114,7 +113,7 @@ class SemanticResolver:
         # 3. Analyze imports and assignments to populate scopes and aliases
         # Walk DFS to resolve bindings chronologically
         stack = [file_node.node_id]
-        visited: Set[str] = set()
+        visited: set[str] = set()
 
         while stack:
             curr_id = stack.pop()
@@ -157,10 +156,10 @@ class SemanticResolver:
                 name = node_text
                 if "(" in name:
                     name = name.split("(", 1)[0].strip()
-                
+
                 # Clean PHP prefix
                 name_clean = name.replace("$", "").strip()
-                
+
                 # Check scope bindings
                 resolved = node_scope.lookup(name_clean)
                 if not resolved:
@@ -174,7 +173,7 @@ class SemanticResolver:
 
         return graph
 
-    def _find_enclosing_scope(self, node_id: Optional[str], scopes: Dict[str, Scope], file_node: FileNode) -> Scope:
+    def _find_enclosing_scope(self, node_id: str | None, scopes: dict[str, Scope], file_node: FileNode) -> Scope:
         """Finds the closest enclosing lexical scope for a given node ID."""
         curr_id = node_id
         while curr_id:
@@ -328,7 +327,7 @@ class SemanticResolver:
             target, value = assign_match.groups()
             target_clean = target.replace("const ", "").replace("let ", "").replace("var ", "").replace("$", "").strip()
             value_clean = value.strip().rstrip(";")
-            
+
             # Resolve transitively if possible
             parts = value_clean.split(".", 1)
             if parts:

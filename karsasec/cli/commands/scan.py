@@ -1,19 +1,20 @@
-"""Modular scan CLI command connecting RuleExecutor, BaselineManager, and Reporting targets."""
+from __future__ import annotations
 
 import concurrent.futures
 import os
 import sys
 import time
 import uuid
-from dataclasses import replace
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from fnmatch import fnmatch
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import TYPE_CHECKING, Any
 
-from rich.progress import BarColumn, Progress, TextColumn, TimeElapsedColumn
+if TYPE_CHECKING:
+    from karsasec.rag.service import RAGService
 
 from rich.panel import Panel
+from rich.progress import BarColumn, Progress, TextColumn, TimeElapsedColumn
 
 from karsasec.config import get_scan_exclusions, load_project_config
 from karsasec.core.baseline import baseline_manager
@@ -29,7 +30,6 @@ from karsasec.core.reporting import (
     SARIFReporter,
     StreamTarget,
 )
-from karsasec.parser.docker_parser import docker_parser_plugin  # ensure Dockerfile parser plugin registers
 from karsasec.parser.generic_parser import GenericParserPlugin
 from karsasec.parser.registry import parser_registry
 from karsasec.parser.target_detector import TargetDetector
@@ -53,9 +53,9 @@ def normalize_scan_path(path: Path) -> Path:
     return Path(os.path.normpath(str(path))).expanduser()
 
 
-def _load_gitignore_patterns(root: Path) -> List[Tuple[str, bool]]:
+def _load_gitignore_patterns(root: Path) -> list[tuple[str, bool]]:
     """Load simple .gitignore-style patterns from the project root."""
-    patterns: List[Tuple[str, bool]] = []
+    patterns: list[tuple[str, bool]] = []
     if not root.exists():
         return patterns
 
@@ -76,7 +76,7 @@ def _load_gitignore_patterns(root: Path) -> List[Tuple[str, bool]]:
     return patterns
 
 
-def _matches_gitignore_pattern(path: Path, root: Path, patterns: List[Tuple[str, bool]]) -> bool:
+def _matches_gitignore_pattern(path: Path, root: Path, patterns: list[tuple[str, bool]]) -> bool:
     """Match a path against a lightweight subset of .gitignore semantics."""
     res_path = path.resolve()
     res_root = root.resolve()
@@ -110,8 +110,8 @@ def _matches_gitignore_pattern(path: Path, root: Path, patterns: List[Tuple[str,
 def should_skip_path(
     path: Path,
     root: Path,
-    gitignore_patterns: List[Tuple[str, bool]],
-    exclude_patterns: Optional[Set[str]] = None,
+    gitignore_patterns: list[tuple[str, bool]],
+    exclude_patterns: set[str] | None = None,
 ) -> bool:
     """Return True when a path should not be scanned."""
     res_path = path.resolve()
@@ -162,11 +162,11 @@ def is_scannable_file(path: Path) -> bool:
     return path.suffix.lower() in SUPPORTED_EXTENSIONS
 
 
-def iter_candidate_files(root: Path, exclude_patterns: Optional[Set[str]] = None) -> List[Path]:
+def iter_candidate_files(root: Path, exclude_patterns: set[str] | None = None) -> list[Path]:
     """Collect candidate files while respecting ignore rules and common production exclusions."""
     normalized_root = normalize_scan_path(root)
     gitignore_patterns = _load_gitignore_patterns(normalized_root)
-    files: List[Path] = []
+    files: list[Path] = []
     effective_excludes = exclude_patterns or set()
 
     if not normalized_root.exists():
@@ -174,7 +174,7 @@ def iter_candidate_files(root: Path, exclude_patterns: Optional[Set[str]] = None
 
     for dirpath, dirnames, filenames in os.walk(normalized_root, topdown=True, followlinks=False):
         current_dir = Path(dirpath)
-        filtered_dirnames: List[str] = []
+        filtered_dirnames: list[str] = []
         for dirname in dirnames:
             child_path = current_dir / dirname
             if should_skip_path(child_path, normalized_root, gitignore_patterns, effective_excludes):
@@ -196,13 +196,13 @@ def scan_file_task(
     target_detector: TargetDetector,
     exec_engine: RuleExecutor,
     rules: Any,
-    rag_context: List[Dict[str, Any]],
-) -> Tuple[List[Finding], int, float, List[str]]:
+    rag_context: list[dict[str, Any]],
+) -> tuple[list[Finding], int, float, list[str]]:
     """Isolated task scanner for a single file path suitable for parallel worker pools."""
-    findings: List[Finding] = []
+    findings: list[Finding] = []
     nodes_processed = 0
     exec_time_ms = 0.0
-    errors: List[str] = []
+    errors: list[str] = []
 
     try:
         source_bytes = file_path.read_bytes()
@@ -241,14 +241,14 @@ def scan_file_task(
 def execute_scan_command(
     target_path: Path,
     format_type: str = "console",
-    output_path: Optional[Path] = None,
-    baseline_path: Optional[Path] = None,
+    output_path: Path | None = None,
+    baseline_path: Path | None = None,
     use_rag: bool = False,
-    rag_query: Optional[str] = None,
+    rag_query: str | None = None,
     rag_rebuild: bool = False,
     no_color: bool = False,
-    rag_corpus: Optional[Path] = None,
-    executor: Optional[RuleExecutor] = None,
+    rag_corpus: Path | None = None,
+    executor: RuleExecutor | None = None,
 ) -> int:
     """Executes deterministic security scan on target_path across multi-language source & IaC files.
 
@@ -257,8 +257,8 @@ def execute_scan_command(
     """
     exec_engine = executor or rule_executor
     resolved_path = target_path.resolve()
-    rag_service: Optional["RAGService"] = None
-    rag_context: List[Dict[str, Any]] = []
+    rag_service: RAGService | None = None
+    rag_context: list[dict[str, Any]] = []
 
     if not resolved_path.exists():
         sys.stderr.write(f"Error: Target path '{resolved_path}' does not exist.\n")
@@ -335,7 +335,7 @@ def execute_scan_command(
     target_detector = TargetDetector()
     scan_started = time.perf_counter()
 
-    scan_progress: Optional[Progress] = None
+    scan_progress: Progress | None = None
     if format_type.lower() == "console" and files_to_scan:
         scan_progress = Progress(
             TextColumn("[bold blue]Scanning[/bold blue]"),
@@ -407,7 +407,7 @@ def execute_scan_command(
 
     combined_res = ExecutionResult(
         scan_id=f"scan-{uuid.uuid4().hex[:8]}",
-        timestamp=datetime.now(timezone.utc).isoformat(),
+        timestamp=datetime.now(UTC).isoformat(),
         files_scanned=total_files,
         rules_checked=len(rules),
         nodes_processed=total_nodes,

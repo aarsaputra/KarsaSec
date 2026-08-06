@@ -1,6 +1,5 @@
 """Unit tests for precision, recall, and quantitative evaluation metrics engine."""
 
-import pytest
 from karsasec.eval.metrics import EvaluationMetrics
 from karsasec.eval.runner import BenchmarkEvaluator
 

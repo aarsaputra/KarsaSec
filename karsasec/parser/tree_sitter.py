@@ -2,11 +2,12 @@
 
 import threading
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 from karsasec.parser.ast_nodes import ASTNode, FileNode, Position, generate_node_id
 
 try:
-    import tree_sitter
+    import tree_sitter  # noqa: F401
     from tree_sitter import Language, Parser
     HAS_TREE_SITTER = True
 except ImportError:
@@ -16,10 +17,10 @@ class TreeSitterEngine:
     """Stateless wrapper over tree-sitter library for parsing source code into ASTNode trees."""
 
     def __init__(self) -> None:
-        self._languages: Dict[str, Any] = {}
+        self._languages: dict[str, Any] = {}
         self._lock = threading.Lock()
 
-    def get_language(self, language_name: str) -> Optional[Any]:
+    def get_language(self, language_name: str) -> Any | None:
         """Gets or initializes a cached tree-sitter Language instance in a thread-safe manner."""
         if not HAS_TREE_SITTER:
             return None
@@ -59,7 +60,7 @@ class TreeSitterEngine:
 
             return None
 
-    def parse_code(self, code_bytes: bytes, language_name: str, file_path: Optional[Path] = None) -> FileNode:
+    def parse_code(self, code_bytes: bytes, language_name: str, file_path: Path | None = None) -> FileNode:
         """Parses raw source bytes into a root FileNode AST."""
         path = file_path or Path("memory.src")
         total_lines = len(code_bytes.splitlines())
@@ -84,7 +85,7 @@ class TreeSitterEngine:
         parser = Parser(lang_obj)
         tree = parser.parse(code_bytes)
 
-        node_lookup: Dict[str, ASTNode] = {}
+        node_lookup: dict[str, ASTNode] = {}
         root_ast_node = self._convert_ts_node(
             ts_node=tree.root_node,
             file_path=path,
@@ -111,7 +112,7 @@ class TreeSitterEngine:
 
         return file_node
 
-    def parse_file(self, file_path: Path, language_name: str) -> Optional[FileNode]:
+    def parse_file(self, file_path: Path, language_name: str) -> FileNode | None:
         """Reads file and parses it into root FileNode."""
         try:
             code_bytes = file_path.read_bytes()
@@ -124,15 +125,15 @@ class TreeSitterEngine:
         ts_node: Any,
         file_path: Path,
         language_name: str,
-        parent_id: Optional[str],
-        node_lookup: Dict[str, ASTNode],
+        parent_id: str | None,
+        node_lookup: dict[str, ASTNode],
     ) -> ASTNode:
         """Recursively converts a tree-sitter Node to a KarsaSec ASTNode."""
         node_id = generate_node_id(file_path, ts_node.start_byte, ts_node.end_byte, ts_node.type)
         start_point = Position(line=ts_node.start_point[0] + 1, column=ts_node.start_point[1])
         end_point = Position(line=ts_node.end_point[0] + 1, column=ts_node.end_point[1])
 
-        child_ids: List[str] = []
+        child_ids: list[str] = []
         for child in ts_node.children:
             child_node = self._convert_ts_node(
                 ts_node=child,

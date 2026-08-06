@@ -3,15 +3,16 @@
 import json
 import sqlite3
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+
+from karsasec.graph.edge import EdgeType, GraphEdge, ResolutionMechanism
 from karsasec.graph.graph import ProjectGraph
 from karsasec.graph.node import GraphNode, NodeKind, Visibility
-from karsasec.graph.edge import GraphEdge, EdgeType, ResolutionMechanism
+
 
 class GraphSerializer:
     """Handles persistence of ProjectGraph to disk (SQLite database or JSON format)."""
 
-    def save_sqlite(self, graph: ProjectGraph, db_path: Union[str, Path]) -> None:
+    def save_sqlite(self, graph: ProjectGraph, db_path: str | Path) -> None:
         """Serializes ProjectGraph nodes and edges into an indexed SQLite database."""
         path = Path(db_path)
         if path.exists():
@@ -98,7 +99,7 @@ class GraphSerializer:
         conn.commit()
         conn.close()
 
-    def load_sqlite(self, db_path: Union[str, Path]) -> ProjectGraph:
+    def load_sqlite(self, db_path: str | Path) -> ProjectGraph:
         """Loads and reconstructs a ProjectGraph from an SQLite database."""
         path = Path(db_path)
         if not path.exists():
@@ -166,7 +167,7 @@ class GraphSerializer:
         conn.close()
         return graph
 
-    def save_json(self, graph: ProjectGraph, json_path: Union[str, Path]) -> None:
+    def save_json(self, graph: ProjectGraph, json_path: str | Path) -> None:
         """Exports ProjectGraph to a structured JSON file."""
         data = {
             "nodes": [
@@ -201,7 +202,7 @@ class GraphSerializer:
         }
         Path(json_path).write_text(json.dumps(data, indent=2))
 
-    def load_json(self, json_path: Union[str, Path]) -> ProjectGraph:
+    def load_json(self, json_path: str | Path) -> ProjectGraph:
         """Imports and reconstructs ProjectGraph from a JSON file."""
         data = json.loads(Path(json_path).read_text())
         graph = ProjectGraph()

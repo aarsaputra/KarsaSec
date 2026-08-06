@@ -2,8 +2,10 @@
 
 import time
 from pathlib import Path
+
 from karsasec.parser.ast import ASTWalker
 from karsasec.parser.tree_sitter import ts_engine
+
 
 def test_benchmark_ast_walker_throughput(tmp_path: Path) -> None:
     """Informational benchmark recording ASTWalker nodes/sec traversal rate."""

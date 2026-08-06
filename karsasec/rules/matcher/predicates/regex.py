@@ -1,12 +1,13 @@
 """RegexPredicate plugin evaluating pre-compiled regular expression patterns against node text."""
 
 import re
-from typing import Optional, Tuple
+
 from karsasec.parser.ast.context import VisitorContext
 from karsasec.parser.ast_nodes import ASTNode
 from karsasec.rules.matcher.compiler import CompiledRule
 from karsasec.rules.matcher.predicates.base import BasePredicate
 from karsasec.rules.matcher.statistics import MatcherStatistics
+
 
 class RegexPredicate(BasePredicate):
     """Evaluates pre-compiled regular expression patterns against AST node text."""
@@ -22,7 +23,7 @@ class RegexPredicate(BasePredicate):
         context: VisitorContext,
         stats: MatcherStatistics,
         source_bytes: bytes = b"",
-    ) -> Tuple[bool, Optional[str], Optional[str]]:
+    ) -> tuple[bool, str | None, str | None]:
         pattern = compiled_rule.compiled_pattern
         if not pattern:
             return True, None, None
@@ -31,13 +32,13 @@ class RegexPredicate(BasePredicate):
         stats.regex_calls += 1
 
         node_text = node.get_text(source_bytes)
-        
+
         # Semantic expansion: If semantic graph is present, try to resolve variable text
         expanded_texts = [node_text]
         if getattr(context, "semantic_graph", None):
             scopes = getattr(context.semantic_graph, "scopes", {})
             file_node = getattr(context, "file_node", None)
-            
+
             # Find the enclosing scope
             node_scope = None
             if file_node and scopes:
@@ -62,7 +63,7 @@ class RegexPredicate(BasePredicate):
                     resolved = context.semantic_graph.alias_tracker.resolve(word)
                     if resolved == word:
                         resolved = None
-                
+
                 if resolved:
                     expanded = re.sub(r"\b" + re.escape(word) + r"\b", resolved, node_text)
                     expanded_texts.append(expanded)

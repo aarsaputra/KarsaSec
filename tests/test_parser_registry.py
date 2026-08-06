@@ -1,9 +1,9 @@
 """Unit tests for ParserRegistry dual lookup."""
 
-from pathlib import Path
 from karsasec.parser.docker_parser import docker_parser_plugin
 from karsasec.parser.python_parser import PythonParserPlugin
 from karsasec.parser.registry import ParserRegistry
+
 
 def test_parser_registry_dual_lookup() -> None:
     registry = ParserRegistry()

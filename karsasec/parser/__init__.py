@@ -1,7 +1,22 @@
 """KarsaSec Parser Package."""
 
-from karsasec.parser.ast import ASTVisitor, ASTWalker, StopTraversal, TraversalStrategy, VisitorContext
-from karsasec.parser.ast_nodes import ASTNode, AssignmentNode, CallNode, ClassNode, FileNode, FunctionNode, ImportNode, Position
+from karsasec.parser.ast import (
+    ASTVisitor,
+    ASTWalker,
+    StopTraversal,
+    TraversalStrategy,
+    VisitorContext,
+)
+from karsasec.parser.ast_nodes import (
+    AssignmentNode,
+    ASTNode,
+    CallNode,
+    ClassNode,
+    FileNode,
+    FunctionNode,
+    ImportNode,
+    Position,
+)
 from karsasec.parser.detector import ProjectDetector, detect_project
 from karsasec.parser.framework import FrameworkDetector
 from karsasec.parser.language import LanguageDetector

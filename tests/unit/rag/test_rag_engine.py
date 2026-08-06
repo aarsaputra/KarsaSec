@@ -1,8 +1,6 @@
-import pytest
 
 from karsasec.rag.bm25 import BM25Document, BM25Index
-from karsasec.rag.hybrid import HybridRAGIndex
-from karsasec.rag.service import RAGService, RAGDocument
+from karsasec.rag.service import RAGDocument, RAGService
 
 
 def test_bm25_search_ranks_relevant_document_first() -> None:

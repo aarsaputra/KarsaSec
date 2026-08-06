@@ -1,19 +1,18 @@
 """Unit tests for FindingCollection, JSONReporter, SARIFReporter, ConsoleReporter, and ReportTargets."""
 
 import json
-import pytest
 from pathlib import Path
 
 from karsasec.core.execution.result import ExecutionResult
 from karsasec.core.finding import Evidence, Finding, FindingCollection
 from karsasec.core.reporting import (
     ConsoleReporter,
-    FileTarget,
     JSONReporter,
     SARIFReporter,
     StringTarget,
 )
 from karsasec.rules.enums import Confidence, Severity
+
 
 def create_mock_finding(
     rule_id: str = "KS-PY-001",

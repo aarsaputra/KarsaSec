@@ -2,13 +2,14 @@
 
 import tempfile
 from pathlib import Path
-from karsasec.parser.python_parser import python_parser_plugin
-from karsasec.semantic.resolver import SemanticResolver
+
 from karsasec.graph.builder import CallGraphBuilder
+from karsasec.parser.ast.context import VisitorContext
+from karsasec.parser.python_parser import python_parser_plugin
 from karsasec.rules.matcher.predicates.symbol import SymbolPredicate
 from karsasec.rules.matcher.statistics import MatcherStatistics
-from karsasec.parser.ast.context import VisitorContext
-from karsasec.rules.schema import Rule, validate_rule_dict
+from karsasec.rules.schema import validate_rule_dict
+from karsasec.semantic.resolver import SemanticResolver
 
 
 def _make_rule(symbol_trigger: str) -> object:

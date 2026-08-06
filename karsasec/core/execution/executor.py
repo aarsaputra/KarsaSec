@@ -2,9 +2,9 @@
 
 import time
 import uuid
-from datetime import datetime, timezone
+from collections.abc import Sequence
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Union
 
 from karsasec.core.execution.context import ScanContext
 from karsasec.core.execution.errors import ExecutionError
@@ -15,20 +15,20 @@ from karsasec.core.finding.factory import FindingFactory, finding_factory
 from karsasec.core.finding.model import Finding
 from karsasec.graph.taint_verifier import taint_verifier
 from karsasec.parser.ast import ASTWalker, VisitorContext
-from karsasec.parser.ast_nodes import FileNode
-from karsasec.rules.matcher import ASTMatcher, CompiledRule, ast_matcher
+from karsasec.rules.matcher import ASTMatcher, CompiledRule
 from karsasec.rules.schema import Rule
 from karsasec.semantic.resolver import SemanticResolver
+
 
 class RuleExecutor:
     """Orchestrates streaming AST traversal, indexed rule evaluation, evidence collection, and finding deduplication."""
 
     def __init__(
         self,
-        walker: Optional[ASTWalker] = None,
-        matcher: Optional[ASTMatcher] = None,
-        collector: Optional[EvidenceCollector] = None,
-        factory: Optional[FindingFactory] = None,
+        walker: ASTWalker | None = None,
+        matcher: ASTMatcher | None = None,
+        collector: EvidenceCollector | None = None,
+        factory: FindingFactory | None = None,
     ) -> None:
         self.walker = walker or ASTWalker()
         self.matcher = matcher or ASTMatcher()
@@ -38,7 +38,7 @@ class RuleExecutor:
     def execute_scan(
         self,
         scan_context: ScanContext,
-        rules: Sequence[Union[Rule, CompiledRule]],
+        rules: Sequence[Rule | CompiledRule],
     ) -> ExecutionResult:
         """Executes static analysis scan over a ScanContext.
 
@@ -50,7 +50,7 @@ class RuleExecutor:
             ExecutionResult: Deduplicated findings and performance metrics.
         """
         scan_id = f"scan-{uuid.uuid4().hex[:8]}"
-        timestamp = datetime.now(timezone.utc).isoformat()
+        timestamp = datetime.now(UTC).isoformat()
         start_time = time.perf_counter()
 
         indexer = RuleIndexer(rules)
@@ -68,8 +68,8 @@ class RuleExecutor:
         )
 
         file_path = scan_context.file_path or scan_context.file_node.file_path or Path("unknown")
-        seen_fingerprints: Dict[str, Finding] = {}
-        errors: List[str] = []
+        seen_fingerprints: dict[str, Finding] = {}
+        errors: list[str] = []
         nodes_count = 0
 
         for node in self.walker.walk(scan_context.file_node):

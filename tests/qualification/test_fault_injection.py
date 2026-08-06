@@ -1,22 +1,18 @@
 """Fault Injection Qualification Test Suite verifying crash isolation across parser, pass, and pipeline layers."""
 
-import pytest
 from pathlib import Path
-from unittest.mock import patch, MagicMock
 
+from karsasec.core.execution import RuleExecutor, ScanContext
+from karsasec.parser.generic_parser import GenericParserPlugin
+from karsasec.parser.python_parser import PythonParserPlugin
+from karsasec.rules.loader import YAMLRuleLoader
+from karsasec.rules.patterns import get_default_rules_directory
+from karsasec.runtime.artifact_store import ArtifactStore
 from karsasec.runtime.pass_manager import (
     AnalysisPass,
     PassDescriptor,
     PassManager,
-    PassTelemetry,
 )
-from karsasec.runtime.artifact_store import ArtifactStore
-from karsasec.parser.python_parser import PythonParserPlugin
-from karsasec.parser.generic_parser import GenericParserPlugin
-from karsasec.core.execution import RuleExecutor, ScanContext
-from karsasec.rules.loader import YAMLRuleLoader
-from karsasec.rules.patterns import get_default_rules_directory
-
 
 # === Phase G.1: Pass Manager Crash Isolation ===
 

@@ -2,17 +2,18 @@
 
 import threading
 from collections import defaultdict
-from typing import Dict, List, Optional, Set, Union
+
 from karsasec.rules.enums import LanguageEnum
 from karsasec.rules.schema import Rule
+
 
 class RuleRegistry:
     """Registry managing loaded security rules indexed by Language and AST Node Type."""
 
     def __init__(self) -> None:
-        self._rules_by_id: Dict[str, Rule] = {}
+        self._rules_by_id: dict[str, Rule] = {}
         # Index: language_str -> node_type_str -> List[Rule]
-        self._rules_by_lang_and_node: Dict[str, Dict[str, List[Rule]]] = defaultdict(lambda: defaultdict(list))
+        self._rules_by_lang_and_node: dict[str, dict[str, list[Rule]]] = defaultdict(lambda: defaultdict(list))
         self._lock = threading.Lock()
 
     def register(self, rule: Rule) -> None:
@@ -40,12 +41,12 @@ class RuleRegistry:
                     clean_type = node_type.lower()
                     self._rules_by_lang_and_node[lang_str][clean_type].append(rule)
 
-    def get_rule_by_id(self, rule_id: str) -> Optional[Rule]:
+    def get_rule_by_id(self, rule_id: str) -> Rule | None:
         """Retrieves a rule by its unique Rule ID."""
         with self._lock:
             return self._rules_by_id.get(rule_id)
 
-    def get_rules_for_node(self, language: Union[str, LanguageEnum], node_type: str) -> List[Rule]:
+    def get_rules_for_node(self, language: str | LanguageEnum, node_type: str) -> list[Rule]:
         """Retrieves candidate rules matching the target language and AST node_type in O(1) time."""
         with self._lock:
             lang_str = language.value if isinstance(language, LanguageEnum) else str(language)
@@ -55,8 +56,8 @@ class RuleRegistry:
             wildcard_rules = self._rules_by_lang_and_node[lang_str].get("*", [])
 
             # Deduplicate while maintaining order
-            combined: List[Rule] = []
-            seen: Set[str] = set()
+            combined: list[Rule] = []
+            seen: set[str] = set()
 
             for r in specific_rules + wildcard_rules:
                 if r.id not in seen:
@@ -65,7 +66,7 @@ class RuleRegistry:
 
             return combined
 
-    def list_rules(self) -> List[Rule]:
+    def list_rules(self) -> list[Rule]:
         """Returns all registered active rules."""
         with self._lock:
             return list(self._rules_by_id.values())

@@ -1,9 +1,10 @@
 """Unit test for RuleTestRunner."""
 
 from pathlib import Path
-from karsasec.rules.enums import Confidence, Severity
+
 from karsasec.rules.schema import validate_rule_dict
 from karsasec.rules.testing import RuleTestCase, RuleTestRunner
+
 
 def test_rule_runner_with_sample_files(tmp_path: Path) -> None:
     rule_dict = {

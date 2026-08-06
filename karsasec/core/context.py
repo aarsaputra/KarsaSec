@@ -2,7 +2,8 @@
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 
 @dataclass
 class Finding:
@@ -37,13 +38,13 @@ class FrameworkMatch:
 class ProjectProfile:
     """Centralized technical profile of the target project."""
     root: Path
-    languages: List[str] = field(default_factory=list)
-    frameworks: List[str] = field(default_factory=list)
-    framework_matches: List[FrameworkMatch] = field(default_factory=list)
-    package_managers: List[str] = field(default_factory=list)
-    manifests: List[Path] = field(default_factory=list)
-    source_files: List[Path] = field(default_factory=list)
-    ignored_files: List[Path] = field(default_factory=list)
+    languages: list[str] = field(default_factory=list)
+    frameworks: list[str] = field(default_factory=list)
+    framework_matches: list[FrameworkMatch] = field(default_factory=list)
+    package_managers: list[str] = field(default_factory=list)
+    manifests: list[Path] = field(default_factory=list)
+    source_files: list[Path] = field(default_factory=list)
+    ignored_files: list[Path] = field(default_factory=list)
     total_files: int = 0
     total_loc: int = 0
     capabilities: ProjectCapabilities = field(default_factory=ProjectCapabilities)
@@ -54,17 +55,17 @@ class ProjectProfile:
         return self.root
 
     @property
-    def detected_languages(self) -> List[str]:
+    def detected_languages(self) -> list[str]:
         """Backward compatibility alias for detected languages."""
         return self.languages
 
     @property
-    def detected_frameworks(self) -> List[str]:
+    def detected_frameworks(self) -> list[str]:
         """Backward compatibility alias for detected frameworks."""
         return self.frameworks
 
     @property
-    def manifest_files(self) -> List[str]:
+    def manifest_files(self) -> list[str]:
         """Backward compatibility alias for manifest files."""
         return [str(m) for m in self.manifests]
 
@@ -74,6 +75,6 @@ class AnalysisContext:
     scan_id: str
     target_path: Path
     profile: ProjectProfile = field(default_factory=lambda: ProjectProfile(root=Path(".")))
-    findings: List[Finding] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    findings: list[Finding] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 

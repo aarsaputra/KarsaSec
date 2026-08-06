@@ -1,8 +1,8 @@
 """Stateless ASTVisitor base class implementing class-based dynamic dispatch."""
 
-from typing import Any, Optional
 from karsasec.parser.ast.context import VisitorContext
 from karsasec.parser.ast_nodes import ASTNode
+
 
 class ASTVisitor:
     """Stateless Visitor pattern base class for inspecting AST nodes."""

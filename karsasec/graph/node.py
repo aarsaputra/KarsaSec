@@ -1,9 +1,9 @@
 """Data structures for Project Graph Nodes."""
 
 from dataclasses import dataclass, field
-from enum import Enum, auto
+from enum import Enum
 from pathlib import Path
-from typing import Dict, Optional
+
 
 class NodeKind(Enum):
     """Types of program elements represented as graph nodes."""
@@ -44,7 +44,7 @@ class GraphNode:
     namespace: str = ""
     signature: str = ""
     visibility: Visibility = Visibility.PUBLIC
-    file_path: Optional[Path] = None
+    file_path: Path | None = None
     line: int = 1
     column: int = 0
-    attributes: Dict[str, str] = field(default_factory=dict)
+    attributes: dict[str, str] = field(default_factory=dict)

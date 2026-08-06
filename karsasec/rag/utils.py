@@ -1,10 +1,9 @@
 import re
-from typing import List
 
 _TOKEN_PATTERN = re.compile(r"[A-Za-z0-9_'-]+")
 
 
-def tokenize_text(text: str) -> List[str]:
+def tokenize_text(text: str) -> list[str]:
     """Tokenize text into normalized alphanumeric tokens for search and embedding."""
     return [token.lower() for token in _TOKEN_PATTERN.findall(text) if token.strip()]
 
@@ -14,7 +13,7 @@ def normalize_text(text: str) -> str:
     return " ".join(tokenize_text(text))
 
 
-def chunk_text(text: str, max_tokens: int = 120) -> List[str]:
+def chunk_text(text: str, max_tokens: int = 120) -> list[str]:
     """Split long text into smaller chunks of up to `max_tokens` tokens."""
     tokens = tokenize_text(text)
     if not tokens:
@@ -23,8 +22,8 @@ def chunk_text(text: str, max_tokens: int = 120) -> List[str]:
     if len(tokens) <= max_tokens:
         return [" ".join(tokens)]
 
-    chunks: List[str] = []
-    current: List[str] = []
+    chunks: list[str] = []
+    current: list[str] = []
     for token in tokens:
         current.append(token)
         if len(current) >= max_tokens:

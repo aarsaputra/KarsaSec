@@ -4,7 +4,6 @@ import logging
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set, Type
 
 from karsasec.rules.enums import AnalysisCapability
 from karsasec.runtime.artifact_store import ArtifactStore
@@ -17,9 +16,9 @@ class PassDescriptor:
     """Metadata describing inputs, outputs, budget constraints, and capability dependencies for an AnalysisPass."""
 
     name: str
-    inputs: List[str]
-    outputs: List[str]
-    required_capabilities: List[AnalysisCapability] = field(default_factory=list)
+    inputs: list[str]
+    outputs: list[str]
+    required_capabilities: list[AnalysisCapability] = field(default_factory=list)
     time_budget_ms: float = 1000.0
     memory_budget_mb: float = 100.0
 
@@ -31,7 +30,7 @@ class PassTelemetry:
     pass_name: str
     success: bool
     elapsed_ms: float
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 class AnalysisPass(ABC):
@@ -50,18 +49,18 @@ class PassManager:
     """Manages pass registration, dependency resolution, failure isolation, and execution telemetry."""
 
     def __init__(self) -> None:
-        self._passes: Dict[str, AnalysisPass] = {}
-        self._execution_order: List[str] = []
-        self._telemetry: List[PassTelemetry] = []
+        self._passes: dict[str, AnalysisPass] = {}
+        self._execution_order: list[str] = []
+        self._telemetry: list[PassTelemetry] = []
 
     def register_pass(self, pass_instance: AnalysisPass) -> None:
         self._passes[pass_instance.descriptor.name] = pass_instance
         if pass_instance.descriptor.name not in self._execution_order:
             self._execution_order.append(pass_instance.descriptor.name)
 
-    def run_passes(self, store: ArtifactStore) -> Dict[str, bool]:
+    def run_passes(self, store: ArtifactStore) -> dict[str, bool]:
         """Executes registered passes sequentially with strict failure isolation."""
-        results: Dict[str, bool] = {}
+        results: dict[str, bool] = {}
         self._telemetry.clear()
 
         for pass_name in self._execution_order:
@@ -89,7 +88,7 @@ class PassManager:
 
         return results
 
-    def get_telemetry(self) -> List[PassTelemetry]:
+    def get_telemetry(self) -> list[PassTelemetry]:
         return list(self._telemetry)
 
 

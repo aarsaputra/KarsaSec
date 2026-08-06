@@ -1,11 +1,12 @@
 """BasePredicate abstract class for ASTMatcher predicate plugins."""
 
 from abc import ABC, abstractmethod
-from typing import Optional, Tuple
+
 from karsasec.parser.ast.context import VisitorContext
 from karsasec.parser.ast_nodes import ASTNode
 from karsasec.rules.matcher.compiler import CompiledRule
 from karsasec.rules.matcher.statistics import MatcherStatistics
+
 
 class BasePredicate(ABC):
     """Abstract base class for individual rule matching predicates."""
@@ -24,7 +25,7 @@ class BasePredicate(ABC):
         context: VisitorContext,
         stats: MatcherStatistics,
         source_bytes: bytes = b"",
-    ) -> Tuple[bool, Optional[str], Optional[str]]:
+    ) -> tuple[bool, str | None, str | None]:
         """Evaluates predicate against node and context.
 
         Returns:

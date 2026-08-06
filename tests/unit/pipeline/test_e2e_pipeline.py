@@ -2,13 +2,14 @@
 
 import tempfile
 from pathlib import Path
-from karsasec.parser.python_parser import python_parser_plugin
-from karsasec.parser.generic_parser import js_parser, go_parser, php_parser
-from karsasec.semantic.resolver import SemanticResolver
+
 from karsasec.graph.builder import ProjectGraphBuilder
+from karsasec.parser.ast import VisitorContext
+from karsasec.parser.generic_parser import go_parser, js_parser, php_parser
+from karsasec.parser.python_parser import python_parser_plugin
 from karsasec.rules.loader import YAMLRuleLoader
 from karsasec.rules.matcher import ASTMatcher, rule_compiler
-from karsasec.parser.ast import VisitorContext
+from karsasec.semantic.resolver import SemanticResolver
 
 
 def test_e2e_multi_language_pipeline() -> None:

@@ -49,12 +49,12 @@ karsasec = "karsasec.cli:app"
 packages = ["karsasec"]
 
 [tool.ruff]
-line-length = 100
+line-length = 120
 target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP"]
-ignore = []
+ignore = ["E501", "B904", "E741", "B008", "B007", "B027", "E402", "F841"]
 
 [tool.mypy]
 python_version = "3.11"

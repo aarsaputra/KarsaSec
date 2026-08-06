@@ -1,7 +1,8 @@
 """Immutable Evidence model capturing code snippet, line, column, and context lines."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, Tuple
+from typing import Any
+
 
 @dataclass(frozen=True)
 class Evidence:
@@ -9,5 +10,5 @@ class Evidence:
     snippet: str
     line: int
     column: int
-    context_lines: Tuple[str, ...] = field(default_factory=tuple)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    context_lines: tuple[str, ...] = field(default_factory=tuple)
+    metadata: dict[str, Any] = field(default_factory=dict)

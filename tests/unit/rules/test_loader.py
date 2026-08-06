@@ -1,8 +1,11 @@
 """Unit tests for YAMLRuleLoader and RuleCache."""
 
-import pytest
 from pathlib import Path
+
+import pytest
+
 from karsasec.rules.loader import RuleCache, YAMLRuleLoader
+
 
 def test_loader_valid_file(tmp_path: Path) -> None:
     rule_file = tmp_path / "test_rule.yaml"

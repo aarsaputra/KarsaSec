@@ -1,11 +1,13 @@
 """ASTWalker streaming iterator implementation operating directly on FileNode trees."""
 
 from collections import deque
-from typing import Iterator, Optional, Set, Type
+from collections.abc import Iterator
+
 from karsasec.parser.ast.context import VisitorContext
 from karsasec.parser.ast.strategy import StopTraversal, TraversalStrategy
 from karsasec.parser.ast.visitor import ASTVisitor
 from karsasec.parser.ast_nodes import ASTNode, FileNode
+
 
 class ASTWalker:
     """High-performance streaming AST Walker operating on FileNode root structures."""
@@ -14,7 +16,7 @@ class ASTWalker:
         self,
         root: FileNode,
         strategy: TraversalStrategy = TraversalStrategy.DFS,
-        node_types: Optional[Set[Type[ASTNode]]] = None,
+        node_types: set[type[ASTNode]] | None = None,
     ) -> Iterator[ASTNode]:
         """Streams AST nodes from FileNode tree using DFS or BFS traversal and type-safe filtering."""
         if not root:
@@ -29,7 +31,7 @@ class ASTWalker:
 
             while queue:
                 current_item = queue.popleft()
-                current_node: Optional[ASTNode] = None
+                current_node: ASTNode | None = None
 
                 if isinstance(current_item, str):
                     if current_item in visited_ids:
@@ -84,9 +86,9 @@ class ASTWalker:
         self,
         root: FileNode,
         visitor: ASTVisitor,
-        context: Optional[VisitorContext] = None,
+        context: VisitorContext | None = None,
         strategy: TraversalStrategy = TraversalStrategy.DFS,
-        node_types: Optional[Set[Type[ASTNode]]] = None,
+        node_types: set[type[ASTNode]] | None = None,
     ) -> None:
         """Walks FileNode tree and dispatches node visits to a stateless ASTVisitor.
 

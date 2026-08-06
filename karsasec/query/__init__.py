@@ -4,7 +4,7 @@ Provides a fluent Python query DSL for expressing complex code patterns and secu
 independently of YAML configuration schemas.
 """
 
-from karsasec.query.dsl import Query, Predicate
+from karsasec.query.dsl import Predicate, Query
 
 __all__ = [
     "Query",

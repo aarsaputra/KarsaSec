@@ -1,9 +1,10 @@
 """EvidenceCollector extracting source snippet and context window lines from ASTNode and source_bytes."""
 
-from typing import Optional, Tuple
+
 from karsasec.core.finding.errors import EvidenceUnavailableError
 from karsasec.core.finding.evidence import Evidence
 from karsasec.parser.ast_nodes import ASTNode
+
 
 class EvidenceCollector:
     """Decoupled evidence collector extracting line, column, snippet, and context lines."""
@@ -11,7 +12,7 @@ class EvidenceCollector:
     def extract_evidence(
         self,
         node: ASTNode,
-        source_bytes: Optional[bytes],
+        source_bytes: bytes | None,
         context_window: int = 10,
     ) -> Evidence:
         """Extracts Evidence DTO from an ASTNode and source bytes.
@@ -39,7 +40,7 @@ class EvidenceCollector:
         # Calculate context lines
         start_idx = max(0, line_num - 1 - context_window)
         end_idx = min(len(lines), line_num + context_window)
-        context_lines: Tuple[str, ...] = tuple(lines[start_idx:end_idx])
+        context_lines: tuple[str, ...] = tuple(lines[start_idx:end_idx])
 
         return Evidence(
             snippet=snippet if snippet else node.node_type,

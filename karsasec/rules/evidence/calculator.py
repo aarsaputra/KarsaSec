@@ -4,6 +4,7 @@ from karsasec.rules.enums import Confidence
 from karsasec.rules.evidence.collector import EvidenceReport
 from karsasec.rules.schema import Rule
 
+
 class ConfidenceCalculator:
     """Calculates hybrid confidence combining fixed rule overrides and dynamic evidence scoring."""
 

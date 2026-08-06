@@ -1,6 +1,8 @@
 import os
-import jwt
+
 import bcrypt
+import jwt
+
 
 def login_user(password):
     secret_key = os.environ.get("JWT_SECRET")

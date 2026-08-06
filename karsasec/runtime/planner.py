@@ -1,11 +1,9 @@
 """Runtime Execution Planner and Capability Dependency Scheduler."""
 
-from typing import Dict, List, Set, Tuple
 from karsasec.rules.enums import AnalysisCapability
 from karsasec.rules.schema import Rule
 
-
-CAPABILITY_DEPENDENCIES: Dict[AnalysisCapability, List[AnalysisCapability]] = {
+CAPABILITY_DEPENDENCIES: dict[AnalysisCapability, list[AnalysisCapability]] = {
     AnalysisCapability.AST: [],
     AnalysisCapability.POSITION: [AnalysisCapability.AST],
     AnalysisCapability.COMMENTS: [AnalysisCapability.AST],
@@ -21,9 +19,9 @@ CAPABILITY_DEPENDENCIES: Dict[AnalysisCapability, List[AnalysisCapability]] = {
 class CapabilityDependencyPlanner:
     """Computes transitive closure and topological execution order of required analysis capabilities."""
 
-    def resolve_execution_order(self, required_capabilities: Set[AnalysisCapability]) -> List[AnalysisCapability]:
+    def resolve_execution_order(self, required_capabilities: set[AnalysisCapability]) -> list[AnalysisCapability]:
         """Resolves required capabilities and their prerequisites into a topologically sorted execution plan."""
-        expanded: Set[AnalysisCapability] = set()
+        expanded: set[AnalysisCapability] = set()
 
         def visit(cap: AnalysisCapability) -> None:
             if cap not in expanded:
@@ -56,9 +54,9 @@ class ExecutionPlanner:
     def __init__(self) -> None:
         self.dep_planner = CapabilityDependencyPlanner()
 
-    def plan_for_rules(self, rules: List[Rule]) -> List[AnalysisCapability]:
+    def plan_for_rules(self, rules: list[Rule]) -> list[AnalysisCapability]:
         """Analyzes required capabilities declared in active rules and computes minimal DAG execution plan."""
-        required: Set[AnalysisCapability] = {AnalysisCapability.AST}
+        required: set[AnalysisCapability] = {AnalysisCapability.AST}
 
         for rule in rules:
             if rule.analysis and rule.analysis.requires:

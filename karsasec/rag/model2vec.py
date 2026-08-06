@@ -1,7 +1,7 @@
 import hashlib
 import math
 from collections import Counter
-from typing import Dict, Iterable, Mapping
+from collections.abc import Mapping
 
 from karsasec.rag.utils import tokenize_text
 
@@ -13,12 +13,12 @@ def stable_token_hash(token: str) -> int:
 class Model2VecEncoder:
     """Lightweight static embedding encoder for code/text retrieval."""
 
-    def encode(self, text: str) -> Dict[int, float]:
+    def encode(self, text: str) -> dict[int, float]:
         tokens = tokenize_text(text)
         if not tokens:
             return {}
         counts = Counter(tokens)
-        vector: Dict[int, float] = {}
+        vector: dict[int, float] = {}
         for token, freq in counts.items():
             vector[stable_token_hash(token)] = float(freq)
         return vector

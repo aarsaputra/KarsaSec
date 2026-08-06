@@ -1,15 +1,13 @@
 """Infrastructure as Code (IaC) Scanner bridging to native AST Parsers and Rule Engine v2."""
 
 from pathlib import Path
-from typing import List, Optional
 
 from karsasec.core.execution import ScanContext, rule_executor
-from karsasec.rules.enums import Severity
 from karsasec.core.finding.model import Finding
-from karsasec.rules.loader import YAMLRuleLoader
 from karsasec.parser.docker_parser import docker_parser_plugin
-from karsasec.parser.k8s_parser import k8s_parser_plugin
 from karsasec.parser.github_actions_parser import gha_parser_plugin
+from karsasec.parser.k8s_parser import k8s_parser_plugin
+from karsasec.rules.loader import YAMLRuleLoader
 
 
 class IaCScanner:
@@ -21,7 +19,7 @@ class IaCScanner:
         self.k8s_rules = self.loader.load_directory(Path("karsasec/rules/patterns/kubernetes"))
         self.gha_rules = self.loader.load_directory(Path("karsasec/rules/patterns/github_actions"))
 
-    def scan_file(self, file_path: Path) -> List[Finding]:
+    def scan_file(self, file_path: Path) -> list[Finding]:
         """Scans Dockerfile, Kubernetes, or GitHub Actions YAML files using native AST parsers and rule engine."""
         path = file_path.resolve()
         if not path.exists() or not path.is_file():

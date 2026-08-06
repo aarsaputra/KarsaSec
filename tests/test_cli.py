@@ -2,7 +2,9 @@
 
 import json
 from pathlib import Path
+
 from typer.testing import CliRunner
+
 from karsasec import __version__
 from karsasec.cli import app
 from karsasec.cli.commands.scan import execute_scan_command

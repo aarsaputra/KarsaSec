@@ -1,6 +1,6 @@
 """SeverityFormatter for ANSI terminal coloring and --no-color mode support."""
 
-from typing import Dict
+
 from karsasec.rules.enums import Severity
 
 # ANSI Color Codes
@@ -11,7 +11,7 @@ COLOR_YELLOW = "\033[0;33m"
 COLOR_BLUE = "\033[0;34m"
 COLOR_GRAY = "\033[0;37m"
 
-SEVERITY_COLORS: Dict[Severity, str] = {
+SEVERITY_COLORS: dict[Severity, str] = {
     Severity.CRITICAL: COLOR_BOLD_RED,
     Severity.HIGH: COLOR_RED,
     Severity.MEDIUM: COLOR_YELLOW,

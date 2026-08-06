@@ -1,10 +1,17 @@
 """Unit tests for ASTWalker and Visitor Pattern implementation."""
 
-import pytest
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
-from karsasec.parser.ast import ASTVisitor, ASTWalker, StopTraversal, TraversalStrategy, VisitorContext
-from karsasec.parser.ast_nodes import ASTNode, CallNode, FileNode
+
+from karsasec.parser.ast import (
+    ASTVisitor,
+    ASTWalker,
+    StopTraversal,
+    TraversalStrategy,
+    VisitorContext,
+)
+from karsasec.parser.ast_nodes import ASTNode, FileNode
+
 
 def create_synthetic_ast() -> FileNode:
     """Helper to build a deterministic synthetic AST tree for unit testing."""

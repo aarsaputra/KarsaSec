@@ -1,11 +1,12 @@
 """LiteralPredicate plugin evaluating literal text trigger matching."""
 
-from typing import Optional, Tuple
+
 from karsasec.parser.ast.context import VisitorContext
 from karsasec.parser.ast_nodes import ASTNode
 from karsasec.rules.matcher.compiler import CompiledRule
 from karsasec.rules.matcher.predicates.base import BasePredicate
 from karsasec.rules.matcher.statistics import MatcherStatistics
+
 
 class LiteralPredicate(BasePredicate):
     """Evaluates literal string triggers against AST node text."""
@@ -21,6 +22,6 @@ class LiteralPredicate(BasePredicate):
         context: VisitorContext,
         stats: MatcherStatistics,
         source_bytes: bytes = b"",
-    ) -> Tuple[bool, Optional[str], Optional[str]]:
+    ) -> tuple[bool, str | None, str | None]:
         # Checked via SymbolPredicate or fallback literal matching
         return True, None, None

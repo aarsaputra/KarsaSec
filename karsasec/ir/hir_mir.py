@@ -1,7 +1,6 @@
 """Multi-Layered IR architecture defining High-Level IR (HIR), Medium-Level IR (MIR), and Analysis-Level IR (LIR)."""
 
 from dataclasses import dataclass, field
-from typing import Any, List, Optional
 
 
 # ---------------------------------------------------------------------------
@@ -25,14 +24,14 @@ class MIRNode:
 @dataclass(frozen=True)
 class MIRConditional(MIRNode):
     condition_var: str
-    then_branch: List[MIRNode] = field(default_factory=list)
-    else_branch: List[MIRNode] = field(default_factory=list)
+    then_branch: list[MIRNode] = field(default_factory=list)
+    else_branch: list[MIRNode] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
 class MIRCall(MIRNode):
     callee: str
-    arguments: List[str] = field(default_factory=list)
+    arguments: list[str] = field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------

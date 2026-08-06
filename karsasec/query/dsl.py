@@ -1,6 +1,7 @@
 """Fluent Query and Predicate DSL for security pattern queries."""
 
-from typing import Any, Callable, List, Optional
+from collections.abc import Callable
+from typing import Any
 
 
 class Predicate:
@@ -19,7 +20,7 @@ class Query:
 
     def __init__(self, target_kind: str = "Call") -> None:
         self.target_kind = target_kind
-        self._predicates: List[Predicate] = []
+        self._predicates: list[Predicate] = []
 
     @classmethod
     def function_call(cls) -> "Query":

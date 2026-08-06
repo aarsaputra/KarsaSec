@@ -1,12 +1,12 @@
 """NodeTypePredicate plugin evaluating language scope and AST node_type."""
 
-from typing import Optional, Tuple
+
 from karsasec.parser.ast.context import VisitorContext
 from karsasec.parser.ast_nodes import ASTNode
-from karsasec.rules.enums import LanguageEnum
 from karsasec.rules.matcher.compiler import CompiledRule
 from karsasec.rules.matcher.predicates.base import BasePredicate
 from karsasec.rules.matcher.statistics import MatcherStatistics
+
 
 class NodeTypePredicate(BasePredicate):
     """Evaluates language scope and AST node_type matching with instant short-circuiting."""
@@ -22,7 +22,7 @@ class NodeTypePredicate(BasePredicate):
         context: VisitorContext,
         stats: MatcherStatistics,
         source_bytes: bytes = b"",
-    ) -> Tuple[bool, Optional[str], Optional[str]]:
+    ) -> tuple[bool, str | None, str | None]:
         stats.predicates_checked += 1
         rule = compiled_rule.rule
 

@@ -1,14 +1,13 @@
 """Benchmark suite comparing BM25, Model2Vec, and hybrid RAG retrieval latency."""
 
 import time
-from typing import List
 
 from karsasec.rag.bm25 import BM25Document, BM25Index
 from karsasec.rag.hybrid import HybridRAGIndex
 from karsasec.rag.model2vec import Model2VecEncoder, Model2VecSimilarity
 
 
-def _build_security_corpus() -> List[BM25Document]:
+def _build_security_corpus() -> list[BM25Document]:
     sample_texts = [
         "use prepared statements to prevent sql injection and database leak",
         "validate redirect URLs to avoid ssrf and open redirect vulnerabilities",

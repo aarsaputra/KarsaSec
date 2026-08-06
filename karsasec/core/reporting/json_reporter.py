@@ -1,11 +1,13 @@
 """JSONReporter producing structured KarsaSec v1.0 JSON report."""
 
 import json
+
 from karsasec.core.execution.result import ExecutionResult
 from karsasec.core.finding.collection import FindingCollection
 from karsasec.core.reporting.models import ReportMetadata
 from karsasec.core.reporting.reporter import Reporter
 from karsasec.core.reporting.target import ReportTarget
+
 
 class JSONReporter(Reporter):
     """Generates structured KarsaSec v1.0 JSON reports."""

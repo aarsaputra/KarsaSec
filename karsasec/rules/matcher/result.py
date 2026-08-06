@@ -1,7 +1,7 @@
 """Immutable RuleMatch model representing rule evaluation outcome."""
 
 from dataclasses import dataclass, field
-from typing import Optional, Tuple
+
 
 @dataclass(frozen=True)
 class RuleMatch:
@@ -9,8 +9,8 @@ class RuleMatch:
     matched: bool
     rule_id: str
     node_id: str
-    matched_symbol: Optional[str] = None
-    matched_text: Optional[str] = None
-    matched_predicates: Tuple[str, ...] = field(default_factory=tuple)
-    failure_reason: Optional[str] = None
+    matched_symbol: str | None = None
+    matched_text: str | None = None
+    matched_predicates: tuple[str, ...] = field(default_factory=tuple)
+    failure_reason: str | None = None
     evaluation_time_ns: int = 0

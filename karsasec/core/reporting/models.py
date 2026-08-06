@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True)
 class ReportMetadata:
     """Immutable metadata descriptor attached to generated security report artifacts."""

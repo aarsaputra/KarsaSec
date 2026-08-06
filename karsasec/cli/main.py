@@ -2,7 +2,7 @@
 
 import sys
 from pathlib import Path
-from typing import Optional
+
 import typer
 from rich.panel import Panel
 from rich.table import Table
@@ -27,7 +27,7 @@ def version_callback(value: bool) -> None:
 
 @app.callback()
 def main(
-    version: Optional[bool] = typer.Option(
+    version: bool | None = typer.Option(
         None,
         "--version",
         "-v",
@@ -60,13 +60,13 @@ def scan(
         "-f",
         help="Report format: console, json, sarif.",
     ),
-    output: Optional[Path] = typer.Option(
+    output: Path | None = typer.Option(
         None,
         "--output",
         "-o",
         help="Export path for scan report file.",
     ),
-    baseline: Optional[Path] = typer.Option(
+    baseline: Path | None = typer.Option(
         None,
         "--baseline",
         "-b",
@@ -78,13 +78,13 @@ def scan(
         "--context-search",
         help="Enable hybrid RAG retrieval context during scan.",
     ),
-    rag_query: Optional[str] = typer.Option(
+    rag_query: str | None = typer.Option(
         None,
         "--rag-query",
         "--context-query",
         help="Explicit text query used for RAG context retrieval.",
     ),
-    rag_corpus: Optional[Path] = typer.Option(
+    rag_corpus: Path | None = typer.Option(
         None,
         "--rag-corpus",
         help="Path to an external RAG corpus directory, e.g. a local clone of a public security/code corpus.",
@@ -169,7 +169,7 @@ runtime:
 
 
 @app.command("init")
-def init_config(path: Optional[Path] = typer.Argument(None, help="Path to write the default configuration file.")) -> None:
+def init_config(path: Path | None = typer.Argument(None, help="Path to write the default configuration file.")) -> None:
     """Create a starter karsasec.yaml configuration file."""
     output_path = path or Path("karsasec.yaml")
     output_path.parent.mkdir(parents=True, exist_ok=True)

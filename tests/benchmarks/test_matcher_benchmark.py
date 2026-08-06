@@ -1,13 +1,14 @@
 """Scalability benchmark measuring ASTMatcher throughput across 1, 10, 100, and 1000 rules."""
 
 import time
-from pathlib import Path
 
 from karsasec.parser.ast import VisitorContext
 from karsasec.parser.ast_nodes import ASTNode, FileNode
 from karsasec.rules.enums import LanguageEnum
 from karsasec.rules.matcher import ASTMatcher, rule_compiler
-from karsasec.rules.schema import Rule, RuleCondition, RuleMatch as RuleMatchSchema, RuleMetadata, RuleOutput, Severity
+from karsasec.rules.schema import Rule, RuleCondition, RuleMetadata, RuleOutput, Severity
+from karsasec.rules.schema import RuleMatch as RuleMatchSchema
+
 
 def create_compiled_rule(index: int) -> Rule:
     r = Rule(

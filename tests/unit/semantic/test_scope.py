@@ -2,6 +2,7 @@
 
 from karsasec.semantic.scope import Scope, ScopeType
 
+
 def test_scope_creation_and_type():
     scope = Scope(ScopeType.GLOBAL)
     assert scope.scope_type == ScopeType.GLOBAL

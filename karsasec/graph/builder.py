@@ -2,25 +2,25 @@
 
 import re
 from pathlib import Path
-from typing import Dict, List, Optional
-from karsasec.parser.ast_nodes import FileNode, ASTNode
-from karsasec.semantic.resolver import SemanticGraph
-from karsasec.graph.types import CallEdge, CallNode, CallType
-from karsasec.graph.node import GraphNode, NodeKind, Visibility
-from karsasec.graph.edge import GraphEdge, EdgeType, ResolutionMechanism
+
+from karsasec.graph.edge import EdgeType, GraphEdge, ResolutionMechanism
 from karsasec.graph.graph import CallGraph, ProjectGraph
+from karsasec.graph.node import GraphNode, NodeKind, Visibility
+from karsasec.graph.types import CallEdge, CallNode, CallType
+from karsasec.parser.ast_nodes import FileNode
+from karsasec.semantic.resolver import SemanticGraph
 
 
 class ProjectGraphBuilder:
     """Aggregates per-file SemanticGraphs and ASTs into a unified ProjectGraph."""
 
-    def build(self, file_nodes: List[FileNode], semantic_graphs: Dict[Path, SemanticGraph]) -> ProjectGraph:
+    def build(self, file_nodes: list[FileNode], semantic_graphs: dict[Path, SemanticGraph]) -> ProjectGraph:
         """Constructs and returns a unified ProjectGraph with rich GraphNode and GraphEdge metadata."""
         project_graph = ProjectGraph()
 
         # Helper maps
-        qname_to_node: Dict[str, GraphNode] = {}
-        node_id_to_graph_node: Dict[str, GraphNode] = {}
+        qname_to_node: dict[str, GraphNode] = {}
+        node_id_to_graph_node: dict[str, GraphNode] = {}
 
         # Step 1: Register Module, Class, and Function GraphNodes
         for file_node in file_nodes:
@@ -206,7 +206,7 @@ class ProjectGraphBuilder:
         match = re.search(r'\(([^)]*)\)', text)
         return f"({match.group(1)})" if match else "()"
 
-    def _get_enclosing_class_name(self, node_id: str, file_node: FileNode, source_bytes: bytes) -> Optional[str]:
+    def _get_enclosing_class_name(self, node_id: str, file_node: FileNode, source_bytes: bytes) -> str | None:
         curr_id = node_id
         while curr_id:
             p_node = file_node.nodes_map.get(curr_id)
@@ -220,7 +220,7 @@ class ProjectGraphBuilder:
             curr_id = p_node.parent_id
         return None
 
-    def _find_enclosing_def_id(self, node_id: str, file_node: FileNode, registered: Dict[str, GraphNode]) -> Optional[str]:
+    def _find_enclosing_def_id(self, node_id: str, file_node: FileNode, registered: dict[str, GraphNode]) -> str | None:
         curr_id = node_id
         while curr_id:
             p_node = file_node.nodes_map.get(curr_id)
@@ -231,7 +231,7 @@ class ProjectGraphBuilder:
             curr_id = p_node.parent_id
         return None
 
-    def _find_enclosing_caller_id(self, node_id: str, file_node: FileNode, registered: Dict[str, GraphNode]) -> Optional[str]:
+    def _find_enclosing_caller_id(self, node_id: str, file_node: FileNode, registered: dict[str, GraphNode]) -> str | None:
         curr_id = node_id
         while curr_id:
             p_node = file_node.nodes_map.get(curr_id)
@@ -246,7 +246,7 @@ class ProjectGraphBuilder:
         match = re.match(r'^([a-zA-Z0-9_\.\$]+)', text.strip())
         return match.group(1) if match else text.strip()
 
-    def _find_enclosing_scope(self, node_id: str, scopes: dict, file_node: FileNode) -> Optional[object]:
+    def _find_enclosing_scope(self, node_id: str, scopes: dict, file_node: FileNode) -> object | None:
         curr_id = node_id
         while curr_id:
             if curr_id in scopes:
@@ -255,7 +255,7 @@ class ProjectGraphBuilder:
             curr_id = p_node.parent_id if p_node else None
         return None
 
-    def _match_callee(self, target: str, qname_to_node: Dict[str, GraphNode], current_file: Optional[Path]) -> Optional[GraphNode]:
+    def _match_callee(self, target: str, qname_to_node: dict[str, GraphNode], current_file: Path | None) -> GraphNode | None:
         if target in qname_to_node:
             return qname_to_node[target]
         if current_file:
@@ -274,13 +274,13 @@ class CallGraphBuilder:
     def __init__(self) -> None:
         pass
 
-    def build(self, file_nodes: List[FileNode], semantic_graphs: Dict[Path, SemanticGraph]) -> CallGraph:
+    def build(self, file_nodes: list[FileNode], semantic_graphs: dict[Path, SemanticGraph]) -> CallGraph:
         """Constructs and returns a unified CallGraph from parsed files and their semantic contexts."""
         cg = CallGraph()
 
         # Step 1: Discover and register all function/method definitions as nodes
-        qualified_to_node: Dict[str, CallNode] = {}
-        id_to_node: Dict[str, CallNode] = {}
+        qualified_to_node: dict[str, CallNode] = {}
+        id_to_node: dict[str, CallNode] = {}
 
         for file_node in file_nodes:
             source_bytes = b""
@@ -432,7 +432,7 @@ class CallGraphBuilder:
         word_match = re.search(r'\b([a-zA-Z_][a-zA-Z0-9_]*)\b', text)
         return word_match.group(1) if word_match else "anonymous"
 
-    def _get_enclosing_class_name(self, node_id: str, file_node: FileNode, source_bytes: bytes) -> Optional[str]:
+    def _get_enclosing_class_name(self, node_id: str, file_node: FileNode, source_bytes: bytes) -> str | None:
         curr_id = node_id
         while curr_id:
             p_node = file_node.nodes_map.get(curr_id)
@@ -446,7 +446,7 @@ class CallGraphBuilder:
             curr_id = p_node.parent_id
         return None
 
-    def _extract_parameters(self, text: str) -> List[str]:
+    def _extract_parameters(self, text: str) -> list[str]:
         param_match = re.search(r'\(([^)]*)\)', text)
         params = []
         if param_match:
@@ -457,7 +457,7 @@ class CallGraphBuilder:
                     params.append(p_clean)
         return params
 
-    def _find_enclosing_caller_id(self, node_id: str, file_node: FileNode, id_to_node: Dict[str, CallNode]) -> Optional[str]:
+    def _find_enclosing_caller_id(self, node_id: str, file_node: FileNode, id_to_node: dict[str, CallNode]) -> str | None:
         curr_id = node_id
         while curr_id:
             p_node = file_node.nodes_map.get(curr_id)
@@ -472,7 +472,7 @@ class CallGraphBuilder:
         match = re.match(r'^([a-zA-Z0-9_\.\$]+)', text.strip())
         return match.group(1) if match else text.strip()
 
-    def _find_enclosing_scope(self, node_id: str, scopes: dict, file_node: FileNode) -> Optional[object]:
+    def _find_enclosing_scope(self, node_id: str, scopes: dict, file_node: FileNode) -> object | None:
         curr_id = node_id
         while curr_id:
             if curr_id in scopes:
@@ -481,7 +481,7 @@ class CallGraphBuilder:
             curr_id = p_node.parent_id if p_node else None
         return None
 
-    def _match_callee(self, target: str, qualified_to_node: Dict[str, CallNode], current_file: Optional[Path]) -> Optional[CallNode]:
+    def _match_callee(self, target: str, qualified_to_node: dict[str, CallNode], current_file: Path | None) -> CallNode | None:
         if target in qualified_to_node:
             return qualified_to_node[target]
         if current_file:

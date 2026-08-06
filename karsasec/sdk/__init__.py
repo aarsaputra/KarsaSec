@@ -4,7 +4,7 @@ Provides stable extension interfaces for third-party parsers, rule packs, custom
 and AI extension modules.
 """
 
-from karsasec.sdk.api import PluginSDK, PluginManifest, AnalysisAPIVersion
+from karsasec.sdk.api import AnalysisAPIVersion, PluginManifest, PluginSDK
 
 __all__ = [
     "PluginSDK",

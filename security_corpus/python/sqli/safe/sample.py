@@ -1,5 +1,6 @@
 import sqlite3
 
+
 def get_user_safe(username: str):
     conn = sqlite3.connect("db.sqlite")
     cursor = conn.cursor()

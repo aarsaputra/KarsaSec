@@ -1,7 +1,7 @@
 """MatcherStatistics tracker for ASTMatcher performance and predicate evaluation telemetry."""
 
-from dataclasses import dataclass, field
-from typing import Dict
+from dataclasses import dataclass
+
 
 @dataclass
 class MatcherStatistics:
@@ -22,7 +22,7 @@ class MatcherStatistics:
         self.short_circuit = 0
         self.total_time_ns = 0
 
-    def to_dict(self) -> Dict[str, int]:
+    def to_dict(self) -> dict[str, int]:
         """Returns statistics summary dictionary."""
         return {
             "nodes_checked": self.nodes_checked,

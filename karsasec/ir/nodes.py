@@ -1,7 +1,7 @@
 """Generic Intermediate Representation (IR) node definitions."""
 
 from dataclasses import dataclass, field
-from typing import Any, List, Optional
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -35,7 +35,7 @@ class IRAssign(IRNode):
 class IRCall(IRNode):
     """Represents a function or method invocation in IR."""
     callee: str = ""
-    args: List[IRNode] = field(default_factory=list)
+    args: list[IRNode] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -49,4 +49,4 @@ class IRBinaryOp(IRNode):
 @dataclass(frozen=True)
 class IRBlock(IRNode):
     """Represents a basic block of IR statements."""
-    statements: List[IRNode] = field(default_factory=list)
+    statements: list[IRNode] = field(default_factory=list)

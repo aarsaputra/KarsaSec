@@ -4,8 +4,8 @@ from pathlib import Path
 
 from karsasec.index.symbol_store import SymbolEntry, SymbolStore
 from karsasec.ir.builder import ir_builder
-from karsasec.ir.nodes import IRCall, IRVar
-from karsasec.query.dsl import Predicate, Query
+from karsasec.ir.nodes import IRCall
+from karsasec.query.dsl import Query
 from karsasec.sdk.api import AnalysisAPIVersion, PluginManifest, PluginSDK
 
 

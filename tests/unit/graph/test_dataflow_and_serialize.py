@@ -2,16 +2,16 @@
 
 import tempfile
 from pathlib import Path
+
 from karsasec.graph.dataflow import (
+    DataflowEdgeType,
     DataflowEngine,
     DataflowNode,
-    DataflowEdge,
-    DataflowEdgeType,
 )
-from karsasec.graph.serialize import GraphSerializer
+from karsasec.graph.edge import EdgeType, GraphEdge, ResolutionMechanism
 from karsasec.graph.graph import ProjectGraph
 from karsasec.graph.node import GraphNode, NodeKind, Visibility
-from karsasec.graph.edge import GraphEdge, EdgeType, ResolutionMechanism
+from karsasec.graph.serialize import GraphSerializer
 
 
 def test_dataflow_engine_tracing() -> None:

@@ -1,7 +1,9 @@
 """Scope-aware semantic symbol definitions."""
 
 from dataclasses import dataclass
+
 from karsasec.semantic.scope import Scope
+
 
 @dataclass(slots=True)
 class SemanticSymbol:

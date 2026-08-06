@@ -4,9 +4,9 @@ from collections import deque
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional, Set
+
 from karsasec.graph.graph import ProjectGraph
-from karsasec.graph.node import GraphNode, NodeKind
+
 
 class DataflowEdgeType(Enum):
     """Types of data flow transfers between program expressions."""
@@ -21,7 +21,7 @@ class DataflowNode:
     node_id: str
     name: str
     qualified_name: str = ""
-    file_path: Optional[Path] = None
+    file_path: Path | None = None
     line: int = 1
     column: int = 0
     is_source: bool = False
@@ -38,17 +38,17 @@ class DataflowEdge:
 @dataclass(slots=True)
 class DataflowPath:
     """Complete sequence of DataflowNodes and DataflowEdges connecting a source to a sink."""
-    nodes: List[DataflowNode] = field(default_factory=list)
-    edges: List[DataflowEdge] = field(default_factory=list)
+    nodes: list[DataflowNode] = field(default_factory=list)
+    edges: list[DataflowEdge] = field(default_factory=list)
 
 class DataflowEngine:
     """Tracks variable, parameter, and return flows across AST nodes and ProjectGraph."""
 
-    def __init__(self, project_graph: Optional[ProjectGraph] = None) -> None:
+    def __init__(self, project_graph: ProjectGraph | None = None) -> None:
         self.project_graph = project_graph
-        self.nodes: Dict[str, DataflowNode] = {}
-        self.outgoing_edges: Dict[str, List[DataflowEdge]] = {}
-        self.incoming_edges: Dict[str, List[DataflowEdge]] = {}
+        self.nodes: dict[str, DataflowNode] = {}
+        self.outgoing_edges: dict[str, list[DataflowEdge]] = {}
+        self.incoming_edges: dict[str, list[DataflowEdge]] = {}
 
     def add_node(self, node: DataflowNode) -> None:
         """Registers a DataflowNode in the engine."""
@@ -72,14 +72,14 @@ class DataflowEngine:
         self.incoming_edges.setdefault(target_id, []).append(edge)
         return edge
 
-    def trace_flow(self, source_id: str, sink_id: str) -> List[DataflowPath]:
+    def trace_flow(self, source_id: str, sink_id: str) -> list[DataflowPath]:
         """Traces all reachable dataflow paths from source_id to sink_id."""
         if source_id not in self.nodes or sink_id not in self.nodes:
             return []
 
-        paths: List[DataflowPath] = []
+        paths: list[DataflowPath] = []
         # Queue stores tuples of (current_node_id, visited_set, node_path, edge_path)
-        queue: deque[tuple[str, Set[str], List[str], List[DataflowEdge]]] = deque([
+        queue: deque[tuple[str, set[str], list[str], list[DataflowEdge]]] = deque([
             (source_id, {source_id}, [source_id], [])
         ])
 
@@ -103,13 +103,13 @@ class DataflowEngine:
 
         return paths
 
-    def find_sources(self, sink_id: str) -> List[DataflowNode]:
+    def find_sources(self, sink_id: str) -> list[DataflowNode]:
         """Finds all origin nodes marked as sources that reach the given sink_id."""
-        sources: List[DataflowNode] = []
+        sources: list[DataflowNode] = []
         if sink_id not in self.nodes:
             return sources
 
-        visited: Set[str] = {sink_id}
+        visited: set[str] = {sink_id}
         queue: deque[str] = deque([sink_id])
 
         while queue:
@@ -126,13 +126,13 @@ class DataflowEngine:
 
         return sources
 
-    def find_sinks(self, source_id: str) -> List[DataflowNode]:
+    def find_sinks(self, source_id: str) -> list[DataflowNode]:
         """Finds all terminal nodes marked as sinks reachable from the given source_id."""
-        sinks: List[DataflowNode] = []
+        sinks: list[DataflowNode] = []
         if source_id not in self.nodes:
             return sinks
 
-        visited: Set[str] = {source_id}
+        visited: set[str] = {source_id}
         queue: deque[str] = deque([source_id])
 
         while queue:

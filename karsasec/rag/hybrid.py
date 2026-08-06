@@ -1,5 +1,5 @@
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from typing import Dict, Iterable, List, Mapping
 
 from karsasec.rag.bm25 import BM25Document, BM25Index, BM25Result
 from karsasec.rag.model2vec import Model2VecEncoder, Model2VecSimilarity
@@ -10,15 +10,15 @@ class RAGResult:
     document_id: str
     score: float
     text: str
-    metadata: Dict[str, str]
+    metadata: dict[str, str]
 
 
 class ReciprocalRankFusion:
     def __init__(self, k: int = 60) -> None:
         self.k = k
 
-    def fuse(self, ranked_lists: List[List[BM25Result or RAGResult]]) -> Dict[str, float]:
-        fused_scores: Dict[str, float] = {}
+    def fuse(self, ranked_lists: list[list[BM25Result or RAGResult]]) -> dict[str, float]:
+        fused_scores: dict[str, float] = {}
         for ranking in ranked_lists:
             for position, item in enumerate(ranking, start=1):
                 fused_scores[item.document_id] = fused_scores.get(item.document_id, 0.0) + 1.0 / (self.k + position)
@@ -31,16 +31,16 @@ class HybridRAGIndex:
         self.bm25_index = BM25Index(self.documents)
         self.encoder = Model2VecEncoder()
         self.similarity = Model2VecSimilarity(self.encoder)
-        self.document_embeddings: Dict[str, Mapping[int, float]] = {
+        self.document_embeddings: dict[str, Mapping[int, float]] = {
             doc.document_id: self.encoder.encode(doc.text)
             for doc in self.documents
         }
 
-    def retrieve(self, query: str, top_k: int = 5) -> List[RAGResult]:
+    def retrieve(self, query: str, top_k: int = 5) -> list[RAGResult]:
         bm25_results = self.bm25_index.search(query, top_k=top_k * 2)
         query_embedding = self.encoder.encode(query)
 
-        embedding_results: List[RAGResult] = []
+        embedding_results: list[RAGResult] = []
         for doc in self.documents:
             vector = self.document_embeddings.get(doc.document_id, {})
             if not vector:
@@ -55,7 +55,7 @@ class HybridRAGIndex:
         rrf = ReciprocalRankFusion()
         fused = rrf.fuse([bm25_results, embedding_results])
 
-        combined: List[RAGResult] = []
+        combined: list[RAGResult] = []
         for doc in self.documents:
             score = fused.get(doc.document_id)
             if score is not None and score > 0.0:

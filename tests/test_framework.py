@@ -1,7 +1,9 @@
 """Unit tests for FrameworkDetector confidence scoring."""
 
 from pathlib import Path
+
 from karsasec.parser.framework import FrameworkDetector
+
 
 def test_framework_nextjs_confidence(tmp_path: Path) -> None:
     detector = FrameworkDetector()

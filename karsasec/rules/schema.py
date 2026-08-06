@@ -3,8 +3,9 @@
 import re
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
-from karsasec.rules.enums import Confidence, LanguageEnum, OWASPCategory, Severity, TargetFormatEnum
+from typing import Any
+
+from karsasec.rules.enums import Confidence, LanguageEnum, Severity, TargetFormatEnum
 
 RULE_ID_PATTERN = re.compile(r"^KS-[A-Z0-9_-]{2,10}-\d{4}$")
 
@@ -23,21 +24,21 @@ class AnalysisBehavior(str, Enum):
 @dataclass(slots=True)
 class TargetSpec:
     """Target language and framework scope specification (Schema v2)."""
-    languages: List[LanguageEnum] = field(default_factory=list)
-    frameworks: List[str] = field(default_factory=list)
+    languages: list[LanguageEnum] = field(default_factory=list)
+    frameworks: list[str] = field(default_factory=list)
 
 @dataclass(slots=True)
 class AnalysisSpec:
     """Analysis engine, behavior, and required capabilities specification (Schema v2)."""
     engine: AnalysisEngine = AnalysisEngine.AST
     behavior: AnalysisBehavior = AnalysisBehavior.SINK
-    requires: List[str] = field(default_factory=lambda: ["ast"])
+    requires: list[str] = field(default_factory=lambda: ["ast"])
 
 @dataclass(slots=True)
 class EvidenceSpec:
     """Evidence requirements and score weight definitions (Schema v2)."""
-    require: List[str] = field(default_factory=list)
-    score_weights: Dict[str, int] = field(default_factory=dict)
+    require: list[str] = field(default_factory=list)
+    score_weights: dict[str, int] = field(default_factory=dict)
 
 @dataclass(slots=True)
 class RuleMetadataV2:
@@ -51,8 +52,8 @@ class RuleMetadataV2:
     owasp: str = "A03:2021-Injection"
     created: str = ""
     updated: str = ""
-    references: List[str] = field(default_factory=list)
-    tags: List[str] = field(default_factory=list)
+    references: list[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
 # Backward Compatible Dataclasses (Schema v1)
 @dataclass(slots=True)
@@ -70,13 +71,13 @@ class RuleMetadata:
 class RuleMatch:
     """Target language and AST node selection scope."""
     language: LanguageEnum
-    ast_node_types: List[str] = field(default_factory=list)
+    ast_node_types: list[str] = field(default_factory=list)
 
 @dataclass(slots=True)
 class RuleCondition:
     """Predicate condition triggering rule matching."""
-    symbol_triggers: List[str] = field(default_factory=list)
-    pattern: Optional[str] = None
+    symbol_triggers: list[str] = field(default_factory=list)
+    pattern: str | None = None
 
 @dataclass(slots=True)
 class RuleOutput:
@@ -94,12 +95,12 @@ class Rule:
     match: RuleMatch
     condition: RuleCondition
     output: RuleOutput
-    target: Optional[TargetSpec] = None
-    analysis: Optional[AnalysisSpec] = None
-    evidence: Optional[EvidenceSpec] = None
+    target: TargetSpec | None = None
+    analysis: AnalysisSpec | None = None
+    evidence: EvidenceSpec | None = None
     schema_version: str = "2.0"
 
-def validate_rule_dict(raw_data: Dict[str, Any]) -> Rule:
+def validate_rule_dict(raw_data: dict[str, Any]) -> Rule:
     """Validates raw dict structure and converts it into a validated Rule object.
 
     Supports both Schema v1 and Schema v2 contracts for full backward compatibility.
@@ -153,8 +154,8 @@ def validate_rule_dict(raw_data: Dict[str, Any]) -> Rule:
     target_sec = raw_data.get("target")
     match_sec = raw_data.get("match", {})
 
-    target_languages: List[LanguageEnum] = []
-    target_frameworks: List[str] = []
+    target_languages: list[LanguageEnum] = []
+    target_frameworks: list[str] = []
 
     if target_sec and isinstance(target_sec, dict):
         raw_langs = target_sec.get("languages", [])
@@ -244,8 +245,8 @@ def validate_rule_dict(raw_data: Dict[str, Any]) -> Rule:
 
     # Validate Evidence Spec (Schema v2)
     ev_sec = raw_data.get("evidence", {})
-    ev_require: List[str] = []
-    ev_score_weights: Dict[str, int] = {}
+    ev_require: list[str] = []
+    ev_score_weights: dict[str, int] = {}
     if isinstance(ev_sec, dict):
         ev_require = [str(r) for r in ev_sec.get("require", [])]
         raw_weights = ev_sec.get("score_weights", {})

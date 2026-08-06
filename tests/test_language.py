@@ -1,7 +1,9 @@
 """Unit tests for LanguageDetector."""
 
 from pathlib import Path
+
 from karsasec.parser.language import LanguageDetector
+
 
 def test_language_detector_by_extension() -> None:
     detector = LanguageDetector()

@@ -1,10 +1,10 @@
 from pathlib import Path
 from unittest.mock import patch
 
+from karsasec.core.execution import RuleExecutor, ScanContext
 from karsasec.parser.generic_parser import php_parser
 from karsasec.parser.tree_sitter import ts_engine
 from karsasec.rules.loader import YAMLRuleLoader
-from karsasec.core.execution import RuleExecutor, ScanContext
 
 
 def _run_rule_on_code(php_code: str, rule_id: str):

@@ -2,6 +2,7 @@
 
 from karsasec.semantic.alias_tracker import AliasTracker
 
+
 def test_alias_tracker_flat():
     tracker = AliasTracker()
     tracker.register_alias("runner", "os.system")

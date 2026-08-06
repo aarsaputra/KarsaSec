@@ -2,9 +2,11 @@
 
 import tempfile
 from pathlib import Path
+
+from karsasec.parser.generic_parser import go_parser, js_parser, php_parser
 from karsasec.parser.python_parser import python_parser_plugin
-from karsasec.parser.generic_parser import js_parser, go_parser, php_parser
 from karsasec.semantic.resolver import SemanticResolver
+
 
 def test_python_semantic_resolution():
     code = """
@@ -29,7 +31,7 @@ def my_func():
         # Let's locate the call node or alias_run node
         call_nodes = [node for node in parse_result.root.nodes_map.values() if node.node_type == "call"]
         assert len(call_nodes) >= 1
-        
+
         # Verify alias_run("whoami") or similar call resolves to os.system
         resolved_symbols = list(graph.node_symbols.values())
         assert "os.system" in resolved_symbols
@@ -92,7 +94,7 @@ func main() {
             f_path.unlink()
 
 def test_php_semantic_resolution():
-    code = """
+    code = r"""
 <?php
 use System\Process as Runner;
 $proc = Runner;
@@ -184,7 +186,7 @@ run("whoami");
 def test_get_node_text_fallback_with_zero_offsets():
     from karsasec.parser.ast_nodes import ASTNode, Position
     from karsasec.semantic.resolver import get_node_text
-    
+
     node = ASTNode(
         node_id="test",
         node_type="statement",

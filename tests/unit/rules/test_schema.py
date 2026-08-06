@@ -1,10 +1,13 @@
 """Unit tests for Rule Schema, Enums, and Finding DTO validation."""
 
-import pytest
 from pathlib import Path
+
+import pytest
+
 from karsasec.rules.enums import Confidence, LanguageEnum, OWASPCategory, Severity
 from karsasec.rules.finding import Finding
 from karsasec.rules.schema import validate_rule_dict
+
 
 def test_valid_rule_schema() -> None:
     raw = {

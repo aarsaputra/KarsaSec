@@ -1,5 +1,6 @@
 import sqlite3
 
+
 def get_user_regression():
     user_id = input('Enter user id: ')
     conn = sqlite3.connect("db.sqlite")

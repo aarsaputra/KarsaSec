@@ -1,11 +1,11 @@
 """Qualification unit tests for ArtifactValidator framework."""
 
-import pytest
 from pathlib import Path
-from karsasec.parser.ast_nodes import FileNode, ASTNode, Position
-from karsasec.core.finding.model import Finding
+
 from karsasec.core.finding.evidence import Evidence
-from karsasec.rules.enums import Severity, Confidence
+from karsasec.core.finding.model import Finding
+from karsasec.parser.ast_nodes import FileNode, Position
+from karsasec.rules.enums import Confidence, Severity
 from karsasec.runtime.artifact_validator import artifact_validator
 
 

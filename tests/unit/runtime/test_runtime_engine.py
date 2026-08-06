@@ -5,7 +5,7 @@ from pathlib import Path
 from karsasec.core.capability_graph import capability_graph
 from karsasec.core.finding.model import compute_stable_finding_fingerprint
 from karsasec.rules.enums import AnalysisCapability
-from karsasec.runtime.planner import CapabilityDependencyPlanner, ExecutionPlanner
+from karsasec.runtime.planner import CapabilityDependencyPlanner
 
 
 def test_capability_dependency_planner_topological_sort() -> None:

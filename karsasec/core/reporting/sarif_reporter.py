@@ -1,12 +1,13 @@
 """SARIFReporter generating compliant SARIF 2.1.0 format with rule taxonomy deduplication."""
 
 import json
-from typing import Dict, List
+
 from karsasec.core.execution.result import ExecutionResult
 from karsasec.core.finding.collection import FindingCollection
 from karsasec.core.reporting.mapping import SARIF_SCORE_MAP, SARIF_SEVERITY_MAP
 from karsasec.core.reporting.reporter import Reporter
 from karsasec.core.reporting.target import ReportTarget
+
 
 class SARIFReporter(Reporter):
     """Generates standard SARIF 2.1.0 security reports for GitHub Security & CI/CD integration."""
@@ -15,8 +16,8 @@ class SARIFReporter(Reporter):
         collection = FindingCollection(result.findings)
 
         # 1. Deduplicate Rules for tool.driver.rules
-        rule_registry: Dict[str, int] = {}
-        sarif_rules: List[dict] = []
+        rule_registry: dict[str, int] = {}
+        sarif_rules: list[dict] = []
 
         for finding in collection.findings:
             if finding.rule_id not in rule_registry:
@@ -39,7 +40,7 @@ class SARIFReporter(Reporter):
                 })
 
         # 2. Build SARIF Results
-        sarif_results: List[dict] = []
+        sarif_results: list[dict] = []
         for finding in collection.findings:
             rule_idx = rule_registry[finding.rule_id]
             level = SARIF_SEVERITY_MAP.get(finding.severity, "warning")

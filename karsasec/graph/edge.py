@@ -1,8 +1,8 @@
 """Data structures for Project Graph Edges."""
 
 from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Dict, Optional
+from enum import Enum
+
 
 class EdgeType(Enum):
     """Structural and behavioral relationship types between graph nodes."""
@@ -40,5 +40,5 @@ class GraphEdge:
     confidence: float = 1.0
     resolved_symbol: str = ""
     resolved_by: ResolutionMechanism = ResolutionMechanism.AST_NATIVE
-    call_site_id: Optional[str] = None
-    attributes: Dict[str, str] = field(default_factory=dict)
+    call_site_id: str | None = None
+    attributes: dict[str, str] = field(default_factory=dict)

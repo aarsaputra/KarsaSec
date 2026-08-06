@@ -5,9 +5,9 @@ from pathlib import Path
 from unittest.mock import patch
 
 from karsasec.core.execution import RuleExecutor, ScanContext
+from karsasec.parser.ast import VisitorContext
 from karsasec.parser.generic_parser import go_parser, js_parser, php_parser
 from karsasec.parser.python_parser import PythonParserPlugin
-from karsasec.parser.ast import VisitorContext
 from karsasec.parser.tree_sitter import ts_engine
 from karsasec.rules.loader import YAMLRuleLoader
 from karsasec.rules.matcher import ASTMatcher, rule_compiler

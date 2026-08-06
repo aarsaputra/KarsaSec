@@ -3,7 +3,7 @@
 import hashlib
 import uuid
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 from karsasec.core.finding.evidence import Evidence
 from karsasec.core.finding.model import Finding
@@ -11,6 +11,7 @@ from karsasec.parser.ast_nodes import ASTNode
 from karsasec.rules.enums import Confidence, OWASPCategory, Severity
 from karsasec.rules.matcher.result import RuleMatch
 from karsasec.rules.schema import Rule
+
 
 class FindingFactory:
     """Computes deterministic SHA-256 fingerprints and builds immutable Finding instances."""
@@ -28,7 +29,7 @@ class FindingFactory:
         file_path: Path,
         evidence: Evidence,
         match_result: RuleMatch,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> Finding:
         """Assembles an immutable Finding instance from Rule evaluation metadata."""
         finding_id = f"finding-{uuid.uuid4().hex[:8]}"

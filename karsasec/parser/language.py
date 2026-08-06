@@ -1,9 +1,8 @@
 """Language Detector module for identifying programming languages by file extensions and manifests."""
 
 from pathlib import Path
-from typing import Dict, List, Set
 
-EXTENSION_MAP: Dict[str, str] = {
+EXTENSION_MAP: dict[str, str] = {
     ".py": "Python",
     ".pyi": "Python",
     ".php": "PHP",
@@ -23,7 +22,7 @@ EXTENSION_MAP: Dict[str, str] = {
     ".rb": "Ruby",
 }
 
-MANIFEST_LANGUAGE_MAP: Dict[str, str] = {
+MANIFEST_LANGUAGE_MAP: dict[str, str] = {
     "package.json": "JavaScript/TypeScript",
     "composer.json": "PHP",
     "requirements.txt": "Python",
@@ -39,12 +38,12 @@ MANIFEST_LANGUAGE_MAP: Dict[str, str] = {
 class LanguageDetector:
     """Detects programming languages present in a given list of project paths."""
 
-    def __init__(self, extension_map: Dict[str, str] = EXTENSION_MAP) -> None:
+    def __init__(self, extension_map: dict[str, str] = EXTENSION_MAP) -> None:
         self.extension_map = extension_map
 
-    def detect(self, files: List[Path]) -> List[str]:
+    def detect(self, files: list[Path]) -> list[str]:
         """Scans relative file paths and returns a sorted list of detected unique language names."""
-        languages: Set[str] = set()
+        languages: set[str] = set()
 
         for path in files:
             ext = path.suffix.lower()

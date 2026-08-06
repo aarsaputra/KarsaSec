@@ -3,7 +3,8 @@
 import hashlib
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
+
 from karsasec.core.finding.evidence import Evidence
 from karsasec.rules.enums import Confidence, Severity
 
@@ -38,4 +39,4 @@ class Finding:
     description: str
     remediation: str
     rule_version: str = "1.0"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)

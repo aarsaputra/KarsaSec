@@ -1,9 +1,11 @@
 """ExecutionResult model storing scan telemetry, deduplicated findings, errors, and performance metrics."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
+
 from karsasec.core.finding.model import Finding
 from karsasec.rules.matcher.statistics import MatcherStatistics
+
 
 @dataclass(frozen=True)
 class ExecutionResult:
@@ -13,9 +15,9 @@ class ExecutionResult:
     files_scanned: int
     rules_checked: int
     nodes_processed: int
-    findings: Tuple[Finding, ...] = field(default_factory=tuple)
+    findings: tuple[Finding, ...] = field(default_factory=tuple)
     execution_time_ms: float = 0.0
-    errors: Tuple[str, ...] = field(default_factory=tuple)
-    warnings: Tuple[str, ...] = field(default_factory=tuple)
-    statistics: Optional[MatcherStatistics] = None
-    rag_context: Tuple[Dict[str, Any], ...] = field(default_factory=tuple)
+    errors: tuple[str, ...] = field(default_factory=tuple)
+    warnings: tuple[str, ...] = field(default_factory=tuple)
+    statistics: MatcherStatistics | None = None
+    rag_context: tuple[dict[str, Any], ...] = field(default_factory=tuple)

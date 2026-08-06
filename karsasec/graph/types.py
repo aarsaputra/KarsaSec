@@ -2,7 +2,7 @@
 
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional
+
 
 class CallType(Enum):
     STATIC = "static"      # Direct function or class method call
@@ -29,9 +29,9 @@ class CallNode:
         name: str,
         qualified_name: str,
         file_path: Path,
-        parameters: List[str],
+        parameters: list[str],
         is_async: bool = False,
-        class_owner: Optional[str] = None,
+        class_owner: str | None = None,
         language: str = "Generic",
     ) -> None:
         self.node_id = node_id
@@ -68,7 +68,7 @@ class CallEdge:
         callee_id: str,
         call_site_id: str,
         call_type: CallType,
-        resolved_symbol: Optional[str] = None,
+        resolved_symbol: str | None = None,
         line: int = 1,
         column: int = 1,
     ) -> None:

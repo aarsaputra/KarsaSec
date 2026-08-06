@@ -1,9 +1,9 @@
 """Scope management for semantic symbol resolution."""
 
-from enum import Enum
-from typing import Dict, Optional
-
 import weakref
+from enum import Enum
+from typing import Optional
+
 
 class ScopeType(Enum):
     GLOBAL = "global"
@@ -20,7 +20,7 @@ class Scope:
     def __init__(self, scope_type: ScopeType, parent: Optional["Scope"] = None) -> None:
         self.scope_type: ScopeType = scope_type
         self._parent_ref = weakref.ref(parent) if parent is not None else None
-        self.bindings: Dict[str, str] = {}
+        self.bindings: dict[str, str] = {}
 
     @property
     def parent(self) -> Optional["Scope"]:
@@ -36,7 +36,7 @@ class Scope:
         """Binds a name to a fully qualified symbol or value in the current scope."""
         self.bindings[name] = symbol
 
-    def lookup(self, name: str) -> Optional[str]:
+    def lookup(self, name: str) -> str | None:
         """Looks up a name in the current scope or ascends the parent scope chain."""
         if name in self.bindings:
             return self.bindings[name]

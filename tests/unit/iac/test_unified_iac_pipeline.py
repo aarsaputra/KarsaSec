@@ -3,10 +3,10 @@
 import tempfile
 from pathlib import Path
 
-from karsasec.parser.docker_parser import docker_parser_plugin
-from karsasec.parser.k8s_parser import k8s_parser_plugin
-from karsasec.parser.github_actions_parser import gha_parser_plugin
 from karsasec.parser.ast import VisitorContext
+from karsasec.parser.docker_parser import docker_parser_plugin
+from karsasec.parser.github_actions_parser import gha_parser_plugin
+from karsasec.parser.k8s_parser import k8s_parser_plugin
 from karsasec.rules.loader import YAMLRuleLoader
 from karsasec.rules.matcher import ASTMatcher, rule_compiler
 

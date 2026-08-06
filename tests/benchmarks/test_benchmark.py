@@ -2,7 +2,9 @@
 
 import time
 from pathlib import Path
+
 from karsasec.parser.detector import detect_project
+
 
 def test_benchmark_1000_files(tmp_path: Path) -> None:
     """Benchmark: Scanning 1,000 synthetic Python files must take < 2.0 seconds."""

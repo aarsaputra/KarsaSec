@@ -2,21 +2,22 @@
 
 import json
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+
 from karsasec.core.context import FrameworkMatch
+
 
 class FrameworkDetector:
     """Scored framework detector evaluating manifest dependencies and distinct file markers."""
 
-    def detect(self, root_path: Path, files: List[Path]) -> Tuple[List[str], List[FrameworkMatch]]:
+    def detect(self, root_path: Path, files: list[Path]) -> tuple[list[str], list[FrameworkMatch]]:
         """Scans project files and calculates confidence scores for framework candidates.
 
         Returns:
             Tuple of (list of framework names with CONFIDENT or LIKELY status, list of all FrameworkMatch DTOs).
         """
-        scores: Dict[str, int] = {}
-        file_set: Set[str] = {p.as_posix().lower() for p in files}
-        filename_set: Set[str] = {p.name.lower() for p in files}
+        scores: dict[str, int] = {}
+        file_set: set[str] = {p.as_posix().lower() for p in files}
+        filename_set: set[str] = {p.name.lower() for p in files}
 
         # 1. Distinct file markers
         if "artisan" in filename_set:
@@ -56,8 +57,8 @@ class FrameworkDetector:
             if "Flask" in scores:
                 scores["Flask"] += 10
 
-        matches: List[FrameworkMatch] = []
-        confident_frameworks: List[str] = []
+        matches: list[FrameworkMatch] = []
+        confident_frameworks: list[str] = []
 
         for name, score in sorted(scores.items(), key=lambda item: item[1], reverse=True):
             if score >= 70:
@@ -73,7 +74,7 @@ class FrameworkDetector:
 
         return sorted(confident_frameworks), matches
 
-    def _inspect_package_json(self, file_path: Path, scores: Dict[str, int]) -> None:
+    def _inspect_package_json(self, file_path: Path, scores: dict[str, int]) -> None:
         """Inspects npm dependencies in package.json."""
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
@@ -94,7 +95,7 @@ class FrameworkDetector:
         except Exception:
             pass
 
-    def _inspect_composer_json(self, file_path: Path, scores: Dict[str, int]) -> None:
+    def _inspect_composer_json(self, file_path: Path, scores: dict[str, int]) -> None:
         """Inspects PHP composer dependencies."""
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore").lower()
@@ -105,7 +106,7 @@ class FrameworkDetector:
         except Exception:
             pass
 
-    def _inspect_python_manifest(self, file_path: Path, filename: str, scores: Dict[str, int]) -> None:
+    def _inspect_python_manifest(self, file_path: Path, filename: str, scores: dict[str, int]) -> None:
         """Inspects Python dependencies."""
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore").lower()
@@ -121,7 +122,7 @@ class FrameworkDetector:
         except Exception:
             pass
 
-    def _inspect_go_mod(self, file_path: Path, scores: Dict[str, int]) -> None:
+    def _inspect_go_mod(self, file_path: Path, scores: dict[str, int]) -> None:
         """Inspects Go modules in go.mod."""
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")

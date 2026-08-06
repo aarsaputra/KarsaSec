@@ -3,7 +3,8 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Optional
+
 from karsasec.core.context import AnalysisContext
 
 if TYPE_CHECKING:
@@ -15,19 +16,20 @@ class Diagnostic:
     code: str
     severity: str  # ERROR, WARNING, INFO
     message: str
-    file_path: Optional[Path] = None
+    file_path: Path | None = None
     line: int = 0
     column: int = 0
 
 @dataclass
 class SymbolTable:
     """Fast symbol table storing extracted high-level symbols for Rule Engine lookup (Sprint 3)."""
-    functions: List[str] = field(default_factory=list)
-    classes: List[str] = field(default_factory=list)
-    imports: List[str] = field(default_factory=list)
-    globals: List[str] = field(default_factory=list)
+    functions: list[str] = field(default_factory=list)
+    classes: list[str] = field(default_factory=list)
+    imports: list[str] = field(default_factory=list)
+    globals: list[str] = field(default_factory=list)
 
 from karsasec.rules.enums import AnalysisCapability
+
 
 @dataclass(frozen=True)
 class ParseResult:
@@ -36,13 +38,13 @@ class ParseResult:
     file_path: Path
     root: Optional["FileNode"] = None
     symbol_table: SymbolTable = field(default_factory=SymbolTable)
-    diagnostics: Tuple[Diagnostic, ...] = field(default_factory=tuple)
+    diagnostics: tuple[Diagnostic, ...] = field(default_factory=tuple)
     parse_time_ms: float = 0.0
     parser_version: str = "0.1.0"
     engine: str = "Tree-sitter v0.25"
     target_kind: str = "SOURCE_CODE"
     target_format: str = "Python"
-    capabilities: Tuple[AnalysisCapability, ...] = field(
+    capabilities: tuple[AnalysisCapability, ...] = field(
         default_factory=lambda: (
             AnalysisCapability.AST,
             AnalysisCapability.POSITION,
@@ -91,6 +93,6 @@ class ScannerPlugin(BasePlugin, ABC):
     """Abstract base class for Security Rule Scanners."""
 
     @abstractmethod
-    def execute_scan(self, context: AnalysisContext) -> List[Dict[str, Any]]:
+    def execute_scan(self, context: AnalysisContext) -> list[dict[str, Any]]:
         """Executes security checks against analysis context."""
         pass

@@ -1,8 +1,8 @@
 """Benchmark test verifying parallel scanning throughput and multi-file worker pool scalability."""
 
-import pytest
 import time
 from pathlib import Path
+
 from karsasec.cli.commands.scan import execute_scan_command
 
 

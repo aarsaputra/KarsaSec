@@ -9,12 +9,13 @@
 """
 
 import re
-from typing import Optional, Tuple
+
 from karsasec.parser.ast.context import VisitorContext
 from karsasec.parser.ast_nodes import ASTNode
 from karsasec.rules.matcher.compiler import CompiledRule
 from karsasec.rules.matcher.predicates.base import BasePredicate
 from karsasec.rules.matcher.statistics import MatcherStatistics
+
 
 class SymbolPredicate(BasePredicate):
     """Evaluates symbol triggers against AST node identifiers and SymbolTable metadata."""
@@ -30,7 +31,7 @@ class SymbolPredicate(BasePredicate):
         context: VisitorContext,
         stats: MatcherStatistics,
         source_bytes: bytes = b"",
-    ) -> Tuple[bool, Optional[str], Optional[str]]:
+    ) -> tuple[bool, str | None, str | None]:
         triggers = compiled_rule.cleaned_symbol_triggers
         if not triggers:
             return True, None, None

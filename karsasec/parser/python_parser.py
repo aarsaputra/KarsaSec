@@ -3,12 +3,12 @@
 import ast
 import time
 from pathlib import Path
-from typing import Dict, List, Optional
 
 from karsasec.core.plugin import Diagnostic, ParseResult, ParserPlugin, SymbolTable
 from karsasec.parser.ast_nodes import ASTNode, FileNode, Position, generate_node_id
 from karsasec.parser.registry import parser_registry
 from karsasec.parser.tree_sitter import ts_engine
+
 
 class PythonParserPlugin(ParserPlugin):
     """Python-specific parser plugin implementing AST analysis and SymbolTable generation."""
@@ -35,12 +35,12 @@ class PythonParserPlugin(ParserPlugin):
         """Parses a Python file and returns structured ParseResult."""
         start_time = time.perf_counter()
         path = file_path.resolve()
-        diagnostics: List[Diagnostic] = []
+        diagnostics: list[Diagnostic] = []
 
-        functions: List[str] = []
-        classes: List[str] = []
-        imports: List[str] = []
-        globals_list: List[str] = []
+        functions: list[str] = []
+        classes: list[str] = []
+        imports: list[str] = []
+        globals_list: list[str] = []
 
         if not path.exists():
             diagnostics.append(
@@ -61,7 +61,7 @@ class PythonParserPlugin(ParserPlugin):
             )
 
         code_bytes = path.read_bytes()
-        file_node: Optional[FileNode] = ts_engine.parse_code(code_bytes, "python", file_path=path)
+        file_node: FileNode | None = ts_engine.parse_code(code_bytes, "python", file_path=path)
 
         # Native Python AST symbol extraction and AST fallback if tree-sitter children are empty
         try:
@@ -130,8 +130,8 @@ class PythonParserPlugin(ParserPlugin):
 
     def _build_from_native_ast(self, py_ast: ast.AST, path: Path, code_bytes: bytes) -> FileNode:
         """Converts native Python ast tree to KarsaSec FileNode and ASTNode structure."""
-        nodes_map: Dict[str, ASTNode] = {}
-        
+        nodes_map: dict[str, ASTNode] = {}
+
         # Build line offset table for byte calculation
         line_offsets = [0]
         offset = 0
@@ -149,7 +149,7 @@ class PythonParserPlugin(ParserPlugin):
             line_end = line_offsets[idx + 1] if idx + 1 < len(line_offsets) else len(code_bytes)
             return min(line_start + col, line_end)
 
-        def _convert(py_node: ast.AST, parent_id: Optional[str]) -> ASTNode:
+        def _convert(py_node: ast.AST, parent_id: str | None) -> ASTNode:
             line_no = getattr(py_node, "lineno", 1)
             col_no = getattr(py_node, "col_offset", 0)
             end_line = getattr(py_node, "end_lineno", line_no)
@@ -173,7 +173,7 @@ class PythonParserPlugin(ParserPlugin):
 
             node_id = generate_node_id(path, line_no, col_no, node_type)
 
-            children_ids: List[str] = []
+            children_ids: list[str] = []
             for field_name, child in ast.iter_fields(py_node):
                 if isinstance(child, ast.AST):
                     c_node = _convert(child, node_id)

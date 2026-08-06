@@ -1,7 +1,6 @@
 """Automated security corpus verification test suite."""
 
 from pathlib import Path
-import pytest
 
 from karsasec.rules.loader import YAMLRuleLoader
 from karsasec.rules.testing import RuleTestCase, RuleTestRunner

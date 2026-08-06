@@ -1,6 +1,6 @@
 """Unit test suite for KarsaSec Reusable Analysis Ecosystem (Pass Manager, Artifact Store, HIR/MIR/LIR, Query Optimizer, Capability Negotiation)."""
 
-from karsasec.ir.hir_mir import HIRNode, LIRSanitizer, LIRSink, LIRSource, MIRCall, MIRConditional
+from karsasec.ir.hir_mir import HIRNode, LIRSink, LIRSource, MIRConditional
 from karsasec.query.optimizer import query_optimizer
 from karsasec.rules.enums import AnalysisCapability
 from karsasec.runtime.artifact_store import ArtifactStore

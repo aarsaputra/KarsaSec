@@ -2,12 +2,12 @@
 
 from pathlib import Path
 
-from karsasec.parser.target_detector import TargetDetector, target_detector
-from karsasec.rules.enums import TargetFormatEnum, TargetKindEnum
-from karsasec.iac.scanner import IaCScanner
+from karsasec.core.execution.result import ExecutionResult
 from karsasec.core.reporting.sarif_reporter import SARIFReporter
 from karsasec.core.reporting.target import StringTarget
-from karsasec.core.execution.result import ExecutionResult
+from karsasec.iac.scanner import IaCScanner
+from karsasec.parser.target_detector import TargetDetector
+from karsasec.rules.enums import TargetFormatEnum, TargetKindEnum
 
 
 def test_target_detector_heuristics() -> None:

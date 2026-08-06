@@ -1,8 +1,10 @@
 """Unit tests for Tree-sitter Parser and PythonParserPlugin."""
 
 from pathlib import Path
+
 from karsasec.parser.python_parser import PythonParserPlugin
 from karsasec.parser.tree_sitter import ts_engine
+
 
 def test_ts_engine_python(tmp_path: Path) -> None:
     """Test TreeSitterEngine parsing Python code into a root FileNode."""

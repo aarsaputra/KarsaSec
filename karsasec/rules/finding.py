@@ -2,7 +2,9 @@
 
 from dataclasses import dataclass
 from pathlib import Path
+
 from karsasec.rules.enums import Confidence, Severity
+
 
 @dataclass(frozen=True)
 class Finding:

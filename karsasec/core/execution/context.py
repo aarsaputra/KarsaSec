@@ -4,12 +4,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
+from typing import TYPE_CHECKING, Any
+
 from karsasec.core.plugin import SymbolTable
 from karsasec.parser.ast_nodes import FileNode
 
 if TYPE_CHECKING:
-    from karsasec.graph.graph import CallGraph
+    pass
 
 @dataclass(slots=True)
 class ScanContext:
@@ -27,12 +28,12 @@ class ScanContext:
     """
     file_node: FileNode
     source_bytes: bytes
-    project_root: Optional[Path] = None
-    symbol_table: Optional[SymbolTable] = None
+    project_root: Path | None = None
+    symbol_table: SymbolTable | None = None
     language: str = ""
-    file_path: Optional[Path] = None
-    call_graph: Optional[object] = None  # CallGraph — typed as object to avoid circular imports at runtime
-    rag_context: Tuple[Dict[str, Any], ...] = ()
+    file_path: Path | None = None
+    call_graph: object | None = None  # CallGraph — typed as object to avoid circular imports at runtime
+    rag_context: tuple[dict[str, Any], ...] = ()
 
     def __post_init__(self) -> None:
         if not self.language and self.file_node:

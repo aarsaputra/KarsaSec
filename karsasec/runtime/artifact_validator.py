@@ -1,7 +1,7 @@
 """Artifact Validation Framework evaluating invariants across AST, HIR, MIR, CFG, CallGraph, Dataflow, and Findings."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 from karsasec.core.finding.model import Finding
 from karsasec.graph.dataflow import DataflowEngine
@@ -13,8 +13,8 @@ class ValidationReport:
     """Immutable validation summary carrying pass decision and invariant error logs."""
     is_valid: bool
     artifact_type: str
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
 
 
 class ArtifactValidator:
@@ -22,9 +22,9 @@ class ArtifactValidator:
 
     def validate_ast(self, root_node: FileNode) -> ValidationReport:
         """Validates FileNode AST invariants: unique node IDs, parent pointers, valid line spans."""
-        errors: List[str] = []
-        warnings: List[str] = []
-        seen_ids: Set[str] = set()
+        errors: list[str] = []
+        warnings: list[str] = []
+        seen_ids: set[str] = set()
 
         if not root_node or not hasattr(root_node, "node_id"):
             return ValidationReport(is_valid=False, artifact_type="AST", errors=["Root FileNode is null or invalid."])
@@ -41,10 +41,10 @@ class ArtifactValidator:
 
         return ValidationReport(is_valid=len(errors) == 0, artifact_type="AST", errors=errors, warnings=warnings)
 
-    def validate_cfg(self, cfg_data: Dict[str, Any]) -> ValidationReport:
+    def validate_cfg(self, cfg_data: dict[str, Any]) -> ValidationReport:
         """Validates CFG invariants: exactly one entry node, reachable exit node, connected graph."""
-        errors: List[str] = []
-        warnings: List[str] = []
+        errors: list[str] = []
+        warnings: list[str] = []
 
         entry_nodes = cfg_data.get("entry_nodes", [])
         blocks = cfg_data.get("blocks", {})
@@ -64,14 +64,14 @@ class ArtifactValidator:
 
         return ValidationReport(is_valid=len(errors) == 0, artifact_type="CFG", errors=errors, warnings=warnings)
 
-    def validate_call_graph(self, call_graph_data: Dict[str, Any]) -> ValidationReport:
+    def validate_call_graph(self, call_graph_data: dict[str, Any]) -> ValidationReport:
         """Validates CallGraph invariants: caller/callee existence, duplicate edge check."""
-        errors: List[str] = []
-        warnings: List[str] = []
+        errors: list[str] = []
+        warnings: list[str] = []
 
         nodes = set(call_graph_data.get("nodes", {}).keys())
         edges = call_graph_data.get("edges", [])
-        seen_edges: Set[str] = set()
+        seen_edges: set[str] = set()
 
         for edge in edges:
             caller = edge.get("caller")
@@ -91,8 +91,8 @@ class ArtifactValidator:
 
     def validate_dataflow(self, dataflow_engine: DataflowEngine) -> ValidationReport:
         """Validates DataflowEngine invariants: valid nodes, non-empty edges."""
-        errors: List[str] = []
-        warnings: List[str] = []
+        errors: list[str] = []
+        warnings: list[str] = []
 
         if not dataflow_engine:
             return ValidationReport(is_valid=False, artifact_type="Dataflow", errors=["DataflowEngine object is null."])
@@ -114,10 +114,10 @@ class ArtifactValidator:
 
         return ValidationReport(is_valid=len(errors) == 0, artifact_type="Dataflow", errors=errors, warnings=warnings)
 
-    def validate_findings(self, findings: List[Finding]) -> ValidationReport:
+    def validate_findings(self, findings: list[Finding]) -> ValidationReport:
         """Validates Finding invariants: non-null fingerprints, valid severity, valid line numbers."""
-        errors: List[str] = []
-        warnings: List[str] = []
+        errors: list[str] = []
+        warnings: list[str] = []
 
         for idx, finding in enumerate(findings):
             if not finding.fingerprint:

@@ -1,7 +1,7 @@
 """Quantitative metric models and calculation helpers for precision/recall evaluation."""
 
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -34,7 +34,7 @@ class EvaluationMetrics:
         denom = self.false_positives + self.true_negatives
         return round(self.false_positives / denom, 4) if denom > 0 else 0.0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "total_samples": self.total_samples,
             "true_positives": self.true_positives,

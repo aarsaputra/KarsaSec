@@ -2,6 +2,7 @@
 
 from karsasec.core.finding.errors import EvidenceUnavailableError
 
+
 class ExecutionError(Exception):
     """Base exception for all rule execution pipeline failures."""
     pass

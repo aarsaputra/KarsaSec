@@ -1,11 +1,12 @@
 """ConsoleReporter producing clean terminal security reports for developers."""
 
-from typing import List
+
 from karsasec.core.execution.result import ExecutionResult
 from karsasec.core.finding.collection import FindingCollection
 from karsasec.core.reporting.formatter import SeverityFormatter
 from karsasec.core.reporting.reporter import Reporter
 from karsasec.core.reporting.target import ReportTarget
+
 
 class ConsoleReporter(Reporter):
     """Generates human-readable terminal reports for developer CLI output."""
@@ -16,7 +17,7 @@ class ConsoleReporter(Reporter):
     def generate(self, result: ExecutionResult, target: ReportTarget) -> None:
         collection = FindingCollection(result.findings).sort_by_severity(descending=True)
 
-        lines: List[str] = []
+        lines: list[str] = []
         lines.append("=" * 60)
         lines.append("              KARSASEC SECURITY SCAN REPORT              ")
         lines.append("=" * 60)

@@ -2,7 +2,6 @@
 
 import time
 from pathlib import Path
-from typing import Dict, List, Optional
 
 from karsasec.core.plugin import ParseResult, ParserPlugin, SymbolTable
 from karsasec.parser.ast_nodes import ASTNode, FileNode, Position, generate_node_id
@@ -49,8 +48,8 @@ class DockerParserPlugin(ParserPlugin):
         code_bytes = path.read_bytes()
         lines = code_bytes.decode("utf-8", errors="ignore").splitlines(keepends=True)
 
-        nodes_map: Dict[str, ASTNode] = {}
-        children_ids: List[str] = []
+        nodes_map: dict[str, ASTNode] = {}
+        children_ids: list[str] = []
 
         line_offsets = [0]
         offset = 0

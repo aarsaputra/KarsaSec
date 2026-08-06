@@ -2,21 +2,22 @@
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any
 
 from karsasec.core.execution import RuleExecutor, ScanContext, rule_executor
+from karsasec.parser.generic_parser import GenericParserPlugin
 from karsasec.parser.python_parser import PythonParserPlugin
 from karsasec.parser.registry import parser_registry
-from karsasec.parser.generic_parser import GenericParserPlugin
 from karsasec.rules.schema import Rule
+
 
 @dataclass
 class RuleTestCase:
     """TestCase DTO specifying rule validation files and expectations."""
     rule_id: str
-    vulnerable_files: List[Path] = field(default_factory=list)
-    safe_files: List[Path] = field(default_factory=list)
-    regression_files: List[Path] = field(default_factory=list)
+    vulnerable_files: list[Path] = field(default_factory=list)
+    safe_files: list[Path] = field(default_factory=list)
+    regression_files: list[Path] = field(default_factory=list)
     min_expected_findings: int = 1
 
 @dataclass
@@ -29,7 +30,7 @@ class RuleTestReport:
     regression_passed: bool
     vulnerable_findings_count: int
     safe_findings_count: int
-    details: List[str] = field(default_factory=list)
+    details: list[str] = field(default_factory=list)
 
 class RuleTestRunner:
     """Reusable runner executing a Rule against security corpus files.
@@ -37,13 +38,13 @@ class RuleTestRunner:
     Designed for reuse by automated pytest suites and future 'karsasec rule test' CLI commands.
     """
 
-    def __init__(self, executor: Optional[RuleExecutor] = None) -> None:
+    def __init__(self, executor: RuleExecutor | None = None) -> None:
         self.executor = executor or rule_executor
         self.default_python_parser = PythonParserPlugin()
 
     def run_case(self, rule: Rule, test_case: RuleTestCase) -> RuleTestReport:
         """Executes a RuleTestCase against vulnerable, safe, and regression files."""
-        details: List[str] = []
+        details: list[str] = []
 
         # 1. Test Vulnerable Files (Positive Control)
         vuln_findings = self._scan_files(rule, test_case.vulnerable_files)
@@ -79,7 +80,7 @@ class RuleTestRunner:
             details=details,
         )
 
-    def _scan_files(self, rule: Rule, files: List[Path]) -> List[Any]:
+    def _scan_files(self, rule: Rule, files: list[Path]) -> list[Any]:
         findings = []
         for file_path in files:
             if not file_path.exists():

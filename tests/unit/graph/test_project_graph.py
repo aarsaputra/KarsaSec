@@ -2,13 +2,14 @@
 
 import tempfile
 from pathlib import Path
+
+from karsasec.graph.builder import ProjectGraphBuilder
+from karsasec.graph.edge import EdgeType, GraphEdge, ResolutionMechanism
+from karsasec.graph.graph import ProjectGraph
+from karsasec.graph.node import GraphNode, NodeKind, Visibility
+from karsasec.graph.query import GraphQueryAPI
 from karsasec.parser.python_parser import python_parser_plugin
 from karsasec.semantic.resolver import SemanticResolver
-from karsasec.graph.node import GraphNode, NodeKind, Visibility
-from karsasec.graph.edge import GraphEdge, EdgeType, ResolutionMechanism
-from karsasec.graph.graph import ProjectGraph
-from karsasec.graph.builder import ProjectGraphBuilder
-from karsasec.graph.query import GraphQueryAPI
 
 
 def test_graph_node_and_edge_creation() -> None:

@@ -1,7 +1,8 @@
 """Automated security corpus benchmark runner for quantitative evaluation of rules precision and recall."""
 
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
+
 import yaml
 
 from karsasec.cli.commands.scan import scan_file_task
@@ -15,7 +16,7 @@ from karsasec.rules.patterns import get_default_rules_directory
 class BenchmarkEvaluator:
     """Evaluates rule accuracy against security corpus datasets (vulnerable, safe, regression)."""
 
-    def __init__(self, corpus_root: Optional[Path] = None, rules_dir: Optional[Path] = None):
+    def __init__(self, corpus_root: Path | None = None, rules_dir: Path | None = None):
         self.corpus_root = corpus_root or Path(__file__).resolve().parents[2] / "security_corpus"
         self.rules_dir = rules_dir or get_default_rules_directory()
         self.loader = YAMLRuleLoader()
@@ -32,7 +33,7 @@ class BenchmarkEvaluator:
         if not self.corpus_root.exists():
             return EvaluationMetrics(0, 0, 0, 0, 0)
 
-        category_dirs: List[Path] = []
+        category_dirs: list[Path] = []
         for path in self.corpus_root.rglob("*"):
             if path.is_dir() and any((path / sub).exists() for sub in ("vulnerable", "safe", "regression")):
                 if path not in category_dirs:
@@ -43,7 +44,7 @@ class BenchmarkEvaluator:
             if not metadata_file.exists():
                 metadata_file = category_dir.parent / "metadata.yaml"
 
-            target_rule_ids: Set[str] = set()
+            target_rule_ids: set[str] = set()
             if metadata_file.exists():
                 try:
                     meta = yaml.safe_load(metadata_file.read_text(encoding="utf-8")) or {}
@@ -56,7 +57,7 @@ class BenchmarkEvaluator:
                 except Exception:
                     pass
 
-            def file_has_target_finding(findings_list: List[Any], target_ids: Set[str]) -> bool:
+            def file_has_target_finding(findings_list: list[Any], target_ids: set[str]) -> bool:
                 if not findings_list:
                     return False
                 if not target_ids:

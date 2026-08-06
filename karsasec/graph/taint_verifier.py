@@ -2,28 +2,28 @@
 
 import re
 from dataclasses import dataclass
-from typing import Optional, Set
+
 from karsasec.parser.ast_nodes import ASTNode
 from karsasec.rules.enums import Confidence, Severity
 
 # Superglobals and untrusted source indicators per language
-UNTRUSTED_SOURCES_PHP: Set[str] = {
+UNTRUSTED_SOURCES_PHP: set[str] = {
     "$_GET", "$_POST", "$_REQUEST", "$_SERVER", "$_COOKIE", "$_FILES", "$_ENV", "$HTTP_RAW_POST_DATA", "$argv", "input"
 }
 
-UNTRUSTED_SOURCES_JS: Set[str] = {
+UNTRUSTED_SOURCES_JS: set[str] = {
     "req.query", "req.body", "req.params", "req.headers", "location.href", "location.search", "document.cookie", "window.name", "input"
 }
 
-UNTRUSTED_SOURCES_GO: Set[str] = {
+UNTRUSTED_SOURCES_GO: set[str] = {
     "r.URL.Query()", "r.FormValue", "r.PostFormValue", "r.Body", "os.Args", "input"
 }
 
-UNTRUSTED_SOURCES_PYTHON: Set[str] = {
+UNTRUSTED_SOURCES_PYTHON: set[str] = {
     "request.args", "request.form", "request.json", "request.GET", "request.POST", "sys.argv", "os.environ", "user_input", "input"
 }
 
-UNTRUSTED_SOURCES_JAVA: Set[str] = {
+UNTRUSTED_SOURCES_JAVA: set[str] = {
     "args[",
     "request.getParameter",
     "request.getHeader",
@@ -33,7 +33,7 @@ UNTRUSTED_SOURCES_JAVA: Set[str] = {
     "System.in",
 }
 
-UNTRUSTED_SOURCES_RUST: Set[str] = {
+UNTRUSTED_SOURCES_RUST: set[str] = {
     "env::args",
     "env::args_os",
     "env::var",
@@ -45,7 +45,7 @@ UNTRUSTED_SOURCES_RUST: Set[str] = {
 }
 
 # Configuration / IaC target formats where code taint does not apply
-IAC_LANGUAGES: Set[str] = {
+IAC_LANGUAGES: set[str] = {
     "dockerfile", "kubernetes", "github actions", "terraform", "hcl", "yaml", "yml", "json", "generic"
 }
 
@@ -169,7 +169,7 @@ class TaintVerifier:
             reason=reason,
         )
 
-    def _extract_variables(self, text: str) -> Set[str]:
+    def _extract_variables(self, text: str) -> set[str]:
         variables = set(re.findall(r'\$[a-zA-Z_][a-zA-Z0-9_]*', text))
         if variables:
             return variables
@@ -177,7 +177,7 @@ class TaintVerifier:
         # Fallback for non-PHP languages: extract identifier names from expressions.
         return set(re.findall(r'\b([A-Za-z_][A-Za-z0-9_]*)\b', text))
 
-    def _variable_assignment_contains_taint(self, variable: str, source_text: str, sources: Set[str]) -> bool:
+    def _variable_assignment_contains_taint(self, variable: str, source_text: str, sources: set[str]) -> bool:
         if not variable or not source_text or not sources:
             return False
 
@@ -193,7 +193,7 @@ class TaintVerifier:
                     return True
         return False
 
-    def _untrusted_sources_for_language(self, language: str) -> Set[str]:
+    def _untrusted_sources_for_language(self, language: str) -> set[str]:
         lang = (language or "").strip().lower()
         if lang == "php":
             return UNTRUSTED_SOURCES_PHP
@@ -209,7 +209,7 @@ class TaintVerifier:
             return UNTRUSTED_SOURCES_RUST
         return set()
 
-    def _contains_untrusted_source(self, text: str, sources: Set[str]) -> bool:
+    def _contains_untrusted_source(self, text: str, sources: set[str]) -> bool:
         if not sources or not text:
             return False
 

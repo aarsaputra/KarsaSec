@@ -1,7 +1,6 @@
 """Builder converting language-specific AST nodes into Generic IR representation."""
 
-from typing import Any, Optional
-from karsasec.ir.nodes import IRBlock, IRCall, IRAssign, IRVar, IRLiteral, IRNode
+from karsasec.ir.nodes import IRAssign, IRBlock, IRCall, IRNode, IRVar
 
 
 class IRBuilder:

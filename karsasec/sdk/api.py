@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Optional
 
 
 class AnalysisAPIVersion(str, Enum):
@@ -18,14 +17,14 @@ class PluginManifest:
     version: str
     author: str
     api_version: AnalysisAPIVersion = AnalysisAPIVersion.V2
-    capabilities_provided: List[str] = field(default_factory=list)
+    capabilities_provided: list[str] = field(default_factory=list)
 
 
 class PluginSDK:
     """Plugin Registry SDK validating compatibility and registering third-party extensions."""
 
     def __init__(self) -> None:
-        self._plugins: List[PluginManifest] = []
+        self._plugins: list[PluginManifest] = []
 
     def register_plugin(self, manifest: PluginManifest) -> bool:
         if manifest.api_version not in (AnalysisAPIVersion.V1, AnalysisAPIVersion.V2, AnalysisAPIVersion.V3):
@@ -33,7 +32,7 @@ class PluginSDK:
         self._plugins.append(manifest)
         return True
 
-    def list_plugins(self) -> List[PluginManifest]:
+    def list_plugins(self) -> list[PluginManifest]:
         return list(self._plugins)
 
 

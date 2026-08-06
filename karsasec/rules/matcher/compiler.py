@@ -2,16 +2,17 @@
 
 import re
 from dataclasses import dataclass, field
-from typing import Optional, Set, Tuple
+
 from karsasec.rules.schema import Rule
+
 
 @dataclass(slots=True)
 class CompiledRule:
     """Pre-compiled rule containing compiled regex patterns and indexed lookup sets."""
     rule: Rule
-    compiled_pattern: Optional[re.Pattern[str]] = None
-    cleaned_symbol_triggers: Tuple[str, ...] = field(default_factory=tuple)
-    ast_node_types_set: Set[str] = field(default_factory=set)
+    compiled_pattern: re.Pattern[str] | None = None
+    cleaned_symbol_triggers: tuple[str, ...] = field(default_factory=tuple)
+    ast_node_types_set: set[str] = field(default_factory=set)
 
     @property
     def id(self) -> str:
@@ -22,7 +23,7 @@ class RuleCompiler:
 
     def compile(self, rule: Rule) -> CompiledRule:
         """Pre-compiles regex pattern and index sets for a Rule."""
-        compiled_pattern: Optional[re.Pattern[str]] = None
+        compiled_pattern: re.Pattern[str] | None = None
         if rule.condition.pattern:
             try:
                 compiled_pattern = re.compile(rule.condition.pattern)

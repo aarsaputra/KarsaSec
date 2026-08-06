@@ -1,7 +1,9 @@
 """Unit tests for Project Detector module and multi-stage profiling pipeline."""
 
 from pathlib import Path
-from karsasec.parser.detector import ProjectDetector, detect_project
+
+from karsasec.parser.detector import detect_project
+
 
 def test_detect_current_project(tmp_path: Path) -> None:
     """Test project detector on a mock python workspace."""

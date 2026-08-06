@@ -1,7 +1,7 @@
 """Console logger module powered by Rich."""
 
 import logging
-from typing import Optional
+
 from rich.console import Console
 from rich.logging import RichHandler
 
@@ -11,7 +11,7 @@ error_console = Console(stderr=True)
 def setup_logger(level: str = "INFO") -> logging.Logger:
     """Configures and returns the application logger."""
     log_level = getattr(logging, level.upper(), logging.INFO)
-    
+
     logging.basicConfig(
         level=log_level,
         format="%(message)s",

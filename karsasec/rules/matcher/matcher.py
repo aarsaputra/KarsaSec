@@ -1,7 +1,7 @@
 """ASTMatcher main entry point for evaluating rules against AST nodes."""
 
 import time
-from typing import Optional, Union
+
 from karsasec.parser.ast.context import VisitorContext
 from karsasec.parser.ast_nodes import ASTNode
 from karsasec.rules.matcher.compatibility import check_rule_compatibility
@@ -11,13 +11,14 @@ from karsasec.rules.matcher.result import RuleMatch
 from karsasec.rules.matcher.statistics import MatcherStatistics
 from karsasec.rules.schema import Rule
 
+
 class ASTMatcher:
     """Deterministic AST Rule Matcher evaluating node predicates and returning RuleMatch DTOs."""
 
     def __init__(
         self,
-        pipeline: Optional[PredicatePipeline] = None,
-        statistics: Optional[MatcherStatistics] = None,
+        pipeline: PredicatePipeline | None = None,
+        statistics: MatcherStatistics | None = None,
     ) -> None:
         self.pipeline = pipeline or PredicatePipeline()
         self.statistics = statistics or MatcherStatistics()
@@ -25,7 +26,7 @@ class ASTMatcher:
     def match(
         self,
         node: ASTNode,
-        rule: Union[Rule, CompiledRule],
+        rule: Rule | CompiledRule,
         context: VisitorContext,
         source_bytes: bytes = b"",
     ) -> RuleMatch:

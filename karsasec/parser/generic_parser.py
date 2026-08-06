@@ -2,17 +2,17 @@
 
 import time
 from pathlib import Path
-from typing import Dict, List, Optional
 
 from karsasec.core.plugin import ParseResult, ParserPlugin, SymbolTable
 from karsasec.parser.ast_nodes import ASTNode, FileNode, Position, generate_node_id
 from karsasec.parser.registry import parser_registry
 from karsasec.parser.tree_sitter import ts_engine
 
+
 class GenericParserPlugin(ParserPlugin):
     """Multi-language parser plugin supporting JavaScript, PHP, Go, and Common pattern parsing."""
 
-    def __init__(self, language_name: str = "Generic", extensions: Optional[List[str]] = None) -> None:
+    def __init__(self, language_name: str = "Generic", extensions: list[str] | None = None) -> None:
         self._language = language_name
         self._extensions = extensions or [".js", ".ts", ".php", ".go", ".yaml", ".yml", ".json"]
 
@@ -48,7 +48,7 @@ class GenericParserPlugin(ParserPlugin):
             )
 
         code_bytes = path.read_bytes()
-        file_node: Optional[FileNode] = ts_engine.parse_code(code_bytes, self.supported_language, file_path=path)
+        file_node: FileNode | None = ts_engine.parse_code(code_bytes, self.supported_language, file_path=path)
 
         if file_node and not file_node.children:
             file_node = self._build_pattern_ast(path, code_bytes)
@@ -67,9 +67,9 @@ class GenericParserPlugin(ParserPlugin):
 
     def _build_pattern_ast(self, path: Path, code_bytes: bytes) -> FileNode:
         """Fallback AST node builder extracting call, assignment, and string nodes from source text."""
-        nodes_map: Dict[str, ASTNode] = {}
+        nodes_map: dict[str, ASTNode] = {}
         lines = code_bytes.decode("utf-8", errors="ignore").splitlines(keepends=True)
-        children_ids: List[str] = []
+        children_ids: list[str] = []
 
         # Build line offset table for byte calculation
         line_offsets = [0]

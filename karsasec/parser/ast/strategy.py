@@ -2,6 +2,7 @@
 
 from enum import Enum
 
+
 class TraversalStrategy(str, Enum):
     """AST Traversal strategy options."""
     DFS = "DFS"  # Depth-First Search (Default)

@@ -6,12 +6,12 @@ rule metadata `tags` list. It inspects `context.rag_context` and
 succeeds only when required RAG constraints are satisfied.
 """
 
-from typing import Optional, Tuple, Dict, Any
 from karsasec.parser.ast.context import VisitorContext
 from karsasec.parser.ast_nodes import ASTNode
 from karsasec.rules.matcher.compiler import CompiledRule
 from karsasec.rules.matcher.predicates.base import BasePredicate
 from karsasec.rules.matcher.statistics import MatcherStatistics
+
 
 class RAGPredicate(BasePredicate):
     @property
@@ -25,10 +25,9 @@ class RAGPredicate(BasePredicate):
         context: VisitorContext,
         stats: MatcherStatistics,
         source_bytes: bytes = b"",
-    ) -> Tuple[bool, Optional[str], Optional[str]]:
+    ) -> tuple[bool, str | None, str | None]:
         # If rule has no RAG-related tags, this predicate is a no-op and passes.
         tags = getattr(compiled_rule.rule.metadata, "tags", []) or []
-        rag_tags = [t for t in tags if t.startswith("rag_") or t.startswith("ragcontains") or t.startswith("ragcontains:") or t.startswith("ragcontains:") or t.startswith("ragcontains") or t.startswith("ragcontains:")]
 
         # Simpler: consider tags that start with 'use_rag' or 'rag_contains:'
         if not tags or not any(t.startswith("use_rag") or t.startswith("rag_contains:") for t in tags):

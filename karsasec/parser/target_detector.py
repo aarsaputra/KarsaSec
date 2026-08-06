@@ -1,7 +1,7 @@
 """Intelligent Target Detector determining TargetKind, TargetFormat, Appropriate Parser, and Detection Confidence."""
 
 from pathlib import Path
-from typing import NamedTuple, Optional
+from typing import NamedTuple
 
 from karsasec.rules.enums import TargetFormatEnum, TargetKindEnum
 
@@ -16,7 +16,7 @@ class TargetDetectionResult(NamedTuple):
 class TargetDetector:
     """Detects target kind, format, and confidence score based on filename, path heuristics, and content inspection."""
 
-    def detect(self, file_path: Path, content: Optional[str] = None) -> TargetDetectionResult:
+    def detect(self, file_path: Path, content: str | None = None) -> TargetDetectionResult:
         path = file_path.resolve()
         filename = path.name.lower()
         ext = path.suffix.lower()

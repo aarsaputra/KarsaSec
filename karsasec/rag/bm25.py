@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from collections import Counter, defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass
 from math import log
-from typing import Dict, Iterable, List, Optional
 
 from karsasec.rag.utils import tokenize_text
 
@@ -12,7 +12,7 @@ from karsasec.rag.utils import tokenize_text
 class BM25Document:
     document_id: str
     text: str
-    metadata: Dict[str, str]
+    metadata: dict[str, str]
 
 
 @dataclass(frozen=True)
@@ -20,7 +20,7 @@ class BM25Result:
     document_id: str
     score: float
     text: str
-    metadata: Dict[str, str]
+    metadata: dict[str, str]
 
 
 class BM25Index:
@@ -28,10 +28,10 @@ class BM25Index:
         self.documents = list(documents)
         self.k1 = k1
         self.b = b
-        self.doc_len: Dict[str, int] = {}
+        self.doc_len: dict[str, int] = {}
         self.average_doc_len = 0.0
-        self.doc_freq: Dict[str, int] = defaultdict(int)
-        self.term_freqs: Dict[str, Counter[str]] = {}
+        self.doc_freq: dict[str, int] = defaultdict(int)
+        self.term_freqs: dict[str, Counter[str]] = {}
         self._build_index()
 
     def _build_index(self) -> None:
@@ -51,7 +51,7 @@ class BM25Index:
 
         self.average_doc_len = total_len / len(self.documents)
 
-    def _score(self, query_tokens: List[str], document: BM25Document) -> float:
+    def _score(self, query_tokens: list[str], document: BM25Document) -> float:
         score = 0.0
         frequencies = self.term_freqs.get(document.document_id, Counter())
         doc_length = self.doc_len.get(document.document_id, 0)
@@ -70,12 +70,12 @@ class BM25Index:
 
         return score
 
-    def search(self, query: str, top_k: int = 5) -> List[BM25Result]:
+    def search(self, query: str, top_k: int = 5) -> list[BM25Result]:
         query_tokens = tokenize_text(query)
         if not query_tokens or not self.documents:
             return []
 
-        scores: List[BM25Result] = []
+        scores: list[BM25Result] = []
         for document in self.documents:
             score = self._score(query_tokens, document)
             if score > 0.0:
