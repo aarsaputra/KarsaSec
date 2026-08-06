@@ -83,26 +83,25 @@ class PredicateResolver:
         self._validate_dependencies_and_cycles()
         self._loaded = True
 
+    def _check_predicate_cycle(self, current: str, visited: set[str]) -> None:
+        if current in visited:
+            raise PredicateCycleError(f"Circular predicate dependency detected involving '{current}'")
+        visited.add(current)
+
+        curr_pred = self._predicates.get(current)
+        if not curr_pred:
+            raise PredicateNotFoundError(f"Referenced predicate dependency '{current}' not found")
+
+        for dep in curr_pred.dependencies:
+            self._check_predicate_cycle(dep, visited)
+
+        visited.remove(current)
+
     def _validate_dependencies_and_cycles(self) -> None:
         """Validates that all predicate dependencies exist and detects cycle loops."""
-        for p_name, pred in self._predicates.items():
+        for p_name in self._predicates:
             visited: set[str] = set()
-
-            def dfs(current: str) -> None:
-                if current in visited:
-                    raise PredicateCycleError(f"Circular predicate dependency detected involving '{current}'")
-                visited.add(current)
-
-                curr_pred = self._predicates.get(current)
-                if not curr_pred:
-                    raise PredicateNotFoundError(f"Referenced predicate dependency '{current}' not found")
-
-                for dep in curr_pred.dependencies:
-                    dfs(dep)
-
-                visited.remove(current)
-
-            dfs(p_name)
+            self._check_predicate_cycle(p_name, visited)
 
     def get_predicate(self, name: str) -> PredicateDefinition:
         """Retrieves a loaded predicate definition by name."""
