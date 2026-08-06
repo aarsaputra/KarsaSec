@@ -1,8 +1,8 @@
 # KarsaSec v1.0 Roadmap — Decoupled Compiler Pipeline & Code Property Graph (CPG) Platform
 
 Platform: KarsaSec Secure Code Analysis Platform (SecOS)
-Versi Roadmap: 3.1.0 (Enterprise Interprocedural Taint & Incremental Analysis Engine Focus) | Status: Milestone 2 Active
-Visi Utama: "Evolusi KarsaSec menjadi Compiler Pipeline & CPG SAST Engine berskala enterprise dengan Pass Manager, Universal IR, CFG, SSA, Data Flow Analysis, Intra/Interprocedural Taint Engine, Incremental Analysis, Framework Semantics, Dependency Intelligence, CPG Fusion, dan CPG Query Engine."
+Versi Roadmap: 4.0.0 (Code Property Graph (CPG) Core Focus) | Status: Milestone 2 Active
+Visi Utama: "Evolusi KarsaSec menjadi Compiler Pipeline & CPG SAST Engine berskala enterprise dengan Pass Manager, Universal IR, CFG, SSA, Data Flow Analysis, Intra/Interprocedural Taint Engine, Code Property Graph (CPG), CPG Query Engine, Framework Semantics, Incremental Analysis, dan Enterprise Qualification."
 
 ---
 
@@ -31,19 +31,17 @@ Data Flow Analysis (Reaching Definitions & Def-Use / Use-Def Chains)
     │
 Intraprocedural Taint Analysis (TaintGraph)
     │
-Interprocedural Taint Analysis (Function Summaries & InterproceduralTaintGraph)
+Interprocedural Taint Analysis (InterproceduralTaintGraph & Function Summaries)
     │
-Incremental Analysis Engine (AST/IR/CFG Delta & Pass Caching)
-    │
-Framework Semantics (Laravel, Django, Express, Next.js, Spring, ASP.NET)
-    │
-Dependency Intelligence (DependencyGraph)
-    │
-Code Property Graph (CPG Fusion)
+Code Property Graph (CPG Fusion Engine)  <── SINGLE SOURCE OF TRUTH
     │
 CPG Query Engine
     │
-Rule Engine v3
+Framework Semantics (Laravel, Django, Express, Next.js, Spring, ASP.NET)
+    │
+Incremental Analysis Engine (CPG Delta & Pass Caching)
+    │
+Enterprise Qualification Platform
     │
 Finding Engine → SARIF / JSON / HTML Reports → AI Advisory
 ```
@@ -55,20 +53,18 @@ Finding Engine → SARIF / JSON / HTML Reports → AI Advisory
 ### Milestone 2: Semantic Analysis Engine & Enterprise Engine (E5 – E12)
 - **Sprint E5 — Data Flow Analysis Engine** (`karsasec/analysis/dataflow/`) [COMPLETED]
 - **Sprint E6 — Intraprocedural Taint Analysis** (`karsasec/analysis/taint/`) [COMPLETED]
-- **Sprint E7 — Interprocedural Taint Analysis** (`karsasec/analysis/interprocedural/`) [ACTIVE]
-  - Cross-function tracking, Function Summary, Context Sensitivity (1-call-site), Parameter Mapping, Return Value Propagation
-- **Sprint E7.5 — Incremental Analysis Engine** (`karsasec/analysis/incremental/`)
-  - File Change Detector, AST/IR/CFG Delta, Call Graph Delta, Incremental Pass Scheduler
-- **Sprint E8 — Framework Semantic Engine** (`karsasec/analysis/framework/`)
-  - Framework Models: Laravel, Django, Express, Next.js, ASP.NET, Spring (`FrameworkModel`)
-- **Sprint E9 — Dependency Intelligence** (`karsasec/analysis/dependency/`)
-  - Automated dependency parser for package.json, Cargo.toml, go.mod, pom.xml, requirements.txt (`DependencyGraph`)
-- **Sprint E10 — Code Property Graph (CPG)** (`karsasec/analysis/cpg/`)
-  - Graph Fusion: AST + CFG + SSA + CallGraph + SymbolGraph + DataFlow + Taint = `CPG`
-- **Sprint E11 — CPG Query Engine** (`karsasec/query/`)
+- **Sprint E7 — Interprocedural Taint Analysis** (`karsasec/analysis/interprocedural/`) [COMPLETED]
+- **Sprint E8 — Code Property Graph (CPG) Core** (`karsasec/cpg/`) [ACTIVE]
+  - Graph Fusion: AST + IR + CFG + SSA + CallGraph + SymbolGraph + DataFlow + Taint = `CPGGraph`
+  - O(1) GraphIndex, Multi-Edge Types, Validation, JSON/Binary Serialization, DOT/Mermaid/HTML Visualizer
+- **Sprint E9 — CPG Query Engine** (`karsasec/query/`)
   - Fluent graph query engine matching source-to-sink paths without regex
-- **Sprint E12 — Rule Engine v3** (`karsasec/rules/engine_v3.py`)
-  - Refactored rule execution operating exclusively on top of CPG
+- **Sprint E10 — Framework Semantic Engine** (`karsasec/analysis/framework/`)
+  - Framework Models: Laravel, Django, Express, Next.js, ASP.NET, Spring (`FrameworkModel`)
+- **Sprint E11 — Incremental Analysis Engine** (`karsasec/analysis/incremental/`)
+  - File Change Detector, CPG Delta, Call Graph Delta, Incremental Pass Scheduler
+- **Sprint E12 — Enterprise Qualification Platform** (`karsasec/qualification/`)
+  - Benchmark against OWASP Benchmark, Juliet, DVWA, 100 KLOC < 5s performance verification
 
 ### Milestone 3: Enterprise SaaS Platform (F1 – F6)
 - **Sprint F1**: REST API (`/scan`, `/findings`)
