@@ -1,35 +1,34 @@
-# KarsaSec v1.0 Roadmap — Milestone 2: Analysis Engine Evolution
+# KarsaSec v1.0 Roadmap — Compiler Pipeline & Code Property Graph (CPG) SAST Platform
 
 Platform: KarsaSec Secure Code Analysis Platform (SecOS)
-Versi Roadmap: 2.0.0 (Semantic Analysis Engine & Interprocedural Taint Focus) | Status: Milestone 2 Active
-Visi Utama: "Evolusi KarsaSec dari rule-based SAST scanner menjadi Semantic Static Analysis Platform kelas enterprise dengan Interprocedural Taint Analysis, Call Graph, CFG, Dataflow Engine, Symbol Resolver, dan Framework Semantic Model."
+Versi Roadmap: 2.1.0 (Compiler Pipeline & CPG Enterprise Focus) | Status: Milestone 2 Active
+Visi Utama: "Evolusi KarsaSec menjadi Compiler Pipeline & Code Property Graph (CPG) SAST Engine berskala enterprise dengan tahapan pipeline linier deterministik dan multi-tenant SaaS readiness."
 
 ---
 
-## Milestone 2 Execution Schedule (Analysis Engine Evolution)
+## Linear Compiler Pipeline Architecture
 
-| Sprint | Fokus Utama | Target Deliverable & Artifact |
-|---|---|---|
-| **Sprint E1** | **Call Graph Engine** | `CallGraph`, `CallNode`, `CallEdge`, `CallGraphBuilder` (`analysis.callgraph.json`) (**ACTIVE NEXT**) |
-| **Sprint E2** | **Symbol Resolution Engine** | `SymbolResolver` for imports, assignments, aliases (`analysis.symbol.json`) |
-| **Sprint E3** | **CFG Builder Engine** | Basic Block Builder, Control Flow Edges for conditionals/loops/returns (`analysis.cfg.json`) |
-| **Sprint E4** | **Dominator Analysis** | Dominator Tree, Post Dominator, Reachability & Dead Branch Detection (`analysis.dominator.json`) |
-| **Sprint E5** | **SSA Preparation** | Variable versioning, assignment tracking, phi candidates (`analysis.ssa.json`) |
-| **Sprint E6** | **Dataflow Engine** | Constant propagation, copy propagation, Def-Use / Use-Def chains (`analysis.dataflow.json`) |
-| **Sprint E7** | **Interprocedural Taint Analysis** | Cross-function parameter and return value taint propagation (`analysis.taint_graph.json`) |
-| **Sprint E8** | **Sanitizer Engine** | Sanitizer Registry (SQL, HTML escape, URL encode, shell escape) |
-| **Sprint E9** | **Confidence Scoring Engine** | Multi-factor confidence formula (AST + Taint + CFG + Framework + Sanitizer) |
-| **Sprint E10** | **Framework Semantic Model** | Route to controller/middleware/model semantics (Laravel, Django, Flask, Express, Next.js, Gin, Actix, Axum) |
-| **Sprint E11** | **Unified Analysis Bundle** | Single `AnalysisBundle` container integrating all engine passes |
-| **Sprint E12** | **Engine Qualification Platform** | `karsasec qualification run` benchmarked against OWASP Benchmark, Juliet, DVWA, Juice Shop |
+```
+Source Code → Language Detection → Tree-sitter Parser → AST → Symbol Resolution → CFG → Call Graph → Dataflow → Taint Analysis → Code Property Graph (CPG) → Rule Engine → Finding Engine → SARIF / HTML / JSON → AI Advisory
+```
 
 ---
 
-## Downstream Pipeline (Capability-Based Language & Secret Packs)
+## Strategic Phase & Sprint Schedule
 
-1. **Capability Pack: Language Expansion** (C#, C++, HTML Expansion)
-2. **Capability Pack: Multi-Cloud IaC (110 Rules Target)** (Docker: 15, K8s: 25, TF AWS: 20, TF Azure: 15, TF GCP: 15, Helm: 10, GHA: 10)
-3. **Capability Pack: Software Composition Analysis (SCA)** (Dependencies: `package-lock.json`, `composer.lock`, `go.sum`, `Cargo.lock`, `pom.xml`)
-4. **Capability Pack: Standalone Secret Detection Engine** (Regex → Entropy → Checksum → Context Validator → Confidence score)
-5. **Capability Pack: License Compliance Analysis** (GPL, AGPL, LGPL, MIT, Apache, BSD, MPL)
-6. **Milestone C: AI Advisory & Remediation Layer** (Explain Findings, Risk Prioritization, PR Security Copilot)
+| Fase | Sprint | Fokus Utama | Output & Artifact Utama |
+|---|---|---|---|
+| **Fase 1** | **Sprint E1** | **Call Graph Engine** | `CallNode`, `CallEdge`, `CallGraphBuilder` (`analysis.callgraph.json`) (**COMPLETED**) |
+| | **Sprint E2** | **Symbol Resolution Engine** | `SymbolTable`, `ScopeResolver`, `ImportResolver`, `QualifiedNameResolver` (`analysis.symbol.json`) (**ACTIVE NEXT**) |
+| | **Sprint E3** | **CFG Builder Engine** | Basic Block Builder, Control Flow Edges for conditionals/loops/returns (`analysis.cfg.json`) |
+| | **Sprint E4** | **Dominator Analysis** | Dominator Tree, Post Dominator, Reachability & Immediate Dominator (`analysis.dominator.json`) |
+| **Fase 2** | **Sprint E5** | **Dataflow Analysis** | Def-Use / Use-Def chains, Constant & Copy propagation (`analysis.dataflow.json`) |
+| | **Sprint E6** | **Taint Engine** | Intraprocedural Taint propagation tracking (`analysis.taint.json`) |
+| | **Sprint E7** | **Interprocedural Analysis** | Cross-function parameter and return value taint tracking (`analysis.interprocedural_taint.json`) |
+| **Fase 3** | **Sprint E8** | **Framework Semantic Model** | Framework routing models (Laravel, Django, Flask, FastAPI, Express, Next.js, Gin, Actix, Axum, Spring, ASP.NET) |
+| | **Sprint E9** | **Dependency Analyzer** | Lockfile parsing (`package.json`, `composer.json`, `Cargo.toml`, `go.mod`, `pom.xml`, `requirements.txt`) |
+| | **Sprint E10**| **Manifest Intelligence** | Automatic framework rule auto-activation based on project manifests |
+| **Fase 4** | **Sprint E11**| **Advanced Rule Engine** | Stateful rules, multi-file rules, cross-file & cross-language rules |
+| | **Sprint E12**| **Code Property Graph (CPG)** | Unified graph fusion of AST + CFG + CallGraph + Dataflow + Symbol Graph (`cpg.json`) |
+| **Fase 5** | **Enterprise**| **Enterprise Capability** | Incremental scan, Parallel analysis, Artifact cache, Baseline management, Full SARIF v2.1.0, CI/CD, SaaS API |
+| **Fase 6** | **AI Layer** | **AI Security Copilot** | Post-processing finding explanation, risk prioritization, fix draft, PR review assistant |
