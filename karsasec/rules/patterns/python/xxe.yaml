@@ -1,0 +1,44 @@
+rules:
+  - rule:
+      id: KS-PY-0011
+    metadata:
+      name: Python XML External Entity (XXE) Processing
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-611
+      owasp: A05:2021-Security Misconfiguration
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+      tags:
+        - xml
+        - xxe
+        - python
+    target:
+      languages:
+        - Python
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - ET.parse
+        - minidom.parse
+        - xml.etree.ElementTree
+        - lxml.etree
+      pattern: "(?i)(xml\\.etree\\.ElementTree|minidom\\.parse|lxml\\.etree\\.parse|ET\\.parse\\s*\\([^)]*request)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 40
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Parsing untrusted XML data using standard XML parsers vulnerable to XXE.
+      remediation: Disable DTD processing and external entity resolution or use defusedxml.

@@ -1,0 +1,82 @@
+rules:
+  - rule:
+      id: KS-PY-0008
+    metadata:
+      name: Python Unsafe Temporary File Creation
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-377
+      owasp: A01:2021-Broken Access Control
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/377.html
+      tags:
+        - tempfile
+        - race_condition
+        - python
+    target:
+      languages:
+        - Python
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - tempfile.mktemp
+      pattern: "(?i)tempfile\\.mktemp\\s*\\("
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: MEDIUM
+      confidence: HIGH
+      message: Insecure function tempfile.mktemp() creates race condition vulnerabilities.
+      remediation: Use tempfile.NamedTemporaryFile() or tempfile.mkstemp() instead.
+
+  - rule:
+      id: KS-PY-0009
+    metadata:
+      name: Python Weak Pseudo-Random Number Generator for Security
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-330
+      owasp: A02:2021-Cryptographic Failures
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/330.html
+      tags:
+        - random
+        - crypto
+        - python
+    target:
+      languages:
+        - Python
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - random.random
+        - random.randint
+        - random.choice
+      pattern: "(?i)(token|password|secret|key|nonce|auth|session)\\s*=\\s*.*random\\.(randint|choice|random|randrange)\\s*\\("
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 40
+    output:
+      severity: MEDIUM
+      confidence: CONFIDENT
+      message: Standard random module is pseudo-random and unsafe for generating security tokens or secrets.
+      remediation: Use secrets module (e.g. secrets.token_hex() or secrets.choice()) for cryptographic use cases.

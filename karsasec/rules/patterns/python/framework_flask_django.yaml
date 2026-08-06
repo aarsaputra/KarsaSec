@@ -1,0 +1,86 @@
+rules:
+  - rule:
+      id: KS-PY-0005
+    metadata:
+      name: Flask Hardcoded Secret Key and Debug Mode
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-798
+      owasp: A05:2021-Security Misconfiguration
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/798.html
+      tags:
+        - flask
+        - secret
+        - misconfiguration
+        - python
+    target:
+      languages:
+        - Python
+      frameworks:
+        - Flask
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - assignment
+        - call
+    condition:
+      symbol_triggers:
+        - app.config
+        - app.run
+      pattern: "(?i)(SECRET_KEY\\s*=\\s*['\"][^'\"]+['\"]|app\\.run\\([^)]*debug\\s*=\\s*True|app\\.config\\[['\"]SECRET_KEY['\"]\\]\\s*=\\s*['\"][^'\"]+['\"])"
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: HIGH
+      confidence: HIGH
+      message: Hardcoded Flask SECRET_KEY or enabled debug mode detected.
+      remediation: Use environment variables for SECRET_KEY and ensure debug=False in production.
+
+  - rule:
+      id: KS-PY-0006
+    metadata:
+      name: Django Insecure Security Settings
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-489
+      owasp: A05:2021-Security Misconfiguration
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/489.html
+      tags:
+        - django
+        - debug
+        - misconfiguration
+        - python
+    target:
+      languages:
+        - Python
+      frameworks:
+        - Django
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - assignment
+    condition:
+      pattern: "(?i)(DEBUG\\s*=\\s*True|ALLOWED_HOSTS\\s*=\\s*\\[\\s*['\"]\\*['\"]\\s*\\])"
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: HIGH
+      confidence: HIGH
+      message: Insecure Django settings detected (DEBUG=True or ALLOWED_HOSTS=['*']).
+      remediation: Set DEBUG=False and specify explicit allowed host domains in production.

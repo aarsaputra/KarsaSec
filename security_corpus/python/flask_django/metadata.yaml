@@ -1,0 +1,6 @@
+rule_id: KS-PY-0005
+category: framework
+language: python
+cwe: CWE-798
+owasp: A05:2021-Security Misconfiguration
+description: Flask hardcoded secret key and debug mode corpus test suite

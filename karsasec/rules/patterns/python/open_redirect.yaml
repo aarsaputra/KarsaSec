@@ -1,0 +1,46 @@
+rules:
+  - rule:
+      id: KS-PY-0007
+    metadata:
+      name: Python Open Redirect Vulnerability
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-601
+      owasp: A01:2021-Broken Access Control
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/601.html
+      tags:
+        - redirect
+        - open_redirect
+        - python
+    target:
+      languages:
+        - Python
+      frameworks:
+        - Flask
+        - Django
+        - FastAPI
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - redirect
+        - HttpResponseRedirect
+      pattern: "(?i)(redirect\\s*\\(\\s*request\\.(GET|POST|args|values)\\.get|HttpResponseRedirect\\s*\\(\\s*request\\.)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 40
+        user_source: 30
+    output:
+      severity: MEDIUM
+      confidence: CONFIDENT
+      message: Untrusted user input passed directly to HTTP redirect function.
+      remediation: Validate redirect URLs against a whitelist of allowed domains or use relative paths.
