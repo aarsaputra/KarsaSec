@@ -1,0 +1,46 @@
+name: KarsaSec Scan
+description: Run the KarsaSec CLI against a target path and emit a security report.
+
+inputs:
+  path:
+    description: Path to scan.
+    required: false
+    default: '.'
+  format:
+    description: Report format to emit (console, json, sarif).
+    required: false
+    default: 'sarif'
+  output:
+    description: Optional output file path for the exported report.
+    required: false
+    default: ''
+  use-rag:
+    description: Enable hybrid RAG context during the scan.
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install KarsaSec
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -e .
+
+    - name: Run KarsaSec scan
+      shell: bash
+      run: |
+        args=(scan "${{ inputs.path }}" --format "${{ inputs.format }}")
+        if [ -n "${{ inputs.output }}" ]; then
+          args+=(--output "${{ inputs.output }}")
+        fi
+        if [ "${{ inputs.use-rag }}" = "true" ]; then
+          args+=(--rag)
+        fi
+        karsasec "${args[@]}"

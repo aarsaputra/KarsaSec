@@ -1,14 +1,16 @@
 # 🗺️ KarsaSec — Implementation Roadmap
 
 **Platform:** KarsaSec AI Application Security Operating System (SecOS)  
-**Versi Roadmap:** 1.1.0 | **Terakhir Diperbarui:** 2026-08-05  
-**Strategi MVP:** 4 Core Agents (`Planner` → `Analyzer` → `Remediator` → `Reporter`) + Dynamic Taint/Guard Verification
+**Versi Roadmap:** 1.2.0 | **Terakhir Diperbarui:** 2026-08-06  
+**Strategi Transisi:** Transisi resmi ke **[Execution Roadmap v1.0](EXECUTION_ROADMAP_v1.0.md)** (Architecture Freeze & Production Qualification Program)
 
 ---
 
 ## 🎯 Visi & Strategi Eksekusi
 
 Roadmap ini memandu pengembangan **KarsaSec** dari fondasi repositori hingga platform enterprise yang siap produksi. Berbeda dari dokumen arsitektur tinggi, roadmap ini berfokus pada **incremental working code** di mana setiap sprint menghasilkan biner/modul yang dapat dieksekusi dan diuji.
+
+> 📌 **Catatan Arsitektur (Chief Software Architect):** Proyek KarsaSec kini berada dalam **Architecture Freeze v1.0**. Tidak ada penambahan subsistem inti baru (IR/Graph/Scheduler). Seluruh eksekusi dipusatkan pada **[Execution Roadmap v1.0](EXECUTION_ROADMAP_v1.0.md)** untuk Production Hardening, Precision Engine, Developer Experience, dan Agentic Orchestration.
 
 ---
 
