@@ -1,0 +1,213 @@
+rules:
+  - rule:
+      id: KS-GO-0010
+    metadata:
+      name: Go Gin Query Parameter Raw SQL Injection
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-89
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+      tags:
+        - sqli
+        - gin
+        - framework
+        - go
+    target:
+      languages:
+        - Go
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Go
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - c.Query
+        - c.Param
+        - db.Raw
+        - db.Exec
+      pattern: "(?i)(?:db\\.Raw|db\\.Exec|db\\.Query)\\s*\\([^)]*c\\.(?:Query|Param|PostForm)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 50
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Passing Gin request parameters directly into raw SQL queries allows SQL injection.
+      remediation: Use GORM parameterized query methods like db.Where("name = ?", param) or sql.DB parameterized placeholders.
+
+  - rule:
+      id: KS-GO-0011
+    metadata:
+      name: Go Gin Unsanitized Command Execution
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-78
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+      tags:
+        - cmdi
+        - gin
+        - go
+    target:
+      languages:
+        - Go
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Go
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - exec.Command
+        - c.Query
+        - c.Param
+      pattern: "(?i)exec\\.Command\\s*\\([^)]*c\\.(?:Query|Param|PostForm)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 50
+        user_source: 30
+    output:
+      severity: CRITICAL
+      confidence: CONFIDENT
+      message: Supplying Gin route parameters directly to exec.Command causes OS command injection.
+      remediation: Validate input against strict allowlists or avoid executing external binaries with request input.
+
+  - rule:
+      id: KS-GO-0012
+    metadata:
+      name: Go Gin Server-Side Request Forgery
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-918
+      owasp: A10:2021-Server-Side Request Forgery (SSRF)
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/918.html
+      tags:
+        - ssrf
+        - gin
+        - go
+    target:
+      languages:
+        - Go
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Go
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - http.Get
+        - http.Post
+        - http.NewRequest
+      pattern: "(?i)http\\.(?:Get|Post|NewRequest)\\s*\\([^)]*c\\.(?:Query|Param)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 40
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Requesting URLs constructed directly from Gin query inputs allows SSRF attacks.
+      remediation: Enforce strict URL domain allowlists and restrict internal IP range access.
+
+  - rule:
+      id: KS-GO-0013
+    metadata:
+      name: Go Gin Path Traversal File Download
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-22
+      owasp: A01:2021-Broken Access Control
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+      tags:
+        - path_traversal
+        - gin
+        - go
+    target:
+      languages:
+        - Go
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Go
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - c.File
+        - c.FileAttachment
+      pattern: "(?i)c\\.(?:File|FileAttachment)\\s*\\([^)]*c\\.(?:Query|Param)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 40
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Serving files via Gin using untrusted path parameters allows directory traversal and arbitrary file reads.
+      remediation: Sanitize filename inputs with filepath.Base() or ensure paths resolve within safe root directories.
+
+  - rule:
+      id: KS-GO-0014
+    metadata:
+      name: Go Gin Unvalidated Open Redirect
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-601
+      owasp: A01:2021-Broken Access Control
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/601.html
+      tags:
+        - redirect
+        - gin
+        - go
+    target:
+      languages:
+        - Go
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Go
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - c.Redirect
+      pattern: "(?i)c\\.Redirect\\s*\\([^,]+,\\s*c\\.(?:Query|Param)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 30
+    output:
+      severity: MEDIUM
+      confidence: CONFIDENT
+      message: Redirecting users to URLs provided in query parameters can lead to phishing and open redirect exploits.
+      remediation: Validate redirect URLs against relative local paths or an explicit domain allowlist.

@@ -1,7 +1,7 @@
-# KarsaSec v1.0 Roadmap (Enterprise & Detection Engineering Standard)
+# KarsaSec v1.0 Roadmap (Detection Engineering & Quality Excellence)
 
 Platform: KarsaSec Secure Code Analysis Platform (SecOS)
-Versi Roadmap: 1.3.0 (Detection Engineering & Capability-First Roadmap) | Status: Milestone 1 Active - Detection Quality Focus
+Versi Roadmap: 1.4.0 (Rule Quality Infrastructure & Multi-Language Pack Focus) | Status: Milestone 1 Active - Quality Excellence
 Visi Utama: "Menjadi platform Application Security Open Source terbaik (Setara Semgrep & CodeQL) dengan deterministic SAST engine yang presisi, framework-aware, dan terukur sebelum memasuki AI Layer."
 
 ---
@@ -12,12 +12,13 @@ Visi Utama: "Menjadi platform Application Security Open Source terbaik (Setara S
 |---|---|---|
 | **Sprint A3.0** | Rule Quality Infrastructure | Rule Validate, Lint, Docs Generator, Coverage Matrix CLI (**COMPLETED - 112 Rules**) |
 | **Sprint A3.1** | PHP Security Pack (Laravel, Symfony, WP, Native) | 25+ Rules, Framework-Aware, Fixture Validation (**COMPLETED - 27 PHP Rules**) |
-| **Sprint A4** | Go Security Pack (Gin, Echo, Fiber, stdlib) | 15-20 Rules, SSRF, SQLi, TLS, Command Injection, Secrets |
+| **Sprint A4** | Go Security Pack (Gin, Echo, Fiber, stdlib) | 15-20 Rules, SSRF, SQLi, TLS, Command Injection, Secrets (**COMPLETED - 23 Go Rules**) |
+| **Sprint A4.5** | Rule Quality Platform (Detection Engineering) | Rule Profiler, Conflict Detector, Dead Code Detector (**COMPLETED - 126 Rules Total**) |
 | **Sprint A5** | Rust Security Pack (Axum, Actix, Warp) | 10-15 Rules, Unsafe memory, Command, SQL, Deserialization |
-| **Sprint A6** | Lengkapi C#, C++, HTML Packs | ASP.NET Razor/XXE/ViewState, C++ Memory/Format String, HTML CSP/Sanitize |
-| **Sprint A7** | IaC Security Pack (Minimal 30 Rules) | Docker, Kubernetes, Terraform, Helm, GitHub Actions |
-| **Sprint A8** | Secrets Detection Engine | Engine khusus entropy & regex (AWS, Azure, GCP, JWT, SSH, API Keys) |
-| **Sprint A9** | Framework Intelligence | Deteksi versi framework & library untuk rule targeting presisi tinggi |
+| **Sprint A6** | Lengkapi C#, C++, HTML Packs | Shared Predicate Engine, ASP.NET, C++ Memory/Format String, HTML CSP |
+| **Sprint A7** | IaC Security Pack (Minimal 50 Rules) | Docker, Kubernetes, Terraform, Helm, GitHub Actions |
+| **Sprint A8** | Secrets Detection Engine | Standalone engine with entropy + checksum (AWS, Azure, GCP, JWT, SSH, API Keys) |
+| **Sprint A9** | Framework Intelligence & Dependency Targeting | Target resolution berdasarkan manifest (`composer.json`, `package.json`, `go.mod`) |
 | **Sprint A10** | Benchmark & Qualification Platform | Benchmarking otomatis terhadap OWASP Benchmark, Juliet, DVWA, JuiceShop |
 | **Milestone B** | DevEx & Enterprise Integration | CLI Doctor, SARIF Diff, HTML/PDF Reports, Quality Gate Policy |
 | **Milestone C** | AI Layer (Explain, Prioritize, Fix Draft) | Explain Findings, Risk Prioritization, Fix Draft, PR Security Copilot |
@@ -38,41 +39,15 @@ Target Kualitas Milestone 1:
 
 ## Detail Sprint Breakdown
 
-### Sprint A3.0 - Rule Quality Infrastructure (COMPLETED)
-- Sub-command CLI `karsasec rules`:
-  - `validate`: Cek duplikat ID, CWE, OWASP, regex, remediasi, referensi eksternal.
-  - `lint`: Format YAML, empty tags, deskripsi pendek.
-  - `docs`: Generator Markdown otomatis di bawah `docs/rules/`.
-  - `coverage`: Visualisasi cakupan rule per bahasa & kategori.
-- Matriks Kompatibilitas `docs/RESEARCH_COMPATIBILITY_MATRIX.md`.
+### Sprint A4 - Go Security Pack (COMPLETED)
+- **Gin**: Raw SQLi (`c.Query` -> `db.Raw`), Unsanitized Command (`exec.Command`), SSRF (`http.Get`), Path Traversal (`c.File`), Open Redirect (`c.Redirect`).
+- **Echo**: QueryParam SQLi (`c.QueryParam`), Inline HTML XSS (`c.HTML`), Hardcoded JWT Secret (`jwt.WithKey`).
+- **Fiber**: Command Injection (`exec.Command`), Path Traversal (`c.SendFile`), Hardcoded Session Secret.
+- **Go Stdlib**: Deprecated Crypto (`md5`, `sha1`), Unsafe Temp File (`os.CreateTemp("/tmp")`), Zip Slip (`archive/zip`).
 
-### Sprint A3.1 - PHP Security Pack + Framework Intelligence (COMPLETED)
-- **Native PHP**: SQLi, Command Injection (`exec`, `shell_exec`, `passthru`), LDAP Injection, XPath Injection, NoSQL Injection, Phar Stream Deserialization, Zip Slip, Unrestricted Upload.
-- **Laravel**: Raw Query (`DB::raw`, `whereRaw`), `APP_DEBUG=true`, Mass Assignment (`fill`, `create`), Unescaped Blade (`{!! !!}`).
-- **WordPress**: `$wpdb->query` tanpa `prepare()`, Missing Nonce Verification (`wp_ajax`).
-- **Symfony**: Expression Language Injection, Twig Unescaped Raw Output SSTI.
-
-### Sprint A4 - Go Security Pack (Next)
-- Frameworks: Gin, Echo, Fiber, stdlib.
-- Coverage: Command Injection, SQLi, SSRF, TLS Misconfiguration, Secret Leaks, Path Traversal, Unsafe Pointer.
-
-### Sprint A5 - Rust Security Pack
-- Frameworks: Axum, Actix, Warp.
-- Coverage: `unsafe` blocks, Command Injection, SQLi, Secret Leaks, Unsafe Deserialization.
-
-### Sprint A6 - Lengkapi C#, C++, HTML Security Packs
-- **C#**: ASP.NET XSS, CSRF, JWT, Path Traversal, ViewState, Razor Injection, XXE.
-- **C++**: Double Free, Use After Free, Integer Overflow, Format String, `memcpy` Overflow, `new/delete` mismatch.
-- **HTML**: CSP Missing, iframe sandbox, `target="_blank"`, mixed content, inline script, autocomplete password.
-
-### Sprint A7 - IaC Security Pack
-- Dockerfile, Kubernetes, Terraform, Helm, GitHub Actions (Minimal 30 Rules).
-
-### Sprint A8 - Standalone Secrets Detection Engine
-- Engine khusus dengan entropy calculation + regex validation untuk AWS, Azure, GCP, JWT, SSH, Slack, OpenAI, Anthropic, Gemini, Database URLs, Webhooks.
-
-### Sprint A9 - Framework Intelligence & Execution Model
-- Model dependency & manifest resolver (`composer.json`, `package.json`, `go.mod`, `Cargo.toml`, `requirements.txt`) untuk memfilter rule secara otomatis berdasarkan versi framework aktif.
-
-### Sprint A10 - Qualification & Qualification Benchmark Platform
-- Evaluasi otomatis terhadap OWASP Benchmark, Juliet Test Suite, DVWA, Juice Shop, Vulnerable Flask/Laravel Apps.
+### Sprint A4.5 - Rule Quality Platform (COMPLETED)
+- **Modul `karsasec/quality/`**:
+  - `CoverageAnalyzer`: Metrik cakupan per bahasa, CWE, OWASP, severity, framework.
+  - `RuleProfiler`: Pengukuran latency evaluasi per rule (`karsasec rules profile`).
+  - `ConflictDetector`: Deteksi nama duplikat & pattern regex overlap (`karsasec rules conflicts`).
+  - `DeadCodeDetector`: Deteksi rule mati / klausa tidak lengkap (`karsasec rules dead-code`).

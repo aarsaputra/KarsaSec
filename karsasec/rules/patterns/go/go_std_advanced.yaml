@@ -1,0 +1,121 @@
+rules:
+  - rule:
+      id: KS-GO-0021
+    metadata:
+      name: Go Deprecated Cryptographic Hash Usage
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-328
+      owasp: A02:2021-Cryptographic Failures
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/328.html
+      tags:
+        - crypto
+        - md5
+        - sha1
+        - go
+    target:
+      languages:
+        - Go
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Go
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - md5.New
+        - md5.Sum
+        - sha1.New
+        - sha1.Sum
+      pattern: "(?i)(?:md5|sha1)\\.(?:New|Sum)\\s*\\("
+    evidence:
+      score_weights:
+        dangerous_sink: 30
+    output:
+      severity: MEDIUM
+      confidence: CONFIDENT
+      message: MD5 and SHA1 hash algorithms are cryptographically broken and vulnerable to collision attacks.
+      remediation: Use SHA-256 (crypto/sha256) or SHA-512 for cryptographic hashing and bcrypt/argon2 for passwords.
+
+  - rule:
+      id: KS-GO-0022
+    metadata:
+      name: Go Unsafe Temporary File Creation in World-Writable Directory
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-377
+      owasp: A01:2021-Broken Access Control
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/377.html
+      tags:
+        - tempfile
+        - filesystem
+        - go
+    target:
+      languages:
+        - Go
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Go
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - os.CreateTemp
+        - ioutil.TempFile
+      pattern: "(?i)(?:os\\.CreateTemp|ioutil\\.TempFile)\\s*\\(\\s*[\"'](?:/tmp|/var/tmp)[\"']"
+    evidence:
+      score_weights:
+        dangerous_sink: 30
+    output:
+      severity: MEDIUM
+      confidence: CONFIDENT
+      message: Creating temporary files in public /tmp or /var/tmp without restrict permissions creates symlink race condition risks.
+      remediation: Pass an empty string "" as directory parameter to use os.TempDir() or restrict file mode permissions.
+
+  - rule:
+      id: KS-GO-0023
+    metadata:
+      name: Go Archive Zip Slip Unvalidated File Extraction
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-22
+      owasp: A01:2021-Broken Access Control
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+      tags:
+        - zip_slip
+        - path_traversal
+        - go
+    target:
+      languages:
+        - Go
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Go
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - zip.OpenReader
+        - File.Open
+        - filepath.Join
+      pattern: "(?i)filepath\\.Join\\s*\\([^,]+,\\s*f\\.Name\\)"
+    evidence:
+      score_weights:
+        dangerous_sink: 40
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Extracting zip files by joining destination directory directly with zip entry names without path validation allows Zip Slip attacks.
+      remediation: Verify that strings.HasPrefix(destinationPath, filepath.Clean(targetDir)) before writing extracted files.

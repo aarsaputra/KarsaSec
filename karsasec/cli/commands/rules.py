@@ -233,3 +233,66 @@ def rule_coverage() -> None:
             console.print(f"  {cat_name:<18} [{bar:<25}] {count} rules")
 
     console.print(f"\nTotal Rules Across Repository: {len(rules)}")
+
+@rules_app.command("profile")
+def profile_rules(
+    top: int = typer.Option(10, "--top", "-t", help="Number of slowest rules to display.")
+) -> None:
+    """Profile latency and evaluation performance across all loaded rules."""
+    from karsasec.quality.profiler import RuleProfiler
+
+    profiler = RuleProfiler()
+    results = profiler.profile_execution()
+
+    table = Table(title="KarsaSec Rule Performance Profile", show_header=True, header_style="bold yellow")
+    table.add_column("Rule ID", style="cyan")
+    table.add_column("Rule Name", style="bold")
+    table.add_column("Severity", style="magenta")
+    table.add_column("Elapsed Time (ms)", style="green")
+
+    for item in results[:top]:
+        table.add_row(item["id"], item["name"], str(item["severity"]), str(item["elapsed_ms"]))
+
+    console.print(table)
+    console.print(f"Total Rules Profiling Evaluated: {len(results)}")
+
+@rules_app.command("conflicts")
+def detect_rule_conflicts() -> None:
+    """Detect pattern overlaps and duplicate names across all YAML rules."""
+    from karsasec.quality.conflicts import ConflictDetector
+
+    detector = ConflictDetector()
+    report = detector.detect_conflicts()
+
+    console.print(Panel("KarsaSec Rule Conflict & Overlap Report", border_style="red"))
+    duplicates = report["duplicate_names"]
+    overlaps = report["pattern_overlaps"]
+
+    console.print(f"Duplicate Names: {len(duplicates)}")
+    for d in duplicates:
+        console.print(f"  [yellow]DUP NAME[/yellow] '{d['name']}': {d['rule_a']} <-> {d['rule_b']}")
+
+    console.print(f"Pattern Overlaps: {len(overlaps)}")
+    for o in overlaps:
+        console.print(f"  [yellow]OVERLAP[/yellow] Pattern '{o['pattern']}': {o['rule_a']} <-> {o['rule_b']}")
+
+    if not duplicates and not overlaps:
+        console.print("[green]No rule conflicts or pattern overlaps detected.[/green]")
+
+@rules_app.command("dead-code")
+def detect_dead_code() -> None:
+    """Detect unused, incomplete, or dead rules across the repository."""
+    from karsasec.quality.dead_code import DeadCodeDetector
+
+    detector = DeadCodeDetector()
+    issues = detector.detect_dead_rules()
+
+    console.print(Panel("KarsaSec Rule Dead Code Report", border_style="magenta"))
+    console.print(f"Dead/Incomplete Rules Identified: {len(issues)}")
+
+    for item in issues:
+        console.print(f"  [red]DEAD RULE[/red] {item['id']} ({item['name']}): {', '.join(item['issues'])}")
+
+    if not issues:
+        console.print("[green]No dead or incomplete rules found across the repository.[/green]")
+
