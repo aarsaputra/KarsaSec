@@ -1,0 +1,135 @@
+rules:
+  - rule:
+      id: KS-RS-0002
+    uses:
+      predicate: sql_injection
+    metadata:
+      name: Rust Axum Query Parameter Raw SQL Injection
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-89
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+      tags:
+        - sqli
+        - axum
+        - framework
+        - rust
+    target:
+      languages:
+        - Rust
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Rust
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - sqlx
+        - query
+        - query_unchecked
+      pattern: "(?i)(?:sqlx::query|query_unchecked)\\s*\\([^)]*format!"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 50
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Using format! macro to construct sqlx raw queries in Axum handlers allows SQL injection.
+      remediation: Use sqlx query parameters sqlx::query("... $1").bind(...) instead of string formatting.
+
+  - rule:
+      id: KS-RS-0003
+    uses:
+      predicate: command_injection
+    metadata:
+      name: Rust Axum Command Injection
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-78
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+      tags:
+        - cmdi
+        - axum
+        - rust
+    target:
+      languages:
+        - Rust
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Rust
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - Command
+        - new
+        - arg
+      pattern: "(?i)Command::new\\s*\\([^)]*\\)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 50
+        user_source: 30
+    output:
+      severity: CRITICAL
+      confidence: CONFIDENT
+      message: Executing system processes via Command::new with untrusted Axum parameters permits OS command injection.
+      remediation: Strictly validate command arguments against allowlists; avoid sh -c subprocess invocations.
+
+  - rule:
+      id: KS-RS-0004
+    uses:
+      predicate: hardcoded_secret
+    metadata:
+      name: Rust Axum Hardcoded Secret Key
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-798
+      owasp: A07:2021-Identification and Authentication Failures
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/798.html
+      tags:
+        - secret
+        - axum
+        - jwt
+        - rust
+    target:
+      languages:
+        - Rust
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Rust
+      ast_node_types:
+        - statement
+        - assignment
+    condition:
+      symbol_triggers:
+        - DecodingKey
+        - EncodingKey
+        - secret
+      pattern: "(?i)(?:DecodingKey|EncodingKey)::from_secret\\s*\\(\\s*b?[\"'][^\"']{3,}[\"']"
+    evidence:
+      score_weights:
+        dangerous_sink: 40
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Hardcoding JWT encoding/decoding secret keys in Axum state enables token forgery.
+      remediation: Read JWT secret keys from secure environment variables or vault secret managers.

@@ -1,0 +1,35 @@
+predicate:
+  name: path_traversal
+  version: "1.0.0"
+  description: Shared Path Traversal sources, sinks, sanitizers, and detection patterns.
+  metadata:
+    cwe: CWE-22
+    owasp: A01:2021-Broken Access Control
+    severity: HIGH
+    confidence: CONFIDENT
+  sources:
+    - request.GET
+    - request.POST
+    - c.Query
+    - c.Param
+    - $_GET
+    - $_POST
+  sinks:
+    - open
+    - readFile
+    - c.File
+    - SendFile
+    - NamedFile
+    - file_get_contents
+  sanitizers:
+    - filepath.Base
+    - filepath.Clean
+    - basename
+  condition:
+    symbol_triggers:
+      - open
+      - readFile
+      - File
+      - SendFile
+      - NamedFile
+    pattern: "(?i)(?:open|readFile|c\\.File|SendFile|NamedFile|file_get_contents)\\s*\\([^)]*\\$(?:request|GET|POST|_GET|_POST|c\\.)"

@@ -1,0 +1,38 @@
+predicate:
+  name: command_injection
+  version: "1.0.0"
+  description: Shared Command Execution sources, sinks, sanitizers, and detection patterns.
+  metadata:
+    cwe: CWE-78
+    owasp: A03:2021-Injection
+    severity: CRITICAL
+    confidence: CONFIDENT
+  sources:
+    - request.GET
+    - request.POST
+    - c.Query
+    - c.Param
+    - $_GET
+    - $_POST
+  sinks:
+    - exec
+    - system
+    - passthru
+    - shell_exec
+    - subprocess.Popen
+    - exec.Command
+    - Process.Start
+    - std::process::Command
+  sanitizers:
+    - escapeshellarg
+    - escapeshellcmd
+  condition:
+    symbol_triggers:
+      - exec
+      - system
+      - passthru
+      - shell_exec
+      - Command
+      - Popen
+      - Process.Start
+    pattern: "(?i)(?:exec|system|passthru|shell_exec|exec\\.Command|subprocess\\.Popen|Process\\.Start)\\s*\\([^)]*\\$(?:request|GET|POST|_GET|_POST|c\\.)"

@@ -1,0 +1,25 @@
+predicate:
+  name: weak_crypto
+  version: "1.0.0"
+  description: Shared Weak Crypto sources, sinks, sanitizers, and detection patterns.
+  metadata:
+    cwe: CWE-327
+    owasp: A02:2021-Cryptographic Failures
+    severity: MEDIUM
+    confidence: CONFIDENT
+  sources: []
+  sinks:
+    - hashlib.md5
+    - hashlib.sha1
+    - md5.New
+    - sha1.New
+    - DES.new
+    - AES.MODE_ECB
+  sanitizers: []
+  condition:
+    symbol_triggers:
+      - md5
+      - sha1
+      - DES
+      - ECB
+    pattern: "(?i)(?:md5|sha1|DES|AES\\.MODE_ECB)\\s*"

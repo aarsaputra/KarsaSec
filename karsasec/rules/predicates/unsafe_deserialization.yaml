@@ -1,0 +1,26 @@
+predicate:
+  name: unsafe_deserialization
+  version: "1.0.0"
+  description: Shared Unsafe Deserialization detection patterns.
+  metadata:
+    cwe: CWE-502
+    owasp: A08:2021-Software and Data Integrity Failures
+    severity: CRITICAL
+    confidence: CONFIDENT
+  sources:
+    - request.body
+    - $_POST
+    - c.Body
+  sinks:
+    - pickle.loads
+    - unserialize
+    - BinaryFormatter.Deserialize
+    - yaml.unsafe_load
+  sanitizers: []
+  condition:
+    symbol_triggers:
+      - loads
+      - unserialize
+      - Deserialize
+      - unsafe_load
+    pattern: "(?i)(?:pickle\\.loads|unserialize|BinaryFormatter\\.Deserialize|yaml\\.unsafe_load)\\s*\\("

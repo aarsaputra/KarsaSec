@@ -1,0 +1,34 @@
+predicate:
+  name: ssrf
+  version: "1.0.0"
+  description: Shared Server-Side Request Forgery sources, sinks, sanitizers, and detection patterns.
+  metadata:
+    cwe: CWE-918
+    owasp: A10:2021-Server-Side Request Forgery (SSRF)
+    severity: HIGH
+    confidence: CONFIDENT
+  sources:
+    - request.GET
+    - request.POST
+    - c.Query
+    - c.Param
+    - $_GET
+    - $_POST
+  sinks:
+    - requests.get
+    - urllib.request.urlopen
+    - http.Get
+    - reqwest::get
+    - fetch
+    - curl_exec
+  sanitizers:
+    - validate_url
+    - allowlist_domain
+  condition:
+    symbol_triggers:
+      - get
+      - urlopen
+      - Get
+      - fetch
+      - curl_exec
+    pattern: "(?i)(?:requests\\.get|urllib\\.request\\.urlopen|http\\.Get|reqwest::get|fetch|curl_exec)\\s*\\([^)]*\\$(?:request|GET|POST|_GET|_POST|c\\.)"

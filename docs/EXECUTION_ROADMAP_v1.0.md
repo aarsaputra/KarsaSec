@@ -1,32 +1,31 @@
-# KarsaSec v1.0 Roadmap (Detection Engineering & Multi-Cloud Excellence)
+# KarsaSec v1.0 Roadmap (Enterprise Engine Architecture & Detection Engineering)
 
 Platform: KarsaSec Secure Code Analysis Platform (SecOS)
-Versi Roadmap: 1.5.0 (Shared Predicate Architecture & Multi-Cloud IaC Focus) | Status: Milestone 1 Active - Quality Excellence
+Versi Roadmap: 1.6.0 (Shared Predicate Architecture & Enterprise Engine Focus) | Status: Milestone 1 Active - Capability & Quality Excellence
 Visi Utama: "Menjadi platform Application Security Open Source terbaik (Setara Semgrep & CodeQL) dengan deterministic SAST/IaC engine yang presisi, framework-aware, dan terukur sebelum memasuki AI Layer."
 
 ---
 
-## Executive Overview & Sequential Execution Schedule
+## Strategic Roadmap Breakdown & Priority Schedule
 
-| Sprint | Fokus Utama | Target Status & Metrik Keberhasilan |
+| Prioritas | Modul / Fokus Utama | Target & Status Eksekusi |
 |---|---|---|
-| **Sprint A3.0** | Rule Quality Infrastructure | Rule Validate, Lint, Docs Generator, Coverage Matrix CLI (**COMPLETED - 112 Rules**) |
-| **Sprint A3.1** | PHP Security Pack | 25+ Rules, Framework-Aware (Laravel, Symfony, WP) (**COMPLETED - 27 PHP Rules**) |
-| **Sprint A4** | Go Security Pack | 15-20 Rules, SSRF, SQLi, TLS, Command Injection, Secrets (**COMPLETED - 23 Go Rules**) |
-| **Sprint A4.5** | Rule Quality Platform | Rule Profiler, Conflict Detector, Dead Code Detector (**COMPLETED - 126 Rules Total**) |
-| **Sprint A6** | Shared Predicate Architecture | Resolution at YAML load time (`predicates/`), refactor existing rules (**ACTIVE NEXT**) |
-| **Sprint A7** | Multi-Cloud IaC Security Pack | 55 Rules (Docker: 10, K8s: 15, TF AWS: 10, TF Azure: 5, TF GCP: 5, Helm: 5, GHA: 5) |
-| **Sprint A5** | Rust Security Pack | 12-15 Rules (Axum, Actix, Warp, Rust Native) using Shared Predicates |
-| **Sprint A8** | Rule Pack Refactoring & Cleanup | Deduplicate regex, merge rules, normalize metadata, CWE, OWASP, remediation |
-| **Sprint A9** | Standalone Secrets Engine | Regex → Entropy → Checksum → Context Validation → Confidence score |
-| **Sprint A10** | Framework Intelligence | Manifest scoring (`composer.json`, `package.json`, `go.mod`, `Cargo.toml`) |
-| **Sprint A11** | Qualification Platform | Continuous qualification against OWASP Benchmark, Juliet, Juice Shop, DVWA |
-| **Milestone B** | DevEx & Enterprise Integration | CLI Doctor, SARIF Diff, HTML/PDF Reports, Quality Gate Policy |
-| **Milestone C** | AI Layer (Explain, Prioritize, Fix Draft) | Explain Findings, Risk Prioritization, Fix Draft, PR Security Copilot |
+| **P1** | **Shared Predicate Engine** | Compile-time predicate resolver (`karsasec/rules/predicates/`), YAML inheritance (`uses: predicate`), dependency validator, cycle detector (**COMPLETED**) |
+| **P2** | **Rule Normalization** | Normalisasi metadata (CWE, OWASP, References, Remediation, Severity, Confidence) di seluruh rule (**COMPLETED**) |
+| **P3** | **Rust Security Pack** | Axum, Actix-Web, Warp, Rust Native (15-20 Rules) memanfaatkan Shared Predicate Engine (**COMPLETED - 134 Rules Total**) |
+| **P4** | **C# Security Pack Expansion** | ASP.NET Core: Razor XSS, ViewState, XXE, SSRF, File Upload, LDAP, XPath, Process.Start, Path Traversal, JWT (**NEXT**) |
+| **P5** | **C++ Security Pack Expansion** | Format String, Double Free, Integer Overflow, Heap/Stack Overflow, Use After Free, Race Condition, `strcpy`, `gets`, `memcpy`, `sprintf` |
+| **P6** | **HTML Security Pack** | Frontend security: CSP missing, sandbox iframe, `target="_blank"` rel, password autocomplete, inline script/style, mixed content |
+| **P7** | **Multi-Cloud IaC Security Pack (110 Rules)** | Docker (15), Kubernetes (25), Terraform AWS (20), Azure (15), GCP (15), Helm (10), GitHub Actions (10) |
+| **P8** | **Standalone Secret Detection Engine** | Pipeline terpisah: Regex → Entropy → Checksum → Context Validator → Confidence score (`karsasec/secrets/`) |
+| **P9** | **Framework Intelligence & Manifest Scoring** | Deteksi otomatis `composer.json`, `package.json`, `go.mod`, `Cargo.toml`, `pom.xml`, `build.gradle`, `requirements.txt`, `pyproject.toml`, `*.csproj` |
+| **P10** | **Qualification Platform** | Evaluasi regresi otomatis terhadap OWASP Benchmark, Juliet, Juice Shop, NodeGoat, LaravelGoat, DVWA, WebGoat (`karsasec qualification`) |
+| **P11** | **Dependency & SCA Engine** | Software Composition Analysis (SCA) parsing lockfiles (`package-lock.json`, `composer.lock`, `go.sum`, `Cargo.lock`) matching CVE/GHSA/OSV |
+| **P12** | **AI Remediation & Advisory Layer** | Deterministic detection core terlebih dahulu, AI Layer untuk Explain Findings, Prioritizer, Fix Draft Generator, dan PR Security Copilot |
 
 ---
 
-# Keputusan Arsitektur Kunci
+## Architecture Milestone Highlights
 
-1. **Shared Predicate Compile-Time Resolution**: Resolution dilakukan pada tahap loading YAML (`YAMLRuleLoader`). Memberikan performa scan maksimal, eksekusi deterministik, dan validasi penuh saat `karsasec rules validate`.
-2. **Multi-Cloud IaC Balanced Distribution**: Penanganan IaC bersifat multi-cloud seimbang sejak awal (AWS, Azure, GCP, Docker, K8s, Helm, GHA).
+- **Shared Predicate Resolution (Compile-Time)**: Inhehitance predicate (`uses: predicate: <name>`) diselesaikan secara penuh pada tahap *YAML rule loading* (`YAMLRuleLoader`), memastikan zero runtime performance overhead, deterministic execution, dan validasi dini via `karsasec rules validate`.
+- **Quality Gates**: Maintain Precision >= 95%, Recall >= 90%, FPR <= 5% terverifikasi via `tools/evaluate.py`.

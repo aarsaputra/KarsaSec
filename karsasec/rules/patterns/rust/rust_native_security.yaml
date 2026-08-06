@@ -1,0 +1,85 @@
+rules:
+  - rule:
+      id: KS-RS-0008
+    uses:
+      predicate: unsafe_deserialization
+    metadata:
+      name: Rust Unsound Unsafe Block Memory Misuse
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-119
+      owasp: A06:2021-Vulnerable and Outdated Components
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/119.html
+      tags:
+        - memory_safety
+        - unsafe
+        - rust
+    target:
+      languages:
+        - Rust
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Rust
+      ast_node_types:
+        - statement
+    condition:
+      symbol_triggers:
+        - unsafe
+        - from_raw_parts
+        - transmute
+      pattern: "(?i)unsafe\\s*\\{\\s*(?:std::slice::from_raw_parts|std::mem::transmute)\\s*\\("
+    evidence:
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: CRITICAL
+      confidence: CONFIDENT
+      message: Invoking slice::from_raw_parts or mem::transmute inside unsafe blocks without strict bounds checks causes memory corruption.
+      remediation: Prefer safe Rust abstractions or enforce explicit non-null, length, and alignment precondition assertions.
+
+  - rule:
+      id: KS-RS-0009
+    uses:
+      predicate: weak_crypto
+    metadata:
+      name: Rust Deprecated Hash Function Usage
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-328
+      owasp: A02:2021-Cryptographic Failures
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/328.html
+      tags:
+        - crypto
+        - md5
+        - sha1
+        - rust
+    target:
+      languages:
+        - Rust
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Rust
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - Md5
+        - Sha1
+        - digest
+      pattern: "(?i)(?:Md5|Sha1)::digest\\s*\\("
+    evidence:
+      score_weights:
+        dangerous_sink: 30
+    output:
+      severity: MEDIUM
+      confidence: CONFIDENT
+      message: Using Md5 or Sha1 crate digest algorithms is cryptographically vulnerable to collision attacks.
+      remediation: Upgrade to SHA-256 (sha2::Sha256) or SHA-3 for secure hashing.

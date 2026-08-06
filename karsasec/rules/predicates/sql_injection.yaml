@@ -1,0 +1,38 @@
+predicate:
+  name: sql_injection
+  version: "1.0.0"
+  description: Shared SQL Injection sources, sinks, sanitizers, and detection patterns.
+  metadata:
+    cwe: CWE-89
+    owasp: A03:2021-Injection
+    severity: HIGH
+    confidence: CONFIDENT
+  sources:
+    - request.GET
+    - request.POST
+    - c.Query
+    - c.Param
+    - $_GET
+    - $_POST
+    - $_REQUEST
+  sinks:
+    - execute
+    - raw
+    - query
+    - db.Raw
+    - db.Exec
+    - $wpdb->query
+    - mysql_query
+  sanitizers:
+    - prepare
+    - escapeshellarg
+    - intval
+    - floatval
+  condition:
+    symbol_triggers:
+      - raw
+      - query
+      - exec
+      - select
+      - where
+    pattern: "(?i)(?:db\\.Raw|db\\.Exec|db\\.Query|whereRaw|selectRaw|\\$wpdb->query|mysql_query|pg_query)\\s*\\([^)]*\\$(?:request|GET|POST|_GET|_POST|query|param|c\\.)"

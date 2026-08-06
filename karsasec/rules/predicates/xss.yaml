@@ -1,0 +1,31 @@
+predicate:
+  name: xss
+  version: "1.0.0"
+  description: Shared Cross-Site Scripting sources, sinks, sanitizers, and detection patterns.
+  metadata:
+    cwe: CWE-79
+    owasp: A03:2021-Injection
+    severity: HIGH
+    confidence: CONFIDENT
+  sources:
+    - request.GET
+    - request.POST
+    - c.Query
+    - location.search
+  sinks:
+    - innerHTML
+    - document.write
+    - echo
+    - print
+    - response.write
+  sanitizers:
+    - html.EscapeString
+    - htmlspecialchars
+    - DOMPurify.sanitize
+  condition:
+    symbol_triggers:
+      - innerHTML
+      - document.write
+      - raw
+      - dangerouslySetInnerHTML
+    pattern: "(?i)(?:dangerouslySetInnerHTML|innerHTML|document\\.write|\\{\\!\\!|\\|\\s*raw)\\s*"

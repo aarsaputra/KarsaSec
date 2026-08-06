@@ -1,0 +1,133 @@
+rules:
+  - rule:
+      id: KS-RS-0005
+    uses:
+      predicate: path_traversal
+    metadata:
+      name: Rust Actix-Web Path Traversal File Read
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-22
+      owasp: A01:2021-Broken Access Control
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+      tags:
+        - path_traversal
+        - actix
+        - rust
+    target:
+      languages:
+        - Rust
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Rust
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - NamedFile
+        - open
+      pattern: "(?i)NamedFile::open\\s*\\([^)]*web::Path"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 40
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Serving files via Actix NamedFile::open directly from web::Path parameters enables directory traversal.
+      remediation: Sanitize paths using std::path::Path::canonicalize and verify the resolved file stays inside the web root.
+
+  - rule:
+      id: KS-RS-0006
+    uses:
+      predicate: xss
+    metadata:
+      name: Rust Actix Inline Unescaped HTML Output XSS
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-79
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+      tags:
+        - xss
+        - actix
+        - rust
+    target:
+      languages:
+        - Rust
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Rust
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - HttpResponse
+        - body
+      pattern: "(?i)HttpResponse::Ok\\(\\)\\.content_type\\(\"text/html\"\\)\\.body\\s*\\([^)]*format!"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 40
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Returning formatted HTML strings directly in HttpResponse bodies introduces Cross-Site Scripting.
+      remediation: Use HTML templating engines (e.g. Askama, Tera) or escape dynamic variables with askama_escape.
+
+  - rule:
+      id: KS-RS-0007
+    uses:
+      predicate: ssrf
+    metadata:
+      name: Rust Actix Unvalidated SSRF
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-918
+      owasp: A10:2021-Server-Side Request Forgery (SSRF)
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/918.html
+      tags:
+        - ssrf
+        - actix
+        - rust
+    target:
+      languages:
+        - Rust
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Rust
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - reqwest
+        - get
+        - Client
+      pattern: "(?i)reqwest::(?:get|Client::new\\(\\)\\.get)\\s*\\([^)]*web::(?:Query|Path)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 40
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Dispatching HTTP client requests to target URLs from Actix parameters causes SSRF.
+      remediation: Restrict outbound request destinations against a strict URL domain allowlist.

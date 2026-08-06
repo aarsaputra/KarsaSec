@@ -5,6 +5,7 @@ from pathlib import Path
 
 import yaml
 
+from karsasec.rules.predicate_resolver import PredicateResolver
 from karsasec.rules.schema import Rule, validate_rule_dict
 
 
@@ -34,8 +35,9 @@ class RuleCache:
 class YAMLRuleLoader:
     """Parses and validates security rules defined in single or multi-rule YAML files."""
 
-    def __init__(self, cache: RuleCache | None = None) -> None:
+    def __init__(self, cache: RuleCache | None = None, predicate_resolver: PredicateResolver | None = None) -> None:
         self.cache = cache or RuleCache()
+        self.resolver = predicate_resolver or PredicateResolver()
 
     def load_file(self, file_path: Path) -> Rule:
         """Loads and validates a single YAML rule file."""
@@ -74,7 +76,8 @@ class YAMLRuleLoader:
                     if cached:
                         rules.append(cached)
                     else:
-                        r = validate_rule_dict(item)
+                        resolved_item = self.resolver.resolve_rule_dict(item)
+                        r = validate_rule_dict(resolved_item)
                         self.cache.put(item_key, r)
                         rules.append(r)
         elif "rule" in raw_data:
@@ -82,7 +85,8 @@ class YAMLRuleLoader:
             if cached:
                 rules.append(cached)
             else:
-                r = validate_rule_dict(raw_data)
+                resolved_item = self.resolver.resolve_rule_dict(raw_data)
+                r = validate_rule_dict(resolved_item)
                 self.cache.put(cache_key, r)
                 rules.append(r)
 
