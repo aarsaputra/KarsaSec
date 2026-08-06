@@ -1,21 +1,19 @@
-"""Rule Schema data models and validation logic for KarsaSec security rules (Schema v1 and v2)."""
-
 import re
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from karsasec.rules.enums import Confidence, LanguageEnum, Severity, TargetFormatEnum
 
 RULE_ID_PATTERN = re.compile(r"^KS-[A-Z0-9_-]{2,10}-\d{4}$")
 
-class AnalysisEngine(str, Enum):
+class AnalysisEngine(StrEnum):
     """Engine modes for rule analysis."""
     AST = "AST"
     PATTERN = "PATTERN"
     CPG = "CPG"
 
-class AnalysisBehavior(str, Enum):
+class AnalysisBehavior(StrEnum):
     """Vulnerability role behavior classification."""
     SOURCE = "SOURCE"
     SINK = "SINK"

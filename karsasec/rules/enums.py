@@ -1,9 +1,9 @@
 """Enumerations for Severity, Confidence, Supported Languages, and OWASP Top 10 categories."""
 
-from enum import Enum
+from enum import StrEnum
 
 
-class Severity(str, Enum):
+class Severity(StrEnum):
     """Vulnerability severity levels."""
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
@@ -11,7 +11,7 @@ class Severity(str, Enum):
     LOW = "LOW"
     INFO = "INFO"
 
-class Confidence(str, Enum):
+class Confidence(StrEnum):
     """Rule matching confidence levels."""
     CONFIDENT = "CONFIDENT"
     LIKELY = "LIKELY"
@@ -20,7 +20,7 @@ class Confidence(str, Enum):
     MEDIUM = "LIKELY"
     LOW = "POSSIBLE"
 
-class LanguageEnum(str, Enum):
+class LanguageEnum(StrEnum):
     """Supported target programming languages."""
     PYTHON = "Python"
     JAVASCRIPT = "JavaScript"
@@ -34,7 +34,7 @@ class LanguageEnum(str, Enum):
     HTML = "HTML"
     GENERIC = "Generic"
 
-class TargetKindEnum(str, Enum):
+class TargetKindEnum(StrEnum):
     """Broad category classification of analysis targets."""
     SOURCE_CODE = "SOURCE_CODE"
     CONFIG = "CONFIG"
@@ -42,7 +42,7 @@ class TargetKindEnum(str, Enum):
     IAC = "IAC"
     MANIFEST = "MANIFEST"
 
-class TargetFormatEnum(str, Enum):
+class TargetFormatEnum(StrEnum):
     """File format/specification identifier."""
     PYTHON = "Python"
     JAVASCRIPT = "JavaScript"
@@ -57,7 +57,7 @@ class TargetFormatEnum(str, Enum):
     TERRAFORM = "Terraform"
     HELM = "Helm"
 
-class IaCTaxonomyEnum(str, Enum):
+class IaCTaxonomyEnum(StrEnum):
     """Taxonomy categories for Infrastructure as Code security risks."""
     MISCONFIGURATION = "misconfiguration"
     PRIVILEGE = "privilege"
@@ -67,7 +67,7 @@ class IaCTaxonomyEnum(str, Enum):
     RUNTIME = "runtime"
     POLICY = "policy"
 
-class AnalysisCapability(str, Enum):
+class AnalysisCapability(StrEnum):
     """Strongly-typed capabilities exported by parsers and required by security rules."""
     AST = "ast"
     POSITION = "position"
@@ -79,7 +79,7 @@ class AnalysisCapability(str, Enum):
     DATAFLOW = "dataflow"
     CALLGRAPH = "callgraph"
 
-class OWASPCategory(str, Enum):
+class OWASPCategory(StrEnum):
     """OWASP Top 10 (2025/2026 & 2021) and OWASP API Category Mappings."""
     # OWASP Top 10 (Latest 2025/2026 Standard)
     A01_2025_BROKEN_ACCESS_CONTROL = "A01:2025-Broken Access Control"

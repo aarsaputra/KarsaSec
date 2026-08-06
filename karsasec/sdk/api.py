@@ -1,10 +1,8 @@
-"""Plugin SDK Manifest and Versioned Analysis API definitions."""
-
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 
-class AnalysisAPIVersion(str, Enum):
+class AnalysisAPIVersion(StrEnum):
     V1 = "v1"
     V2 = "v2"
     V3 = "v3"

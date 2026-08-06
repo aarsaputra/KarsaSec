@@ -1,9 +1,9 @@
 """TraversalStrategy enum and StopTraversal exception signal for AST Walker."""
 
-from enum import Enum
+from enum import StrEnum
 
 
-class TraversalStrategy(str, Enum):
+class TraversalStrategy(StrEnum):
     """AST Traversal strategy options."""
     DFS = "DFS"  # Depth-First Search (Default)
     BFS = "BFS"  # Breadth-First Search
