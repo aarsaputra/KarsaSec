@@ -1,12 +1,12 @@
 rule:
-  id: KS-OWASP-A08
+  id: KS-OWASP-0008
 
 metadata:
-  name: OWASP A08 - Insecure Deserialization (Multi-language)
+  name: OWASP A08 - Software and Data Integrity Failures / Insecure Deserialization
   author: KarsaSec Team
   version: "1.0"
   cwe: CWE-502
-  owasp: A08:2021-Insecure Deserialization
+  owasp: A08:2021-Software and Data Integrity Failures
   created: "2026-08-05"
   tags:
     - deserialization
@@ -23,27 +23,25 @@ analysis:
   behavior: SINK
 
 match:
-  language: generic
+  language: Generic
   ast_node_types:
     - call
-    - statement
 
 condition:
   symbol_triggers:
     - unserialize
-    - pickle
-    - json_decode
-    - yaml_load
-  pattern: "(?i)(unserialize\(|pickle\.loads|yaml\.load|JSON\.parse|eval\()"
+    - pickle.loads
+    - yaml.load
+    - JSON.parse
+  pattern: '(?i)(unserialize|pickle\.loads|yaml\.load|JSON\.parse)'
 
 evidence:
-  require:
-    - user_input
+  require: []
   score_weights:
-    dangerous_sink: 40
+    dangerous_sink: 30
 
 output:
   severity: HIGH
-  confidence: CONFIDENT
-  message: Detects deserialization or eval-like operations on potentially untrusted input.
-  remediation: Avoid deserializing untrusted input; use safe parsers and validation.
+  confidence: LIKELY
+  message: Unsafe deserialization or unverified package loading detected.
+  remediation: Validate payload signatures or use safe serialization formats (JSON, SafeLoader).

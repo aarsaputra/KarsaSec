@@ -1,0 +1,44 @@
+rules:
+  - rule:
+      id: KS-PY-0015
+    metadata:
+      name: Python Weak Cryptographic Algorithm (DES, RC4, AES-ECB)
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-327
+      owasp: A02:2021-Cryptographic Failures
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+      tags:
+        - crypto
+        - des
+        - rc4
+        - ecb
+        - python
+    target:
+      languages:
+        - Python
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - Crypto.Cipher.DES
+        - Crypto.Cipher.ARC4
+        - MODE_ECB
+      pattern: '(?i)(DES\.new|ARC4\.new|MODE_ECB|Cipher\([^)]*modes\.ECB)'
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Insecure or broken cipher algorithm / mode (DES, RC4, ECB) detected.
+      remediation: Use AES-GCM or AES-CBC with an authenticated MAC instead.

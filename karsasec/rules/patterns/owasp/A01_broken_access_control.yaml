@@ -1,5 +1,5 @@
 rule:
-  id: KS-OWASP-A01
+  id: KS-OWASP-0001
 
 metadata:
   name: OWASP A01 - Broken Access Control (Multi-language)
@@ -24,7 +24,7 @@ analysis:
   behavior: SINK
 
 match:
-  language: generic
+  language: Generic
   ast_node_types:
     - call
     - statement
@@ -37,7 +37,7 @@ condition:
     - session
     - jwt
     - token
-  pattern: "(?i)(cookie|session|token|auth|role|permission|access_denied|unauthorized|is_admin|is_authorized)"
+  pattern: '(?i)(cookie|session|token|auth|role|permission|access_denied|unauthorized|is_admin|is_authorized)'
 
 evidence:
   require:

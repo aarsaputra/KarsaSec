@@ -1,171 +1,185 @@
-# 🚀 KarsaSec v1.0 Roadmap (Post Architecture Freeze)
+# 🚀 KarsaSec v1.0 Roadmap (Revisi Enterprise)
 
 **Platform:** KarsaSec Secure Code Analysis Platform (SecOS)  
-**Versi Roadmap:** 1.0.0 | **Status:** Post Architecture Freeze — Phase A Execution  
-**Strategi Utama:** Rule Intelligence Expansion ➡️ Developer Experience ➡️ Enterprise Integration
+**Versi Roadmap:** 1.0.0 (Enterprise Revision) | **Status:** Milestone 1 Active — Detection Quality Focus  
+**Visi Utama:** "KarsaSec menjadi salah satu platform Application Security Open Source terbaik (Setara Semgrep) dengan deterministic SAST engine yang presisi, sebelum memasuki AI Layer."
 
 ---
 
-## 🎯 Objective
+## 🎯 Executive Overview & Prioritas Eksekusi
 
-Menyelesaikan KarsaSec v1.0 sebagai **production-ready Secure Code Analysis Platform** yang memiliki:
-- Deterministic SAST engine berpresisi tinggi
-- Multi-language & Framework support (Python, JS/TS, PHP, Go, Rust, Java)
-- IaC security scanning (Dockerfile, Kubernetes, GitHub Actions, Terraform)
-- Enterprise reporting & CI/CD quality gates
-- Developer-friendly CLI & rule lifecycle management
-- Ready to serve as foundation for AI Remediation in v2.0 (AI ditunda hingga fondasi v1.0 stabil)
-
----
-
-## 🧭 Strategic Execution Flow
-
-```
-PHASE A — Rule Intelligence Expansion
-  ├── SPRINT A1: Python Security Pack (Auth, Injection, Filesystem, Serialization, Crypto, Network, Flask/Django)
-  ├── SPRINT A2: JavaScript / TypeScript Security Pack (Express, Next.js, NestJS, Fastify)
-  ├── SPRINT A3: PHP Security Pack (Laravel, Symfony, WordPress)
-  ├── SPRINT A4: Go Security Pack (Gin, Echo, Fiber)
-  ├── SPRINT A5: Rust Security Pack (Actix, Axum, Warp)
-  └── SPRINT A6: IaC Security Pack (Docker, Kubernetes, GitHub Actions, Terraform)
-
-PHASE B — Developer Experience (DevEx)
-  ├── SPRINT B1: CLI UX (Severity, Language, & Framework Filters, Progress & Execution Profiling)
-  ├── SPRINT B2: Rule Lifecycle Management (list, inspect, search, enable, disable, doctor, validate)
-  ├── SPRINT B3: Workspace Configuration (karsasec.yaml full schema, baseline, suppressions, RAG)
-  └── SPRINT B4: Production Documentation & SDK Guides
-
-PHASE C — Enterprise Integration
-  ├── SPRINT C1: Quality Gates (--fail-on, --max-findings, --baseline, --new-only)
-  ├── SPRINT C2: Multi-Format Reporting (Console, JSON, SARIF 2.1, HTML, Markdown, CSV, PDF)
-  ├── SPRINT C3: CI/CD Templates (GitHub Actions, GitLab CI, Jenkins, Azure DevOps, CircleCI)
-  └── SPRINT C4: Qualification & Benchmark (OWASP Benchmark, Juliet, DVWA, WebGoat, Juice Shop)
-```
+| Prioritas | Milestone | Fokus Utama | Target Status |
+|---|---|---|---|
+| ⭐⭐⭐⭐⭐ | **MILESTONE 1** | **Detection Quality (Target: Setara Semgrep)** | 120–150 rule, Precision >95%, FPR <5% (ACTIVE) |
+| ⭐⭐⭐⭐☆ | **MILESTONE 2** | **Developer Experience & CLI** | Interactive CLI, Rule Lifecycle (`list`/`inspect`/`doctor`), `karsasec.yaml`, Docs |
+| ⭐⭐⭐⭐☆ | **MILESTONE 3** | **Enterprise Integration** | Quality Gates (`--fail-on`), HTML/PDF Reporting, CI/CD Templates, OWASP Benchmark |
+| ⭐⭐⭐☆☆ | **MILESTONE 4** | **Platform Ecosystem** | Plugin SDK, Rule Registry (`install`/`update`), Language SDKs (Java, C#, Ruby, Kotlin) |
+| ⭐⭐☆☆☆ | **MILESTONE 5** | **AI Layer (Tahap Terakhir)** | AI Reasoning Consumer (Explain, Prioritize, Fix Draft, PR Review) |
 
 ---
 
-# 🔬 PHASE A — Rule Intelligence Expansion
+# 🛡️ MILESTONE 1 — Detection Quality (Target: Setara Semgrep)
 
-## Goal
-Meningkatkan kualitas engine deteksi (**Bukan sekadar jumlah rule, tapi kualitas, precision & framework coverage**).
+> **Prinsip:** "Jika user menjalankan `karsasec scan .`, hasilnya harus bisa dipercaya."
 
-Target Trajectory: `47 Rules` ➡️ `120+ High Quality Rules` ➡️ `Framework Coverage` ➡️ `CWE / OWASP / MITRE ATT&CK Mapping`
+## A1 — Python Security Pack
+- [x] **Injection**: SQLi, Command Injection, LDAP Injection, XPath Injection, SSTI (Jinja2/Mako), NoSQL Injection
+- [x] **Serialization**: Pickle (`pickle.loads`), Marshal, Unsafe YAML (`yaml.load`), Dill, Shelve
+- [x] **Crypto**: AES-ECB Mode, DES, RC4, MD5, SHA1, Pseudo-Random, Weak Salt
+- [x] **Filesystem**: Zip Slip, Path Traversal, Temporary File (`tempfile.mktemp`), Unsafe Symlink
+- [x] **Web**: SSRF, XXE, Open Redirect, CRLF Injection
+- [x] **Flask Framework**: `SECRET_KEY`, Debug Mode (`debug=True`), Insecure Session Cookie, Missing CSRF
+- [x] **Django Framework**: `DEBUG=True`, `ALLOWED_HOSTS=['*']`, Hardcoded `SECRET_KEY`, CSRF Middleware Exempt, `SECURE_SSL_REDIRECT=False`
 
----
-
-### 🐍 Sprint A1 — Python Security Pack
-**Target Framework:** Flask, Django, FastAPI, Standard Library
-
-- [ ] **Authentication**: Hardcoded Secret, Weak JWT Secret, Insecure Session, Missing CSRF
-- [ ] **Injection**: SQL Injection, Command Injection, LDAP Injection, XPath Injection, NoSQL Injection
-- [ ] **Filesystem**: Path Traversal, Zip Slip, Unsafe Temp File (`tempfile.mktemp`)
-- [ ] **Serialization**: Pickle (`pickle.loads`), Unsafe YAML Loader (`yaml.load`), Marshal
-- [ ] **Crypto**: MD5, SHA1, Weak Random (`random` module), AES-ECB Mode
-- [ ] **Network**: SSRF, Open Redirect, XXE (`xml.etree` / `minidom`)
-- [ ] **Flask Framework**: `SECRET_KEY` hardcoding, Debug Mode (`debug=True`), `host=0.0.0.0`
-- [ ] **Django Framework**: `DEBUG=True`, `ALLOWED_HOSTS=['*']`, CSRF Middleware Exempt
-
-**Definition of Done (DoD):**
-- [ ] Vulnerable fixture created
-- [ ] Safe fixture created
-- [ ] AST test verified
-- [ ] Taint/Guard test verified
-- [ ] SARIF snapshot validated
+**Definition of Done (DoD) per Rule:**
+- [x] `vulnerable` fixture
+- [x] `safe` fixture
+- [x] AST test
+- [x] Taint verification
+- [x] Guard verification
+- [x] SARIF snapshot
 
 ---
 
-### 🟨 Sprint A2 — JavaScript / TypeScript Security Pack
-**Target Framework:** Express, Next.js, NestJS, Fastify
-
-- [ ] XSS (Reflected / Stored)
+## A2 — JavaScript / TypeScript Security Pack
+**Framework Target:** Express, Next.js, NestJS, Fastify
 - [ ] DOM XSS (`innerHTML`, `document.write`)
+- [ ] Reflected & Stored XSS
 - [ ] Prototype Pollution (`lodash.merge`, object assign)
-- [ ] JWT Secret Hardcoding
-- [ ] Insecure Cookie Flags (`httpOnly: false`, `secure: false`)
-- [ ] SSRF (`axios`, `node-fetch`, `got`)
-- [ ] Open Redirect (`res.redirect`)
-- [ ] `eval()` / `Function()` Injection
-- [ ] Command Injection (`child_process.exec`)
-- [ ] Weak Crypto (`crypto.createHash('md5')`)
-- [ ] Weak CORS Configuration (`Access-Control-Allow-Origin: *`)
-- [ ] Next.js Middleware Bypass & Security Headers
+- [ ] Dangerous `eval()` & `new Function()`
+- [ ] Command Injection (`child_process.exec`, `spawn` with shell)
+- [ ] Insecure Cookie Flags & Hardcoded JWT Secret
+- [ ] Open Redirect & SSRF (`axios`, `got`, `node-fetch`)
+- [ ] Next.js Middleware Security & Header Bypasses
 
 ---
 
-### 🐘 Sprint A3 — PHP Security Pack
-**Target Framework:** Laravel, Symfony, WordPress, Native PHP
-
-- [ ] SQL Injection (PDO raw, mysqli string concat)
-- [ ] File Inclusion / Path Traversal (`include`, `require` with user input)
-- [ ] Object Injection / Unserialize (`unserialize()`)
-- [ ] Insecure Session Cookie Flags
-- [ ] XSS (`echo $_GET[...]` without `htmlspecialchars`)
-- [ ] CSRF Exemption
+## A3 — PHP Security Pack
+**Framework Target:** Laravel, Symfony, WordPress, Native PHP
+- [ ] SQL Injection (PDO raw, mysqli)
+- [ ] LFI / RFI / Path Traversal (`include`, `require` with user input)
+- [ ] Unsafe Object Injection (`unserialize()`)
 - [ ] Unsafe File Upload
-- [ ] Command Injection (`exec`, `system`, `passthru`, `shell_exec`)
+- [ ] XSS (`echo $_GET` without escaping)
+- [ ] Insecure Session Cookie Flags
 
 ---
 
-### 🐹 Sprint A4 — Go Security Pack
-**Target Framework:** Gin, Echo, Fiber, Standard Library
-
-- [ ] SSRF (`http.Get` with dynamic URL)
+## A4 — Go Security Pack
+**Framework Target:** Gin, Echo, Fiber, Standard Library
+- [ ] SSRF (`http.Get` dynamic URL)
 - [ ] SQL Injection (`db.Query` string formatting)
-- [ ] Unsafe Pointer Usage (`unsafe.Pointer`)
-- [ ] Weak TLS Configuration (`InsecureSkipVerify: true`)
-- [ ] Hardcoded Secret / API Token
-- [ ] Command Injection (`exec.Command` with bash -c)
+- [ ] Unsafe Pointer (`unsafe.Pointer`)
+- [ ] Insecure TLS (`InsecureSkipVerify: true`)
+- [ ] Hardcoded API Secret
+- [ ] Command Execution (`exec.Command("sh", "-c", ...)`)
 
 ---
 
-### 🦀 Sprint A5 — Rust Security Pack
-**Target Framework:** Actix-web, Axum, Warp
-
+## A5 — Rust Security Pack
+**Framework Target:** Axum, Actix-web, Warp
 - [ ] Unsafe Block Misuse (`unsafe { ... }`)
-- [ ] Command Injection (`Command::new("sh").arg("-c")`)
-- [ ] Hardcoded API Credential
-- [ ] SQL Query Concatenation
+- [ ] Command Injection (`Command::new("sh")`)
+- [ ] Hardcoded API Credentials
+- [ ] Raw SQL Query Concatenation
 
 ---
 
-### 🐳 Sprint A6 — IaC & Cloud Security Pack
-**Docker:** `USER` missing, `latest` tag, `curl | bash`, `ADD` vs `COPY`, `HEALTHCHECK` missing, Hardcoded Secrets  
-**Kubernetes:** `privileged: true`, `hostNetwork`, `hostPID`, `hostPath`, `capabilities`, `runAsRoot`, resource limits  
-**GitHub Actions:** `pull_request_target`, unpinned actions, script injection, secret leakage  
-**Terraform:** Public S3 bucket, Open Security Group (`0.0.0.0/0`), Wildcard IAM Policy (`*`)
+## A6 — IaC Security Pack
+- **Docker:** `USER` missing (Root container), `latest` tag, `curl | bash`, `ADD` vs `COPY`, `HEALTHCHECK` missing, Secrets in ENV
+- **Kubernetes:** `privileged: true`, `hostNetwork`, `hostPID`, `hostPath`, `capabilities`, `runAsRoot`, resource limits missing
+- **Terraform:** Public S3 bucket, Open Security Group (`0.0.0.0/0`), Wildcard IAM Policy (`*`)
+- **Helm & GitHub Actions:** `pull_request_target`, unpinned actions, script injection, secret leakage
 
 ---
 
-# 🛠️ PHASE B — Developer Experience (DevEx)
+# 💻 MILESTONE 2 — Developer Experience (DevEx)
 
-## Goal
-Membuat developer nyaman dan produktif menggunakan KarsaSec setiap hari.
+## B1 — CLI Enhancements
+```bash
+karsasec scan .
+karsasec scan --severity HIGH
+karsasec scan --framework flask
+karsasec scan --rule KS-PY-0012
+karsasec scan --new-only
+karsasec scan --profile
+```
 
-- **Sprint B1 — CLI UX:** `--severity`, `--rule`, `--language`, `--framework` filters, Rich progress bar, scan stats, execution profiler.
-- **Sprint B2 — Rule Lifecycle Management:** `karsasec rules list`, `inspect`, `search`, `enable`, `disable`, `doctor`, `validate`.
-- **Sprint B3 — Workspace Configuration:** Full `karsasec.yaml` schema, baseline, suppressions, RAG & plugin settings.
-- **Sprint B4 — Documentation:** Installation, Rule Authoring, Parser SDK, Plugin SDK, CI/CD, Migration, & Troubleshooting Guides.
+## B2 — Rule Lifecycle Management
+```bash
+karsasec rules list
+karsasec rules inspect <rule_id>
+karsasec rules search <query>
+karsasec rules doctor
+karsasec rules validate
+```
+
+## B3 — Configuration Engine (`karsasec.yaml`)
+Support for: `baseline`, `suppression`, `severity_override`, `rule_enable`, `plugins`, `rag`.
+
+## B4 — Documentation
+Comprehensive guides: Installation, Rule Authoring, Parser SDK, Plugin SDK, Architecture, Examples, CI/CD, Troubleshooting.
 
 ---
 
-# 📦 PHASE C — Enterprise Integration
+# 🏢 MILESTONE 3 — Enterprise Integration
 
-## Goal
-Membuat KarsaSec siap digunakan dalam pipeline CI/CD enterprise.
-
-- **Sprint C1 — Quality Gates:** `--fail-on`, `--max-findings`, `--baseline`, `--new-only` (Quality Gate policy: HIGH/CRITICAL ➡️ Pipeline FAIL).
-- **Sprint C2 — Multi-Format Reporting:** Console, JSON, SARIF 2.1.0 (validated for GitHub Code Scanning), HTML (Dark mode interactive), Markdown, CSV, PDF.
-- **Sprint C3 — CI/CD Templates:** Official templates for GitHub Actions, GitLab CI, Jenkins, Azure DevOps, CircleCI.
-- **Sprint C4 — Qualification & Benchmark:** OWASP Benchmark, Juliet Test Suite, DVWA, WebGoat, Juice Shop. Published metrics: Precision (≥90%), Recall (≥90%), F1 Score, Scan Time, Memory Usage, Rule & Framework Coverage.
+- **C1 Quality Gates:** `--fail-on <SEVERITY>`, `--max-findings`, `--baseline`, `--new-only`. (Policy: HIGH/CRITICAL ➡️ Pipeline FAIL with consistent exit code).
+- **C2 Reporting:** Console, JSON, SARIF 2.1.0, HTML Interactive Dashboard, Markdown, CSV, PDF.
+- **C3 CI/CD Integration:** Official templates for GitHub Actions, GitLab CI, Azure DevOps, Jenkins, CircleCI, Bitbucket.
+- **C4 Qualification & Benchmark:** OWASP Benchmark, Juliet Test Suite, DVWA, WebGoat, Juice Shop. Published metrics: Precision (≥95%), Recall (≥90%), F1 Score, FPR (≤5%), Scan Time, Memory Usage.
 
 ---
 
-## 🏆 Definition of Done v1.0
+# 🔌 MILESTONE 4 — Platform Ecosystem
 
-KarsaSec v1.0 dinyatakan siap rilis apabila memenuhi seluruh kriteria berikut:
-1. **120+ High Quality Rules** dengan fixture `vulnerable`/`safe` dan `regression` test pada setiap rule.
-2. **Multi-language & Framework Support** stabil (Python, JS/TS, PHP, Go, Rust, Java) beserta IaC (Dockerfile, Kubernetes, GitHub Actions, Terraform).
-3. **Precision ≥ 90%** pada benchmark internal & external dengan **False Positive Rate < 10%**.
-4. **SARIF 2.1.0** tervalidasi dan kompatibel penuh dengan GitHub Code Scanning.
-5. **CLI, dokumentasi, dan CI/CD templates** lengkap dan siap pakai.
-6. **Test suite lulus 100%** serta benchmark performa terdokumentasi secara transparan.
+- **Plugin Marketplace:** Parser plugins, Rule plugins, Reporter plugins, Policy plugins.
+- **Rule Registry:** `karsasec rules install`, `karsasec rules update`, `karsasec rules publish`.
+- **SDKs:** Python SDK, Library API, REST API.
+- **Language SDK:** Extensible SDK allowing third-party developers to build parsers for Java, C#, Swift, Kotlin, Ruby without touching the core engine.
+
+---
+
+# 🤖 MILESTONE 5 — AI Layer (Tahap Terakhir)
+
+AI sebagai **consumer** dari hasil analisis deterministik engine:
+
+```text
+              Source Code
+                    │
+                    ▼
+          Parser + Rule Engine
+                    │
+                    ▼
+          AST / CFG / Dataflow
+                    │
+                    ▼
+             Finding Objects
+                    │
+      ┌─────────────┼─────────────┐
+      ▼             ▼             ▼
+ Reporter      Baseline      SARIF Export
+                    │
+                    ▼
+             AI Reasoning Layer
+      ┌─────────────┼─────────────┐
+      ▼             ▼             ▼
+ Explain      Prioritize      Fix Draft
+                    │
+                    ▼
+         Human Review & Apply
+```
+
+- **Capabilities:** Contextual Explanation, Severity Prioritization based on reachability, Fix Draft Generation (AST/diff validated), Multi-remediation trade-offs, PR Review Assistant.
+
+---
+
+## 🏆 KarsaSec v1.0 Production Gate Criteria
+
+Sebuah rilis v1.0 hanya boleh dinyatakan **Production Ready** apabila memenuhi seluruh kriteria berikut:
+1. **120–150 High Quality Rules** dengan fixture `vulnerable` dan `safe` serta `regression` test pada setiap rule.
+2. **Precision ≥ 95%**, **Recall ≥ 90%**, dan **False Positive Rate ≤ 5%** pada benchmark teruji.
+3. **Dukungan parser stabil** untuk seluruh bahasa dan IaC yang diklaim.
+4. **Output JSON, SARIF 2.1.0, HTML, dan Markdown** tervalidasi dan kompatibel penuh dengan GitHub Code Scanning.
+5. **Integrasi CI/CD resmi** untuk platform CI/CD utama.
+6. **Dokumentasi lengkap** untuk pengguna, penulis rule, dan pengembang plugin.

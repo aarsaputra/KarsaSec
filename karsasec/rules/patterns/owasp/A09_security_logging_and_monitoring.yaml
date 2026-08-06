@@ -1,8 +1,8 @@
 rule:
-  id: KS-OWASP-A09
+  id: KS-OWASP-0009
 
 metadata:
-  name: OWASP A09 - Security Logging and Monitoring Failures (Multi-language)
+  name: OWASP A09 - Security Logging and Monitoring Failures
   author: KarsaSec Team
   version: "1.0"
   cwe: CWE-778
@@ -19,26 +19,28 @@ target:
     - Go
 
 analysis:
-  engine: GENERIC
-  behavior: PATTERN
+  engine: AST
+  behavior: SINK
 
 match:
-  language: generic
+  language: Generic
   ast_node_types:
-    - statement
+    - call
 
 condition:
   symbol_triggers:
     - log
     - logging
     - error_log
-  pattern: "(?i)(log\(|logging\.|error_log\(|audit|bac_log|security_event)"
+  pattern: '(?i)(log|logging|error_log|audit)'
 
 evidence:
   require: []
+  score_weights:
+    dangerous_sink: 20
 
 output:
-  severity: INFO
-  confidence: LOW
-  message: Detects logging/auditing code paths; ensure sensitive information is not logged and events are monitored.
-  remediation: Avoid logging secrets, ensure logs are shipped to a monitored system and retained appropriately.
+  severity: LOW
+  confidence: POSSIBLE
+  message: Verify that critical authentication or state events are properly audited and logged.
+  remediation: Implement centralized audit logging for all security-relevant actions.

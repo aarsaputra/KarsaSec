@@ -1,8 +1,8 @@
 # 🗺️ KarsaSec — Implementation Roadmap
 
 **Platform:** KarsaSec AI Application Security Operating System (SecOS)  
-**Versi Roadmap:** 2.0.0 | **Terakhir Diperbarui:** 2026-08-06  
-**Strategi Transisi:** Transisi resmi ke **[Execution Roadmap v1.0 (Post Architecture Freeze)](EXECUTION_ROADMAP_v1.0.md)** (Phase A: Rule Intelligence ➡️ Phase B: DevEx ➡️ Phase C: Enterprise CI/CD)
+**Versi Roadmap:** 3.0.0 (Enterprise Revision) | **Terakhir Diperbarui:** 2026-08-06  
+**Strategi Transisi:** Transisi resmi ke **[Execution Roadmap v1.0 (Enterprise Revision)](EXECUTION_ROADMAP_v1.0.md)** (5 Milestones: Milestone 1 Detection Quality ➡️ Milestone 2 DevEx ➡️ Milestone 3 Enterprise Integration ➡️ Milestone 4 Platform Ecosystem ➡️ Milestone 5 AI Layer)
 
 ---
 

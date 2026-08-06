@@ -1,5 +1,5 @@
 rule:
-  id: KS-OWASP-A02
+  id: KS-OWASP-0002
 
 metadata:
   name: OWASP A02 - Cryptographic Failures (Multi-language)
@@ -23,7 +23,7 @@ analysis:
   behavior: SINK
 
 match:
-  language: generic
+  language: Generic
   ast_node_types:
     - call
     - statement
@@ -36,7 +36,7 @@ condition:
     - crypt
     - openssl_encrypt
     - random
-  pattern: "(?i)(md5\(|sha1\(|base64_encode\(|crypt\(|rng|rand\(|Random|InsecureRandom|InsecureSkipVerify|DES|ECB)"
+  pattern: '(?i)(md5|sha1|base64_encode|crypt|rng|rand|Random|InsecureRandom|InsecureSkipVerify|DES|ECB)'
 
 evidence:
   require: []

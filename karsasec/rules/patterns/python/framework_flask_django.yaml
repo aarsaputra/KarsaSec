@@ -32,7 +32,7 @@ rules:
       symbol_triggers:
         - app.config
         - app.run
-      pattern: "(?i)(SECRET_KEY\\s*=\\s*['\"][^'\"]+['\"]|app\\.run\\([^)]*debug\\s*=\\s*True|app\\.config\\[['\"]SECRET_KEY['\"]\\]\\s*=\\s*['\"][^'\"]+['\"])"
+      pattern: '(?i)(SECRET_KEY\s*=\s*[''"][^''"]+[''"]|app\.run\([^)]*debug\s*=\\s*True|app\.config\[''SECRET_KEY''\]\s*=\s*[''"][^''"]+[''"])'
     evidence:
       require:
         - static_sink
@@ -40,7 +40,7 @@ rules:
         dangerous_sink: 50
     output:
       severity: HIGH
-      confidence: HIGH
+      confidence: CONFIDENT
       message: Hardcoded Flask SECRET_KEY or enabled debug mode detected.
       remediation: Use environment variables for SECRET_KEY and ensure debug=False in production.
 
@@ -73,7 +73,7 @@ rules:
       ast_node_types:
         - assignment
     condition:
-      pattern: "(?i)(DEBUG\\s*=\\s*True|ALLOWED_HOSTS\\s*=\\s*\\[\\s*['\"]\\*['\"]\\s*\\])"
+      pattern: '(?i)(DEBUG\s*=\s*True|ALLOWED_HOSTS\s*=\s*\[\s*[''"]\*[''"]\s*\])'
     evidence:
       require:
         - static_sink
@@ -81,6 +81,6 @@ rules:
         dangerous_sink: 50
     output:
       severity: HIGH
-      confidence: HIGH
+      confidence: CONFIDENT
       message: Insecure Django settings detected (DEBUG=True or ALLOWED_HOSTS=['*']).
       remediation: Set DEBUG=False and specify explicit allowed host domains in production.

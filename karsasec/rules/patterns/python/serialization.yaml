@@ -1,0 +1,46 @@
+rules:
+  - rule:
+      id: KS-PY-0014
+    metadata:
+      name: Python Unsafe Serialization (Marshal, Dill, Shelve, PyYAML)
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-502
+      owasp: A08:2021-Software and Data Integrity Failures
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+      tags:
+        - deserialization
+        - yaml
+        - marshal
+        - dill
+        - shelve
+        - python
+    target:
+      languages:
+        - Python
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - yaml.load
+        - marshal.loads
+        - dill.loads
+        - shelve.open
+      pattern: '(?i)(yaml\.load\s*\([^)]*Loader\s*=\s*yaml\.(UnsafeLoader|Loader)|marshal\.loads|dill\.loads|shelve\.open)'
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Insecure deserialization function allows arbitrary code execution.
+      remediation: Use yaml.safe_load() or JSON format for data serialization instead of marshal/dill/shelve.

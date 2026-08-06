@@ -27,7 +27,7 @@ rules:
     condition:
       symbol_triggers:
         - tempfile.mktemp
-      pattern: "(?i)tempfile\\.mktemp\\s*\\("
+      pattern: '(?i)tempfile\.mktemp\s*\('
     evidence:
       require:
         - static_sink
@@ -35,7 +35,7 @@ rules:
         dangerous_sink: 50
     output:
       severity: MEDIUM
-      confidence: HIGH
+      confidence: CONFIDENT
       message: Insecure function tempfile.mktemp() creates race condition vulnerabilities.
       remediation: Use tempfile.NamedTemporaryFile() or tempfile.mkstemp() instead.
 
@@ -69,7 +69,7 @@ rules:
         - random.random
         - random.randint
         - random.choice
-      pattern: "(?i)(token|password|secret|key|nonce|auth|session)\\s*=\\s*.*random\\.(randint|choice|random|randrange)\\s*\\("
+      pattern: '(?i)(token|password|secret|key|nonce|auth|session)\s*=\s*.*random\.(randint|choice|random|randrange)\s*\('
     evidence:
       require:
         - static_sink

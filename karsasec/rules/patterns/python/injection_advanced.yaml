@@ -1,0 +1,93 @@
+rules:
+  - rule:
+      id: KS-PY-0012
+    metadata:
+      name: Python Server-Side Template Injection (SSTI)
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-1336
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/1336.html
+      tags:
+        - ssti
+        - jinja2
+        - mako
+        - injection
+        - python
+    target:
+      languages:
+        - Python
+      frameworks:
+        - Jinja2
+        - Mako
+        - Flask
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - render_template_string
+        - Template
+      pattern: "(?i)(render_template_string\\s*\\(\\s*.*request\\.|Template\\s*\\(\\s*.*request\\.)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 40
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Untrusted user input rendered directly inside a template string causing SSTI RCE.
+      remediation: Use template files with render_template() instead of render_template_string() with concatenated input.
+
+  - rule:
+      id: KS-PY-0013
+    metadata:
+      name: Python LDAP / XPath / NoSQL Injection
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-90
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/90.html
+      tags:
+        - ldap
+        - xpath
+        - nosql
+        - injection
+        - python
+    target:
+      languages:
+        - Python
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - ldap.search
+        - xpath
+        - find_one
+      pattern: "(?i)(ldap.*search_s\\s*\\([^)]*request\\.|xpath\\s*\\([^)]*request\\.|find_one\\s*\\(\\s*\\{\\s*['\"]\\$where['\"]\\s*:\\s*.*request)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 40
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Unescaped user input passed directly to LDAP, XPath, or NoSQL query.
+      remediation: Sanitize user input using escape functions (e.g. ldap.filter.escape_filter_chars).

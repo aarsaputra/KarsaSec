@@ -1,5 +1,5 @@
 rule:
-  id: KS-OWASP-A06
+  id: KS-OWASP-0006
 
 metadata:
   name: OWASP A06 - Vulnerable and Outdated Components (Multi-language)
@@ -23,7 +23,7 @@ analysis:
   behavior: PATTERN
 
 match:
-  language: generic
+  language: Generic
   ast_node_types:
     - statement
 
@@ -33,13 +33,13 @@ condition:
     - requirements.txt
     - package.json
     - go.mod
-  pattern: "(?i)(composer\.json|package\.json|requirements\.txt|go\.mod)"
+  pattern: '(?i)(composer.json|package.json|requirements.txt|go.mod)'
 
 evidence:
   require: []
 
 output:
   severity: MEDIUM
-  confidence: MEDIUM
+  confidence: LIKELY
   message: Detects usage of manifest files; integrate with SCA toolchain to lookup known vulnerable dependencies.
   remediation: Run SCA scanning and upgrade or mitigate vulnerable packages.

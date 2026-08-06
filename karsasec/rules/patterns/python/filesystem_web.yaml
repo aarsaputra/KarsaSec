@@ -1,0 +1,84 @@
+rules:
+  - rule:
+      id: KS-PY-0016
+    metadata:
+      name: Python Zip Slip Vulnerability
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-22
+      owasp: A01:2021-Broken Access Control
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+      tags:
+        - zip_slip
+        - path_traversal
+        - zipfile
+        - python
+    target:
+      languages:
+        - Python
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - extractall
+        - extract
+      pattern: "(?i)(zip_file|zipfile|archive)\\.(extractall|extract)\\s*\\("
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 40
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Extracting zip archives without path validation can allow Zip Slip file overwriting.
+      remediation: Validate entry path with os.path.abspath() before extracting archive entries.
+
+  - rule:
+      id: KS-PY-0017
+    metadata:
+      name: Python CRLF Injection (HTTP Response Splitting)
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-113
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/113.html
+      tags:
+        - crlf
+        - response_splitting
+        - python
+    target:
+      languages:
+        - Python
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: Python
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - response.set_cookie
+        - response.headers
+      pattern: "(?i)(set_cookie\\s*\\([^)]*request\\.|headers\\[[^]]+\\]\\s*=\\s*.*request\\.)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 40
+        user_source: 30
+    output:
+      severity: MEDIUM
+      confidence: CONFIDENT
+      message: Passing unsanitized user input into HTTP headers can cause CRLF response splitting.
+      remediation: Strip carriage returns (\\r) and line feeds (\\n) from user inputs set in response headers.

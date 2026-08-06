@@ -1,5 +1,5 @@
 rule:
-  id: KS-OWASP-A07
+  id: KS-OWASP-0007
 
 metadata:
   name: OWASP A07 - Identification and Authentication Failures (Multi-language)
@@ -23,7 +23,7 @@ analysis:
   behavior: SINK
 
 match:
-  language: generic
+  language: Generic
   ast_node_types:
     - call
     - statement
@@ -33,7 +33,7 @@ condition:
     - password
     - bcrypt
     - compare_hash
-  pattern: "(?i)(password|bcrypt|verify_password|check_password|login|authenticate)"
+  pattern: '(?i)(password|bcrypt|verify_password|check_password|login|authenticate)'
 
 evidence:
   require: []

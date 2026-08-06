@@ -1,12 +1,12 @@
 rule:
-  id: KS-OWASP-A10
+  id: KS-OWASP-0010
 
 metadata:
-  name: OWASP A10 - Server-Side Request Forgery (Multi-language)
+  name: OWASP A10 - Server-Side Request Forgery (SSRF)
   author: KarsaSec Team
   version: "1.0"
   cwe: CWE-918
-  owasp: A10:2021-Server-Side Request Forgery
+  owasp: A10:2021-Server-Side Request Forgery (SSRF)
   created: "2026-08-05"
   tags:
     - ssrf
@@ -23,28 +23,26 @@ analysis:
   behavior: SINK
 
 match:
-  language: generic
+  language: Generic
   ast_node_types:
     - call
-    - statement
 
 condition:
   symbol_triggers:
     - file_get_contents
-    - requests
-    - http_get
+    - requests.get
     - axios
     - fetch
-  pattern: "(?i)(file_get_contents\(|requests\.get\(|axios\.|fetch\(|http\.Get\()"
+    - curl
+  pattern: '(?i)(file_get_contents|requests\.get|axios|fetch|cURL)'
 
 evidence:
-  require:
-    - user_input
+  require: []
   score_weights:
-    dangerous_sink: 40
+    dangerous_sink: 30
 
 output:
   severity: HIGH
   confidence: LIKELY
-  message: Detects potential SSRF when untrusted input is used to construct outbound requests or file reads.
-  remediation: Validate and whitelist destination hosts and use network-level egress controls.
+  message: Detects outbound HTTP requests using unvalidated user input.
+  remediation: Enforce strict URL whitelisting and block internal network ranges (127.0.0.1, 169.254.169.254).

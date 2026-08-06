@@ -1,5 +1,5 @@
 rule:
-  id: KS-OWASP-A04
+  id: KS-OWASP-0004
 
 metadata:
   name: OWASP A04 - Insecure Design (Multi-language)
@@ -23,13 +23,13 @@ analysis:
   behavior: PATTERN
 
 match:
-  language: generic
+  language: Generic
   ast_node_types:
     - statement
 
 condition:
   symbol_triggers: []
-  pattern: "(?i)(TODO|XXX|FIXME|insecure by design|magic authentication|hardcoded policy)"
+  pattern: '(?i)(TODO|XXX|FIXME|insecure by design|magic authentication|hardcoded policy)'
 
 evidence:
   require: []
