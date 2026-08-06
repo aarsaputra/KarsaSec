@@ -1,0 +1,45 @@
+rules:
+  - rule:
+      id: KS-JS-0019
+    metadata:
+      name: Fastify Reflected XSS (reply.send user input)
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-79
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+      tags:
+        - fastify
+        - xss
+        - javascript
+        - typescript
+    target:
+      languages:
+        - JavaScript
+        - TypeScript
+      frameworks:
+        - Fastify
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: JavaScript
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - reply.send
+        - reply.type
+      pattern: '(?i)reply\.type\s*\(\s*[''"]text/html[''"]\s*\)\.send\s*\(\s*req\.'
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Fastify route returning unescaped user input with text/html content-type causes Reflected XSS.
+      remediation: Sanitize user input before sending HTML response or set application/json content-type.

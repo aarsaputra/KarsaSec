@@ -1,0 +1,138 @@
+rules:
+  - rule:
+      id: KS-JS-0014
+    metadata:
+      name: Next.js dangerouslySetInnerHTML XSS Vulnerability
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-79
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+      tags:
+        - nextjs
+        - react
+        - xss
+        - javascript
+        - typescript
+    target:
+      languages:
+        - JavaScript
+        - TypeScript
+      frameworks:
+        - Next.js
+        - React
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: JavaScript
+      ast_node_types:
+        - jsx_attribute
+        - call
+        - assignment
+    condition:
+      symbol_triggers:
+        - dangerouslySetInnerHTML
+      pattern: '(?i)dangerouslySetInnerHTML\s*=\s*{\s*{\s*__html\s*:\s*.*}'
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Raw HTML rendering via dangerouslySetInnerHTML introduces Cross-Site Scripting (XSS).
+      remediation: Sanitize raw HTML using DOMPurify or render trusted React components instead.
+
+  - rule:
+      id: KS-JS-0015
+    metadata:
+      name: Next.js Prototype Pollution (Object.assign / merge)
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-1321
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/1321.html
+      tags:
+        - nextjs
+        - prototype_pollution
+        - javascript
+        - typescript
+    target:
+      languages:
+        - JavaScript
+        - TypeScript
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: JavaScript
+      ast_node_types:
+        - call
+        - assignment
+    condition:
+      symbol_triggers:
+        - merge
+        - Object.assign
+      pattern: '(?i)(lodash\.merge\s*\(\s*{}\s*,\s*req\.|Object\.assign\s*\(\s*{}\s*,\s*req\.)'
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 40
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Unsafe recursive object merging with user payload enables Prototype Pollution attacks.
+      remediation: Freeze Object.prototype or validate input keys to block __proto__ and constructor modifications.
+
+  - rule:
+      id: KS-JS-0016
+    metadata:
+      name: Next.js Server Component Environment Secret Leak
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-200
+      owasp: A01:2021-Broken Access Control
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/200.html
+      tags:
+        - nextjs
+        - secret
+        - environment
+        - typescript
+    target:
+      languages:
+        - JavaScript
+        - TypeScript
+      frameworks:
+        - Next.js
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: JavaScript
+      ast_node_types:
+        - assignment
+        - jsx_attribute
+    condition:
+      symbol_triggers:
+        - NEXT_PUBLIC_
+      pattern: '(?i)NEXT_PUBLIC_[A-Z0-9_]*(SECRET|KEY|PASSWORD|TOKEN|AUTH|PRIVATE)\s*='
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Exposing private credentials or tokens under NEXT_PUBLIC_ embeds secrets into client bundle.
+      remediation: Remove NEXT_PUBLIC_ prefix for server-only environment variables.

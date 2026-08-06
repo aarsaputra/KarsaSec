@@ -1,0 +1,180 @@
+rules:
+  - rule:
+      id: KS-JS-0010
+    metadata:
+      name: Express Command Injection (child_process.exec / spawn)
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-78
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+      tags:
+        - express
+        - cmdi
+        - child_process
+        - javascript
+    target:
+      languages:
+        - JavaScript
+        - TypeScript
+      frameworks:
+        - Express
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: JavaScript
+      ast_node_types:
+        - call
+        - statement
+    condition:
+      symbol_triggers:
+        - child_process.exec
+        - child_process.spawn
+        - execSync
+      pattern: '(?i)(child_process\.exec\s*\(|execSync\s*\([^)]*req\.)'
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 50
+        user_source: 40
+    output:
+      severity: CRITICAL
+      confidence: CONFIDENT
+      message: Express route passes unvalidated user input directly into system shell execution commands.
+      remediation: Use execFile or spawn with argument arrays without running inside a shell context.
+
+  - rule:
+      id: KS-JS-0011
+    metadata:
+      name: Express Code Injection / Dynamic Code Execution (eval / vm.runInNewContext)
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-95
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/95.html
+      tags:
+        - express
+        - eval
+        - vm
+        - javascript
+    target:
+      languages:
+        - JavaScript
+        - TypeScript
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: JavaScript
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - eval
+        - vm.runInNewContext
+        - Function
+      pattern: '(?i)(eval\s*\([^)]*req\.|vm\.runInNewContext\s*\([^)]*req\.|new\s+Function\s*\([^)]*req\.)'
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: CRITICAL
+      confidence: CONFIDENT
+      message: Dynamic evaluation of user-supplied code via eval or vm sandbox permits arbitrary Remote Code Execution (RCE).
+      remediation: Avoid dynamic code evaluation functions entirely.
+
+  - rule:
+      id: KS-JS-0012
+    metadata:
+      name: Express Missing Helmet Security Headers
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-693
+      owasp: A05:2021-Security Misconfiguration
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/693.html
+      tags:
+        - express
+        - helmet
+        - headers
+        - javascript
+    target:
+      languages:
+        - JavaScript
+        - TypeScript
+      frameworks:
+        - Express
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: JavaScript
+      ast_node_types:
+        - call
+        - assignment
+    condition:
+      symbol_triggers:
+        - express
+      pattern: '(?i)(const|let|var)\s+app\s*=\s*express\s*\(\)'
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 20
+    output:
+      severity: LOW
+      confidence: POSSIBLE
+      message: Express application detected without app.use(helmet()) security header protection.
+      remediation: Import and use helmet middleware (app.use(helmet())) to set secure HTTP headers.
+
+  - rule:
+      id: KS-JS-0013
+    metadata:
+      name: Express CORS Wildcard Access-Control-Allow-Origin ('*')
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-942
+      owasp: A05:2021-Security Misconfiguration
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/942.html
+      tags:
+        - express
+        - cors
+        - javascript
+    target:
+      languages:
+        - JavaScript
+        - TypeScript
+      frameworks:
+        - Express
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: JavaScript
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - cors
+      pattern: '(?i)(cors\s*\(\s*{\s*origin\s*:\s*[''"]\*[''"]|Access-Control-Allow-Origin.*[''"]\*[''"])'
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 40
+    output:
+      severity: MEDIUM
+      confidence: CONFIDENT
+      message: Permissive CORS configuration allows any origin ('*') to read sensitive API responses.
+      remediation: Restrict CORS origin to trusted domains or white-listed origins.

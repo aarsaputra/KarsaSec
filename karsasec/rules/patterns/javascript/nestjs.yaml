@@ -1,0 +1,91 @@
+rules:
+  - rule:
+      id: KS-JS-0017
+    metadata:
+      name: NestJS Disabled Global Validation Pipe
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-20
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/20.html
+      tags:
+        - nestjs
+        - validation
+        - pipe
+        - typescript
+    target:
+      languages:
+        - TypeScript
+        - JavaScript
+      frameworks:
+        - NestJS
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: JavaScript
+      ast_node_types:
+        - call
+        - assignment
+    condition:
+      symbol_triggers:
+        - ValidationPipe
+      pattern: '(?i)new\s+ValidationPipe\s*\(\s*{\s*disableErrorMessages\s*:\s*false'
+    evidence:
+      require:
+        - static_sink
+      score_weights:
+        dangerous_sink: 20
+    output:
+      severity: LOW
+      confidence: CONFIDENT
+      message: Detailed ValidationPipe error messages expose internal DTO structure.
+      remediation: Set disableErrorMessages = true in production environment to avoid info disclosure.
+
+  - rule:
+      id: KS-JS-0018
+    metadata:
+      name: NestJS TypeORM / Prisma Raw SQL Injection
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-89
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+      tags:
+        - nestjs
+        - sqli
+        - typeorm
+        - prisma
+        - typescript
+    target:
+      languages:
+        - TypeScript
+        - JavaScript
+      frameworks:
+        - NestJS
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: JavaScript
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - query
+        - $queryRawUnsafe
+      pattern: '(?i)(query\s*\(\s*`[^`]*\${.*}`|\$queryRawUnsafe\s*\(\s*`[^`]*\${.*}`)`?'
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: CRITICAL
+      confidence: CONFIDENT
+      message: Unsafe string interpolation in TypeORM query() or Prisma $queryRawUnsafe enables SQL Injection.
+      remediation: Use parameterized queries ($queryRaw`...` or QueryBuilder parameter binding).

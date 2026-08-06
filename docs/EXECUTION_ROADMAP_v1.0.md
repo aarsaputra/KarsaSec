@@ -1,8 +1,8 @@
 # KarsaSec v1.0 Roadmap (Revisi Enterprise)
 
 Platform: KarsaSec Secure Code Analysis Platform (SecOS)
-Versi Roadmap: 1.1.0 (Python Pack Granular Plan) | Status: Milestone 1 Active - Detection Quality Focus
-Visi Utama: "KarsaSec menjadi salah satu platform Application Security Open Source terbaik (Setara Semgrep) dengan deterministic SAST engine yang presisi, sebelum memasuki AI Layer."
+Versi Roadmap: 1.2.0 (Capabilities-Based & Comprehensive Roadmap) | Status: Milestone 1 Active - Detection Quality Focus
+Visi Utama: "KarsaSec menjadi salah satu platform Application Security Open Source terbaik (Setara Semgrep) dengan deterministic SAST engine yang presisi, berorientasi kapabilitas deteksi, sebelum memasuki AI Layer."
 
 ---
 
@@ -10,10 +10,10 @@ Visi Utama: "KarsaSec menjadi salah satu platform Application Security Open Sour
 
 | Prioritas | Milestone | Fokus Utama | Target Status |
 |---|---|---|---|
-| P1 | MILESTONE 1 | Detection Quality (Target: Setara Semgrep) | 120-150 rule, Precision >=95%, Recall >=90%, FPR <=5% (ACTIVE) |
+| P1 | MILESTONE 1 | Detection Quality (Target: Setara Semgrep) | 120-150 rule, Precision >95%, FPR <5% (ACTIVE) |
 | P2 | MILESTONE 2 | Developer Experience & CLI | Interactive CLI, Rule Lifecycle (list/inspect/doctor), karsasec.yaml, Docs |
-| P3 | MILESTONE 3 | Enterprise Integration | Quality Gates (--fail-on), HTML/PDF Reporting, CI/CD Templates, OWASP Benchmark |
-| P4 | MILESTONE 4 | Platform Ecosystem | Plugin SDK, Rule Registry (install/update), Language SDKs (Java, C#, Ruby, Kotlin) |
+| P3 | MILESTONE 3 | Enterprise Integration | Quality Gates (--fail-on), HTML/PDF Reporting, CI/CD Templates, Real Benchmark |
+| P4 | MILESTONE 4 | Platform Ecosystem | Plugin Marketplace, Rule Registry (install/update), Language SDKs |
 | P5 | MILESTONE 5 | AI Layer (Tahap Terakhir) | AI Reasoning Consumer (Explain, Prioritize, Fix Draft, PR Review) |
 
 ---
@@ -28,54 +28,68 @@ Target Kualitas Milestone 1:
 - Recall >= 90%
 - False Positive Rate (FPR) <= 5%
 
-## Sprint A1 - Python Security Pack Completion (Sub-Sprints A1.1 s/d A1.8)
+## Sprint A1 - Python Security Pack Completion (DONE)
+- Sprint A1.1 s/d A1.8: Injection, Web, Auth, Session, Filesystem, Networking, Crypto, Framework (Flask/Django), Corpus Test Suite & Evaluator Tool.
 
-### Sprint A1.1 - Core Injection & Web (DONE)
-- SQLi, Command Injection, SSRF, XXE, Open Redirect, Path Traversal, Temp File
+## Sprint A2 - JavaScript / TypeScript Pack (ACTIVE)
+- Express: Command Injection, SQL Injection, SSRF, Path Traversal, Open Redirect, JWT Secret, Hardcoded Secret, Cookie Flag, Helmet Missing, CORS Wildcard, Dangerous eval, child_process.exec/spawn, vm.runInNewContext.
+- Next.js: Middleware bypass, Server Action security, Insecure cookies, Server Component secret leak, Route Handler SSRF, API Route SQLi, dangerouslySetInnerHTML, Prototype Pollution, Open Redirect, Image loader abuse.
+- NestJS: ValidationPipe disabled, Raw SQL / TypeORM injection, Prisma unsafe query, JWT secret, Debug enabled.
+- Fastify: reply.send(userInput) XSS, helmet disabled, CORS wildcard.
 
-### Sprint A1.2 - Authentication & Session (ACTIVE)
-- Hardcoded JWT Secret
-- Flask Session Cookie Flags (Secure, HttpOnly, SameSite)
-- Django Session Cookie Flags (SESSION_COOKIE_SECURE, SESSION_COOKIE_HTTPONLY)
-- Weak Password Hashing (MD5/SHA1 for passwords)
-- Insecure Password Storage
+## Sprint A3 - PHP Pack
+- Frameworks: Laravel, Symfony, WordPress, Native PHP.
+- Coverage: SQLi, RCE, Object Injection, Deserialization, LFI/RFI, Path Traversal, Upload, Session, Cookie, Password, Open Redirect, XXE, SSRF.
 
-### Sprint A1.3 - Python Filesystem
-- Path Traversal (advanced)
-- Symlink Attack / Arbitrary File Overwrite
-- Insecure File Permission (chmod 0777)
-- TOCTOU (Time-of-check to time-of-use)
-- Directory Traversal & Unsafe Temp Dir
+## Sprint A4 - Go Pack
+- Frameworks: Gin, Echo, Fiber.
+- Coverage: Command Injection, SQLi, SSRF, TLS, Secrets, JWT, Unsafe Pointer, Crypto, File Permission.
 
-### Sprint A1.4 - Python Networking
-- SSRF (requests, urllib, aiohttp)
-- Insecure TLS (verify=False, ssl._create_unverified_context)
-- Urllib SSL Disable
-- Unencrypted Protocols (FTP, Telnet)
+## Sprint A5 - Rust Pack
+- Frameworks: Axum, Actix, Warp.
+- Coverage: unsafe block, Command, SQL, JWT, Secrets, TLS, Random.
 
-### Sprint A1.5 - Python Cryptography
-- RSA Key Size < 2048
-- ECB Cipher Mode
-- Weak Algorithms (DES, RC2, RC4, Blowfish, MD4, MD5, SHA1)
-- Predictable IV / Constant IV / Static Nonce
+## Sprint A6 - IaC Pack (Minimal 30 Rules)
+- Coverage: Docker, Kubernetes, Terraform, Helm, GitHub Actions.
+- Topics: Privilege Escalation, Capabilities, HostPath, runAsRoot, seccomp, NetworkPolicy, OIDC, Terraform state, Helm secrets.
 
-### Sprint A1.6 - Python Framework Pack (Flask & Django Full OWASP)
-- Flask: debug=True, SECRET_KEY, send_file traversal, unsafe redirect, Jinja SSTI, CSRF exemption
-- Django: DEBUG=True, ALLOWED_HOSTS=['*'], SECRET_KEY, csrf_exempt, SECURE_SSL_REDIRECT=False, X_FRAME_OPTIONS
+## Sprint A7 - Secrets Detection Engine
+- Engine khusus deteksi secret: AWS, Azure, GCP, JWT, RSA, SSH, OpenAI, GitHub, GitLab, Slack, Discord, Stripe, Twilio, Sendgrid, SMTP, Bearer Token, Private Key, API Key, Password, Database URL.
 
-### Sprint A1.7 - Python Benchmark Suite
-- Complete security_corpus/python/ directory structure with metadata.yaml, safe/, vulnerable/ for all categories.
-
-### Sprint A1.8 - Rule Quality Evaluator Tool
-- Automated tool tools/evaluate.py providing Rule Coverage, Precision, Recall, FPR, Missed/Unexpected Findings, Runtime, Memory, and Top Slow Rules.
+## Sprint A8 - Framework Intelligence
+- Pengenalan otomatis framework dan versi library (misal: Python + Flask 3.x, Node.js + Express 4.x) untuk rule targeting presisi tinggi.
 
 ---
 
-## Definition of Done (DoD) per Rule
-Every rule MUST contain:
-1. vulnerable fixture
-2. safe fixture
-3. AST test
-4. Taint verification
-5. Guard verification
-6. SARIF snapshot validation
+# MILESTONE 2 - Developer Experience
+
+- Sprint B1: CLI Filtering (--severity, --framework, --language, --rule, --profile, --new-only, --stats)
+- Sprint B2: Rule Lifecycle (list, inspect, search, validate, doctor, test)
+- Sprint B3: Workspace Config (karsasec.yaml)
+- Sprint B4: Documentation & SDK (Rule Author Guide, Parser SDK, Plugin SDK, Reporter SDK)
+
+---
+
+# MILESTONE 3 - Enterprise Integration
+
+- Sprint C1: Quality Gates (--fail-on, --max-findings, --baseline, --new-only)
+- Sprint C2: Multi-Format Reporter (HTML, Markdown, CSV, PDF, JUnit XML, GitLab SAST, GitHub Code Scanning)
+- Sprint C3: CI/CD Templates (GitHub Actions, GitLab, Azure DevOps, Jenkins, CircleCI, Bitbucket)
+- Sprint C4: Real Benchmark Validation (OWASP Benchmark, Juliet Test Suite, DVWA, WebGoat, Juice Shop, DVNA, Vulnerable Flask/Django)
+
+---
+
+# MILESTONE 4 - Platform Ecosystem
+
+- Plugin Marketplace, Rule Registry, Auto Update Rules, Versioned Rule Pack, Community Rules, Language SDKs (Python, Java, C#, Kotlin, Ruby).
+
+---
+
+# MILESTONE 5 - AI Layer (Consumer of Deterministic Findings)
+
+1. Explain Finding
+2. Risk Prioritization
+3. Fix Draft Generation
+4. Pull Request Review
+5. Secure Coding Assistant
+6. Security Copilot

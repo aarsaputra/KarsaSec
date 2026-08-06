@@ -1,0 +1,8 @@
+rules:
+  - rule_id: KS-JS-0010
+  - rule_id: KS-JS-0011
+category: express
+language: javascript
+cwe: CWE-78
+owasp: A03:2021-Injection
+description: Express command and code injection corpus test suite
