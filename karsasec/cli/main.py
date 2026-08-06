@@ -8,6 +8,8 @@ from rich.panel import Panel
 from rich.table import Table
 
 from karsasec import __version__
+from karsasec.cli.commands.cfg import cfg_app
+from karsasec.cli.commands.debug import debug_app
 from karsasec.cli.commands.rules import rules_app
 from karsasec.cli.commands.scan import execute_scan_command
 from karsasec.config import settings
@@ -21,6 +23,8 @@ app = typer.Typer(
 )
 
 app.add_typer(rules_app, name="rules")
+app.add_typer(cfg_app, name="cfg")
+app.add_typer(debug_app, name="debug")
 
 def version_callback(value: bool) -> None:
     """Callback for printing the CLI version."""
