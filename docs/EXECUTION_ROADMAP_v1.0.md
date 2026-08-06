@@ -1,8 +1,8 @@
 # KarsaSec v1.0 Roadmap — Decoupled Compiler Pipeline & Code Property Graph (CPG) Platform
 
 Platform: KarsaSec Secure Code Analysis Platform (SecOS)
-Versi Roadmap: 3.0.0 (Enterprise CPG & Semantic Compiler Engine Focus) | Status: Milestone 2 Active
-Visi Utama: "Evolusi KarsaSec menjadi Compiler Pipeline & CPG SAST Engine berskala enterprise dengan Pass Manager, Universal IR, CFG, SSA, Data Flow Analysis, Intra/Interprocedural Taint Engine, Framework Semantics, Dependency Intelligence, CPG Fusion, dan CPG Query Engine."
+Versi Roadmap: 3.1.0 (Enterprise Interprocedural Taint & Incremental Analysis Engine Focus) | Status: Milestone 2 Active
+Visi Utama: "Evolusi KarsaSec menjadi Compiler Pipeline & CPG SAST Engine berskala enterprise dengan Pass Manager, Universal IR, CFG, SSA, Data Flow Analysis, Intra/Interprocedural Taint Engine, Incremental Analysis, Framework Semantics, Dependency Intelligence, CPG Fusion, dan CPG Query Engine."
 
 ---
 
@@ -29,7 +29,11 @@ SSA (Static Single Assignment & Phi Nodes)
     │
 Data Flow Analysis (Reaching Definitions & Def-Use / Use-Def Chains)
     │
-Taint Analysis (Intraprocedural & Interprocedural TaintGraph)
+Intraprocedural Taint Analysis (TaintGraph)
+    │
+Interprocedural Taint Analysis (Function Summaries & InterproceduralTaintGraph)
+    │
+Incremental Analysis Engine (AST/IR/CFG Delta & Pass Caching)
     │
 Framework Semantics (Laravel, Django, Express, Next.js, Spring, ASP.NET)
     │
@@ -49,12 +53,12 @@ Finding Engine → SARIF / JSON / HTML Reports → AI Advisory
 ## Strategic Roadmap Phases
 
 ### Milestone 2: Semantic Analysis Engine & Enterprise Engine (E5 – E12)
-- **Sprint E5 — Data Flow Analysis Engine** (`karsasec/analysis/dataflow/`) [ACTIVE]
-  - Reaching Definitions, Def-Use / Use-Def Chains, Constant/Copy Propagation, Liveness Analysis, `DataFlowGraph`
-- **Sprint E6 — Intraprocedural Taint Analysis** (`karsasec/analysis/taint/`)
-  - Source → Sink tracking within functions, Sanitizer verification, `TaintGraph`
-- **Sprint E7 — Interprocedural Taint Analysis** (`karsasec/analysis/interprocedural/`)
-  - Cross-function tracking, Function Summary, Context Sensitivity, Parameter Mapping
+- **Sprint E5 — Data Flow Analysis Engine** (`karsasec/analysis/dataflow/`) [COMPLETED]
+- **Sprint E6 — Intraprocedural Taint Analysis** (`karsasec/analysis/taint/`) [COMPLETED]
+- **Sprint E7 — Interprocedural Taint Analysis** (`karsasec/analysis/interprocedural/`) [ACTIVE]
+  - Cross-function tracking, Function Summary, Context Sensitivity (1-call-site), Parameter Mapping, Return Value Propagation
+- **Sprint E7.5 — Incremental Analysis Engine** (`karsasec/analysis/incremental/`)
+  - File Change Detector, AST/IR/CFG Delta, Call Graph Delta, Incremental Pass Scheduler
 - **Sprint E8 — Framework Semantic Engine** (`karsasec/analysis/framework/`)
   - Framework Models: Laravel, Django, Express, Next.js, ASP.NET, Spring (`FrameworkModel`)
 - **Sprint E9 — Dependency Intelligence** (`karsasec/analysis/dependency/`)
