@@ -19,6 +19,8 @@ EXTENSION_MAP: dict[str, str] = {
     ".cpp": "C++",
     ".h": "C/C++ Header",
     ".cs": "C#",
+    ".html": "HTML",
+    ".htm": "HTML",
     ".rb": "Ruby",
 }
 

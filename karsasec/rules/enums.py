@@ -29,6 +29,9 @@ class LanguageEnum(str, Enum):
     GO = "Go"
     RUST = "Rust"
     JAVA = "Java"
+    CPP = "C++"
+    CSHARP = "C#"
+    HTML = "HTML"
     GENERIC = "Generic"
 
 class TargetKindEnum(str, Enum):

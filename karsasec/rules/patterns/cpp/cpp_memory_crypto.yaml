@@ -1,0 +1,80 @@
+rules:
+  - rule:
+      id: KS-CPP-0001
+    metadata:
+      name: C/C++ Buffer Overflow Unsafe String Copy
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-120
+      owasp: A06:2021-Vulnerable and Outdated Components
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/120.html
+      tags:
+        - memory_safety
+        - buffer_overflow
+        - cpp
+    target:
+      languages:
+        - C++
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: C++
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - strcpy
+        - strcat
+        - gets
+        - sprintf
+      pattern: "(?i)\\b(strcpy|strcat|gets|sprintf)\\s*\\("
+    evidence:
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: CRITICAL
+      confidence: CONFIDENT
+      message: Use of unbounded buffer functions like strcpy, gets, or sprintf poses buffer overflow vulnerabilities.
+      remediation: Replace with bounded alternatives like strncpy, snprintf, or std::string operations.
+
+  - rule:
+      id: KS-CPP-0002
+    metadata:
+      name: C/C++ Weak Pseudo-Random Number Generator
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-338
+      owasp: A02:2021-Cryptographic Failures
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/338.html
+      tags:
+        - crypto
+        - random
+        - cpp
+    target:
+      languages:
+        - C++
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: C++
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - rand
+        - srand
+      pattern: "(?i)\\b(rand|srand)\\s*\\("
+    evidence:
+      score_weights:
+        dangerous_sink: 30
+    output:
+      severity: MEDIUM
+      confidence: CONFIDENT
+      message: Standard rand() or srand() functions are predictable and unsuitable for security-sensitive operations.
+      remediation: Use C++11 <random> header with std::mt19937 or OS-level cryptographically secure random sources.

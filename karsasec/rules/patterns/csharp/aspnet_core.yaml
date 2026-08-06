@@ -1,0 +1,123 @@
+rules:
+  - rule:
+      id: KS-CS-0001
+    metadata:
+      name: C# ASP.NET Core Entity Framework Raw SQL Injection
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-89
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+      tags:
+        - sqli
+        - csharp
+        - aspnet
+    target:
+      languages:
+        - C#
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: C#
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - FromSqlRaw
+        - ExecuteSqlRaw
+        - SqlCommand
+      pattern: "(?i)(FromSqlRaw|ExecuteSqlRaw|ExecuteSqlInterpolated|SqlCommand\\s*\\([^)]*\\+)"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 50
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Detects unparameterized string concatenation passed into Entity Framework raw SQL methods.
+      remediation: Use FromSqlInterpolated or explicit SqlParameter objects to safely parameterize database queries.
+
+  - rule:
+      id: KS-CS-0002
+    metadata:
+      name: C# Insecure BinaryFormatter Deserialization
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-502
+      owasp: A08:2021-Software and Data Integrity Failures
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+      tags:
+        - deserialization
+        - rce
+        - csharp
+    target:
+      languages:
+        - C#
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: C#
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - BinaryFormatter
+        - Deserialize
+      pattern: "(?i)BinaryFormatter\\.[^;]*\\.Deserialize\\s*\\("
+    evidence:
+      score_weights:
+        dangerous_sink: 50
+    output:
+      severity: CRITICAL
+      confidence: CONFIDENT
+      message: BinaryFormatter deserialization of untrusted data is inherently unsafe and can lead to remote code execution.
+      remediation: Migrate away from BinaryFormatter to System.Text.Json or Newtonsoft.Json with strict type handling.
+
+  - rule:
+      id: KS-CS-0003
+    metadata:
+      name: C# OS Command Injection
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-78
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+      tags:
+        - cmdi
+        - csharp
+    target:
+      languages:
+        - C#
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: C#
+      ast_node_types:
+        - call
+    condition:
+      symbol_triggers:
+        - Process.Start
+        - ProcessStartInfo
+      pattern: "(?i)Process\\.Start\\s*\\([^)]*(?:cmd|powershell|bash|sh)[^)]*\\+"
+    evidence:
+      require:
+        - user_input
+      score_weights:
+        dangerous_sink: 50
+        user_source: 30
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Untrusted input concatenated into system command execution APIs can result in OS command injection.
+      remediation: Avoid shell invocation; pass arguments as an explicit string array or list without invoking shell interpreters.

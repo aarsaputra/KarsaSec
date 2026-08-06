@@ -1,0 +1,80 @@
+rules:
+  - rule:
+      id: KS-HTML-0001
+    metadata:
+      name: HTML Inline Event Handler XSS Flaw
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-79
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+      tags:
+        - xss
+        - html
+        - frontend
+    target:
+      languages:
+        - HTML
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: HTML
+      ast_node_types:
+        - statement
+        - call
+    condition:
+      symbol_triggers:
+        - onload
+        - onerror
+        - onclick
+      pattern: "(?i)<[^>]+\\b(onload|onerror|onclick|onmouseover)\\s*=\\s*[\"']?[^\"'>]*"
+    evidence:
+      score_weights:
+        dangerous_sink: 30
+    output:
+      severity: MEDIUM
+      confidence: CONFIDENT
+      message: Inline event handlers in HTML templates increase XSS attack surface and violate Content Security Policy.
+      remediation: Attach event handlers in external JavaScript files using addEventListener and enforce strict CSP header.
+
+  - rule:
+      id: KS-HTML-0002
+    metadata:
+      name: HTML Unescaped Template Expression XSS
+      author: KarsaSec Team
+      version: "1.0"
+      cwe: CWE-79
+      owasp: A03:2021-Injection
+      created: "2026-08-06"
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+      tags:
+        - xss
+        - html
+        - templates
+    target:
+      languages:
+        - HTML
+    analysis:
+      engine: AST
+      behavior: SINK
+    match:
+      language: HTML
+      ast_node_types:
+        - statement
+    condition:
+      symbol_triggers:
+        - v-html
+        - dangerouslySetInnerHTML
+      pattern: "(?i)(\\{\\{\\{|v-html|dangerouslySetInnerHTML|c:out\\s+value=|\\[\\[[^\\]]+\\]\\])"
+    evidence:
+      score_weights:
+        dangerous_sink: 40
+    output:
+      severity: HIGH
+      confidence: CONFIDENT
+      message: Unescaped template expressions (v-html, raw triple braces) bypass HTML entity encoding, risking Reflected/Stored XSS.
+      remediation: Use auto-escaped template interpolation or sanitize HTML input using DOMPurify before rendering.
