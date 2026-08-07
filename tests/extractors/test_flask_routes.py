@@ -301,10 +301,12 @@ def test_nested_blueprints_fixture(extractor: FlaskRouteExtractor):
 def test_blueprint_visitor_instantiation():
     code = "auth_bp = Blueprint('auth', __name__, url_prefix='/auth')"
     tree = PythonASTAdapter.parse_code(code)
+    assert tree is not None
     state = FlaskSemanticState()
     FlaskBlueprintVisitor(state).visit(tree.children[0])
     assert "auth_bp" in state.blueprints
     assert state.blueprints["auth_bp"].url_prefix == "/auth"
+
 
 def test_blueprint_visitor_registration():
     code = "app.register_blueprint(auth_bp, url_prefix='/api/auth')"
@@ -339,6 +341,7 @@ def test_blueprint_normalizer_registration_override():
 def test_blueprint_visitor_no_url_prefix():
     code = "simple_bp = Blueprint('simple', __name__)"
     tree = PythonASTAdapter.parse_code(code)
+    assert tree is not None
     state = FlaskSemanticState()
     FlaskBlueprintVisitor(state).visit(tree.children[0])
     assert state.blueprints["simple_bp"].url_prefix == ""
@@ -346,6 +349,7 @@ def test_blueprint_visitor_no_url_prefix():
 def test_blueprint_visitor_module_attribute():
     code = "bp = flask.Blueprint('m_bp', __name__)"
     tree = PythonASTAdapter.parse_code(code)
+    assert tree is not None
     state = FlaskSemanticState()
     FlaskBlueprintVisitor(state).visit(tree.children[0])
     assert "bp" in state.blueprints
@@ -369,9 +373,11 @@ def test_blueprint_multiple_registrations():
 def test_blueprint_visitor_positional_name():
     code = "p_bp = Blueprint('pos_name', __name__)"
     tree = PythonASTAdapter.parse_code(code)
+    assert tree is not None
     state = FlaskSemanticState()
     FlaskBlueprintVisitor(state).visit(tree.children[0])
     assert state.blueprints["p_bp"].name == "pos_name"
+
 
 def test_blueprint_visitor_attribute_registration():
     code = "myapp.main_app.register_blueprint(b_var, url_prefix='/b')"
@@ -429,6 +435,7 @@ class MyView(MethodView):
     def post(self): pass
 """
     tree = PythonASTAdapter.parse_code(code)
+    assert tree is not None
     state = FlaskSemanticState()
     FlaskMethodViewVisitor(state).visit(tree.children[0])
     assert "MyView" in state.method_views
@@ -440,6 +447,7 @@ class ViewSub(View):
     def get(self): pass
 """
     tree = PythonASTAdapter.parse_code(code)
+    assert tree is not None
     state = FlaskSemanticState()
     FlaskMethodViewVisitor(state).visit(tree.children[0])
     assert "ViewSub" in state.method_views
@@ -450,6 +458,7 @@ class AttrView(flask.views.MethodView):
     def put(self): pass
 """
     tree = PythonASTAdapter.parse_code(code)
+    assert tree is not None
     state = FlaskSemanticState()
     FlaskMethodViewVisitor(state).visit(tree.children[0])
     assert "AttrView" in state.method_views
@@ -483,6 +492,7 @@ class FullView(MethodView):
     def options(self): pass
 """
     tree = PythonASTAdapter.parse_code(code)
+    assert tree is not None
     state = FlaskSemanticState()
     FlaskMethodViewVisitor(state).visit(tree.children[0])
     assert len(state.method_views["FullView"].methods_map) == 7
@@ -494,6 +504,7 @@ class CustomView(MethodView):
     def helper_func(self): pass
 """
     tree = PythonASTAdapter.parse_code(code)
+    assert tree is not None
     state = FlaskSemanticState()
     FlaskMethodViewVisitor(state).visit(tree.children[0])
     assert "GET" in state.method_views["CustomView"].methods_map
@@ -513,6 +524,7 @@ class AsyncView(MethodView):
     async def get(self): pass
 """
     tree = PythonASTAdapter.parse_code(code)
+    assert tree is not None
     state = FlaskSemanticState()
     FlaskMethodViewVisitor(state).visit(tree.children[0])
     assert "GET" in state.method_views["AsyncView"].methods_map
@@ -520,6 +532,7 @@ class AsyncView(MethodView):
 def test_method_view_empty_class():
     code = "class EmptyView(MethodView): pass"
     tree = PythonASTAdapter.parse_code(code)
+    assert tree is not None
     state = FlaskSemanticState()
     FlaskMethodViewVisitor(state).visit(tree.children[0])
     assert len(state.method_views["EmptyView"].methods_map) == 0
@@ -527,9 +540,11 @@ def test_method_view_empty_class():
 def test_method_view_visitor_non_view_class():
     code = "class RegularClass: pass"
     tree = PythonASTAdapter.parse_code(code)
+    assert tree is not None
     state = FlaskSemanticState()
     FlaskMethodViewVisitor(state).visit(tree.children[0])
     assert "RegularClass" not in state.method_views
+
 
 def test_method_view_integration(extractor: FlaskRouteExtractor):
     code = """
@@ -716,6 +731,7 @@ def test_decorator_aliases_fixture(extractor: FlaskRouteExtractor):
 def test_decorator_resolver_direct_assignment():
     code = "r = app.route"
     tree = PythonASTAdapter.parse_code(code)
+    assert tree is not None
     state = FlaskSemanticState()
     FlaskDecoratorResolver(state).visit(tree.children[0])
     assert state.aliases["r"] == "app.route"
@@ -743,6 +759,7 @@ def aliased_fn(): pass
 def test_decorator_resolver_shortcut_alias():
     code = "my_post = app.post"
     tree = PythonASTAdapter.parse_code(code)
+    assert tree is not None
     state = FlaskSemanticState()
     FlaskDecoratorResolver(state).visit(tree.children[0])
     assert state.aliases["my_post"] == "app.post"
@@ -750,6 +767,7 @@ def test_decorator_resolver_shortcut_alias():
 def test_decorator_resolver_non_route_assignment():
     code = "x = 10"
     tree = PythonASTAdapter.parse_code(code)
+    assert tree is not None
     state = FlaskSemanticState()
     FlaskDecoratorResolver(state).visit(tree.children[0])
     assert "x" not in state.aliases
@@ -757,6 +775,7 @@ def test_decorator_resolver_non_route_assignment():
 def test_decorator_resolver_attribute_assignment():
     code = "my_r = my_app.route"
     tree = PythonASTAdapter.parse_code(code)
+    assert tree is not None
     state = FlaskSemanticState()
     FlaskDecoratorResolver(state).visit(tree.children[0])
     assert state.aliases["my_r"] == "my_app.route"
@@ -815,9 +834,11 @@ r2 = app.get
 def test_decorator_resolver_bp_alias():
     code = "bp_r = bp.route"
     tree = PythonASTAdapter.parse_code(code)
+    assert tree is not None
     state = FlaskSemanticState()
     FlaskDecoratorResolver(state).visit(tree.children[0])
     assert state.aliases["bp_r"] == "bp.route"
+
 
 def test_decorator_resolver_aliased_bp_route():
     code = """

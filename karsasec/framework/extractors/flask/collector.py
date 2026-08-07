@@ -26,8 +26,12 @@ class FlaskRouteCollector:
         self.call_visitor = FlaskCallVisitor(self.state)
         self.route_visitor = FlaskRouteVisitor(self.state)
 
-    def collect_from_ast(self, root: ASTNodeWrapper) -> FlaskSemanticState:
+    def collect_from_ast(self, root: ASTNodeWrapper | None) -> FlaskSemanticState:
         """Runs a 2-pass visitation over a single AST tree."""
+        if root is None:
+            return self.state
+
+
         # Pass 1: Decorators, Blueprints, MethodViews, Calls
         def pass1(node: ASTNodeWrapper) -> None:
             self.decorator_resolver.visit(node)
