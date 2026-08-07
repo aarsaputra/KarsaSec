@@ -42,7 +42,14 @@ class IRExpression(IRNode):
 
 
 @dataclass
-class IRCall(IRExpression):
+class IRStatement(IRNode):
+    """Represents a statement node in IR."""
+
+    pass
+
+
+@dataclass
+class IRCall(IRExpression, IRStatement):
     """Represents a function or method invocation in IR."""
 
     callee_name: str = ""
@@ -57,13 +64,6 @@ class IRCall(IRExpression):
         d["callee_name"] = self.callee_name
         d["arguments"] = self.arguments
         return d
-
-
-@dataclass
-class IRStatement(IRNode):
-    """Represents a statement node in IR."""
-
-    pass
 
 
 @dataclass
@@ -88,7 +88,7 @@ class IRAssignment(IRStatement):
 
     def to_dict(self) -> dict[str, Any]:
         d = super().to_dict()
-        d["target"] = self.target.name if isinstance(self.target, IRVar) else str(self.target)
+        d["target"] = self.target.name if isinstance(self.target, IRVar) else self.target
         d["value_expression"] = str(self.value_expression)
         return d
 

@@ -39,7 +39,7 @@ def list_rules(
 
     count = 0
     for r in rules:
-        langs = [str(x) for x in r.target.languages]
+        langs = [str(x) for x in r.target.languages] if r.target else []
         if language and language.lower() not in [l.lower() for l in langs]:
             continue
         tags = r.metadata.tags or []
@@ -178,7 +178,7 @@ def generate_rule_docs(
 - **OWASP**: {r.metadata.owasp or 'N/A'}
 - **Author**: {r.metadata.author or 'KarsaSec Team'}
 - **Version**: {r.metadata.version or '1.0'}
-- **Target Languages**: {', '.join([str(l) for l in r.target.languages])}
+- **Target Languages**: {', '.join([str(l) for l in r.target.languages]) if r.target else 'N/A'}
 - **Tags**: {', '.join(r.metadata.tags or [])}
 
 ## Description
@@ -211,7 +211,7 @@ def rule_coverage() -> None:
     lang_category_map: dict[str, dict[str, int]] = {}
 
     for r in rules:
-        langs = [getattr(x, "value", str(x)) for x in r.target.languages]
+        langs = [getattr(x, "value", str(x)) for x in r.target.languages] if r.target else ["Generic"]
         tags = r.metadata.tags or ["general"]
         cat = tags[0] if tags else "general"
 
