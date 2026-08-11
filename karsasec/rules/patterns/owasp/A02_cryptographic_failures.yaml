@@ -38,10 +38,10 @@ condition:
     - InsecureSkipVerify
   # Pattern requires: weak algorithm AND credential/auth/session context adjacent to the call.
   # Generic hashing (file checksums) is UNKNOWN -> SUPPRESS per contract.
-  pattern: '(?i)(md5\s*\(|sha1\s*\().*(?:password|passwd|pwd|secret|credential|token|session|auth)|(?:password|passwd|pwd|secret|credential|token|session|auth).*(?:md5\s*\(|sha1\s*\()|InsecureRandom|InsecureSkipVerify'
+  pattern: '(?i)(md5\s*\(|sha1\s*\().*(?:password|passwd|pwd|pass|secret|credential|token|session|auth)|(?:password|passwd|pwd|pass|secret|credential|token|session|auth).*(?:md5\s*\(|sha1\s*\()|InsecureRandom|InsecureSkipVerify'
   # Candidate pre-filter only (not final decision):
   # Exclude IV encoding (DVWA FP), tag encoding, prose text
-  node_text_not_matches: '(base64_encode\s*\(\s*\$iv|base64_encode\s*\(\s*\$tag|//|<!--|\*\s|\b(more|less|looks|appears|seems)\s+random\b)'
+  node_text_not_matches: '(base64_encode\s*\(\s*\$iv|base64_encode\s*\(\s*\$tag|<!--|\*\s|\b(more|less|looks|appears|seems)\s+random\b)'
 
 evidence:
   require: []

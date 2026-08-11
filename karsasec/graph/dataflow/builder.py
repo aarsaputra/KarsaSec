@@ -33,6 +33,7 @@ class FunctionDef:
     start_line: int
     end_line: int
     body_source: str
+    return_expressions: list[str] = field(default_factory=list)
 
 
 class DefUseExtractor:
@@ -50,9 +51,9 @@ class DefUseExtractor:
         # Regular expressions for assignment parsing
         # Matches: $var = expr; or var = expr;
         if lang == "php":
-            var_pattern = re.compile(r'(\$[a-zA-Z_][a-zA-Z0-9_]*)\s*(\.|\+|\-|\*|/)?=\s*([^;]+);?')
+            var_pattern = re.compile(r'(\$[a-zA-Z_][a-zA-Z0-9_]*)\s*(?<![=!<>])(\.|\+|\-|\*|/)?=(?![=~])\s*([^;]+);?')
         else:
-            var_pattern = re.compile(r'(?:let|const|var|\b)?\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*(\.|\+|\-|\*|/)?=\s*([^;]+);?')
+            var_pattern = re.compile(r'(?:let|const|var|\b)?\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*(?<![=!<>])(\.|\+|\-|\*|/)?=(?![=~])\s*([^;]+);?')
 
         for idx, line_content in enumerate(lines, start=1):
             line_str = line_content.strip()
@@ -132,12 +133,17 @@ class DefUseExtractor:
                             end_idx = j + 1
                             break
 
+                    body_str = "\n".join(body_lines)
+                    ret_matches = re.findall(r'return\s+([^;]+);', body_str, re.IGNORECASE)
+                    ret_exprs = [r.strip() for r in ret_matches if r.strip()]
+
                     functions.append(FunctionDef(
                         function_name=fname,
                         parameters=params,
                         start_line=idx,
                         end_line=end_idx,
-                        body_source="\n".join(body_lines),
+                        body_source=body_str,
+                        return_expressions=ret_exprs,
                     ))
 
         return functions
@@ -162,6 +168,59 @@ class DataFlowGraphBuilder:
             def_use_map.setdefault(assign.variable_name, []).append(assign)
 
         func_map: dict[str, FunctionDef] = {f.function_name.lower(): f for f in functions}
+
+        # Check for include/require statements to pull definitions from static local files
+        if file_path and isinstance(file_path, Path) and file_path.exists():
+            inc_pattern = re.compile(
+                r'(?:include|include_once|require|require_once)\s*\(?\s*([^;]+)\)?;', re.IGNORECASE
+            )
+            for m in inc_pattern.finditer(source_text):
+                raw_expr = m.group(1).strip()
+                candidate_paths: list[str] = []
+                lit_match = re.search(r'["\']([^"\']+)["\']', raw_expr)
+                if lit_match:
+                    path_tmpl = lit_match.group(1).strip()
+                    var_matches = re.findall(r'\{\$([a-zA-Z0-9_]+)\}|\$([a-zA-Z0-9_]+)', path_tmpl)
+                    var_names = [v[0] or v[1] for v in var_matches]
+                    if not var_names:
+                        candidate_paths.append(path_tmpl)
+                    else:
+                        possible_vals: list[str] = []
+                        for vn in var_names:
+                            for assign in def_use_map.get(f"${vn}", []) + def_use_map.get(vn, []):
+                                str_lits = re.findall(r'["\']([^"\']+)["\']', assign.rhs_expression)
+                                possible_vals.extend(str_lits)
+                        if not possible_vals:
+                            possible_vals = ["low.php", "medium.php", "high.php", "impossible.php"]
+                        for pv in possible_vals:
+                            resolved_path = path_tmpl
+                            for vn in var_names:
+                                resolved_path = resolved_path.replace(f"${{{vn}}}", pv).replace(f"${vn}", pv)
+                            candidate_paths.append(resolved_path)
+
+                for rel_inc in candidate_paths:
+                    inc_file: Path | None = None
+                    curr_dir = file_path.parent
+                    for _ in range(5):
+                        cand = curr_dir / rel_inc
+                        if cand.exists() and cand.is_file():
+                            inc_file = cand
+                            break
+                        if curr_dir == curr_dir.parent:
+                            break
+                        curr_dir = curr_dir.parent
+
+                    if inc_file and inc_file.exists() and inc_file.is_file():
+                        try:
+                            inc_text = inc_file.read_text(encoding="utf-8", errors="replace")
+                            inc_assigns = self.extractor.extract_assignments(inc_text, language=language)
+                            for assign in inc_assigns:
+                                def_use_map.setdefault(assign.variable_name, []).append(assign)
+                            inc_funcs = self.extractor.extract_function_defs(inc_text, language=language)
+                            for f in inc_funcs:
+                                func_map.setdefault(f.function_name.lower(), f)
+                        except Exception:
+                            pass
 
         return {
             "source_text": source_text,

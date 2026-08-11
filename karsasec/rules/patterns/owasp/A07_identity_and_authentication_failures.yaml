@@ -36,6 +36,7 @@ condition:
     - bcrypt
     - compare_hash
   pattern: '(?i)(password|bcrypt|verify_password|check_password|login|authenticate)'
+  node_text_not_matches: '(?i)\b(api|axios|fetch|http|client|request|httpClient|service)\s*\.\s*(post|put|get|patch|delete|request)\b'
   value_evidence_not_in:
     - ENV_REFERENCE
     - SECRET_PROVIDER_REFERENCE

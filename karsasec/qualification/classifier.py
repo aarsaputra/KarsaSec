@@ -126,7 +126,8 @@ class QualificationClassifier:
             matched: Finding | None = None
 
             for fi, f in finding_identities:
-                if case_identity.matches_finding(fi):
+                corr_rules = f.metadata.get("correlated_rules") if isinstance(getattr(f, "metadata", None), dict) else None
+                if case_identity.matches_finding(fi, correlated_rules=corr_rules):
                     matched = f
                     matched_finding_ids.add(f.finding_id)
                     break

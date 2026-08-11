@@ -33,9 +33,11 @@ match:
 
 condition:
   symbol_triggers:
+    - include
     - include_once
+    - require
     - require_once
-  pattern: "(?i)(include_once|require_once)"
+  pattern: "(?i)\\b(include|include_once|require|require_once)\\b"
 
 evidence:
   require:

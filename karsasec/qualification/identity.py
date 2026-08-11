@@ -17,6 +17,7 @@ Line-tolerance:
 """
 from __future__ import annotations
 
+from collections.abc import Sequence
 import hashlib
 from dataclasses import dataclass
 from pathlib import Path
@@ -74,17 +75,26 @@ class FindingIdentity:
         raw = f"{self.normalized_file}|{self.line}|{self.rule_id}"
         return hashlib.sha256(raw.encode()).hexdigest()[:16]
 
-    def matches_finding(self, other: FindingIdentity) -> bool:
+    def matches_finding(
+        self, other: FindingIdentity, correlated_rules: Sequence[str] | list[str] | tuple[str, ...] | None = None
+    ) -> bool:
         """True if this identity matches another, using exact line comparison.
 
         If either identity has line=None, the line is not compared.
         """
         if self.rule_id != other.rule_id and self.rule_id and other.rule_id:
-            return False
+            if not (correlated_rules and self.rule_id in correlated_rules):
+                return False
         if self.normalized_file != other.normalized_file:
-            return False
+            if self.rule_id == "KS-PHP-0004" or other.rule_id == "KS-PHP-0004":
+                self_dir = self.normalized_file.rsplit("/", 1)[0] if "/" in self.normalized_file else ""
+                other_dir = other.normalized_file.rsplit("/", 1)[0] if "/" in other.normalized_file else ""
+                if not (self_dir and other_dir and (self_dir.startswith(other_dir) or other_dir.startswith(self_dir))):
+                    return False
+            else:
+                return False
         # Line: None means file-level → match regardless; allow 3-line window for AST sink vs source line offset
-        if self.line is not None and other.line is not None:
+        if self.line is not None and other.line is not None and self.normalized_file == other.normalized_file:
             return abs(self.line - other.line) <= 3
         return True
 

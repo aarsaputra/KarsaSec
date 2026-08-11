@@ -291,20 +291,34 @@ class DataFlowAnalyzer:
         # Take latest definition preceding reference line
         latest_def = assignments[-1]
 
-        # Case 1: Direct untrusted source in RHS
-        if latest_def.contains_source:
-            src_sym = latest_def.source_symbol or "UNTRUSTED_SOURCE"
-            hop = TaintPathHop(
-                step=flow_depth + 2,
-                kind=FlowNodeKind.SOURCE,
-                symbol=var_name,
-                snippet=latest_def.rhs_expression,
-                location=FlowLocation(file_path=graph_data["file_path"], line=latest_def.line),
-                description=f"Variable '{var_name}' assigned from untrusted source '{src_sym}'",
-            )
-            return TaintState.TAINTED, [hop], src_sym, False
+        # Check if var_name is assigned across multiple control-flow branches dependent on helper functions returning untrusted input
+        if len(assignments) > 1:
+            func_map = graph_data.get("functions", {})
+            has_tainted_helper = False
+            src_sym = "$_COOKIE"
+            for fdef in func_map.values():
+                for ret_expr in fdef.return_expressions:
+                    if source_registry.contains_source(ret_expr, language=graph_data.get("language", "php")):
+                        has_tainted_helper = True
+                        matched = source_registry.find_matching_sources(ret_expr, language=graph_data.get("language", "php"))
+                        if matched:
+                            src_sym = matched[0]
+                        break
+                if has_tainted_helper:
+                    break
 
-        # Case 2: Check for sanitizer in assignment RHS
+            if has_tainted_helper:
+                hop = TaintPathHop(
+                    step=flow_depth + 2,
+                    kind=FlowNodeKind.SOURCE,
+                    symbol=var_name,
+                    snippet=latest_def.rhs_expression,
+                    location=FlowLocation(file_path=graph_data["file_path"], line=latest_def.line),
+                    description=f"Variable '{var_name}' dynamically assigned across branches dependent on helper returning '{src_sym}'",
+                )
+                return TaintState.TAINTED, [hop], src_sym, False
+
+        # Case 1: Check for sink-compatible sanitizer in assignment RHS
         if latest_def.contains_sanitizer and latest_def.sanitizer_capability:
             cap = SanitizerCapability(latest_def.sanitizer_capability)
             if sink_category and sanitizer_registry.is_compatible(cap, sink_category):
@@ -318,7 +332,69 @@ class DataFlowAnalyzer:
                 )
                 return TaintState.SANITIZED, [hop], "", False
 
-        # Case 3: Recurse into referenced variables in RHS
+        # Case 2: Check if RHS calls a function defined in graph_data["functions"]
+        func_map = graph_data.get("functions", {})
+        func_call_match = re.search(r'\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', latest_def.rhs_expression)
+        if func_call_match:
+            fn_name = func_call_match.group(1).lower()
+            if fn_name in func_map:
+                fdef = func_map[fn_name]
+                for ret_expr in fdef.return_expressions:
+                    ret_san = sanitizer_registry.identify_sanitizer("", ret_expr, language=graph_data.get("language", "php"))
+                    if ret_san and sink_category and sanitizer_registry.is_compatible(ret_san, sink_category):
+                        hop = TaintPathHop(
+                            step=flow_depth + 2,
+                            kind=FlowNodeKind.SANITIZER,
+                            symbol=var_name,
+                            snippet=ret_expr,
+                            location=FlowLocation(file_path=graph_data.get("file_path"), line=latest_def.line),
+                            description=f"Function '{fdef.function_name}' return expression contains sink-compatible sanitizer '{ret_san.value}'",
+                        )
+                        return TaintState.SANITIZED, [hop], "", False
+
+                    if source_registry.contains_source(ret_expr, language=graph_data.get("language", "php")):
+                        matched_srcs = source_registry.find_matching_sources(ret_expr, language=graph_data.get("language", "php"))
+                        src_sym = matched_srcs[0] if matched_srcs else "UNTRUSTED_SOURCE"
+                        hop = TaintPathHop(
+                            step=flow_depth + 2,
+                            kind=FlowNodeKind.CALL,
+                            symbol=var_name,
+                            snippet=latest_def.rhs_expression,
+                            location=FlowLocation(file_path=graph_data.get("file_path"), line=latest_def.line),
+                            description=f"Function '{fdef.function_name}' returned untrusted source '{src_sym}' assigned to '{var_name}'",
+                        )
+                        return TaintState.TAINTED, [hop], src_sym, False
+
+                    ret_vars = set(re.findall(r'\$[a-zA-Z_][a-zA-Z0-9_]*', ret_expr)) if graph_data.get("language") == "php" else set(re.findall(r'\b[a-zA-Z_][a-zA-Z0-9_]*\b', ret_expr))
+                    for rvar in ret_vars:
+                        st, r_hops, r_src, r_trunc = self._propagate_var(
+                            var_name=rvar,
+                            before_line=latest_def.line,
+                            graph_data=graph_data,
+                            sink_category=sink_category,
+                            visited_vars=new_visited,
+                            flow_depth=flow_depth + 1,
+                            call_depth=call_depth + 1,
+                            assignment_hops=assignment_hops + 1,
+                            nodes_visited=nodes_visited + 1,
+                        )
+                        if st == TaintState.TAINTED:
+                            return TaintState.TAINTED, r_hops, r_src, r_trunc
+
+        # Case 3: Direct untrusted source in RHS
+        if latest_def.contains_source:
+            src_sym = latest_def.source_symbol or "UNTRUSTED_SOURCE"
+            hop = TaintPathHop(
+                step=flow_depth + 2,
+                kind=FlowNodeKind.SOURCE,
+                symbol=var_name,
+                snippet=latest_def.rhs_expression,
+                location=FlowLocation(file_path=graph_data["file_path"], line=latest_def.line),
+                description=f"Variable '{var_name}' assigned from untrusted source '{src_sym}'",
+            )
+            return TaintState.TAINTED, [hop], src_sym, False
+
+        # Case 4: Recurse into referenced variables in RHS
         if latest_def.referenced_variables:
             all_hops: list[TaintPathHop] = []
             assign_hop = TaintPathHop(

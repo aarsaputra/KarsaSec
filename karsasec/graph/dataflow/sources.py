@@ -6,21 +6,21 @@ import re
 # Language untrusted source sets
 UNTRUSTED_SOURCES_PHP: frozenset[str] = frozenset({
     "$_GET", "$_POST", "$_REQUEST", "$_SERVER", "$_COOKIE",
-    "$_FILES", "$_ENV", "$HTTP_RAW_POST_DATA", "$argv", "input",
+    "$_FILES", "$_ENV", "$HTTP_RAW_POST_DATA", "$argv", "php://input",
 })
 
 UNTRUSTED_SOURCES_PYTHON: frozenset[str] = frozenset({
     "request.args", "request.form", "request.json", "request.GET",
-    "request.POST", "request.values", "sys.argv", "os.environ", "input",
+    "request.POST", "request.values", "sys.argv", "os.environ",
 })
 
 UNTRUSTED_SOURCES_JS: frozenset[str] = frozenset({
     "req.query", "req.body", "req.params", "req.headers",
-    "location.href", "location.search", "document.cookie", "window.name", "input",
+    "location.href", "location.search", "document.cookie", "window.name",
 })
 
 UNTRUSTED_SOURCES_GO: frozenset[str] = frozenset({
-    "r.URL.Query()", "r.FormValue", "r.PostFormValue", "r.Body", "os.Args", "input",
+    "r.URL.Query()", "r.FormValue", "r.PostFormValue", "r.Body", "os.Args",
 })
 
 UNTRUSTED_SOURCES_JAVA: frozenset[str] = frozenset({
@@ -78,7 +78,7 @@ class SourceRegistry:
             return []
 
         matched: list[str] = []
-        for source in sources:
+        for source in sorted(sources, key=len, reverse=True):
             if re.search(r"[^A-Za-z0-9_]", source):
                 pattern = re.escape(source)
             else:
