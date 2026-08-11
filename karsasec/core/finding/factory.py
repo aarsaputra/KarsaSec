@@ -8,7 +8,6 @@ from typing import Any
 from karsasec.core.finding.evidence import Evidence
 from karsasec.core.finding.model import Finding
 from karsasec.parser.ast_nodes import ASTNode
-from karsasec.rules.enums import Confidence, OWASPCategory, Severity
 from karsasec.rules.matcher.result import RuleMatch
 from karsasec.rules.schema import Rule
 
@@ -39,7 +38,6 @@ class FindingFactory:
         candidate_id = f"cand-{uuid.uuid4().hex[:8]}"
         matched_text = match_result.matched_text if hasattr(match_result, "matched_text") and match_result.matched_text else evidence.snippet
 
-        from karsasec.parser.ast_nodes import ASTNode
         ast_node = ASTNode(node_id=match_result.node_id, node_type="sink", start=None, end=None)
 
         candidate = CandidateFinding(

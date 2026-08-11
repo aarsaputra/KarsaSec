@@ -1,6 +1,7 @@
 """Unit tests for CandidateFinding model (E12-3)."""
 
 from pathlib import Path
+
 from karsasec.core.finding.candidate import CandidateFinding
 from karsasec.rules.enums import Confidence, LanguageEnum, Severity
 from karsasec.rules.schema import (

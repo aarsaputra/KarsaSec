@@ -69,7 +69,8 @@ _MAX_BACKTRACK_DEPTH: int = 4
 # Result model
 # ---------------------------------------------------------------------------
 
-from karsasec.graph.dataflow import DataFlowAnalyzer, DataFlowEvidence, TaintState, dataflow_analyzer
+from karsasec.graph.dataflow import DataFlowEvidence, TaintState, dataflow_analyzer
+
 
 @dataclass(slots=True, frozen=True)
 class TaintAnalysisResult:

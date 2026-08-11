@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+
 from karsasec.cli.commands.qualify import _scan_target
 from karsasec.qualification.engine import QualificationEngine
 from karsasec.qualification.model import ManifestLoader

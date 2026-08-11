@@ -3,12 +3,11 @@
 from __future__ import annotations
 
 import re
-from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from karsasec.core.finding.candidate import CandidateFinding
 from karsasec.core.finding.evidence import Evidence, FindingEvidence
-from karsasec.core.finding.model import QualifiedFinding, QualificationState, compute_stable_finding_fingerprint
+from karsasec.core.finding.model import QualificationState, QualifiedFinding, compute_stable_finding_fingerprint
 from karsasec.graph.dataflow.compatibility import CompatibilityRegistry
 from karsasec.graph.dataflow.model import TaintState
 from karsasec.graph.taint_verifier import TaintVerifier

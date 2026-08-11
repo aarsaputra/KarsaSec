@@ -11,7 +11,7 @@ from karsasec.rules.schema import Rule
 @dataclass(frozen=True)
 class CandidateFinding:
     """Raw finding candidate produced by AST/Rule Matcher before semantic qualification.
-    
+
     A CandidateFinding retains full AST context, source text, and rule metadata,
     allowing the SemanticFindingQualifier to perform deep verification without dropping evidence.
     """

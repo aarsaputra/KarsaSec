@@ -1,7 +1,6 @@
 """Unit tests for backward taint propagation scenarios T1-T6, T9, T11, T12 (E11)."""
 
 from karsasec.graph.dataflow import DataFlowAnalyzer, TaintState
-from karsasec.graph.dataflow.sinks import SinkCategory
 
 
 def test_t1_direct_assignment_propagation() -> None:

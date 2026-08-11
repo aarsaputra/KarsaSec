@@ -7,16 +7,8 @@ from pathlib import Path
 from typing import Any
 
 from karsasec.graph.constant_resolver import ConstantResolver
-from karsasec.graph.dataflow.model import (
-    FlowLocation,
-    FlowNode,
-    FlowNodeKind,
-    TaintState,
-)
 from karsasec.graph.dataflow.sanitizers import sanitizer_registry
-from karsasec.graph.dataflow.sinks import sink_registry
 from karsasec.graph.dataflow.sources import source_registry
-from karsasec.parser.ast_nodes import ASTNode
 
 
 @dataclass(slots=True)

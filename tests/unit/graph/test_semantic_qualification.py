@@ -1,6 +1,7 @@
 """Unit tests for SemanticFindingQualifier state machine (E12-3)."""
 
 from pathlib import Path
+
 from karsasec.core.finding.candidate import CandidateFinding
 from karsasec.core.finding.model import QualificationState
 from karsasec.core.finding.qualifier import SemanticFindingQualifier

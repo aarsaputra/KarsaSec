@@ -5,7 +5,7 @@ from enum import StrEnum
 
 class FPTaxonomyReason(StrEnum):
     """Explicit, deterministic reasons for rejecting candidate findings.
-    
+
     Every candidate finding that fails qualification must have an explicit reason.
     Silently dropping candidate findings is prohibited.
     """

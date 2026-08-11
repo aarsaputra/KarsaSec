@@ -1,8 +1,8 @@
 """Enhanced immutable Finding & QualifiedFinding models for security vulnerabilities (E12-3)."""
 
-from enum import StrEnum
 import hashlib
 from dataclasses import dataclass, field
+from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
