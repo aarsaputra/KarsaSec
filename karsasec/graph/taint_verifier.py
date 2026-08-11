@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from pathlib import Path
 
 from karsasec.graph.constant_resolver import (
     _RE_CONST_IDENT,
@@ -111,6 +112,7 @@ class TaintVerifier:
         language: str = "",
         base_severity: Severity = Severity.HIGH,
         base_confidence: Confidence = Confidence.CONFIDENT,
+        file_path: Path | None = None,
     ) -> TaintAnalysisResult:
         """Analyze a sink location for taint vs. static evidence."""
         lang = (language or "").strip().lower()
@@ -172,6 +174,7 @@ class TaintVerifier:
             df_evidence = self._df_analyzer.analyze_sink(
                 snippet=clean_snippet,
                 source_text=full_source,
+                file_path=file_path,
                 language=lang,
                 base_severity=base_severity,
                 base_confidence=base_confidence,

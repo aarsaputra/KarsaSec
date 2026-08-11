@@ -99,6 +99,7 @@ class RuleExecutor:
                                 language=scan_context.language,
                                 base_severity=compiled_rule.rule.output.severity,
                                 base_confidence=compiled_rule.rule.output.confidence,
+                                file_path=file_path,
                             )
                             if not taint_res.has_taint_source:
                                 continue

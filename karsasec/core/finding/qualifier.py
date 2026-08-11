@@ -56,6 +56,7 @@ class SemanticFindingQualifier:
             context_text=snippet,
             source_text=source_text,
             language=candidate.language,
+            file_path=candidate.file_path,
         )
 
         # Extract evidence metrics
