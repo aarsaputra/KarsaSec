@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from karsasec.analysis.taint.models import TaintCategory, TaintNode
 
 
-class RecursionState(str, Enum):
+class RecursionState(StrEnum):
     """Recursion tracking state during call graph traversal."""
 
     UNVISITED = "UNVISITED"

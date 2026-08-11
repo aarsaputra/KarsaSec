@@ -6,11 +6,11 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 
-class NodeType(str, Enum):
+class NodeType(StrEnum):
     """Core Node Types in Code Property Graph."""
 
     AST = "AST"
@@ -24,7 +24,7 @@ class NodeType(str, Enum):
     CALLSITE = "CALLSITE"
 
 
-class EdgeType(str, Enum):
+class EdgeType(StrEnum):
     """Core Edge Types linking representations across the CPG."""
 
     REPRESENTS = "REPRESENTS"
