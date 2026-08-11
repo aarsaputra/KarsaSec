@@ -15,7 +15,7 @@ The engine is pure: it receives pre-scanned findings, does not re-run the parser
 from __future__ import annotations
 
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from karsasec.core.finding.model import Finding
@@ -85,9 +85,16 @@ class QualificationResult:
     cross_rule_overlaps: int
     cross_rule_overlap_rate: float
     unknown_rate: float
-    per_rule: dict[str, RuleQualificationResult]
-    per_category: dict[str, CategoryQualificationResult]
-    classification_report: ClassificationReport
+    candidate_count: int = 0
+    qualified_count: int = 0
+    rejected_count: int = 0
+    unresolved_count: int = 0
+    conflict_count: int = 0
+    semantic_duplicates: int = 0
+    evidence_incomplete_count: int = 0
+    per_rule: dict[str, RuleQualificationResult] = field(default_factory=dict)
+    per_category: dict[str, CategoryQualificationResult] = field(default_factory=dict)
+    classification_report: ClassificationReport = field(default_factory=ClassificationReport)
 
 
 class QualificationEngine:
@@ -133,7 +140,7 @@ class QualificationEngine:
         dup_count = max(0, raw_count - final_count)
         dup_rate = calculate_duplicate_rate(raw_count, final_count)
 
-        # --- Compute Exact Duplicates ---
+        # --- Compute Exact & Semantic Duplicates ---
         exact_dups = 0
         if raw_findings:
             identities = [FindingIdentity.from_finding(f, scan_root) for f in raw_findings]
@@ -142,6 +149,36 @@ class QualificationEngine:
         else:
             exact_dups = dup_count
         exact_dup_rate = exact_dups / raw_count if raw_count > 0 else 0.0
+        semantic_dups = max(0, dup_count - exact_dups)
+
+        # --- Compute Evidence Telemetry ---
+        from karsasec.core.finding.evidence import EvidenceCompleteness
+
+        qualified_cnt = 0
+        rejected_cnt = 0
+        unresolved_cnt = 0
+        conflict_cnt = 0
+        incomplete_cnt = 0
+
+        eval_set = final_findings
+        for f in eval_set:
+            q_state = getattr(f, "qualification_state", "CONFIRMED")
+            q_str = q_state.value if hasattr(q_state, "value") else str(q_state)
+
+            if q_str in ("CONFIRMED", "SUPPORTED"):
+                qualified_cnt += 1
+            elif q_str == "REJECTED":
+                rejected_cnt += 1
+            elif q_str == "UNRESOLVED":
+                unresolved_cnt += 1
+
+            if getattr(f, "rejection_reason", "") in ("CONFLICTING_EVIDENCE", "QUALIFICATION_CONFLICT", "TAINT_STATE_CONFLICT") or "evidence_conflict" in getattr(f, "metadata", {}):
+                conflict_cnt += 1
+
+            enriched_ev = getattr(f, "enriched_evidence", None)
+            ev_comp = EvidenceCompleteness.evaluate(enriched_ev, q_str)
+            if not ev_comp.is_complete:
+                incomplete_cnt += 1
 
         # --- Compute Cross-Rule Overlaps ---
         location_rules: dict[tuple[str, int | None], set[str]] = defaultdict(set)
@@ -181,6 +218,13 @@ class QualificationEngine:
             cross_rule_overlaps=cross_rule_overlaps,
             cross_rule_overlap_rate=cross_rule_overlap_rate,
             unknown_rate=unknown_rate,
+            candidate_count=raw_count,
+            qualified_count=qualified_cnt,
+            rejected_count=rejected_cnt,
+            unresolved_count=unresolved_cnt,
+            conflict_count=conflict_cnt,
+            semantic_duplicates=semantic_dups,
+            evidence_incomplete_count=incomplete_cnt,
             per_rule=per_rule,
             per_category=per_category,
             classification_report=report,

@@ -1,25 +1,24 @@
-"""FindingCorrelator: deduplicates and correlates findings from multiple rules detecting the same vulnerability.
+"""FindingCorrelator: deduplicates and correlates findings from multiple rules detecting vulnerabilities (E12-4).
 
-Problem: Multiple rules (e.g. KS-OWASP-0010 and KS-PHP-SSRF-0001) can produce separate findings
-for the same semantic vulnerability at the same source location. This produces duplicate reports.
-
-Solution: Canonical semantic fingerprint per vulnerability. Findings sharing the same
-fingerprint are merged into a single CanonicalFinding, retaining all contributing rule IDs.
-
-Design principles (E10-3J):
-- Deterministic: same input findings -> same canonical output, regardless of order
-- Stateless: no side effects, no mutable state
-- Conservative: only merges findings with identical CWE class, file, and line
-- Transparent: correlated_rule_ids records all contributing rules for auditability
+Supports 4 correlation cases:
+- Case A (Exact Duplicate): Same file, line, rule_id -> collapse duplicate.
+- Case B (Semantic Duplicate): Same file, line, sink category, equivalent taint path -> merge into primary finding, preserving contributing rules.
+- Case C (Different Vulnerabilities): Different sink category or materially different taint path -> preserve as independent findings.
+- Case D (Conflicting Evidence): Contradictory evidence (e.g. TAINTED vs SANITIZED) -> transition to UNRESOLVED with EvidenceConflict attached.
 """
 
 from __future__ import annotations
 
-import hashlib
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from karsasec.core.finding.model import Finding
+from karsasec.core.finding.conflict import EvidenceConflict, detect_evidence_conflict
+from karsasec.core.finding.model import (
+    CanonicalFindingIdentity,
+    Finding,
+    QualificationState,
+    QualifiedFinding,
+)
 
 # Severity weights for canonical selection (keep highest severity when merging)
 _SEVERITY_WEIGHT: dict[str, int] = {
@@ -45,43 +44,15 @@ def _confidence_weight(f: Finding) -> int:
     return _CONFIDENCE_WEIGHT.get(str(f.confidence).upper(), 0)
 
 
-def _semantic_fingerprint(finding: Finding) -> str:
-    """Compute a canonical semantic fingerprint for deduplication.
-
-    Fingerprint is based on:
-    - normalized file path
-    - line number
-    - CWE class (vulnerability category)
-    - sink category (if enriched_evidence is present)
-    - normalized sink expression (first 64 chars of snippet, stripped)
-
-    NOT based on rule_id — intentionally, so findings from different rules
-    detecting the same vulnerability at the same location are merged.
-    """
-    norm_path = str(finding.file_path).replace("\\", "/").lower()
-    cwe = (finding.cwe_id or "CWE-0").upper()
-    snippet_norm = (finding.evidence.snippet or "").strip()[:64]
-    line = str(finding.evidence.line)
-
-    sink_cat = ""
-    if hasattr(finding, "enriched_evidence") and finding.enriched_evidence:
-        sink_cat = getattr(finding.enriched_evidence, "sink_category", "") or ""
-
-    raw = f"{norm_path}|{line}|{cwe}|{sink_cat}|{snippet_norm}"
-    return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:32]
-
-
 @dataclass(frozen=True)
 class CanonicalFinding:
-    """A deduplicated, correlated finding representing one semantic vulnerability.
+    """A deduplicated, correlated finding representing one semantic vulnerability (E12-4)."""
 
-    primary: the highest-severity / highest-confidence Finding among all correlated matches.
-    correlated_rule_ids: all rule IDs that contributed to this finding (ordered, deterministic).
-    semantic_fingerprint: the deduplication key used to merge this group.
-    """
     primary: Finding
     correlated_rule_ids: tuple[str, ...] = field(default_factory=tuple)
     semantic_fingerprint: str = ""
+    exact_fingerprint: str = ""
+    evidence_conflict: EvidenceConflict | None = None
 
     @property
     def rule_id(self) -> str:
@@ -93,37 +64,64 @@ class CanonicalFinding:
 
 
 class FindingCorrelator:
-    """Stateless correlator that deduplicates findings from multiple rules.
+    """Stateless correlator that deduplicates findings and manages evidence conflicts (E12-4)."""
 
-    Usage:
-        correlator = FindingCorrelator()
-        canonical = correlator.correlate(all_findings)
-        # canonical is a tuple[CanonicalFinding, ...], deterministically ordered
-
-    Pipeline position:
-        Rule Matcher -> Candidate Findings -> FindingCorrelator -> FindingCollection -> Reporter
-    """
+    def __init__(self) -> None:
+        self.exact_duplicate_count: int = 0
+        self.semantic_duplicate_count: int = 0
+        self.conflict_count: int = 0
 
     def correlate(self, findings: list[Finding] | tuple[Finding, ...]) -> tuple[CanonicalFinding, ...]:
-        """Group findings by semantic fingerprint and produce one CanonicalFinding per group.
+        """Groups findings into exact and semantic equivalence classes.
 
-        When multiple findings share a fingerprint:
-        - The canonical primary is the one with the highest severity, then highest confidence.
-        - correlated_rule_ids lists all contributing rule IDs in sorted order for determinism.
+        Pipeline position:
+            Candidate Findings -> Qualifier -> FindingCorrelator -> QualificationEngine / Reporter
         """
         if not findings:
+            self.exact_duplicate_count = 0
+            self.semantic_duplicate_count = 0
+            self.conflict_count = 0
             return ()
 
-        # Group by semantic fingerprint
-        groups: dict[str, list[Finding]] = {}
+        # 1. First pass: Exact Deduplication (Case A: same file, line, rule_id)
+        exact_groups: dict[str, list[Finding]] = {}
         for f in findings:
-            fp = _semantic_fingerprint(f)
-            if fp not in groups:
-                groups[fp] = []
-            groups[fp].append(f)
+            ident = CanonicalFindingIdentity.from_finding(f)
+            exact_key = ident.exact_key
+            if exact_key not in exact_groups:
+                exact_groups[exact_key] = []
+            exact_groups[exact_key].append(f)
 
-        canonical: list[CanonicalFinding] = []
-        for fp, group in groups.items():
+        exact_dups_found = sum(len(g) - 1 for g in exact_groups.values() if len(g) > 1)
+        self.exact_duplicate_count = max(0, exact_dups_found)
+
+        # Select primary finding for each exact group
+        exact_primaries: list[Finding] = []
+        for group in exact_groups.values():
+            sorted_group = sorted(
+                group,
+                key=lambda f: (_severity_weight(f), _confidence_weight(f), f.rule_id),
+                reverse=True,
+            )
+            exact_primaries.append(sorted_group[0])
+
+        # 2. Second pass: Semantic Deduplication & Conflict Detection (Case B, C, D)
+        semantic_groups: dict[str, list[Finding]] = {}
+        for f in exact_primaries:
+            ident = CanonicalFindingIdentity.from_finding(f)
+            sem_key = ident.semantic_key
+            if sem_key not in semantic_groups:
+                semantic_groups[sem_key] = []
+            semantic_groups[sem_key].append(f)
+
+        canonical_list: list[CanonicalFinding] = []
+        sem_dups_found = 0
+        conflicts_found = 0
+
+        for sem_key, group in semantic_groups.items():
+            if len(group) > 1:
+                sem_dups_found += len(group) - 1
+
             # Sort group: highest severity first, then highest confidence, then rule_id for tiebreak
             sorted_group = sorted(
                 group,
@@ -131,77 +129,117 @@ class FindingCorrelator:
                 reverse=True,
             )
             primary = sorted_group[0]
-            # Collect all unique rule IDs, sorted for determinism
             all_rule_ids = tuple(sorted({f.rule_id for f in group}))
-            canonical.append(CanonicalFinding(
-                primary=primary,
-                correlated_rule_ids=all_rule_ids,
-                semantic_fingerprint=fp,
-            ))
+            exact_ident = CanonicalFindingIdentity.from_finding(primary).exact_key
 
-        # Final sort: by file_path + line + rule_id for deterministic output order
-        canonical.sort(key=lambda c: (
-            str(c.primary.file_path),
-            c.primary.evidence.line,
-            c.primary.rule_id,
-        ))
+            # Detect Case D: Evidence Conflicts among correlated findings
+            conflict: EvidenceConflict | None = None
+            for i in range(len(sorted_group)):
+                for j in range(i + 1, len(sorted_group)):
+                    fa = sorted_group[i]
+                    fb = sorted_group[j]
+                    ev_a = getattr(fa, "enriched_evidence", fa.evidence)
+                    ev_b = getattr(fb, "enriched_evidence", fb.evidence)
+                    conflict = detect_evidence_conflict(ev_a, ev_b, fa.rule_id, fb.rule_id)
+                    if conflict:
+                        break
+                if conflict:
+                    break
 
-        return tuple(canonical)
+            if conflict:
+                conflicts_found += 1
+                # Enforce invariant: CONFLICT → UNKNOWN → UNRESOLVED
+                if isinstance(primary, QualifiedFinding):
+                    primary = QualifiedFinding(
+                        finding_id=primary.finding_id,
+                        rule_id=primary.rule_id,
+                        fingerprint=primary.fingerprint,
+                        title=primary.title,
+                        severity=primary.severity,
+                        confidence=primary.confidence,
+                        cwe_id=primary.cwe_id,
+                        owasp=primary.owasp,
+                        file_path=primary.file_path,
+                        evidence=primary.evidence,
+                        description=primary.description,
+                        remediation=primary.remediation,
+                        rule_version=primary.rule_version,
+                        metadata=dict(primary.metadata),
+                        qualification_state=QualificationState.UNRESOLVED,
+                        rejection_reason=conflict.conflict_type.value,
+                        enriched_evidence=primary.enriched_evidence,
+                    )
+
+            canonical_list.append(
+                CanonicalFinding(
+                    primary=primary,
+                    correlated_rule_ids=all_rule_ids,
+                    semantic_fingerprint=sem_key,
+                    exact_fingerprint=exact_ident,
+                    evidence_conflict=conflict,
+                )
+            )
+
+        self.semantic_duplicate_count = max(0, sem_dups_found)
+        self.conflict_count = conflicts_found
+
+        # Canonical sort for deterministic output ordering
+        canonical_list.sort(
+            key=lambda c: (
+                str(c.primary.file_path).replace("\\", "/"),
+                c.primary.evidence.line if c.primary.evidence else 0,
+                c.primary.rule_id,
+            )
+        )
+
+        return tuple(canonical_list)
 
     def to_findings(self, canonical: tuple[CanonicalFinding, ...]) -> tuple[Finding, ...]:
-        """Extract primary Finding objects from CanonicalFinding collection.
-
-        Use when downstream code expects tuple[Finding, ...] (e.g. reporter, baseline).
-        Correlated rule metadata is embedded in Finding.metadata['correlated_rules'].
-        Preserves QualifiedFinding instances without dropping qualification attributes.
-        """
+        """Extracts primary Finding objects from CanonicalFinding collection, embedding provenance metadata."""
         result: list[Finding] = []
-        from karsasec.core.finding.model import QualifiedFinding
         for c in canonical:
-            if len(c.correlated_rule_ids) > 1:
-                # Embed correlation metadata into the primary finding's metadata
-                updated_meta = dict(c.primary.metadata)
-                updated_meta["correlated_rules"] = list(c.correlated_rule_ids)
-                updated_meta["semantic_fingerprint"] = c.semantic_fingerprint
+            updated_meta = dict(c.primary.metadata)
+            updated_meta["correlated_rules"] = list(c.correlated_rule_ids)
+            updated_meta["semantic_fingerprint"] = c.semantic_fingerprint
+            if c.evidence_conflict:
+                updated_meta["evidence_conflict"] = c.evidence_conflict.to_dict()
 
-                if isinstance(c.primary, QualifiedFinding):
-                    primary = QualifiedFinding(
-                        finding_id=c.primary.finding_id,
-                        rule_id=c.primary.rule_id,
-                        fingerprint=c.primary.fingerprint,
-                        title=c.primary.title,
-                        severity=c.primary.severity,
-                        confidence=c.primary.confidence,
-                        cwe_id=c.primary.cwe_id,
-                        owasp=c.primary.owasp,
-                        file_path=c.primary.file_path,
-                        evidence=c.primary.evidence,
-                        description=c.primary.description,
-                        remediation=c.primary.remediation,
-                        rule_version=c.primary.rule_version,
-                        metadata=updated_meta,
-                        qualification_state=c.primary.qualification_state,
-                        rejection_reason=c.primary.rejection_reason,
-                        enriched_evidence=c.primary.enriched_evidence,
-                    )
-                else:
-                    primary = Finding(
-                        finding_id=c.primary.finding_id,
-                        rule_id=c.primary.rule_id,
-                        fingerprint=c.primary.fingerprint,
-                        title=c.primary.title,
-                        severity=c.primary.severity,
-                        confidence=c.primary.confidence,
-                        cwe_id=c.primary.cwe_id,
-                        owasp=c.primary.owasp,
-                        file_path=c.primary.file_path,
-                        evidence=c.primary.evidence,
-                        description=c.primary.description,
-                        remediation=c.primary.remediation,
-                        rule_version=c.primary.rule_version,
-                        metadata=updated_meta,
-                    )
-                result.append(primary)
+            if isinstance(c.primary, QualifiedFinding):
+                primary = QualifiedFinding(
+                    finding_id=c.primary.finding_id,
+                    rule_id=c.primary.rule_id,
+                    fingerprint=c.primary.fingerprint,
+                    title=c.primary.title,
+                    severity=c.primary.severity,
+                    confidence=c.primary.confidence,
+                    cwe_id=c.primary.cwe_id,
+                    owasp=c.primary.owasp,
+                    file_path=c.primary.file_path,
+                    evidence=c.primary.evidence,
+                    description=c.primary.description,
+                    remediation=c.primary.remediation,
+                    rule_version=c.primary.rule_version,
+                    metadata=updated_meta,
+                    qualification_state=c.primary.qualification_state,
+                    rejection_reason=c.primary.rejection_reason,
+                    enriched_evidence=c.primary.enriched_evidence,
+                )
             else:
-                result.append(c.primary)
+                primary = Finding(
+                    finding_id=c.primary.finding_id,
+                    rule_id=c.primary.rule_id,
+                    fingerprint=c.primary.fingerprint,
+                    title=c.primary.title,
+                    severity=c.primary.severity,
+                    confidence=c.primary.confidence,
+                    cwe_id=c.primary.cwe_id,
+                    owasp=c.primary.owasp,
+                    file_path=c.primary.file_path,
+                    evidence=c.primary.evidence,
+                    description=c.primary.description,
+                    remediation=c.primary.remediation,
+                    rule_version=c.primary.rule_version,
+                    metadata=updated_meta,
+                )
+            result.append(primary)
         return tuple(result)

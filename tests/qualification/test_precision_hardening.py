@@ -1,4 +1,4 @@
-"""Precision Hardening & E11 TP Recall Protection Gate Tests (E12-3)."""
+"""Precision Hardening & E11/E12-4 TP Recall Protection Gate Tests (E12-4)."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from karsasec.qualification.model import ManifestLoader
 
 
 class TestE11TPRecallProtection:
-    """Ensures that Sprint E12-3 precision hardening strictly preserves all Sprint E11 TPs."""
+    """Ensures that Sprint E12-4 evidence quality & correlation hardening strictly preserves all recall gates."""
 
     def test_e11_tp_cases_are_fully_retained(self) -> None:
         dvwa_root = Path("/home/lota1337/pentest/DVWA")
@@ -34,11 +34,14 @@ class TestE11TPRecallProtection:
             raw_findings=raw_findings,
         )
 
-        # Baseline E11 TP expectation: at least 13 TPs
-        assert result.true_positives >= 13, f"Recall Regression! Expected result.true_positives >= 13, got {result.true_positives}"
-
-        # Per category recall gates
-        assert result.per_category["COMMAND_INJECTION"].recall == 1.0, f"Command Injection recall dropped! {result.per_category['COMMAND_INJECTION'].recall}"
+        # E12-4 Hard Recall Protection Gates
+        assert result.per_category["COMMAND_INJECTION"].recall >= 1.0, f"Command Injection recall dropped! {result.per_category['COMMAND_INJECTION'].recall}"
         assert result.per_category["PATH_TRAVERSAL"].recall == 1.0, f"Path Traversal recall dropped! {result.per_category['PATH_TRAVERSAL'].recall}"
-        assert result.per_category["SQL_INJECTION"].recall >= 0.70, f"SQL Injection recall dropped! {result.per_category['SQL_INJECTION'].recall}"
-        assert result.recall >= 0.65, f"Overall recall dropped! {result.recall}"
+        assert result.per_category["SQL_INJECTION"].recall >= 0.85, f"SQL Injection recall dropped! {result.per_category['SQL_INJECTION'].recall}"
+        assert result.recall >= 0.70, f"Overall recall dropped! {result.recall}"
+
+        # E12-4 Telemetry & Provenance Assertions
+        assert result.candidate_count > 0, "Candidate count should be positive"
+        assert result.candidate_count == len(raw_findings)
+        assert result.qualified_count > 0, "Qualified count should be positive"
+        assert result.qualified_count + result.unresolved_count == len(correlated_findings)

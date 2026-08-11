@@ -199,6 +199,9 @@ class SemanticFindingQualifier:
             snippet=candidate.snippet,
             line=candidate.line,
             column=candidate.column,
+            rule_id=candidate.rule_id,
+            node_type=getattr(candidate.ast_node, "node_type", "sink") if candidate.ast_node else "sink",
+            matched_text=candidate.matched_text,
             sink_symbol=candidate.matched_text,
             sink_category=sink_category,
             source_symbol=df_ev.source_node.symbol if df_ev and df_ev.source_node else "",
@@ -209,6 +212,8 @@ class SemanticFindingQualifier:
             taint_path=hops,
             ast_match=True,
             semantic_match=True,
+            qualification_state="CONFIRMED",
+            rejection_reason="",
         )
 
         return QualifiedFinding(
@@ -260,12 +265,17 @@ class SemanticFindingQualifier:
             snippet=candidate.snippet,
             line=candidate.line,
             column=candidate.column,
+            rule_id=candidate.rule_id,
+            node_type=getattr(candidate.ast_node, "node_type", "sink") if candidate.ast_node else "sink",
+            matched_text=candidate.matched_text,
             sink_symbol=candidate.matched_text,
             sink_category=sink_category,
             taint_state=taint_state,
             sanitizer_capability=sanitizer_capability,
             ast_match=True,
             semantic_match=False,
+            qualification_state="REJECTED",
+            rejection_reason=reason.value,
         )
 
         return QualifiedFinding(
@@ -314,11 +324,16 @@ class SemanticFindingQualifier:
             snippet=candidate.snippet,
             line=candidate.line,
             column=candidate.column,
+            rule_id=candidate.rule_id,
+            node_type=getattr(candidate.ast_node, "node_type", "sink") if candidate.ast_node else "sink",
+            matched_text=candidate.matched_text,
             sink_symbol=candidate.matched_text,
             sink_category=sink_category,
             taint_state=TaintState.UNKNOWN,
             ast_match=True,
             semantic_match=False,
+            qualification_state="UNRESOLVED",
+            rejection_reason=FPTaxonomyReason.UNKNOWN_FLOW.value,
         )
 
         return QualifiedFinding(

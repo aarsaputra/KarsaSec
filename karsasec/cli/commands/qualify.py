@@ -179,12 +179,17 @@ def _output_text(result: QualificationResult) -> None:
     console.print(f"  Recall    : [cyan]{result.recall:.2%}[/cyan]")
     console.print(f"  F1 Score  : [cyan]{result.f1:.2%}[/cyan]")
 
-    console.print("\n[bold]Finding Quality[/bold]")
-    console.print(f"  Raw Findings      : {result.raw_findings}")
-    console.print(f"  Final Findings    : {result.final_findings}")
-    console.print(f"  Exact Duplicates  : {result.exact_duplicates}  ({result.exact_duplicate_rate:.2%})")
-    console.print(f"  Cross-Rule Overlaps: {result.cross_rule_overlaps}  ({result.cross_rule_overlap_rate:.2%})")
-    console.print(f"  UNKNOWN Rate      : {result.unknown_rate:.2%}")
+    console.print("\n[bold]Finding Quality & Provenance (E12-4)[/bold]")
+    console.print(f"  Candidates          : {result.candidate_count}")
+    console.print(f"  Qualified           : {result.qualified_count}")
+    console.print(f"  Rejected            : {result.rejected_count}")
+    console.print(f"  Unresolved          : {result.unresolved_count}")
+    console.print(f"  Conflicts           : {result.conflict_count}")
+    console.print(f"  Exact Duplicates    : {result.exact_duplicates} ({result.exact_duplicate_rate:.2%})")
+    console.print(f"  Semantic Duplicates : {result.semantic_duplicates}")
+    console.print(f"  Evidence Incomplete : {result.evidence_incomplete_count}")
+    console.print(f"  Cross-Rule Overlaps : {result.cross_rule_overlaps} ({result.cross_rule_overlap_rate:.2%})")
+    console.print(f"  UNKNOWN Rate        : {result.unknown_rate:.2%}")
 
     # Per-category table
     if result.per_category:
@@ -227,7 +232,7 @@ def _output_text(result: QualificationResult) -> None:
         console.print(tbl)
 
     console.print("\n[bold dim]STATUS: QUALIFICATION BASELINE[/bold dim]  "
-                  "[dim](E12-2 — deterministic baseline active)[/dim]\n")
+                  "[dim](E12-4 — evidence quality & correlation active)[/dim]\n")
 
 
 def _output_json(result: QualificationResult) -> str:
@@ -256,12 +261,15 @@ def _output_json(result: QualificationResult) -> str:
             "duplicate_rate": round(result.duplicate_rate, 4),
         },
         "finding_quality": {
-            "raw_findings": result.raw_findings,
-            "final_findings": result.final_findings,
-            "duplicate_findings": result.duplicate_findings,
-            "duplicate_rate": round(result.duplicate_rate, 4),
+            "candidates": result.candidate_count,
+            "qualified": result.qualified_count,
+            "rejected": result.rejected_count,
+            "unresolved": result.unresolved_count,
+            "conflicts": result.conflict_count,
             "exact_duplicates": result.exact_duplicates,
             "exact_duplicate_rate": round(result.exact_duplicate_rate, 4),
+            "semantic_duplicates": result.semantic_duplicates,
+            "evidence_incomplete": result.evidence_incomplete_count,
             "cross_rule_overlaps": result.cross_rule_overlaps,
             "cross_rule_overlap_rate": round(result.cross_rule_overlap_rate, 4),
             "unknown_rate": round(result.unknown_rate, 4),
