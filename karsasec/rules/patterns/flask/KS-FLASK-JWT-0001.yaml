@@ -1,0 +1,35 @@
+rule:
+  id: KS-FLASK-JWT-0001
+  version: "1.0"
+  framework: FLASK
+
+metadata:
+  name: Weak JWT Algorithm Policy
+  author: KarsaSec Team
+  cwe: CWE-327
+  owasp: A02:2021-Cryptographic Failures
+  references:
+    - https://owasp.org/Top10/A02_2021-Cryptographic_Failures/
+
+target:
+  node_type: AUTH
+
+conditions:
+  all:
+    - attribute_equals:
+        key: auth_type
+        value: JWT
+    - attribute_equals:
+        key: jwt_algorithm
+        value: none
+
+traversal:
+  max_depth: 1
+  max_nodes_visited: 10
+  max_edges_examined: 20
+
+output:
+  severity: CRITICAL
+  confidence: HIGH
+  message: JWT authentication configured with insecure 'none' signature algorithm.
+  remediation: Enforce a secure signing algorithm (e.g., HS256, RS256) in JWTManager configuration.

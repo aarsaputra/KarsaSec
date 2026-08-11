@@ -1,0 +1,35 @@
+rule:
+  id: KS-FLASK-SESS-0001
+  version: "1.0"
+  framework: FLASK
+
+metadata:
+  name: Insecure Session Cookie
+  author: KarsaSec Team
+  cwe: CWE-614
+  owasp: A05:2021-Security Misconfiguration
+  references:
+    - https://owasp.org/Top10/A05_2021-Security_Misconfiguration/
+
+target:
+  node_type: CONFIG
+
+conditions:
+  all:
+    - attribute_equals:
+        key: key
+        value: SESSION_COOKIE_SECURE
+    - attribute_equals:
+        key: value
+        value: false
+
+traversal:
+  max_depth: 1
+  max_nodes_visited: 10
+  max_edges_examined: 20
+
+output:
+  severity: MEDIUM
+  confidence: HIGH
+  message: Configuration item SESSION_COOKIE_SECURE is explicitly set to False.
+  remediation: Set SESSION_COOKIE_SECURE = True in application configuration to enforce HTTPS session cookies.

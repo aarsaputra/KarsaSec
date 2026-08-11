@@ -1,0 +1,31 @@
+rule:
+  id: KS-FLASK-FLOW-0001
+  version: "1.0"
+  framework: FLASK
+
+metadata:
+  name: Untrusted Input Reaches Dangerous Sink
+  author: KarsaSec Team
+  cwe: CWE-20
+  owasp: A03:2021-Injection
+  references:
+    - https://owasp.org/Top10/A03_2021-Injection/
+
+target:
+  node_type: FLOW
+
+conditions:
+  all:
+    - flow_taint_state_equals: UNTRUSTED
+    - is_dangerous_sink: true
+
+traversal:
+  max_depth: 1
+  max_nodes_visited: 50
+  max_edges_examined: 100
+
+output:
+  severity: CRITICAL
+  confidence: HIGH
+  message: Untrusted user input propagates interprocedurally to dangerous sink '{node.name}'.
+  remediation: Implement explicit sink-compatible sanitization or validation before passing user input to dangerous functions.

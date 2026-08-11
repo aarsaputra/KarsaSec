@@ -28,12 +28,13 @@ match:
   ast_node_types:
     - call_expression
     - call
+    - statement
 
 condition:
   symbol_triggers:
     - exec.Command
     - exec.CommandContext
-  pattern: "exec\\.(Command|CommandContext)\\([^)]*input[^)]*\\)"
+  pattern: "(?i)(exec\\.(Command|CommandContext)|sh|cmd)"
 
 evidence:
   require:

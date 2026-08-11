@@ -6,7 +6,7 @@ import re
 
 from karsasec.framework.extractors.flask.state import FlaskSemanticState, RawRouteRecord
 from karsasec.framework.intermediate import CURRENT_ISR_SCHEMA_VERSION, RouteDefinition
-from karsasec.framework.origin import Evidence, ExtractorInfo, OriginMetadata, SourceLocation
+from karsasec.framework.origin import Evidence, EvidenceProvenance, ExtractorInfo, OriginMetadata, SourceLocation
 
 
 class FlaskRouteNormalizer:
@@ -149,11 +149,70 @@ class FlaskRouteNormalizer:
 
         method_str = methods[0] if methods else "GET"
 
+        # Determine sensitivity and exposure deterministically with explicit conflict resolution (CONFLICT -> UNKNOWN)
+        lower_decs = [d.lower() for d in rec.decorators]
+
+        has_high = any(d in lower_decs for d in ("sensitive", "high_sensitivity", "admin_only", "requires_admin"))
+        has_low = any(d in lower_decs for d in ("low_sensitivity", "public_access"))
+        has_normal = any(d in lower_decs for d in ("normal_sensitivity", "standard_sensitivity"))
+
+        if (has_high and (has_low or has_normal)) or (has_low and has_normal):
+            sensitivity = "UNKNOWN"
+            sens_source_kind = "unknown"
+        elif has_high:
+            sensitivity = "HIGH"
+            sens_source_kind = "explicit_decorator"
+        elif has_low:
+            sensitivity = "LOW"
+            sens_source_kind = "explicit_decorator"
+        elif has_normal:
+            sensitivity = "NORMAL"
+            sens_source_kind = "explicit_decorator"
+        else:
+            sensitivity = "UNKNOWN"
+            sens_source_kind = "unknown"
+
+        has_internal = any(d in lower_decs for d in ("internal", "private", "internal_only"))
+        has_public = any(d in lower_decs for d in ("public", "external"))
+
+        if has_internal and has_public:
+            exposure = "UNKNOWN"
+            exp_source_kind = "unknown"
+        elif has_internal:
+            exposure = "INTERNAL"
+            exp_source_kind = "explicit_decorator"
+        elif has_public:
+            exposure = "PUBLIC"
+            exp_source_kind = "explicit_decorator"
+        else:
+            exposure = "UNKNOWN"
+            exp_source_kind = "unknown"
+
+        prov_map = {
+            "sensitivity": EvidenceProvenance(
+                value=sensitivity,
+                source_kind=sens_source_kind,
+                file_path=rec.file_path,
+                line=rec.line,
+                origin_id=f"route:{method_str}:{path}",
+            ),
+            "exposure": EvidenceProvenance(
+                value=exposure,
+                source_kind=exp_source_kind,
+                file_path=rec.file_path,
+                line=rec.line,
+                origin_id=f"route:{method_str}:{path}",
+            ),
+        }
+
         return RouteDefinition(
             path=path,
             method=method_str,
             handler=handler,
             middleware_chain=(),
+            sensitivity=sensitivity,
+            exposure=exposure,
+            provenance_map=prov_map,
             language="Python",
             framework="FLASK",
             confidence=rec.confidence,

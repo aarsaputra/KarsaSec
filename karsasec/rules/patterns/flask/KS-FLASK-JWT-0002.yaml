@@ -1,0 +1,39 @@
+rule:
+  id: KS-FLASK-JWT-0002
+  version: "1.0"
+  framework: FLASK
+
+metadata:
+  name: Insecure JWT Signing Policy Violation
+  author: KarsaSec Team
+  cwe: CWE-327
+  owasp: A02:2021-Cryptographic Failures
+  references:
+    - https://owasp.org/Top10/A02_2021-Cryptographic_Failures/
+
+target:
+  node_type: AUTH
+
+conditions:
+  all:
+    - attribute_equals:
+        key: auth_type
+        value: JWT
+    - any:
+        - attribute_equals:
+            key: jwt_algorithm
+            value: none
+        - attribute_equals:
+            key: jwt_algorithm
+            value: NONE
+
+traversal:
+  max_depth: 1
+  max_nodes_visited: 10
+  max_edges_examined: 20
+
+output:
+  severity: CRITICAL
+  confidence: HIGH
+  message: JWT authentication configuration '{node.name}' violates signing policy with insecure algorithm.
+  remediation: Configure explicit strong asymmetric (e.g., RS256, ES256) or strong HMAC (HS256) algorithms.

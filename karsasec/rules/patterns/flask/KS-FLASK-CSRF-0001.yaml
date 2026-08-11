@@ -1,0 +1,35 @@
+rule:
+  id: KS-FLASK-CSRF-0001
+  version: "1.0"
+  framework: FLASK
+
+metadata:
+  name: CSRF Protection Disabled
+  author: KarsaSec Team
+  cwe: CWE-352
+  owasp: A01:2021-Broken Access Control
+  references:
+    - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+
+target:
+  node_type: CONFIG
+
+conditions:
+  all:
+    - attribute_equals:
+        key: key
+        value: WTF_CSRF_ENABLED
+    - attribute_equals:
+        key: value
+        value: false
+
+traversal:
+  max_depth: 1
+  max_nodes_visited: 10
+  max_edges_examined: 20
+
+output:
+  severity: HIGH
+  confidence: HIGH
+  message: Configuration item WTF_CSRF_ENABLED is explicitly set to False.
+  remediation: Enable CSRF protection by setting WTF_CSRF_ENABLED = True.

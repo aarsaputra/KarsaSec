@@ -29,6 +29,7 @@ def _run_rule_on_code(php_code: str, rule_id: str):
 
 def test_php_crypto_weak_detects_md5():
     code = """<?php
+$password = $_GET['pass'];
 $h = md5($password);
 """
     res = _run_rule_on_code(code, 'KS-PHP-CRYPTO-0001')
@@ -45,6 +46,7 @@ ini_set('display_errors', '1');
 
 def test_php_auth_detects_md5_usage():
     code = """<?php
+$password = $_GET['pass'];
 $hash = md5($password);
 """
     res = _run_rule_on_code(code, 'KS-PHP-AUTH-0001')
@@ -59,10 +61,13 @@ $data = unserialize($_POST['payload']);
     assert len(res.findings) >= 1
 
 
-def test_php_ssrf_detects_file_get_contents():
+def test_php_ssrf_detects_curl_setopt_url():
+    """E10-3J: KS-PHP-SSRF-0001 now owns curl_setopt(CURLOPT_URL).
+    file_get_contents is owned by KS-OWASP-0010 (zero intentional overlap enforced).
+    """
     code = """<?php
 $url = $_GET['url'];
-$file = file_get_contents($url);
+curl_setopt($ch, CURLOPT_URL, $url);
 """
     res = _run_rule_on_code(code, 'KS-PHP-SSRF-0001')
     assert len(res.findings) >= 1

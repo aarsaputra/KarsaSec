@@ -6,10 +6,11 @@ metadata:
     - https://owasp.org/Top10/
   name: OWASP A08 - Software and Data Integrity Failures / Insecure Deserialization
   author: KarsaSec Team
-  version: "1.0"
+  version: "1.1"
   cwe: CWE-502
   owasp: A08:2021-Software and Data Integrity Failures
   created: "2026-08-05"
+  updated: "2026-08-09"
   tags:
     - deserialization
 
@@ -34,8 +35,11 @@ condition:
     - unserialize
     - pickle.loads
     - yaml.load
-    - JSON.parse
-  pattern: '(?i)(unserialize|pickle\.loads|yaml\.load|JSON\.parse)'
+  # JSON.parse removed: JSON.parse(response) is not deserialization vulnerability.
+  # yaml.load pattern: only flag when no explicit safe Loader is specified.
+  pattern: '(?i)(unserialize\s*\(|pickle\.loads\s*\(|yaml\.load\s*\([^)]*\)(?!\s*,\s*Loader\s*=\s*yaml\.(?:Safe|Full)Loader))'
+  # Candidate pre-filter: safe variants and comments
+  node_text_not_matches: '(yaml\.safe_load|yaml\.load\s*\([^,)]+,\s*Loader\s*=\s*yaml\.(Safe|Full)Loader|JSON\.parse\s*\(\s*response|JSON\.parse\s*\(\s*data\b|//|<!--)'
 
 evidence:
   require: []
@@ -45,5 +49,37 @@ evidence:
 output:
   severity: HIGH
   confidence: LIKELY
-  message: Unsafe deserialization or unverified package loading detected.
-  remediation: Validate payload signatures or use safe serialization formats (JSON, SafeLoader).
+  message: Unsafe deserialization detected — unserialize(), pickle.loads(), or unsafe yaml.load() may execute arbitrary code.
+  remediation: Use yaml.safe_load() for YAML. Avoid pickle on untrusted data. Use signed, schema-validated serialization formats.
+
+contract:
+  detection:
+    source_kind: unsafe_deserialization_call
+    semantic_context: >
+      Deserialization of untrusted data without integrity verification.
+      JSON.parse is explicitly excluded as it is not a deserialization vulnerability.
+
+  safety:
+    safe_evidence:
+      - STATIC_CONSTANT
+    unknown_evidence:
+      - UNKNOWN
+    unknown_resolution: SUPPRESS
+
+  fixtures:
+    positive:
+      - "unserialize($user_input);"
+      - "pickle.loads(user_data)"
+      - "yaml.load(user_content)"
+    negative:
+      - "yaml.safe_load(content)"
+      - "JSON.parse(response)"
+      - "JSON.parse(data)"
+      - "yaml.load(content, Loader=yaml.SafeLoader)"
+
+  regression:
+    fp_regression_ids:
+      - DESER-FP-001
+    regression_context: >
+      JSON.parse(response) was previously flagged as deserialization.
+      It is server-validated JSON parsing, not insecure deserialization.

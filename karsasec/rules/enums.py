@@ -111,3 +111,44 @@ class OWASPCategory(StrEnum):
     API03_BOPLA = "API3:2023-Broken Object Property Level Authorization"
     API04_RESOURCE_CONSUMPTION = "API4:2023-Unrestricted Resource Consumption"
     API05_BFLA = "API5:2023-Broken Function Level Authorization"
+
+
+class ValueEvidenceKind(StrEnum):
+    """Classification of AST values and expressions for semantic security rule evaluation."""
+    LITERAL_SECRET = "LITERAL_SECRET"
+    ENV_REFERENCE = "ENV_REFERENCE"
+    SECRET_PROVIDER_REFERENCE = "SECRET_PROVIDER_REFERENCE"
+    EMPTY_LITERAL = "EMPTY_LITERAL"
+    NULL_LITERAL = "NULL_LITERAL"
+    STATIC_CONSTANT = "STATIC_CONSTANT"
+    USER_INPUT = "USER_INPUT"
+    UNKNOWN = "UNKNOWN"
+
+
+class EvidenceState(StrEnum):
+    """State of evidence provenance during semantic analysis.
+
+    IMPORTANT: This is an analysis-layer state, NOT a FindingConfidence.
+    EvidenceState drives predicate decisions internally and must never be
+    mapped directly to a Finding output.
+
+    Invariant (locked, E10-3J):
+        UNKNOWN  -> NO FINDING (suppress)
+        CONFLICT -> NO FINDING (suppress)
+    Only PROVEN_VULNERABLE may produce a security Finding.
+    """
+    PROVEN_SAFE       = "PROVEN_SAFE"        # evidence proves code is safe -> NO FINDING
+    PROVEN_VULNERABLE = "PROVEN_VULNERABLE"  # evidence proves vulnerability -> FINDING
+    UNKNOWN           = "UNKNOWN"            # insufficient evidence -> NO FINDING
+    CONFLICT          = "CONFLICT"           # contradicting evidence -> NO FINDING
+
+
+class UnknownResolution(StrEnum):
+    """Policy for how a rule handles EvidenceState.UNKNOWN at predicate evaluation time.
+
+    E10-3J policy: all rules use SUPPRESS.
+    REVIEW is reserved for a future ReviewCandidate subsystem that is
+    explicitly separate from the Finding model.
+    """
+    SUPPRESS = "SUPPRESS"  # UNKNOWN -> NO FINDING (default, E10-3J policy)
+    REVIEW   = "REVIEW"    # UNKNOWN -> ReviewCandidate (future subsystem, never a Finding)

@@ -6,10 +6,12 @@ from karsasec.parser.ast_nodes import ASTNode
 from karsasec.rules.matcher.compiler import CompiledRule
 from karsasec.rules.matcher.predicates.base import BasePredicate
 from karsasec.rules.matcher.predicates.literal import LiteralPredicate
+from karsasec.rules.matcher.predicates.node_text_exclusion import NodeTextExclusionPredicate
 from karsasec.rules.matcher.predicates.node_type import NodeTypePredicate
 from karsasec.rules.matcher.predicates.rag import RAGPredicate
 from karsasec.rules.matcher.predicates.regex import RegexPredicate
 from karsasec.rules.matcher.predicates.symbol import SymbolPredicate
+from karsasec.rules.matcher.predicates.value_classifier import ValueEvidencePredicate
 from karsasec.rules.matcher.statistics import MatcherStatistics
 
 
@@ -20,6 +22,8 @@ class PredicatePipeline:
         self.predicates: list[BasePredicate] = predicates or [
             NodeTypePredicate(),
             SymbolPredicate(),
+            NodeTextExclusionPredicate(),
+            ValueEvidencePredicate(),
             RAGPredicate(),
             RegexPredicate(),
             LiteralPredicate(),

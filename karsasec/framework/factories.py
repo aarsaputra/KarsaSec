@@ -9,6 +9,7 @@ from karsasec.framework.intermediate import (
     AuthDefinition,
     ConfigDefinition,
     ControllerDefinition,
+    FlowDefinition,
     HandlerDefinition,
     MiddlewareDefinition,
     ModelDefinition,
@@ -45,6 +46,9 @@ class FrameworkNodeFactory:
                 "method": route.method.upper(),
                 "handler": route.handler,
                 "middleware_chain": list(route.middleware_chain),
+                "sensitivity": route.sensitivity,
+                "exposure": route.exposure,
+                "_provenance": {k: v.to_dict() for k, v in route.provenance_map.items()},
                 "framework": route.framework,
             },
             origin=route.origin,
@@ -149,6 +153,8 @@ class FrameworkNodeFactory:
         qual_name = config.key
         node_id = generate_semantic_node_id(config.framework, SemanticNodeType.CONFIG.value, qual_name, file_path, line)
 
+        val_attr = config.value if isinstance(config.value, bool) else (str(config.value) if config.value is not None else None)
+
         return FrameworkSemanticNode(
             id=node_id,
             node_type=SemanticNodeType.CONFIG,
@@ -158,8 +164,12 @@ class FrameworkNodeFactory:
             labels=("CONFIG",),
             attributes={
                 "key": config.key,
-                "value": str(config.value) if config.value is not None else None,
+                "value": val_attr,
                 "is_sensitive": config.is_sensitive,
+                "source_kind": config.source_kind,
+                "provenance_type": config.provenance_type,
+                "environment": config.environment,
+                "_provenance": {k: v.to_dict() for k, v in config.provenance_map.items()},
                 "framework": config.framework,
             },
             origin=config.origin,
@@ -205,9 +215,45 @@ class FrameworkNodeFactory:
                 "auth_type": auth.auth_type,
                 "protected_routes": list(auth.protected_routes),
                 "roles_or_scopes": list(auth.roles_or_scopes),
+                "auth_strength": auth.auth_strength,
+                "mechanism": auth.mechanism,
+                "jwt_algorithm": auth.jwt_algorithm,
+                "_provenance": {k: v.to_dict() for k, v in auth.provenance_map.items()},
                 "framework": auth.framework,
             },
             origin=auth.origin,
+        )
+
+    @staticmethod
+    def create_flow_node(flow: FlowDefinition) -> FrameworkSemanticNode:
+        file_path = flow.origin.location_info.file_path
+        line = flow.origin.location_info.line
+        qual_name = f"FLOW:{flow.flow_id}"
+        node_id = generate_semantic_node_id(flow.framework, SemanticNodeType.FLOW.value, qual_name, file_path, line)
+
+        sorted_prov = tuple(sorted(flow.provenance_entries, key=lambda p: (p.attribute_name, p.source_kind, p.file_path, p.line, p.column, p.symbol)))
+
+        return FrameworkSemanticNode(
+            id=node_id,
+            node_type=SemanticNodeType.FLOW,
+            name=flow.flow_id,
+            language=flow.language,
+            cpg_node_id=flow.cpg_ref,
+            labels=("FLOW", flow.source_kind.upper(), flow.sink_kind.upper()),
+            attributes={
+                "flow_id": flow.flow_id,
+                "scope": flow.scope.to_dict(),
+                "source_kind": flow.source_kind,
+                "source_symbol": flow.source_symbol,
+                "sink_kind": flow.sink_kind,
+                "sink_symbol": flow.sink_symbol,
+                "sanitizer_symbols": list(flow.sanitizer_symbols),
+                "validator_symbols": list(flow.validator_symbols),
+                "propagation_path": list(flow.propagation_path),
+                "provenance_entries": [p.to_dict() for p in sorted_prov],
+                "framework": flow.framework,
+            },
+            origin=flow.origin,
         )
 
 

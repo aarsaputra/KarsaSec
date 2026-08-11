@@ -13,6 +13,7 @@ from karsasec.cli.commands.cpg import cpg_app
 from karsasec.cli.commands.debug import debug_app
 from karsasec.cli.commands.framework import framework_app
 from karsasec.cli.commands.interprocedural import interprocedural_app
+from karsasec.cli.commands.qualify import qualify_app
 from karsasec.cli.commands.query import query_app
 from karsasec.cli.commands.rules import rules_app
 from karsasec.cli.commands.scan import execute_scan_command
@@ -27,6 +28,7 @@ app = typer.Typer(
     no_args_is_help=True,
 )
 
+app.add_typer(qualify_app, name="qualify")
 app.add_typer(rules_app, name="rules")
 app.add_typer(cfg_app, name="cfg")
 app.add_typer(debug_app, name="debug")

@@ -6,10 +6,11 @@ metadata:
     - https://owasp.org/Top10/
   name: OWASP A01 - Broken Access Control (Multi-language)
   author: KarsaSec Team
-  version: "1.0"
+  version: "1.1"
   cwe: CWE-284
   owasp: A01:2021-Broken Access Control
   created: "2026-08-05"
+  updated: "2026-08-09"
   tags:
     - broken_access_control
     - authorization
@@ -29,7 +30,6 @@ match:
   language: Generic
   ast_node_types:
     - call
-    - statement
     - assignment
 
 condition:
@@ -39,7 +39,8 @@ condition:
     - session
     - jwt
     - token
-  pattern: '(?i)(cookie|session|token|auth|role|permission|access_denied|unauthorized|is_admin|is_authorized)'
+  pattern: '(?i)(setcookie\s*\(|\$_COOKIE\s*\[|session_start\s*\(|jwt_decode\s*\(|token\s*==|is_admin\s*=|is_authorized\s*=|access_denied|unauthorized)'
+  node_text_not_matches: '(<[^>]+>|//|#\s|/\*|\*\s|<!--|\b(will|can|may|the|that|this|are|have|any|an|a|and|or|for|with|from|not|is|to|if|be|it|by)\b.*\b(cookie|session|token)\b|\b(cookie|session|token)\b.*\b(will|can|may|the|that|this|are|have|any|an|a|and|or|for|with|from|not|is|to|if|be|it|by)\b)'
 
 evidence:
   require:
@@ -53,3 +54,4 @@ output:
   confidence: LIKELY
   message: Detects code paths making access control decisions based on request-controlled values or weak token checks.
   remediation: Use server-side authoritative identity checks and avoid using client-controlled cookies or request parameters for authorization.
+

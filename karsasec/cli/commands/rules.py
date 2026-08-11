@@ -4,6 +4,7 @@ import re
 from pathlib import Path
 
 import typer
+import yaml
 from rich.panel import Panel
 from rich.table import Table
 
@@ -64,6 +65,48 @@ def validate_rules() -> None:
 
     for yaml_path in sorted(rules_dir.rglob("*.yaml")):
         try:
+            content = yaml_path.read_text(encoding="utf-8")
+            raw_doc = yaml.safe_load(content)
+
+            # Check if this is a Graph Security Rule (E10-3D schema)
+            if isinstance(raw_doc, dict) and isinstance(raw_doc.get("target"), dict) and "node_type" in raw_doc["target"]:
+                from karsasec.framework.framework_semantics.rules.loader import GraphRuleLoader
+                g_loader = GraphRuleLoader()
+                gr = g_loader.load_file(yaml_path)
+
+                # 1. Duplicate ID check
+                if gr.id in seen_ids:
+                    errors.append(f"Duplicate Rule ID '{gr.id}' in {yaml_path.name} (already defined in {seen_ids[gr.id].name})")
+                else:
+                    seen_ids[gr.id] = yaml_path
+
+                # 2. Duplicate Name check
+                gr_name = str(gr.metadata.get("name", gr.id))
+                if gr_name in seen_names:
+                    warnings.append(f"Duplicate Rule Name '{gr_name}' in {yaml_path.name}")
+                else:
+                    seen_names[gr_name] = yaml_path
+
+                # 3. CWE Check
+                cwe_val = str(gr.metadata.get("cwe", ""))
+                if cwe_val and not VALID_CWES.match(cwe_val):
+                    errors.append(f"Rule '{gr.id}': Invalid CWE format '{cwe_val}' (expected e.g. CWE-78)")
+
+                # 4. OWASP Check
+                owasp_val = str(gr.metadata.get("owasp", ""))
+                if owasp_val and not VALID_OWASP.match(owasp_val):
+                    errors.append(f"Rule '{gr.id}': Invalid OWASP format '{owasp_val}' (expected e.g. A03:2021-Injection)")
+
+                # 5. Missing Remediation
+                if not gr.output.remediation or gr.output.remediation == "N/A":
+                    warnings.append(f"Rule '{gr.id}': Missing explicit remediation text")
+
+                # 6. Missing References
+                if not gr.metadata.get("references"):
+                    warnings.append(f"Rule '{gr.id}': Missing external reference links")
+
+                continue
+
             file_rules = loader.load_file_multi(yaml_path)
             for r in file_rules:
                 # 1. Duplicate ID check
@@ -123,6 +166,71 @@ def validate_rules() -> None:
         raise typer.Exit(code=1)
     else:
         console.print("\n[green]All security rules passed validation checks successfully.[/green]")
+
+@rules_app.command("contract")
+def validate_contracts(
+    rule_id: str | None = typer.Option(None, "--rule", "-r", help="Validate a specific rule ID only."),
+    coverage: bool = typer.Option(False, "--coverage", help="Show Rule Contract Coverage metric only."),
+) -> None:
+    """Validate rule fixture contracts (E10-3J quality gate).
+
+    Runs positive/negative fixtures through ASTMatcher.
+    Positive fixtures MUST match. Negative fixtures MUST NOT match.
+    """
+    from karsasec.rules.contract_validator import RuleContractValidator
+    from karsasec.rules.matcher.matcher import ASTMatcher
+
+    loader = YAMLRuleLoader()
+    rules_dir = get_default_rules_directory()
+    all_rules = loader.load_directory(rules_dir)
+
+    if rule_id:
+        all_rules = [r for r in all_rules if r.id == rule_id]
+        if not all_rules:
+            console.print(f"[red]No rule found with ID \'{rule_id}\'[/red]")
+            raise typer.Exit(code=1)
+
+    validator = RuleContractValidator()
+    matcher = ASTMatcher()
+    suite = validator.validate_all(all_rules, matcher)
+
+    total = len(suite.results)
+    with_contract = suite.rules_with_contract
+    all_passing = suite.rules_all_passing
+
+    status_color = "green" if all_passing == with_contract else "red"
+    console.print(Panel(
+        f"[bold cyan]KarsaSec Rule Contract Validation[/bold cyan]\n"
+        f"Rules Evaluated    : {total}\n"
+        f"Rules with Contract: [cyan]{with_contract}[/cyan] / {total} "
+        f"([bold]{suite.contract_coverage_pct}%[/bold])\n"
+        f"All Fixtures Passing: [{status_color}]{all_passing}[/{status_color}] / {with_contract}",
+        border_style="cyan",
+        title="Rule Contract Coverage",
+    ))
+
+    if coverage:
+        raise typer.Exit(code=0)
+
+    total_failures = suite.total_failures
+    if total_failures > 0:
+        console.print(f"\n[red]Contract Fixture Failures: {total_failures}[/red]\n")
+        for res in suite.results:
+            if res.failures:
+                console.print(f"[bold red]FAIL[/bold red] {res.rule_id} — {len(res.failures)} fixture(s) failed")
+                for fail in res.failures:
+                    expected = "FINDING" if fail.expected_matched else "NO_FINDING"
+                    actual = "FINDING" if fail.actual_matched else "NO_FINDING"
+                    console.print(
+                        f"  [{fail.fixture_kind.upper()}] Expected={expected} Got={actual}\n"
+                        f"  Snippet: [dim]{fail.snippet[:120]}[/dim]"
+                    )
+        raise typer.Exit(code=1)
+
+    if with_contract == 0:
+        console.print("[yellow]No rules carry a contract section yet.[/yellow]")
+    else:
+        console.print(f"[green]All {with_contract} contract(s) passed {all_passing}/{with_contract} fixture suites.[/green]")
 
 @rules_app.command("lint")
 def lint_rules() -> None:

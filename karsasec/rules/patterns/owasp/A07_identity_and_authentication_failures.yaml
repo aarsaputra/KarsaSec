@@ -36,9 +36,16 @@ condition:
     - bcrypt
     - compare_hash
   pattern: '(?i)(password|bcrypt|verify_password|check_password|login|authenticate)'
+  value_evidence_not_in:
+    - ENV_REFERENCE
+    - SECRET_PROVIDER_REFERENCE
+    - EMPTY_LITERAL
+    - NULL_LITERAL
+    - STATIC_CONSTANT
 
 evidence:
-  require: []
+  require:
+    - user_input
 
 output:
   severity: HIGH

@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/aarsaputra/KarsaSec"><img src="https://img.shields.io/badge/Status-Sprint%209.7%20Completed-brightgreen?style=for-the-badge" alt="Status"></a>
+  <a href="https://github.com/aarsaputra/KarsaSec"><img src="https://img.shields.io/badge/Status-Sprint%20E12--3%20Completed-brightgreen?style=for-the-badge" alt="Status"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue?style=for-the-badge" alt="License"></a>
   <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python" alt="Python"></a>
   <a href="docs/IMPLEMENTATION_ROADMAP.md"><img src="https://img.shields.io/badge/Rules-Schema%20v2-orange?style=for-the-badge" alt="Schema v2"></a>
@@ -19,24 +19,26 @@
 
 ## 📌 Overview
 
-**KarsaSec** is a high-performance, production-grade static application security testing (SAST) platform. Built from the ground up to power modern DevSecOps pipelines, KarsaSec combines deterministic **Abstract Syntax Tree (AST) matching**, **Schema v2 security rules**, **hybrid evidence scoring**, and **SARIF standard reporting** with multi-language support (**Python, JavaScript/TypeScript, PHP, Go, Rust, Java**) and Infrastructure-as-Code (**Dockerfile, Kubernetes, GitHub Actions, Terraform, Helm**).
+**KarsaSec** is a high-performance, production-grade static application security testing (SAST) platform. Built from the ground up to power modern DevSecOps pipelines, KarsaSec combines deterministic **Abstract Syntax Tree (AST) matching**, **Incremental Data-Flow & Taint Engine**, **Semantic Finding Qualification**, **Declarative Compatibility Registry**, **hybrid evidence scoring**, and **SARIF standard reporting** with multi-language support (**Python, JavaScript/TypeScript, PHP, Go, Rust, Java**) and Infrastructure-as-Code (**Dockerfile, Kubernetes, GitHub Actions, Terraform, Helm**).
 
 ---
 
 ## ✨ Key Features & Capabilities
 
 - **🚀 Dual-Engine AST & Token Matching**: High-throughput streaming AST traversal (`ASTWalker`) backed by Tree-sitter bindings and native parser fallbacks.
-- **🛡️ Taint Analysis & Guard Verification**: Eliminates SAST false positives by verifying untrusted data flows (`$_GET`, `$_POST`, etc.), filtering out hardcoded static sinks, and checking switch-case whitelist guards.
+- **🛡️ Incremental Data-Flow & Taint Analysis**: Bounded interprocedural taint propagation engine verifying data flows (`$_GET`, `$_POST`, `os.Args`, etc.), tracing assignments, and constant resolution (`ConstantResolver`).
+- **🎯 Semantic Finding Qualifier & FP Taxonomy**: Formal state-machine engine classifying candidates into `CONFIRMED`, `REJECTED`, or `UNRESOLVED` with explicit taxonomy reasons (`FPTaxonomyReason`). Zero silent drops.
+- **⚡ Declarative Compatibility Registry**: Capability matrix checking source-to-sink and sanitizer-to-sink compatibility (e.g. `htmlspecialchars` vs `escapeshellarg`).
 - **🧱 Language-Agnostic Generic IR**: Built-in Intermediate Representation (`karsasec/ir/`) decoupling security rules from language-specific AST structures.
 - **⚡ Dedicated Runtime & Capability DAG Scheduler**: Autonomous DAG planner (`karsasec/runtime/`) for dynamic lazy analysis pass resolution (`AST -> SEMANTIC -> CALLGRAPH -> DATAFLOW`).
 - **🎯 Intelligent Target Detector**: Auto-detects target kinds and formats via path heuristics and structural content inspection (`TargetDetector`).
 - **🗂️ Persistent Symbol Store**: Enterprise project symbol database (`karsasec/index/`) for cross-file symbol indexing and instant reference lookup.
 - **🔌 Extensible Plugin SDK**: Versioned Analysis API (`v1`, `v2`, `v3`) for third-party parser, rule pack, and reporter extensions (`karsasec/sdk/`).
-- **📜 Rule Schema v2 Engine**: Advanced rule definitions featuring `TargetSpec`, `AnalysisSpec` (`requires: ["ast", "semantic"]`), `EvidenceSpec`, and CWE/OWASP taxonomy mapping.
+- **📜 Rule Schema v2 Engine & Contract**: Advanced rule definitions featuring `TargetSpec`, `AnalysisSpec` (`requires: ["ast", "semantic"]`), `EvidenceSpec`, CWE/OWASP taxonomy mapping, and formal Rule Contracts (Detection, Safety, Fixtures, Regression).
 - **📊 Hybrid Evidence & Confidence Engine**: Evaluates evidence telemetry dynamically to assign high-precision confidence levels (`CONFIDENT`, `HIGH`, `MEDIUM`, `LOW`).
 - **🔍 Local Hybrid RAG Retrieval**: Use `karsasec scan --rag` or `karsasec scan --context-search` to attach contextual references from the local security corpus during scan.
 - **🌐 Multi-Language & IaC Support**: Built-in AST and pattern detection for **Python**, **JavaScript / TypeScript**, **PHP**, **Go**, **Rust**, **Java**, **Dockerfile**, **Kubernetes**, **GitHub Actions**, **Terraform**, and **Helm**.
-- **📄 Enterprise Reporting & Baseline**: Generates **SARIF 2.1.0**, **JSON**, and interactive **Console** reports, with deterministic 32-character SHA-256 fingerprinting (`compute_stable_finding_fingerprint`).
+- **📄 Enterprise Reporting, Baseline & Qualification**: Generates **SARIF 2.1.0**, **JSON**, and interactive **Console** reports, with benchmark qualification reporting (`karsasec qualify --benchmark dvwa`).
 
 ---
 

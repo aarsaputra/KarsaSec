@@ -37,7 +37,8 @@ condition:
     (?i)(md5\(|sha1\(|base64_encode\(|openssl_encrypt\()
 
 evidence:
-  require: []
+  require:
+    - user_input
 
 output:
   severity: HIGH

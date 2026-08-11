@@ -1,0 +1,35 @@
+rule:
+  id: KS-FLASK-SESS-0002
+  version: "1.0"
+  framework: FLASK
+
+metadata:
+  name: HttpOnly Disabled on Session Cookie
+  author: KarsaSec Team
+  cwe: CWE-1004
+  owasp: A05:2021-Security Misconfiguration
+  references:
+    - https://owasp.org/Top10/A05_2021-Security_Misconfiguration/
+
+target:
+  node_type: CONFIG
+
+conditions:
+  all:
+    - attribute_equals:
+        key: key
+        value: SESSION_COOKIE_HTTPONLY
+    - attribute_equals:
+        key: value
+        value: false
+
+traversal:
+  max_depth: 1
+  max_nodes_visited: 10
+  max_edges_examined: 20
+
+output:
+  severity: MEDIUM
+  confidence: HIGH
+  message: Configuration item SESSION_COOKIE_HTTPONLY is explicitly set to False.
+  remediation: Set SESSION_COOKIE_HTTPONLY = True to prevent client-side JavaScript access to session cookies.

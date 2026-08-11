@@ -1,0 +1,35 @@
+rule:
+  id: KS-FLASK-CONF-0001
+  version: "1.0"
+  framework: FLASK
+
+metadata:
+  name: Debug Mode Explicitly Enabled
+  author: KarsaSec Team
+  cwe: CWE-489
+  owasp: A05:2021-Security Misconfiguration
+  references:
+    - https://owasp.org/Top10/A05_2021-Security_Misconfiguration/
+
+target:
+  node_type: CONFIG
+
+conditions:
+  all:
+    - attribute_equals:
+        key: key
+        value: DEBUG
+    - attribute_equals:
+        key: value
+        value: true
+
+traversal:
+  max_depth: 1
+  max_nodes_visited: 10
+  max_edges_examined: 20
+
+output:
+  severity: HIGH
+  confidence: HIGH
+  message: Configuration item DEBUG is explicitly set to True.
+  remediation: Disable debug mode in non-development deployments by setting DEBUG = False.

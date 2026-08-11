@@ -1,12 +1,21 @@
-"""Enhanced immutable Finding model for security vulnerabilities with stable fingerprint identity."""
+"""Enhanced immutable Finding & QualifiedFinding models for security vulnerabilities (E12-3)."""
 
+from enum import StrEnum
 import hashlib
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from karsasec.core.finding.evidence import Evidence
+from karsasec.core.finding.evidence import Evidence, FindingEvidence
 from karsasec.rules.enums import Confidence, Severity
+
+
+class QualificationState(StrEnum):
+    """Deterministic state of a finding after qualification."""
+    CONFIRMED = "CONFIRMED"
+    SUPPORTED = "SUPPORTED"
+    UNRESOLVED = "UNRESOLVED"
+    REJECTED = "REJECTED"
 
 
 def compute_stable_finding_fingerprint(
@@ -40,3 +49,12 @@ class Finding:
     remediation: str
     rule_version: str = "1.0"
     metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class QualifiedFinding(Finding):
+    """Enriched finding with qualification decision state, evidence trail, and FP taxonomy reason."""
+
+    qualification_state: QualificationState = QualificationState.CONFIRMED
+    rejection_reason: Any | None = None
+    enriched_evidence: FindingEvidence | None = None

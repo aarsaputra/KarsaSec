@@ -1,0 +1,38 @@
+rule:
+  id: KS-FLASK-CONF-0003
+  version: "1.0"
+  framework: FLASK
+
+metadata:
+  name: Debug Mode Enabled in Production Environment
+  author: KarsaSec Team
+  cwe: CWE-489
+  owasp: A05:2021-Security Misconfiguration
+  references:
+    - https://owasp.org/Top10/A05_2021-Security_Misconfiguration/
+
+target:
+  node_type: CONFIG
+
+conditions:
+  all:
+    - attribute_equals:
+        key: key
+        value: DEBUG
+    - attribute_equals:
+        key: value
+        value: true
+    - attribute_equals:
+        key: environment
+        value: PRODUCTION
+
+traversal:
+  max_depth: 1
+  max_nodes_visited: 10
+  max_edges_examined: 20
+
+output:
+  severity: CRITICAL
+  confidence: HIGH
+  message: Debug mode is explicitly enabled (DEBUG=True) in a production environment deployment.
+  remediation: Set DEBUG = False in production configurations or environment variables.

@@ -27,6 +27,7 @@ class SemanticNodeType(StrEnum):
     TEMPLATE = "TEMPLATE"
     SESSION = "SESSION"
     COOKIE = "COOKIE"
+    FLOW = "FLOW"
 
 
 class SemanticEdgeType(StrEnum):
@@ -40,6 +41,9 @@ class SemanticEdgeType(StrEnum):
     CONFIGURES = "CONFIGURES"
     OWNS = "OWNS"
     RETURNS = "RETURNS"
+    FLOWS_TO = "FLOWS_TO"
+    PROPAGATES_TO = "PROPAGATES_TO"
+    SINKS_TO = "SINKS_TO"
 
 
 @dataclass(frozen=True)
@@ -125,11 +129,15 @@ class FrameworkSemanticGraph:
 
         self._outgoing_edges: dict[str, list[FrameworkSemanticEdge]] = {}
         self._incoming_edges: dict[str, list[FrameworkSemanticEdge]] = {}
+        self._outgoing_index: dict[str, tuple[FrameworkSemanticEdge, ...]] = {}
+        self._incoming_index: dict[str, tuple[FrameworkSemanticEdge, ...]] = {}
         self._rebuild_adjacency()
 
     def _rebuild_adjacency(self) -> None:
         self._outgoing_edges.clear()
         self._incoming_edges.clear()
+        self._outgoing_index.clear()
+        self._incoming_index.clear()
         for nid in self._nodes:
             self._outgoing_edges[nid] = []
             self._incoming_edges[nid] = []
@@ -139,6 +147,11 @@ class FrameworkSemanticGraph:
                 self._outgoing_edges[e.source_id].append(e)
             if e.target_id in self._incoming_edges:
                 self._incoming_edges[e.target_id].append(e)
+
+        for nid, e_list in self._outgoing_edges.items():
+            self._outgoing_index[nid] = tuple(sorted(e_list, key=lambda x: (x.source_id, x.target_id, x.edge_type.value)))
+        for nid, e_list in self._incoming_edges.items():
+            self._incoming_index[nid] = tuple(sorted(e_list, key=lambda x: (x.source_id, x.target_id, x.edge_type.value)))
 
     def add_node(self, node: FrameworkSemanticNode) -> FrameworkSemanticGraph:
         """Returns a new FrameworkSemanticGraph instance containing the added node."""
@@ -200,6 +213,13 @@ class FrameworkSemanticGraph:
         """Returns dictionary of node_id -> FrameworkSemanticNode."""
         return dict(self._nodes)
 
+    def get_incoming_edges(self, node_id: str) -> tuple[FrameworkSemanticEdge, ...]:
+        """Returns O(1) indexed tuple of incoming edges for the given node_id."""
+        return self._incoming_index.get(node_id, ())
+
+    def get_outgoing_edges(self, node_id: str) -> tuple[FrameworkSemanticEdge, ...]:
+        """Returns O(1) indexed tuple of outgoing edges for the given node_id."""
+        return self._outgoing_index.get(node_id, ())
 
     def edge(self, source_id: str, target_id: str) -> FrameworkSemanticEdge | None:
         """Retrieves first matching edge between source_id and target_id."""

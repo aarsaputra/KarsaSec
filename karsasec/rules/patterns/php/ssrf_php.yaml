@@ -4,12 +4,13 @@ rule:
 metadata:
   references:
     - https://owasp.org/Top10/
-  name: PHP SSRF
+  name: PHP SSRF - PHP-Specific Outbound Request Vectors
   author: KarsaSec Team
-  version: "1.0"
+  version: "1.1"
   cwe: CWE-918
   owasp: A10:2021-Server-Side Request Forgery
   created: "2026-08-05"
+  updated: "2026-08-09"
   tags:
     - ssrf
 
@@ -25,15 +26,14 @@ match:
   language: PHP
   ast_node_types:
     - call
-    - statement
 
 condition:
   symbol_triggers:
-    - file_get_contents
-    - curl_exec
-    - fopen
-  pattern: >-
-    (?i)(file_get_contents\(|curl_exec\(|fopen\()
+    - curl_setopt
+    - CURLOPT_URL
+  # Scope: PHP-specific SSRF vectors NOT covered by KS-OWASP-0010.
+  # Intentional overlap = 0. file_get_contents/curl_exec are owned by KS-OWASP-0010.
+  pattern: '(?i)(curl_setopt\s*\(\s*\$[a-z_]+\s*,\s*CURLOPT_URL)'
 
 evidence:
   require:
@@ -44,5 +44,36 @@ evidence:
 output:
   severity: HIGH
   confidence: LIKELY
-  message: Detects potential SSRF when untrusted input is used to make outbound requests or file reads.
-  remediation: Whitelist destination hosts and validate URLs; avoid direct use of user-controlled URLs.
+  message: Detects curl_setopt(CURLOPT_URL) with potentially user-controlled URL — PHP-specific SSRF vector.
+  remediation: Whitelist destination hosts and validate URLs before passing to curl_setopt. Block private/internal network ranges.
+
+contract:
+  detection:
+    source_kind: php_curl_url_assignment
+    semantic_context: >
+      curl_setopt(CURLOPT_URL, $user_input) allows attacker to control outbound
+      HTTP destination. PHP-specific vector not covered by generic KS-OWASP-0010.
+
+  safety:
+    safe_evidence:
+      - STATIC_CONSTANT
+    unknown_evidence:
+      - UNKNOWN
+    unknown_resolution: SUPPRESS
+
+  fixtures:
+    positive:
+      - "curl_setopt($ch, CURLOPT_URL, $user_url);"
+      - "curl_setopt($ch, CURLOPT_URL, $_GET['target']);"
+    negative:
+      - "curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);"
+      - "curl_exec($ch);"
+      - "file_get_contents($url);"
+
+  regression:
+    fp_regression_ids:
+      - SSRF-OVERLAP-001
+    regression_context: >
+      Previously overlapped with KS-OWASP-0010 on file_get_contents and curl_exec.
+      Now scoped exclusively to curl_setopt(CURLOPT_URL) — the PHP-specific vector
+      not covered by the generic OWASP rule. Zero intentional overlap enforced.

@@ -36,7 +36,8 @@ condition:
     (?i)(password_hash\(|password_verify\(|md5\(|sha1\()
 
 evidence:
-  require: []
+  require:
+    - user_input
 
 output:
   severity: HIGH

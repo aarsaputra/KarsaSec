@@ -1,0 +1,31 @@
+rule:
+  id: KS-FLASK-FLOW-0002
+  version: "1.0"
+  framework: FLASK
+
+metadata:
+  name: Untrusted Input Reaches SQL Sink
+  author: KarsaSec Team
+  cwe: CWE-89
+  owasp: A03:2021-Injection
+  references:
+    - https://owasp.org/Top10/A03_2021-Injection/
+
+target:
+  node_type: FLOW
+
+conditions:
+  all:
+    - flow_taint_state_equals: UNTRUSTED
+    - sink_kind_equals: sql_execution
+
+traversal:
+  max_depth: 1
+  max_nodes_visited: 50
+  max_edges_examined: 100
+
+output:
+  severity: HIGH
+  confidence: HIGH
+  message: Untrusted user input propagates interprocedurally to SQL execution sink '{node.name}'.
+  remediation: Use parameterized SQL queries or ORM bindings instead of raw string concatenation.

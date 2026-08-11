@@ -1,0 +1,31 @@
+rule:
+  id: KS-FLASK-FLOW-0003
+  version: "1.0"
+  framework: FLASK
+
+metadata:
+  name: Unvalidated Redirect Input
+  author: KarsaSec Team
+  cwe: CWE-601
+  owasp: A01:2021-Broken Access Control
+  references:
+    - https://owasp.org/Top10/A01_2021-Broken_Access_Control/
+
+target:
+  node_type: FLOW
+
+conditions:
+  all:
+    - flow_taint_state_equals: UNTRUSTED
+    - sink_kind_equals: redirect
+
+traversal:
+  max_depth: 1
+  max_nodes_visited: 50
+  max_edges_examined: 100
+
+output:
+  severity: HIGH
+  confidence: HIGH
+  message: Untrusted request parameter reaches HTTP redirect sink '{node.name}' without allowlist host validation.
+  remediation: Validate target redirect URLs against an allowlist of trusted domains or relative paths using validate_redirect / is_safe_url.

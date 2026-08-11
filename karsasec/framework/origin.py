@@ -69,6 +69,51 @@ class Evidence:
         )
 
 
+SOURCE_KIND_CONFIDENCE_MAP: dict[str, str] = {
+    "explicit_decorator": "HIGH",
+    "explicit_assignment": "HIGH",
+    "explicit_env": "HIGH",
+    "derived_relation": "MEDIUM",
+    "unknown": "UNKNOWN",
+}
+
+
+@dataclass(frozen=True)
+class EvidenceProvenance:
+    """Deterministic provenance record tracking the source, classification, and location of semantic evidence."""
+    value: Any
+    source_kind: str = "unknown"  # explicit_decorator, explicit_assignment, explicit_env, derived_relation, unknown
+    confidence: str = "UNKNOWN"   # HIGH, MEDIUM, UNKNOWN
+    file_path: str = ""
+    line: int = 1
+    origin_id: str = ""
+
+    def __post_init__(self) -> None:
+        if self.confidence == "UNKNOWN" and self.source_kind in SOURCE_KIND_CONFIDENCE_MAP:
+            object.__setattr__(self, "confidence", SOURCE_KIND_CONFIDENCE_MAP[self.source_kind])
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "value": self.value,
+            "source_kind": self.source_kind,
+            "confidence": self.confidence,
+            "file_path": self.file_path,
+            "line": self.line,
+            "origin_id": self.origin_id,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> EvidenceProvenance:
+        return cls(
+            value=data.get("value"),
+            source_kind=data.get("source_kind", "unknown"),
+            confidence=data.get("confidence", "UNKNOWN"),
+            file_path=data.get("file_path", ""),
+            line=data.get("line", 1),
+            origin_id=data.get("origin_id", ""),
+        )
+
+
 @dataclass(frozen=True)
 class ExtractorInfo:
     """Information regarding the semantic extractor that produced an artifact."""

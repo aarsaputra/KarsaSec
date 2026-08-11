@@ -6,10 +6,11 @@ metadata:
     - https://owasp.org/Top10/
   name: OWASP A10 - Server-Side Request Forgery (SSRF)
   author: KarsaSec Team
-  version: "1.0"
+  version: "1.1"
   cwe: CWE-918
   owasp: A10:2021-Server-Side Request Forgery (SSRF)
   created: "2026-08-05"
+  updated: "2026-08-09"
   tags:
     - ssrf
 
@@ -32,19 +33,23 @@ match:
 condition:
   symbol_triggers:
     - file_get_contents
+    - curl_exec
     - requests.get
+    - requests.post
     - axios
     - fetch
-    - curl
-  pattern: '(?i)(file_get_contents|requests\.get|axios|fetch|cURL)'
+  pattern: '(?i)(file_get_contents|curl_exec|requests\.(get|post|put|delete)|axios\.(get|post)|fetch\s*\()'
+  node_text_not_matches: '(->fetch\s*\(|->fetchAll\s*\(|console\.(error|log|warn)\s*\(|lastErrorMsg|Error in fetch|problem with your fetch|PDO|sqlite_db|pdo_fetch)'
 
 evidence:
-  require: []
+  require:
+    - user_input
   score_weights:
     dangerous_sink: 30
 
 output:
   severity: HIGH
   confidence: LIKELY
-  message: Detects outbound HTTP requests using unvalidated user input.
+  message: Detects outbound HTTP requests using potentially unvalidated user input.
   remediation: Enforce strict URL whitelisting and block internal network ranges (127.0.0.1, 169.254.169.254).
+

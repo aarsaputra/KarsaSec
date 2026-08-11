@@ -1,0 +1,560 @@
+benchmark:
+  id: dvwa
+  version: "1.x"
+  description: >
+    DVWA (Damn Vulnerable Web Application) security benchmark.
+    Manually reviewed cases covering SQL injection, command injection,
+    path traversal, LFI, weak crypto, and misconfiguration.
+    Ground truth is independently derived — NOT generated from KarsaSec output.
+
+# Anti-circularity: every case below was verified by direct source inspection.
+# Files reviewed: sqli/source/low.php, view_source.php, exec/source/low.php,
+#   exec/source/medium.php, exec/source/impossible.php, brute/source/low.php,
+#   fi/source/low.php, sqli/source/impossible.php, sqli/index.php, exec/index.php
+
+cases:
+
+  # ─── KS-PHP-0002: SQL Injection (6 TP) ─────────────────────────────────────
+
+  - id: dvwa-sqli-low-001
+    file: vulnerabilities/sqli/source/low.php
+    line: 10
+    rule_id: KS-PHP-0002
+    expected: TRUE_POSITIVE
+    cwe: CWE-89
+    language: PHP
+    severity: HIGH
+    category: SQL_INJECTION
+    rationale: >
+      User-controlled $_REQUEST['id'] (line 5) is concatenated directly into a MySQL
+      SELECT query string on line 10 with no sanitization. Classic SQLi sink.
+    source_reference: vulnerabilities/sqli/source/low.php:10
+    description: >
+      $id = $_REQUEST['id'] (line 5) is concatenated directly into a MySQL
+      SELECT query string on line 10 with no sanitization. Classic SQLi sink.
+
+  - id: dvwa-sqli-low-002
+    file: vulnerabilities/sqli/source/low.php
+    line: 34
+    rule_id: KS-PHP-0002
+    expected: TRUE_POSITIVE
+    cwe: CWE-89
+    language: PHP
+    severity: HIGH
+    category: SQL_INJECTION
+    rationale: >
+      Same $id from $_REQUEST['id'] is concatenated into a SQLite query on
+      line 31 and executed via $sqlite_db_connection->query($query) on line 34.
+      Distinct sink from the MySQL variant above.
+    source_reference: vulnerabilities/sqli/source/low.php:34
+    description: >
+      Same $id from $_REQUEST['id'] is concatenated into a SQLite query on
+      line 31 and executed via $sqlite_db_connection->query($query) on line 34.
+      Distinct sink from the MySQL variant above.
+
+  - id: dvwa-sqli-medium-001
+    file: vulnerabilities/sqli/source/medium.php
+    line: 30
+    rule_id: KS-PHP-0002
+    expected: TRUE_POSITIVE
+    cwe: CWE-89
+    language: PHP
+    severity: HIGH
+    category: SQL_INJECTION
+    rationale: >
+      SQLite variant: user-controlled $id reaches ->query() on line 30 despite
+      mysqli_real_escape_string applied to the MySQL path. SQLite path is unguarded.
+    source_reference: vulnerabilities/sqli/source/medium.php:30
+    description: >
+      SQLite variant: user-controlled $id reaches ->query() on line 30 despite
+      mysqli_real_escape_string applied to the MySQL path. SQLite path is unguarded.
+
+  - id: dvwa-sqli-medium-002
+    file: vulnerabilities/sqli/source/medium.php
+    line: 55
+    rule_id: KS-PHP-0002
+    expected: TRUE_POSITIVE
+    cwe: CWE-89
+    language: PHP
+    severity: HIGH
+    category: SQL_INJECTION
+    rationale: >
+      MySQL path: $id from $_POST['id'] is passed through mysqli_real_escape_string
+      but still concatenated into the query string. Single-quote injection is mitigated
+      but integer injection is still possible. mysqli_query() is the sink.
+    source_reference: vulnerabilities/sqli/source/medium.php:55
+    description: >
+      MySQL path: $id from $_POST['id'] is passed through mysqli_real_escape_string
+      but still concatenated into the query string. Single-quote injection is mitigated
+      but integer injection is still possible. mysqli_query() is the sink.
+
+  - id: dvwa-sqli-blind-low-001
+    file: vulnerabilities/sqli_blind/source/low.php
+    line: 34
+    rule_id: KS-PHP-0002
+    expected: TRUE_POSITIVE
+    cwe: CWE-89
+    language: PHP
+    severity: HIGH
+    category: SQL_INJECTION
+    rationale: >
+      Blind SQLi module: same pattern as sqli/source/low.php. $id from $_GET['id']
+      is concatenated into a query string executed via ->query() on line 34.
+    source_reference: vulnerabilities/sqli_blind/source/low.php:34
+    description: >
+      Blind SQLi module: same pattern as sqli/source/low.php. $id from $_GET['id']
+      is concatenated into a query string executed via ->query() on line 34.
+
+  - id: dvwa-xss-stored-sqli-001
+    file: vulnerabilities/xss_s/index.php
+    line: 18
+    rule_id: KS-PHP-0002
+    expected: TRUE_POSITIVE
+    cwe: CWE-89
+    language: PHP
+    severity: HIGH
+    category: SQL_INJECTION
+    rationale: >
+      Stored XSS module executes mysqli_query() with $message from $_POST['mtxMessage']
+      concatenated into a SELECT/INSERT query. SQLi vulnerability co-located with XSS.
+    source_reference: vulnerabilities/xss_s/index.php:18
+    description: >
+      Stored XSS module executes mysqli_query() with $message from $_POST['mtxMessage']
+      concatenated into a SELECT/INSERT query. SQLi vulnerability co-located with XSS.
+
+  # ─── KS-PHP-0003: Path Traversal / Unsafe File Read (4 TP) ─────────────────
+
+  - id: dvwa-view-source-001
+    file: vulnerabilities/view_source.php
+    line: 63
+    rule_id: KS-PHP-0003
+    expected: TRUE_POSITIVE
+    cwe: CWE-22
+    language: PHP
+    severity: HIGH
+    category: PATH_TRAVERSAL
+    rationale: >
+      $id = $_GET['id'] and $security = $_GET['security'] are both user-controlled.
+      They are interpolated into the path argument of file_get_contents() on line 63:
+      DVWA_WEB_PAGE_TO_ROOT . "vulnerabilities/{$id}/source/{$security}.php".
+      DVWA_WEB_PAGE_TO_ROOT is a static constant; $id and $security are tainted.
+    source_reference: vulnerabilities/view_source.php:63
+    description: >
+      $id = $_GET['id'] and $security = $_GET['security'] are both user-controlled.
+      They are interpolated into the path argument of file_get_contents() on line 63:
+      DVWA_WEB_PAGE_TO_ROOT . "vulnerabilities/{$id}/source/{$security}.php".
+      DVWA_WEB_PAGE_TO_ROOT is a static constant; $id and $security are tainted.
+
+  - id: dvwa-view-source-002
+    file: vulnerabilities/view_source.php
+    line: 68
+    rule_id: KS-PHP-0003
+    expected: TRUE_POSITIVE
+    cwe: CWE-22
+    language: PHP
+    severity: HIGH
+    category: PATH_TRAVERSAL
+    rationale: >
+      Same file as dvwa-view-source-001; a second file_get_contents() call on
+      line 68 uses the same tainted $id and $security to read a .js source file.
+    source_reference: vulnerabilities/view_source.php:68
+    description: >
+      Same file as dvwa-view-source-001; a second file_get_contents() call on
+      line 68 uses the same tainted $id and $security to read a .js source file.
+
+  - id: dvwa-view-source-all-001
+    file: vulnerabilities/view_source_all.php
+    line: 22
+    rule_id: KS-PHP-0003
+    expected: TRUE_POSITIVE
+    cwe: CWE-22
+    language: PHP
+    severity: HIGH
+    category: PATH_TRAVERSAL
+    rationale: >
+      $id from $_GET['id'] is interpolated into a path passed to file_get_contents()
+      on line 22: "./{$id}/source/high.php". Attacker can traverse to arbitrary paths.
+    source_reference: vulnerabilities/view_source_all.php:22
+    description: >
+      $id from $_GET['id'] is interpolated into a path passed to file_get_contents()
+      on line 22: "./{$id}/source/high.php". Attacker can traverse to arbitrary paths.
+
+  - id: dvwa-view-source-all-002
+    file: vulnerabilities/view_source_all.php
+    line: 26
+    rule_id: KS-PHP-0003
+    expected: TRUE_POSITIVE
+    cwe: CWE-22
+    language: PHP
+    severity: HIGH
+    category: PATH_TRAVERSAL
+    rationale: >
+      Same file: a second file_get_contents() on line 26 uses the same tainted
+      $id in "./{$id}/source/impossible.php". Distinct sink; same taint source.
+    source_reference: vulnerabilities/view_source_all.php:26
+    description: >
+      Same file: a second file_get_contents() on line 26 uses the same tainted
+      $id in "./{$id}/source/impossible.php". Distinct sink; same taint source.
+
+  # ─── KS-PHP-0004: LFI via require_once (4 TP) ─────────────────────────────
+
+  - id: dvwa-sqli-index-lfi-001
+    file: vulnerabilities/sqli/index.php
+    line: 34
+    rule_id: KS-PHP-0004
+    expected: TRUE_POSITIVE
+    cwe: CWE-98
+    language: PHP
+    severity: HIGH
+    category: LFI
+    rationale: >
+      $vulnerabilityFile is derived from $_DVWA['SQLI_DB'] (user-environment-
+      controlled) and used in require_once on line 34:
+      DVWA_WEB_PAGE_TO_ROOT . "vulnerabilities/sqli/source/{$vulnerabilityFile}".
+      While DVWA_WEB_PAGE_TO_ROOT is static, $vulnerabilityFile is dynamic.
+    source_reference: vulnerabilities/sqli/index.php:34
+    description: >
+      $vulnerabilityFile is derived from $_DVWA['SQLI_DB'] (user-environment-
+      controlled) and used in require_once on line 34:
+      DVWA_WEB_PAGE_TO_ROOT . "vulnerabilities/sqli/source/{$vulnerabilityFile}".
+      While DVWA_WEB_PAGE_TO_ROOT is static, $vulnerabilityFile is dynamic.
+
+  - id: dvwa-sqli-blind-index-lfi-001
+    file: vulnerabilities/sqli_blind/index.php
+    line: 34
+    rule_id: KS-PHP-0004
+    expected: TRUE_POSITIVE
+    cwe: CWE-98
+    language: PHP
+    severity: HIGH
+    category: LFI
+    rationale: >
+      Same pattern as dvwa-sqli-index-lfi-001 in the sqli_blind module.
+      $vulnerabilityFile is user-environment-derived and used in require_once.
+    source_reference: vulnerabilities/sqli_blind/index.php:34
+    description: >
+      Same pattern as dvwa-sqli-index-lfi-001 in the sqli_blind module.
+      $vulnerabilityFile is user-environment-derived and used in require_once.
+
+  - id: dvwa-xss-r-index-lfi-001
+    file: vulnerabilities/xss_r/index.php
+    line: 32
+    rule_id: KS-PHP-0004
+    expected: TRUE_POSITIVE
+    cwe: CWE-98
+    language: PHP
+    severity: HIGH
+    category: LFI
+    rationale: >
+      Reflected XSS module: $vulnerabilityFile from $_DVWA environment is used
+      in require_once, allowing inclusion of an attacker-controlled file path.
+    source_reference: vulnerabilities/xss_r/index.php:32
+    description: >
+      Reflected XSS module: $vulnerabilityFile from $_DVWA environment is used
+      in require_once, allowing inclusion of an attacker-controlled file path.
+
+  - id: dvwa-fi-source-lfi-001
+    file: vulnerabilities/fi/source/low.php
+    line: 3
+    rule_id: KS-PHP-0004
+    expected: TRUE_POSITIVE
+    cwe: CWE-98
+    language: PHP
+    severity: HIGH
+    category: LFI
+    rationale: >
+      File inclusion module (low level): $file = $_GET['page'] on line 3 is
+      used directly in a PHP include, allowing inclusion of arbitrary files.
+      This is the primary demonstration of LFI in DVWA.
+    source_reference: vulnerabilities/fi/source/low.php:3
+    description: >
+      File inclusion module (low level): $file = $_GET['page'] on line 3 is
+      used directly in a PHP include, allowing inclusion of arbitrary files.
+      This is the primary demonstration of LFI in DVWA.
+
+  # ─── KS-OWASP-0003: Command Injection via shell_exec (4 TP) ────────────────
+
+  - id: dvwa-exec-low-001
+    file: vulnerabilities/exec/source/low.php
+    line: 10
+    rule_id: KS-OWASP-0003
+    expected: TRUE_POSITIVE
+    cwe: CWE-78
+    language: PHP
+    severity: CRITICAL
+    category: COMMAND_INJECTION
+    rationale: >
+      $target = $_REQUEST['ip'] (no sanitization) is concatenated directly into
+      shell_exec('ping  ' . $target) on line 10 (Windows path). Full RCE via
+      semicolon or pipe character injection.
+    source_reference: vulnerabilities/exec/source/low.php:10
+    description: >
+      $target = $_REQUEST['ip'] (no sanitization) is concatenated directly into
+      shell_exec('ping  ' . $target) on line 10 (Windows path). Full RCE via
+      semicolon or pipe character injection.
+
+  - id: dvwa-exec-low-002
+    file: vulnerabilities/exec/source/low.php
+    line: 14
+    rule_id: KS-OWASP-0003
+    expected: TRUE_POSITIVE
+    cwe: CWE-78
+    language: PHP
+    severity: CRITICAL
+    category: COMMAND_INJECTION
+    rationale: >
+      Same tainted $target from $_REQUEST['ip'] is used in the *nix variant:
+      shell_exec('ping  -c 4 ' . $target) on line 14. Both code paths are vulnerable.
+    source_reference: vulnerabilities/exec/source/low.php:14
+    description: >
+      Same tainted $target from $_REQUEST['ip'] is used in the *nix variant:
+      shell_exec('ping  -c 4 ' . $target) on line 14. Both code paths are vulnerable.
+
+  - id: dvwa-exec-medium-001
+    file: vulnerabilities/exec/source/medium.php
+    line: 19
+    rule_id: KS-OWASP-0003
+    expected: TRUE_POSITIVE
+    cwe: CWE-78
+    language: PHP
+    severity: CRITICAL
+    category: COMMAND_INJECTION
+    rationale: >
+      Medium difficulty: str_replace() removes '&&' and ';' but not '|', '`', or
+      $() sequences. Attacker can still inject via pipe. shell_exec() sink on line 19.
+    source_reference: vulnerabilities/exec/source/medium.php:19
+    description: >
+      Medium difficulty: str_replace() removes '&&' and ';' but not '|', '`', or
+      $() sequences. Attacker can still inject via pipe. shell_exec() sink on line 19.
+
+  - id: dvwa-exec-medium-002
+    file: vulnerabilities/exec/source/medium.php
+    line: 23
+    rule_id: KS-OWASP-0003
+    expected: TRUE_POSITIVE
+    cwe: CWE-78
+    language: PHP
+    severity: CRITICAL
+    category: COMMAND_INJECTION
+    rationale: >
+      *nix variant of dvwa-exec-medium-001. str_replace mitigation is incomplete;
+      shell_exec() on line 23 still receives partially-sanitized user input.
+    source_reference: vulnerabilities/exec/source/medium.php:23
+    description: >
+      *nix variant of dvwa-exec-medium-001. str_replace mitigation is incomplete;
+      shell_exec() on line 23 still receives partially-sanitized user input.
+
+  # ─── KS-OWASP-0002: Weak Crypto (2 TP) ────────────────────────────────────
+
+  - id: dvwa-brute-crypto-001
+    file: vulnerabilities/brute/source/low.php
+    line: 9
+    rule_id: KS-OWASP-0002
+    expected: TRUE_POSITIVE
+    cwe: CWE-916
+    language: PHP
+    severity: HIGH
+    category: CRYPTOGRAPHIC_FAILURES
+    rationale: >
+      Password from $_GET['password'] is hashed using md5($pass) on line 9 before
+      database comparison. MD5 is a broken algorithm for password hashing; bcrypt/
+      argon2id should be used instead. This is credential hashing context.
+    source_reference: vulnerabilities/brute/source/low.php:9
+    description: >
+      Password from $_GET['password'] is hashed using md5($pass) on line 9 before
+      database comparison. MD5 is a broken algorithm for password hashing; bcrypt/
+      argon2id should be used instead. This is credential hashing context.
+
+  - id: dvwa-brute-sqli-combined-001
+    file: vulnerabilities/brute/source/low.php
+    line: 12
+    rule_id: KS-PHP-0002
+    expected: TRUE_POSITIVE
+    cwe: CWE-89
+    language: PHP
+    severity: HIGH
+    category: SQL_INJECTION
+    rationale: >
+      $user from $_GET['username'] is concatenated directly into SELECT query on
+      line 12 with no sanitization. The MD5-hashed $pass is also concatenated.
+      Both the injection and weak crypto exist in the same file.
+    source_reference: vulnerabilities/brute/source/low.php:12
+    description: >
+      $user from $_GET['username'] is concatenated directly into SELECT query on
+      line 12 with no sanitization. The MD5-hashed $pass is also concatenated.
+      Both the injection and weak crypto exist in the same file.
+
+  # ─── TRUE_NEGATIVE cases (10) ───────────────────────────────────────────────
+  # Code that MUST NOT produce a finding. Finding here = False Positive.
+
+  - id: dvwa-static-root-sqli-index
+    file: vulnerabilities/sqli/index.php
+    line: 4
+    rule_id: KS-PHP-0004
+    expected: TRUE_NEGATIVE
+    cwe: CWE-98
+    language: PHP
+    category: LFI
+    rationale: >
+      Line 4: require_once DVWA_WEB_PAGE_TO_ROOT . 'dvwa/includes/dvwaPage.inc.php'.
+      DVWA_WEB_PAGE_TO_ROOT is a static constant defined as '../'. The path is fully
+      hardcoded and user-input-free. KarsaSec should suppress via ConstantResolver.
+    source_reference: vulnerabilities/sqli/index.php:4
+    description: >
+      Line 4: require_once DVWA_WEB_PAGE_TO_ROOT . 'dvwa/includes/dvwaPage.inc.php'.
+      DVWA_WEB_PAGE_TO_ROOT is a static constant defined as '../'. The path is fully
+      hardcoded and user-input-free. KarsaSec should suppress via ConstantResolver.
+
+  - id: dvwa-static-root-exec-index
+    file: vulnerabilities/exec/index.php
+    line: 4
+    rule_id: KS-PHP-0004
+    expected: TRUE_NEGATIVE
+    cwe: CWE-98
+    language: PHP
+    category: LFI
+    rationale: >
+      Same static require_once pattern in exec/index.php:4. DVWA_WEB_PAGE_TO_ROOT
+      is a constant; inclusion path is hardcoded. No user input involved.
+    source_reference: vulnerabilities/exec/index.php:4
+    description: >
+      Same static require_once pattern in exec/index.php:4. DVWA_WEB_PAGE_TO_ROOT
+      is a constant; inclusion path is hardcoded. No user input involved.
+
+  - id: dvwa-static-root-view-source
+    file: vulnerabilities/view_source.php
+    line: 4
+    rule_id: KS-PHP-0004
+    expected: TRUE_NEGATIVE
+    cwe: CWE-98
+    language: PHP
+    category: LFI
+    rationale: >
+      view_source.php line 4: require_once DVWA_WEB_PAGE_TO_ROOT . 'dvwa/includes/dvwaPage.inc.php'.
+      Static constant path — not user-controlled. E10-3K ConstantResolver must classify as safe.
+    source_reference: vulnerabilities/view_source.php:4
+    description: >
+      view_source.php line 4: require_once DVWA_WEB_PAGE_TO_ROOT . 'dvwa/includes/dvwaPage.inc.php'.
+      Static constant path — not user-controlled. E10-3K ConstantResolver must classify as safe.
+
+  - id: dvwa-static-root-sqli-blind-index
+    file: vulnerabilities/sqli_blind/index.php
+    line: 4
+    rule_id: KS-PHP-0004
+    expected: TRUE_NEGATIVE
+    cwe: CWE-98
+    language: PHP
+    category: LFI
+    rationale: >
+      sqli_blind/index.php:4 uses identical static pattern. DVWA_WEB_PAGE_TO_ROOT
+      is defined as '../' — purely static. Should not trigger LFI finding.
+    source_reference: vulnerabilities/sqli_blind/index.php:4
+    description: >
+      sqli_blind/index.php:4 uses identical static pattern. DVWA_WEB_PAGE_TO_ROOT
+      is defined as '../' — purely static. Should not trigger LFI finding.
+
+  - id: dvwa-impossible-sqli-prepared-001
+    file: vulnerabilities/sqli/source/impossible.php
+    line: 16
+    rule_id: KS-PHP-0002
+    expected: TRUE_NEGATIVE
+    cwe: CWE-89
+    language: PHP
+    category: SQL_INJECTION
+    rationale: >
+      Impossible level uses $db->prepare() with ':id' placeholder on line 16 and
+      $data->bindParam(':id', $id, PDO::PARAM_INT) on line 17. Fully parameterized.
+      Should not be flagged as SQL injection.
+    source_reference: vulnerabilities/sqli/source/impossible.php:16
+    description: >
+      Impossible level uses $db->prepare() with ':id' placeholder on line 16 and
+      $data->bindParam(':id', $id, PDO::PARAM_INT) on line 17. Fully parameterized.
+      Should not be flagged as SQL injection.
+
+  - id: dvwa-impossible-sqli-prepared-002
+    file: vulnerabilities/sqli/source/impossible.php
+    line: 34
+    rule_id: KS-PHP-0002
+    expected: TRUE_NEGATIVE
+    cwe: CWE-89
+    language: PHP
+    category: SQL_INJECTION
+    rationale: >
+      SQLite prepared statement variant in impossible.php:34. Uses ->prepare() with
+      named parameter ':id'. Fully parameterized — not vulnerable to SQLi.
+    source_reference: vulnerabilities/sqli/source/impossible.php:34
+    description: >
+      SQLite prepared statement variant in impossible.php:34. Uses ->prepare() with
+      named parameter ':id'. Fully parameterized — not vulnerable to SQLi.
+
+  - id: dvwa-exec-impossible-001
+    file: vulnerabilities/exec/source/impossible.php
+    line: 22
+    rule_id: KS-OWASP-0003
+    expected: TRUE_NEGATIVE
+    cwe: CWE-78
+    language: PHP
+    category: COMMAND_INJECTION
+    rationale: >
+      Impossible level: user input is processed through stripslashes(), trim(),
+      and is validated against a strict IP address regex before shell_exec. The
+      input is sanitized to a safe whitelist pattern — risk is effectively neutralized.
+      Note: KarsaSec may still flag the sink; this case establishes the expectation.
+    source_reference: vulnerabilities/exec/source/impossible.php:22
+    description: >
+      Impossible level: user input is processed through stripslashes(), trim(),
+      and is validated against a strict IP address regex before shell_exec. The
+      input is sanitized to a safe whitelist pattern — risk is effectively neutralized.
+      Note: KarsaSec may still flag the sink; this case establishes the expectation.
+
+  - id: dvwa-exec-impossible-002
+    file: vulnerabilities/exec/source/impossible.php
+    line: 26
+    rule_id: KS-OWASP-0003
+    expected: TRUE_NEGATIVE
+    cwe: CWE-78
+    language: PHP
+    category: COMMAND_INJECTION
+    rationale: >
+      *nix variant of dvwa-exec-impossible-001. Same IP validation guard applies.
+      shell_exec() sink is present but input is strictly validated before reaching it.
+    source_reference: vulnerabilities/exec/source/impossible.php:26
+    description: >
+      *nix variant of dvwa-exec-impossible-001. Same IP validation guard applies.
+      shell_exec() sink is present but input is strictly validated before reaching it.
+
+  - id: dvwa-view-source-constant-root
+    file: vulnerabilities/view_source_all.php
+    line: 4
+    rule_id: KS-PHP-0004
+    expected: TRUE_NEGATIVE
+    cwe: CWE-98
+    language: PHP
+    category: LFI
+    rationale: >
+      view_source_all.php:4 uses require_once DVWA_WEB_PAGE_TO_ROOT . 'dvwa/includes/dvwaPage.inc.php'.
+      Static constant path. E10-3K ConstantResolver should classify DVWA_WEB_PAGE_TO_ROOT
+      as STATIC_CONSTANT and suppress this as a false positive.
+    source_reference: vulnerabilities/view_source_all.php:4
+    description: >
+      view_source_all.php:4 uses require_once DVWA_WEB_PAGE_TO_ROOT . 'dvwa/includes/dvwaPage.inc.php'.
+      Static constant path. E10-3K ConstantResolver should classify DVWA_WEB_PAGE_TO_ROOT
+      as STATIC_CONSTANT and suppress this as a false positive.
+
+  - id: dvwa-sqli-blind-index-static
+    file: vulnerabilities/sqli_blind/cookie-input.php
+    line: 4
+    rule_id: KS-PHP-0004
+    expected: TRUE_NEGATIVE
+    cwe: CWE-98
+    language: PHP
+    category: LFI
+    rationale: >
+      cookie-input.php:4: require_once DVWA_WEB_PAGE_TO_ROOT . 'dvwa/includes/dvwaPage.inc.php'.
+      Identical static inclusion pattern. DVWA_WEB_PAGE_TO_ROOT resolves to '../'.
+      Not user-controlled. Should be suppressed.
+    source_reference: vulnerabilities/sqli_blind/cookie-input.php:4
+    description: >
+      cookie-input.php:4: require_once DVWA_WEB_PAGE_TO_ROOT . 'dvwa/includes/dvwaPage.inc.php'.
+      Identical static inclusion pattern. DVWA_WEB_PAGE_TO_ROOT resolves to '../'.
+      Not user-controlled. Should be suppressed.

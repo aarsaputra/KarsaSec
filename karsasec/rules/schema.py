@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any
 
-from karsasec.rules.enums import Confidence, LanguageEnum, Severity, TargetFormatEnum
+from karsasec.rules.enums import Confidence, LanguageEnum, Severity, TargetFormatEnum, UnknownResolution
 
 RULE_ID_PATTERN = re.compile(r"^KS-[A-Z0-9_-]{2,10}-\d{4}$")
 
@@ -76,6 +76,9 @@ class RuleCondition:
     """Predicate condition triggering rule matching."""
     symbol_triggers: list[str] = field(default_factory=list)
     pattern: str | None = None
+    value_evidence_equals: str | None = None
+    value_evidence_not_in: list[str] = field(default_factory=list)
+    node_text_not_matches: str | None = None
 
 @dataclass(slots=True)
 class RuleOutput:
@@ -84,6 +87,55 @@ class RuleOutput:
     confidence: Confidence
     message: str
     remediation: str
+
+
+# ---------------------------------------------------------------------------
+# Rule Contract (E10-3J) — four-section formal quality gate
+# ---------------------------------------------------------------------------
+
+@dataclass(slots=True, frozen=True)
+class DetectionContract:
+    """Describes what makes a rule match semantically dangerous."""
+    source_kind: str = ""               # e.g. 'credential_assignment', 'hash_for_password'
+    semantic_context: str = ""          # Human description of the vulnerability intent
+    unsafe_evidence: tuple[str, ...] = field(default_factory=tuple)  # ValueEvidenceKind values
+
+@dataclass(slots=True, frozen=True)
+class SafetyContract:
+    """Describes what evidence proves a match is safe (no finding)."""
+    safe_evidence: tuple[str, ...] = field(default_factory=tuple)    # ValueEvidenceKind -> suppress
+    unknown_evidence: tuple[str, ...] = field(default_factory=tuple) # ValueEvidenceKind -> suppress
+    unknown_resolution: UnknownResolution = UnknownResolution.SUPPRESS
+
+@dataclass(slots=True, frozen=True)
+class FixtureContract:
+    """Executable code fixtures that validate the rule deterministically.
+
+    positive: snippets that MUST produce a Finding.
+    negative: snippets that MUST NOT produce any Finding.
+    Both are verified by RuleContractValidator in CI.
+    """
+    positive: tuple[str, ...] = field(default_factory=tuple)
+    negative: tuple[str, ...] = field(default_factory=tuple)
+
+@dataclass(slots=True, frozen=True)
+class RegressionContract:
+    """Tracks known FP patterns this rule has been explicitly hardened against."""
+    fp_regression_ids: tuple[str, ...] = field(default_factory=tuple)
+    regression_context: str = ""        # Human description of FP source
+
+@dataclass(slots=True)
+class RuleContract:
+    """Full formal contract for a security rule — composed of four sub-contracts.
+
+    Rules without a contract section are valid (backward compatible).
+    Rules modified after E10-3J MUST carry a contract before merging.
+    """
+    detection: DetectionContract = field(default_factory=DetectionContract)
+    safety: SafetyContract = field(default_factory=SafetyContract)
+    fixtures: FixtureContract = field(default_factory=FixtureContract)
+    regression: RegressionContract = field(default_factory=RegressionContract)
+
 
 @dataclass(slots=True)
 class Rule:
@@ -96,6 +148,7 @@ class Rule:
     target: TargetSpec | None = None
     analysis: AnalysisSpec | None = None
     evidence: EvidenceSpec | None = None
+    contract: RuleContract | None = None
     schema_version: str = "2.0"
 
 def validate_rule_dict(raw_data: dict[str, Any]) -> Rule:
@@ -236,9 +289,18 @@ def validate_rule_dict(raw_data: dict[str, Any]) -> Rule:
         raise ValueError("Field 'symbol_triggers' in 'condition' section must be a list.")
 
     pattern = cond_sec.get("pattern")
+    ve_eq = cond_sec.get("value_evidence_equals")
+    ve_not_in = cond_sec.get("value_evidence_not_in", [])
+    if not isinstance(ve_not_in, list):
+        ve_not_in = []
+    node_text_not_matches = cond_sec.get("node_text_not_matches")
+
     condition_obj = RuleCondition(
         symbol_triggers=[str(s) for s in symbol_triggers],
         pattern=str(pattern) if pattern else None,
+        value_evidence_equals=str(ve_eq) if ve_eq else None,
+        value_evidence_not_in=[str(v) for v in ve_not_in],
+        node_text_not_matches=str(node_text_not_matches) if node_text_not_matches else None,
     )
 
     # Validate Evidence Spec (Schema v2)
@@ -289,6 +351,42 @@ def validate_rule_dict(raw_data: dict[str, Any]) -> Rule:
 
     schema_ver = "2.0" if (target_sec or analysis_sec or ev_sec or created) else "1.0"
 
+    # Parse optional contract section (E10-3J) — fully backward-compatible
+    contract_obj: RuleContract | None = None
+    contract_sec = raw_data.get("contract")
+    if isinstance(contract_sec, dict):
+        det = contract_sec.get("detection", {}) or {}
+        saf = contract_sec.get("safety", {}) or {}
+        fix = contract_sec.get("fixtures", {}) or {}
+        reg = contract_sec.get("regression", {}) or {}
+
+        raw_unknown_res = saf.get("unknown_resolution", "SUPPRESS")
+        try:
+            unknown_res = UnknownResolution(str(raw_unknown_res).upper())
+        except ValueError:
+            unknown_res = UnknownResolution.SUPPRESS
+
+        contract_obj = RuleContract(
+            detection=DetectionContract(
+                source_kind=str(det.get("source_kind", "")),
+                semantic_context=str(det.get("semantic_context", "")),
+                unsafe_evidence=tuple(str(v) for v in det.get("unsafe_evidence", [])),
+            ),
+            safety=SafetyContract(
+                safe_evidence=tuple(str(v) for v in saf.get("safe_evidence", [])),
+                unknown_evidence=tuple(str(v) for v in saf.get("unknown_evidence", [])),
+                unknown_resolution=unknown_res,
+            ),
+            fixtures=FixtureContract(
+                positive=tuple(str(v) for v in fix.get("positive", [])),
+                negative=tuple(str(v) for v in fix.get("negative", [])),
+            ),
+            regression=RegressionContract(
+                fp_regression_ids=tuple(str(v) for v in reg.get("fp_regression_ids", [])),
+                regression_context=str(reg.get("regression_context", "")),
+            ),
+        )
+
     return Rule(
         id=rule_id,
         metadata=metadata_v2,
@@ -298,5 +396,6 @@ def validate_rule_dict(raw_data: dict[str, Any]) -> Rule:
         target=target_obj,
         analysis=analysis_obj,
         evidence=evidence_obj,
+        contract=contract_obj,
         schema_version=schema_ver,
     )

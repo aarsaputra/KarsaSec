@@ -1,0 +1,36 @@
+rule:
+  id: KS-FLASK-AUTH-0004
+  version: "1.0"
+  framework: FLASK
+
+metadata:
+  name: Sensitive Endpoint Protected by Weak Authentication
+  author: KarsaSec Team
+  cwe: CWE-306
+  owasp: A07:2021-Identification and Authentication Failures
+  references:
+    - https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/
+
+target:
+  node_type: ROUTE
+
+conditions:
+  all:
+    - attribute_equals:
+        key: sensitivity
+        value: HIGH
+    - incoming_edge:
+        type: PROTECTS
+        source_attributes:
+          auth_strength: WEAK
+
+traversal:
+  max_depth: 1
+  max_nodes_visited: 50
+  max_edges_examined: 100
+
+output:
+  severity: HIGH
+  confidence: HIGH
+  message: High-sensitivity route '{node.name}' is protected by an authentication provider with weak auth strength.
+  remediation: Upgrade authentication provider to use strong authentication (e.g. robust JWT signature or secure session cookies).

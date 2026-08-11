@@ -6,10 +6,11 @@ metadata:
     - https://owasp.org/Top10/
   name: OWASP A05 - Security Misconfiguration (Multi-language)
   author: KarsaSec Team
-  version: "1.0"
+  version: "1.1"
   cwe: CWE-16
   owasp: A05:2021-Security Misconfiguration
   created: "2026-08-05"
+  updated: "2026-08-09"
   tags:
     - misconfiguration
 
@@ -33,10 +34,14 @@ match:
 condition:
   symbol_triggers:
     - display_errors
-    - error_reporting
     - ini_set
     - debug
-  pattern: '(?i)(display_errors|error_reporting|ini_set|DEBUG\s*=\s*True)'
+  # Pattern: only flag explicit enable assignments.
+  # error_reporting(E_ALL) requires file-level context -> removed -> UNKNOWN -> SUPPRESS.
+  pattern: >-
+    (?i)(ini_set\s*\(\s*["']display_errors["']|display_errors\s*=\s*["']?1["']?|DEBUG\s*=\s*True\b)
+  # Candidate pre-filter: skip comments and test/bootstrap contexts
+  node_text_not_matches: '(//|#\s|/\*|\*\s|<!--|\btest\b|\bspec\b|\bphpunit\b|\bbootstrap\b)'
 
 evidence:
   require: []
@@ -46,5 +51,38 @@ evidence:
 output:
   severity: MEDIUM
   confidence: LIKELY
-  message: Detects enabled debug modes, verbose error output, or unhardened security flags.
-  remediation: Disable debug features and verbose error reporting in production environments.
+  message: Detects explicitly enabled debug mode or verbose error display in production context.
+  remediation: Disable display_errors and DEBUG mode in production. Use logging frameworks that write to files, not HTTP responses.
+
+contract:
+  detection:
+    source_kind: debug_flag_assignment
+    semantic_context: >
+      Debug mode or verbose error display explicitly enabled in code.
+      error_reporting(E_ALL) alone is UNKNOWN (insufficient context) and suppressed.
+    unsafe_evidence:
+      - LITERAL_SECRET
+
+  safety:
+    safe_evidence:
+      - ENV_REFERENCE
+      - SECRET_PROVIDER_REFERENCE
+    unknown_evidence:
+      - UNKNOWN
+    unknown_resolution: SUPPRESS
+
+  fixtures:
+    positive:
+      - "ini_set('display_errors', 1);"
+      - "ini_set('display_errors', '1');"
+      - "ini_set('display_errors', true);"
+    negative:
+      - "error_reporting(E_ALL);"
+      - "// ini_set('display_errors', 1);"
+
+  regression:
+    fp_regression_ids:
+      - DVWA-FP-MISCONFIG-001
+    regression_context: >
+      error_reporting(E_ALL) in impossible.php and test bootstrap files was
+      falsely flagged. Insufficient context to determine production risk.

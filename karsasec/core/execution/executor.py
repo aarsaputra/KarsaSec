@@ -103,11 +103,13 @@ class RuleExecutor:
                             if not taint_res.has_taint_source:
                                 continue
 
+                        src_txt = scan_context.source_bytes.decode("utf-8", errors="ignore") if scan_context.source_bytes else ""
                         finding = self.factory.create_finding(
                             rule=compiled_rule.rule,
                             file_path=file_path,
                             evidence=evidence,
                             match_result=match_res,
+                            source_text=src_txt,
                         )
                         # Deduplication by fingerprint
                         if finding.fingerprint not in seen_fingerprints:

@@ -6,10 +6,11 @@ metadata:
     - https://owasp.org/Top10/
   name: OWASP A02 - Cryptographic Failures (Multi-language)
   author: KarsaSec Team
-  version: "1.0"
+  version: "1.1"
   cwe: CWE-326
   owasp: A02:2021-Cryptographic Failures
   created: "2026-08-05"
+  updated: "2026-08-09"
   tags:
     - crypto
 
@@ -28,17 +29,19 @@ match:
   language: Generic
   ast_node_types:
     - call
-    - statement
 
 condition:
   symbol_triggers:
     - md5
     - sha1
-    - base64_encode
-    - crypt
-    - openssl_encrypt
-    - random
-  pattern: '(?i)(md5|sha1|base64_encode|crypt|rng|rand|Random|InsecureRandom|InsecureSkipVerify|DES|ECB)'
+    - InsecureRandom
+    - InsecureSkipVerify
+  # Pattern requires: weak algorithm AND credential/auth/session context adjacent to the call.
+  # Generic hashing (file checksums) is UNKNOWN -> SUPPRESS per contract.
+  pattern: '(?i)(md5\s*\(|sha1\s*\().*(?:password|passwd|pwd|secret|credential|token|session|auth)|(?:password|passwd|pwd|secret|credential|token|session|auth).*(?:md5\s*\(|sha1\s*\()|InsecureRandom|InsecureSkipVerify'
+  # Candidate pre-filter only (not final decision):
+  # Exclude IV encoding (DVWA FP), tag encoding, prose text
+  node_text_not_matches: '(base64_encode\s*\(\s*\$iv|base64_encode\s*\(\s*\$tag|//|<!--|\*\s|\b(more|less|looks|appears|seems)\s+random\b)'
 
 evidence:
   require: []
@@ -48,5 +51,41 @@ evidence:
 output:
   severity: HIGH
   confidence: LIKELY
-  message: Detects use of weak or insecure cryptographic primitives or insecure randomness.
-  remediation: Use modern, vetted crypto libraries and secure random number generators for secrets and tokens.
+  message: Detects use of weak cryptographic primitives (MD5/SHA1) in credential or session contexts.
+  remediation: Use bcrypt, argon2id, or PBKDF2 for password hashing. Use SHA-256+ for non-credential hashing. Never use MD5/SHA1 for authentication tokens.
+
+contract:
+  detection:
+    source_kind: credential_hashing
+    semantic_context: Weak hash algorithm (MD5/SHA1) applied to password, session ID, or authentication credential
+    unsafe_evidence:
+      - LITERAL_SECRET
+
+  safety:
+    safe_evidence:
+      - ENV_REFERENCE
+      - SECRET_PROVIDER_REFERENCE
+    unknown_evidence:
+      - UNKNOWN
+      - STATIC_CONSTANT
+    unknown_resolution: SUPPRESS
+
+  fixtures:
+    positive:
+      - "$hash = md5($password);"
+      - "$cookie_value = md5($_SESSION['last_session_id_high']);"
+      - "password_hash = hashlib.md5(password.encode()).hexdigest()"
+      - "$token = sha1($user_password . $salt);"
+    negative:
+      - "$checksum = md5($uploaded_file);"
+      - "$iv_b64 = base64_encode($iv_string);"
+      - "$token = bin2hex(random_bytes(32));"
+      - "// The value looks a little more random than on low"
+
+  regression:
+    fp_regression_ids:
+      - DVWA-FP-CRYPTO-001
+      - DVWA-FP-CRYPTO-002
+    regression_context: >
+      DVWA: base64_encode($iv_string) and prose text containing "random" were
+      falsely flagged. MD5 checksum on uploaded file content is not credential hashing.

@@ -65,7 +65,7 @@ class RegexPredicate(BasePredicate):
                         resolved = None
 
                 if resolved:
-                    expanded = re.sub(r"\b" + re.escape(word) + r"\b", resolved, node_text)
+                    expanded = re.sub(r"\b" + re.escape(word) + r"\b", lambda _, r=resolved: r, node_text)
                     expanded_texts.append(expanded)
 
         for text_to_check in expanded_texts:

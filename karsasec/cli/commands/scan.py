@@ -395,7 +395,13 @@ def execute_scan_command(
     scan_duration_ms = round((time.perf_counter() - scan_started) * 1000, 2)
 
     # Handle Baseline Comparison if requested
-    findings_tuple = tuple(all_findings)
+    # Phase 5.5 — Finding Correlation & Deduplication
+    # Group findings by semantic fingerprint to eliminate duplicates from overlapping rules.
+    from karsasec.core.finding.correlator import FindingCorrelator
+    _correlator = FindingCorrelator()
+    _canonical = _correlator.correlate(all_findings)
+    findings_tuple = _correlator.to_findings(_canonical)
+
     if baseline_path and baseline_path.exists():
         try:
             baseline = baseline_manager.load_baseline(baseline_path)
