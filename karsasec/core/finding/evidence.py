@@ -1,4 +1,4 @@
-"""Immutable Evidence, FindingEvidence, and EvidenceCompleteness models (E12-4)."""
+"""Immutable Evidence, FindingEvidence, EvidenceCompleteness, SourceCategory, OperationSemantics, and QualificationEvidence models (E12-4, E12-10)."""
 
 from __future__ import annotations
 
@@ -7,6 +7,54 @@ from enum import StrEnum
 from typing import Any
 
 from karsasec.graph.dataflow.model import TaintPathHop, TaintState
+
+
+class SourceCategory(StrEnum):
+    """Classification of data origin for taint analysis and evidence attribution."""
+    USER_CONTROLLED = "USER_CONTROLLED"   # Direct or indirect untrusted user input (e.g. $_GET, $_POST, HTTP headers)
+    STATIC = "STATIC"                     # Static literal string, number, static constant, or compile-time expression
+    LOCAL_RESOURCE = "LOCAL_RESOURCE"     # Local server resource (e.g. php://input stream, __DIR__, local file path)
+    DERIVED = "DERIVED"                   # Computed value derived from static/local operations
+    UNKNOWN = "UNKNOWN"                   # Flow provenance inconclusive
+
+
+class OperationSemantics(StrEnum):
+    """Semantic classification of AST operation performed on candidate data."""
+    STATEMENT_EXECUTION = "STATEMENT_EXECUTION"   # Execution of security-sensitive sink statement
+    SAFE_PREPARATION = "SAFE_PREPARATION"         # Preparation of parameterized query (e.g. PDO::prepare)
+    PARAMETER_BINDING = "PARAMETER_BINDING"       # Parameter binding operation (e.g. PDOStatement::bindParam)
+    VALIDATION_GUARD = "VALIDATION_GUARD"         # Input validation guard check (e.g. isset, preg_match, is_numeric)
+    LOCAL_READ = "LOCAL_READ"                     # Read operation from local stream or static file
+    VARIABLE_ASSIGNMENT = "VARIABLE_ASSIGNMENT"   # Variable assignment expression ($var = value)
+    COMPARISON = "COMPARISON"                     # Comparison expression ($a == $b)
+    SECURE_CONFIGURATION = "SECURE_CONFIGURATION" # Secure configuration setting (e.g., setcookie with httponly/secure)
+    UNKNOWN = "UNKNOWN"                           # Default / generic expression context
+
+
+@dataclass
+class QualificationEvidence:
+    """Serializable structural evidence supporting deterministic finding qualification decisions."""
+    decision: str
+    source_category: SourceCategory = SourceCategory.UNKNOWN
+    taint_evidence: dict[str, Any] = field(default_factory=dict)
+    sanitizer_capability: str = "NONE"
+    sink_category: str = "GENERIC_SINK"
+    operation_semantics: OperationSemantics = OperationSemantics.UNKNOWN
+    rejection_reason: str | None = None
+    explanation: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize evidence into machine-readable JSON-friendly dictionary."""
+        return {
+            "decision": str(self.decision),
+            "source_category": str(self.source_category),
+            "taint_evidence": self.taint_evidence,
+            "sanitizer_capability": str(self.sanitizer_capability),
+            "sink_category": str(self.sink_category),
+            "operation_semantics": str(self.operation_semantics),
+            "rejection_reason": str(self.rejection_reason) if self.rejection_reason else None,
+            "explanation": self.explanation,
+        }
 
 
 class ProvenanceStatus(StrEnum):

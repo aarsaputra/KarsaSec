@@ -1,4 +1,4 @@
-"""Sink categories and central sink registry (E11)."""
+"""Sink categories and central sink registry (E11, E12-10)."""
 from __future__ import annotations
 
 import re
@@ -9,6 +9,8 @@ class SinkCategory(StrEnum):
     """Semantic classifications of dangerous sink functions and language constructs."""
     COMMAND_EXECUTION = "COMMAND_EXECUTION"
     SQL_EXECUTION = "SQL_EXECUTION"
+    SQL_PREPARATION = "SQL_PREPARATION"
+    PARAMETER_BINDING = "PARAMETER_BINDING"
     FILE_INCLUSION = "FILE_INCLUSION"
     FILE_READ = "FILE_READ"
     HTML_OUTPUT = "HTML_OUTPUT"
@@ -41,6 +43,8 @@ _PHP_SINKS: dict[str, SinkCategory] = {
     "mysqli_query": SinkCategory.SQL_EXECUTION,
     "mysql_query": SinkCategory.SQL_EXECUTION,
     "pg_query": SinkCategory.SQL_EXECUTION,
+    "mysqli_prepare": SinkCategory.SQL_PREPARATION,
+    "mysqli_stmt_bind_param": SinkCategory.PARAMETER_BINDING,
     "md5": SinkCategory.CRYPTOGRAPHIC_OPERATION,
     "sha1": SinkCategory.CRYPTOGRAPHIC_OPERATION,
 }
@@ -49,7 +53,10 @@ _PHP_METHOD_SINKS: dict[str, SinkCategory] = {
     "query": SinkCategory.SQL_EXECUTION,
     "exec": SinkCategory.SQL_EXECUTION,
     "execute": SinkCategory.SQL_EXECUTION,
-    "prepare": SinkCategory.SQL_EXECUTION,
+    "prepare": SinkCategory.SQL_PREPARATION,
+    "bindParam": SinkCategory.PARAMETER_BINDING,
+    "bindValue": SinkCategory.PARAMETER_BINDING,
+    "bind_param": SinkCategory.PARAMETER_BINDING,
 }
 
 
@@ -72,13 +79,17 @@ class SinkRegistry:
             if clean_sym in self._php_method_sinks:
                 return self._php_method_sinks[clean_sym]
 
-            # Regex inspection on snippet if symbol alone is generic
+            # Structural snippet inspection if symbol is generic or unknown
             if snippet:
+                if re.search(r'->(?:bindParam|bindValue|bind_param)\s*\(|\bmysqli_stmt_bind_param\s*\(', snippet, re.IGNORECASE):
+                    return SinkCategory.PARAMETER_BINDING
+                if re.search(r'->prepare\s*\(|\bmysqli_prepare\s*\(', snippet, re.IGNORECASE):
+                    return SinkCategory.SQL_PREPARATION
                 if re.search(r'\b(shell_exec|exec|system|passthru|popen|proc_open)\s*\(', snippet, re.IGNORECASE):
                     return SinkCategory.COMMAND_EXECUTION
                 if re.search(r'\b(include|require)(?:_once)?\b', snippet, re.IGNORECASE):
                     return SinkCategory.FILE_INCLUSION
-                if re.search(r'->(?:query|exec|execute|prepare)\s*\(', snippet, re.IGNORECASE):
+                if re.search(r'->(?:query|exec|execute)\s*\(', snippet, re.IGNORECASE):
                     return SinkCategory.SQL_EXECUTION
                 if re.search(r'\b(mysqli_query|mysql_query|pg_query)\s*\(', snippet, re.IGNORECASE):
                     return SinkCategory.SQL_EXECUTION

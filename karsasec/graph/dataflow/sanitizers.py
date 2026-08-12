@@ -13,6 +13,7 @@ class SanitizerCapability(StrEnum):
     SHELL_ESCAPE = "SHELL_ESCAPE"
     SQL_ESCAPE = "SQL_ESCAPE"
     INTEGER_COERCION = "INTEGER_COERCION"
+    HASH_OUTPUT = "HASH_OUTPUT"
     PATH_COMPONENT_NORMALIZATION = "PATH_COMPONENT_NORMALIZATION"
     PATH_CANONICALIZATION = "PATH_CANONICALIZATION"
 
@@ -29,6 +30,14 @@ _CAPABILITY_COMPATIBILITY: dict[SanitizerCapability, frozenset[SinkCategory]] = 
         SinkCategory.SQL_EXECUTION,
     }),
     SanitizerCapability.INTEGER_COERCION: frozenset({
+        SinkCategory.SQL_EXECUTION,
+        SinkCategory.COMMAND_EXECUTION,
+        SinkCategory.FILE_INCLUSION,
+        SinkCategory.FILE_READ,
+        SinkCategory.HTML_OUTPUT,
+        SinkCategory.CODE_EVALUATION,
+    }),
+    SanitizerCapability.HASH_OUTPUT: frozenset({
         SinkCategory.SQL_EXECUTION,
         SinkCategory.COMMAND_EXECUTION,
         SinkCategory.FILE_INCLUSION,
@@ -60,6 +69,16 @@ _PHP_SANITIZERS: dict[str, SanitizerCapability] = {
     "intval": SanitizerCapability.INTEGER_COERCION,
     "floatval": SanitizerCapability.INTEGER_COERCION,
     "abs": SanitizerCapability.INTEGER_COERCION,
+    "is_numeric": SanitizerCapability.INTEGER_COERCION,
+    "ctype_digit": SanitizerCapability.INTEGER_COERCION,
+    "is_int": SanitizerCapability.INTEGER_COERCION,
+    "is_integer": SanitizerCapability.INTEGER_COERCION,
+    "md5": SanitizerCapability.HASH_OUTPUT,
+    "sha1": SanitizerCapability.HASH_OUTPUT,
+    "hash": SanitizerCapability.HASH_OUTPUT,
+    "password_hash": SanitizerCapability.HASH_OUTPUT,
+    "crypt": SanitizerCapability.HASH_OUTPUT,
+    "crc32": SanitizerCapability.HASH_OUTPUT,
     "basename": SanitizerCapability.PATH_COMPONENT_NORMALIZATION,
     "realpath": SanitizerCapability.PATH_CANONICALIZATION,
 }

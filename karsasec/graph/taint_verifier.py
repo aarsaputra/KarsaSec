@@ -20,12 +20,22 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+from karsasec.graph.cfg import CFGBuilder
 from karsasec.graph.constant_resolver import (
     _RE_CONST_IDENT,
     _STATIC_RESOLUTIONS,
     ConstantResolution,
     ConstantResolver,
 )
+from karsasec.graph.dataflow.abstract_state import AbstractEnvironment, SemanticConstraint, TaintState as AbstractTaintState
+from karsasec.graph.dataflow.constant_evaluator import constant_evaluator
+from karsasec.graph.dataflow.crypto_context import CryptoContextAnalyzer, CryptoContextKind
+from karsasec.graph.dataflow.guard_propagation import WorklistFixpointAnalyzer
+from karsasec.graph.dataflow.interprocedural_guard import InterproceduralGuardManager
+from karsasec.graph.dataflow.model import DataFlowEvidence, TaintState
+from karsasec.graph.dataflow.sink_matrix import CompatibilityDecision, SinkContext, sink_compatibility_matrix
+from karsasec.graph.resource_graph import ResourceGraph
+from karsasec.graph.symbol_resolver import SymbolResolver
 from karsasec.parser.ast_nodes import ASTNode
 from karsasec.rules.enums import Confidence, Severity
 
@@ -70,7 +80,11 @@ _MAX_BACKTRACK_DEPTH: int = 4
 # Result model
 # ---------------------------------------------------------------------------
 
-from karsasec.graph.dataflow import DataFlowEvidence, TaintState, dataflow_analyzer
+from karsasec.graph.dataflow import dataflow_analyzer
+
+
+from karsasec.graph.dataflow.security_decision import SecurityDecisionEngine
+from karsasec.graph.dataflow.security_verdict import SecurityVerdict
 
 
 @dataclass(slots=True, frozen=True)
@@ -84,11 +98,16 @@ class TaintAnalysisResult:
     reason: str
     constant_resolution: ConstantResolution | None = None  # E10-3K: constant evidence
     dataflow_evidence: DataFlowEvidence | None = None       # E11: data-flow evidence
+    verdict: SecurityVerdict | None = None                   # E18: security decision verdict
 
 
 # ---------------------------------------------------------------------------
 # TaintVerifier
 # ---------------------------------------------------------------------------
+
+from karsasec.graph.dataflow.semantic_correlator import SemanticSinkCorrelator
+from karsasec.graph.dataflow.semantic_evidence import ProofStatus
+
 
 class TaintVerifier:
     """Verifies whether a rule match at a sink actually receives untrusted user input.
@@ -97,11 +116,22 @@ class TaintVerifier:
     - Added ConstantResolver for generic PHP constant tracking
     E11 changes:
     - Integrated DataFlowAnalyzer for backward taint propagation, Def/Use analysis, and sink-aware sanitization
+    E12-17 changes:
+    - Integrated SemanticSinkCorrelator for evidence correlation while preserving E12-13 final authority
+    E12-18 changes:
+    - Integrated SecurityDecisionEngine for evidence-backed security verdicts
     """
 
     def __init__(self) -> None:
         self._const_resolver = ConstantResolver()
         self._df_analyzer = dataflow_analyzer
+        self._resource_graph = ResourceGraph()
+        self._symbol_resolver = SymbolResolver(self._resource_graph)
+        self._interproc_manager = InterproceduralGuardManager(self._resource_graph)
+        self._crypto_analyzer = CryptoContextAnalyzer()
+        self._correlator = SemanticSinkCorrelator(self._resource_graph)
+        self._decision_engine = SecurityDecisionEngine()
+        self.project_files: dict[str, str] = {}
 
     def verify_sink(
         self,
@@ -115,7 +145,7 @@ class TaintVerifier:
         file_path: Path | None = None,
     ) -> TaintAnalysisResult:
         """Analyze a sink location for taint vs. static evidence."""
-        lang = (language or "").strip().lower()
+        lang = (language or "php").strip().lower()
         clean_snippet = snippet.strip()
         clean_context = context_text.strip()
         full_source = source_text or clean_context
@@ -150,8 +180,25 @@ class TaintVerifier:
             if m and "$" not in m.group(2):
                 is_static = True
 
-        # -- Step 2: PHP Constant Resolution (E10-3K) ----------------------------
         const_resolution: ConstantResolution | None = None
+
+        # -- Step 1B: Static SQL query payload detection ---------------------------
+        if lang == "php" and not is_static:
+            if self._is_static_sql_argument(clean_snippet, full_source, lang):
+                is_static = True
+
+        if is_static:
+            return TaintAnalysisResult(
+                has_taint_source=False,
+                is_hardcoded_static=True,
+                is_whitelisted_guard=False,
+                adjusted_confidence=Confidence.LOW,
+                adjusted_severity=Severity.LOW,
+                reason="Sink argument is a hardcoded or statically-resolved constant",
+                constant_resolution=const_resolution,
+            )
+
+        # -- Step 2: PHP Constant Resolution (E10-3K) ----------------------------
         if lang == "php" and not is_static:
             const_resolution, is_static = self._resolve_php_constants(
                 clean_snippet, full_source
@@ -216,10 +263,7 @@ class TaintVerifier:
 
         # -- Step 4: Untrusted source detection (Legacy Fallback) ----------------
         source_patterns = self._untrusted_sources_for_language(lang)
-        has_taint = (
-            self._contains_untrusted_source(clean_snippet, source_patterns)
-            or self._contains_untrusted_source(clean_context, source_patterns)
-        )
+        has_taint = self._contains_untrusted_source(clean_snippet, source_patterns)
 
         # -- Step 5: Variable assignment backtracking fallback -------------------
         if not has_taint and full_source:
@@ -235,6 +279,59 @@ class TaintVerifier:
             ("switch (" in clean_context or "switch(" in clean_context)
             and ("case '" in clean_context or 'case "' in clean_context)
         )
+
+        # -- Step 6B: Path-Sensitive Control-Flow Guard & Compatibility Evaluation --
+        rule_cat = "SQL_INJECTION"
+        if any(k in clean_snippet for k in ("exec", "shell_exec", "system", "passthru")):
+            rule_cat = "COMMAND_INJECTION"
+        elif any(k in clean_snippet for k in ("include", "require", "readfile")):
+            rule_cat = "PATH_TRAVERSAL"
+        elif any(k in clean_snippet for k in ("echo", "print", "header")):
+            rule_cat = "XSS"
+
+        is_guarded, guard_reason, guard_df_ev = self._evaluate_cfg_path_guards(
+            snippet=clean_snippet,
+            full_source=full_source,
+            lang=lang,
+            rule_category=rule_cat,
+        )
+        if is_guarded:
+            return TaintAnalysisResult(
+                has_taint_source=False,
+                is_hardcoded_static=False,
+                is_whitelisted_guard=True,
+                adjusted_confidence=Confidence.LOW,
+                adjusted_severity=Severity.LOW,
+                reason=guard_reason,
+                dataflow_evidence=guard_df_ev,
+            )
+
+        # -- Step 6C: HMAC / Signature Guard Detection ----------------------------
+        has_hmac_guard = bool(
+            re.search(r'\bhash_equals\s*\(', full_source, re.IGNORECASE)
+            and re.search(r'\b(wp_hash|hash_hmac|openssl_verify|verify_signature)\b', full_source, re.IGNORECASE)
+        )
+        if has_hmac_guard and any(k in clean_snippet for k in ("unserialize", "eval", "unserialize(")):
+            df_evidence = DataFlowEvidence(
+                state=TaintState.SANITIZED,
+                path=(),
+                sanitizer_capability="HMAC_INTEGRITY",
+                adjusted_confidence=Confidence.LOW,
+                adjusted_severity=Severity.LOW,
+                reason="Sink is protected by HMAC signature verification (hash_equals/wp_hash)",
+                truncated=False,
+                hop_count=0,
+            )
+            return TaintAnalysisResult(
+                has_taint_source=False,
+                is_hardcoded_static=False,
+                is_whitelisted_guard=True,
+                adjusted_confidence=Confidence.LOW,
+                adjusted_severity=Severity.LOW,
+                reason=df_evidence.reason,
+                constant_resolution=const_resolution,
+                dataflow_evidence=df_evidence,
+            )
 
         # -- Step 7: Resolve final confidence/severity ----------------------------
         adj_severity = base_severity
@@ -321,6 +418,26 @@ class TaintVerifier:
 
         return None, False
 
+    def _is_static_sql_argument(self, snippet: str, full_source: str, lang: str) -> bool:
+        """Determines if a SQL query execution argument is a provably hardcoded static string literal."""
+        m_call = re.search(r'\b(?:mysqli_query|pg_query|mysql_query|sqlite_query|query|exec)\s*\(\s*(?:[^,\)]+\s*,\s*)?(.+?)\s*\)', snippet, re.IGNORECASE)
+        if not m_call:
+            return False
+
+        arg = m_call.group(1).strip()
+        # Use ConstantEvaluator pre-dataflow evaluation
+        env = constant_evaluator.build_scope_environment(full_source, language=lang)
+        lat_val = constant_evaluator.evaluate_expression(arg, full_source, env=env, language=lang)
+        if lat_val.is_constant():
+            return True
+
+        # Fallback direct string literal argument without variable interpolation
+        if (arg.startswith('"') and arg.endswith('"')) or (arg.startswith("'") and arg.endswith("'")):
+            if "$" not in arg and not re.search(r'\$_(?:GET|POST|REQUEST|COOKIE|SERVER|FILES)\b', arg):
+                return True
+
+        return False
+
     # ---------------------------------------------------------------------------
     # Language-agnostic helpers
     # ---------------------------------------------------------------------------
@@ -348,12 +465,12 @@ class TaintVerifier:
             return False
 
         visited = visited | {variable}
-        assign_pattern = re.compile(rf'{re.escape(variable)}\s*=\s*([^;]+);')
+        assign_pattern = re.compile(rf'(?:var|let|const)?\s*{re.escape(variable)}\s*(?::=|=)\s*([^\n;]+)')
         for m in assign_pattern.finditer(source_text):
             expression = m.group(1)
             if self._contains_untrusted_source(expression, sources):
                 return True
-            nested_vars = set(re.findall(r'\$[a-zA-Z_][a-zA-Z0-9_]*', expression))
+            nested_vars = self._extract_variables(expression)
             for nested in nested_vars:
                 if nested != variable and self._variable_assignment_contains_taint(
                     nested, source_text, sources, visited, depth + 1
@@ -388,6 +505,193 @@ class TaintVerifier:
             if re.search(pattern, text, flags=re.IGNORECASE):
                 return True
         return False
+
+    def _evaluate_cfg_path_guards(
+        self,
+        snippet: str,
+        full_source: str,
+        lang: str,
+        rule_category: str = "SQL_INJECTION",
+    ) -> tuple[bool, str, DataFlowEvidence | None]:
+        """Performs path-sensitive CFG abstract interpretation and evaluates sink compatibility."""
+        if not full_source or lang != "php":
+            return False, "", None
+
+        lines = [line for line in full_source.splitlines() if line.strip()]
+        builder = CFGBuilder()
+        cfg = builder.build_cfg("main", lines)
+
+        if not cfg.reachable_blocks:
+            return False, "", None
+
+        # Initial environment
+        init_env = AbstractEnvironment()
+        for sg in ("$_GET", "$_POST", "$_REQUEST", "$_COOKIE", "$_FILES", "$_SERVER"):
+            init_env.assignment_kill(sg, new_taint=AbstractTaintState.TAINTED, prov_desc="Superglobal input")
+
+        analyzer = WorklistFixpointAnalyzer()
+        in_states = analyzer.analyze(cfg, init_env)
+
+        # Determine SinkContext
+        context = SinkContext.SQL_VALUE
+        if "SQL" in rule_category.upper():
+            if re.search(r'FROM\s+\$[a-zA-Z0-9_]+|INTO\s+\$[a-zA-Z0-9_]+', snippet, re.IGNORECASE):
+                context = SinkContext.SQL_IDENTIFIER
+            else:
+                context = SinkContext.SQL_VALUE
+        elif "COMMAND" in rule_category.upper() or "EXEC" in rule_category.upper() or "SHELL" in rule_category.upper():
+            context = SinkContext.SHELL_ARGUMENT
+        elif "XSS" in rule_category.upper() or "HTML" in rule_category.upper():
+            context = SinkContext.HTML_TEXT
+        elif "FILE" in rule_category.upper() or "PATH" in rule_category.upper() or "LFI" in rule_category.upper():
+            context = SinkContext.FILE_PATH
+
+        # E12-17 Whole-Program Semantic Sink Correlation Layer
+        ev_bundle = self._correlator.correlate_and_evaluate(
+            sink_node_id=f"sink_{hash(snippet)}",
+            snippet=snippet,
+            full_source=full_source,
+            language=lang,
+            sink_category=rule_category,
+            sink_context=context,
+        )
+        if ev_bundle.proof_status == ProofStatus.PROVEN and ev_bundle.evaluation_result and ev_bundle.evaluation_result.decision == CompatibilityDecision.COMPATIBLE:
+            ev_reason = ev_bundle.evaluation_result.reason
+            df_ev = DataFlowEvidence(
+                state=TaintState.SANITIZED,
+                path=(),
+                adjusted_confidence=Confidence.LOW,
+                adjusted_severity=Severity.LOW,
+                reason=ev_reason,
+                truncated=False,
+            )
+            return True, ev_reason, df_ev
+
+        vars_in_snip = self._extract_variables(snippet)
+        env_at_sink = self._correlator._compute_path_environment(full_source, snippet) or init_env
+        for var in vars_in_snip:
+            val = env_at_sink.get_value(var)
+            constraints_to_eval = set(val.all_constraints) if val else set()
+
+            # E12-14: Interprocedural Guard Provenance (Guardrail 2)
+            interproc_facts = self._interproc_manager.get_propagated_facts("", var, env_at_sink)
+            constraints_to_eval.update(interproc_facts)
+
+            if constraints_to_eval:
+                eval_res = sink_compatibility_matrix.evaluate(constraints_to_eval, rule_category, context)
+                if eval_res.decision == CompatibilityDecision.COMPATIBLE:
+                    ev_reason = f"Path-sensitive guard proved {eval_res.matching_constraint} compatible with {rule_category} in {eval_res.sink_context} context"
+                    df_ev = DataFlowEvidence(
+                        state=TaintState.SANITIZED,
+                        path=(),
+                        adjusted_confidence=Confidence.LOW,
+                        adjusted_severity=Severity.LOW,
+                        reason=ev_reason,
+                        truncated=False,
+                    )
+                    return True, ev_reason, df_ev
+
+        # E12-14: Static Include & Constant Interpolation Resolution (Guardrail 5)
+        if "FILE" in rule_category.upper() or "PATH" in rule_category.upper() or "LFI" in rule_category.upper() or "TRAVERSAL" in rule_category.upper():
+            if any(inc in snippet for inc in ("require", "include", "require_once", "include_once")):
+                clean_inc_expr = re.sub(r'^\s*(?:require_once|include_once|require|include)\s*\(?\s*', '', snippet)
+                clean_inc_expr = re.sub(r'\s*\)?\s*;?\s*$', '', clean_inc_expr)
+                all_files = dict(self.project_files) if self.project_files else {"current": full_source}
+                if "current" not in all_files:
+                    all_files["current"] = full_source
+                ev = self._symbol_resolver.resolve_expression(clean_inc_expr, all_files, requesting_file="current")
+                if ev.resolution in (ConstantResolution.DERIVED_STATIC, ConstantResolution.STATIC_CONSTANT, ConstantResolution.STATIC_LITERAL):
+                    eval_res = sink_compatibility_matrix.evaluate({SemanticConstraint.PATH_NORMALIZED}, rule_category, SinkContext.FILE_PATH)
+                    if eval_res.decision == CompatibilityDecision.COMPATIBLE:
+                        ev_reason = f"Static include expression provenance resolved: {ev.provenance}"
+                        df_ev = DataFlowEvidence(
+                            state=TaintState.SANITIZED,
+                            path=(),
+                            adjusted_confidence=Confidence.LOW,
+                            adjusted_severity=Severity.LOW,
+                            reason=ev_reason,
+                            truncated=False,
+                        )
+                        return True, ev_reason, df_ev
+
+        # E12-14: Cryptographic Usage Context Evaluation (Guardrail 1)
+        if "CRYPTO" in rule_category.upper() or "HASH" in rule_category.upper() or "MD5" in rule_category.upper():
+            hash_match = re.search(r'\b(md5|sha1|hash)\s*\(\s*([^)]+)\s*\)', snippet, re.IGNORECASE)
+            if hash_match:
+                func_name = hash_match.group(1)
+                input_arg = hash_match.group(2)
+                assigned_match = re.search(r'(\$[a-zA-Z0-9_]+)\s*=\s*(?:md5|sha1|hash)', snippet)
+                assigned_var = assigned_match.group(1) if assigned_match else ""
+
+                ctx_ev = self._crypto_analyzer.analyze_hash_usage(
+                    hash_func=func_name,
+                    input_expr=input_arg,
+                    assigned_var=assigned_var,
+                    surrounding_stmts=lines,
+                )
+                if ctx_ev.context_kind in (CryptoContextKind.CACHE_KEY, CryptoContextKind.CHECKSUM, CryptoContextKind.NON_SECURITY_IDENTIFIER):
+                    eval_res = sink_compatibility_matrix.evaluate({SemanticConstraint.PATH_NORMALIZED}, rule_category, SinkContext.UNKNOWN)
+                    if eval_res.decision == CompatibilityDecision.COMPATIBLE:
+                        ev_reason = f"Non-security cryptographic usage context confirmed: {ctx_ev.provenance}"
+                        df_ev = DataFlowEvidence(
+                            state=TaintState.SANITIZED,
+                            path=(),
+                            adjusted_confidence=Confidence.LOW,
+                            adjusted_severity=Severity.LOW,
+                            reason=ev_reason,
+                            truncated=False,
+                        )
+                        return True, ev_reason, df_ev
+
+        return False, "", None
+
+    def evaluate_security_verdict(
+        self,
+        snippet: str,
+        full_source: str,
+        lang: str = "php",
+        rule_id: str = "KS-SECURITY-0001",
+        rule_category: str = "SQL_INJECTION",
+        file_path: str = "",
+        line_number: int = 0,
+        function_name: str = "",
+        variable_version: str = "",
+        call_context: str | None = None,
+        branch_polarity: str = "",
+    ) -> SecurityVerdict:
+        """Evaluates path-sensitive evidence and constructs a SecurityVerdict (E12-18)."""
+        context = SinkContext.SQL_VALUE
+        if "SQL" in rule_category.upper():
+            if re.search(r'FROM\s+\$[a-zA-Z0-9_]+|INTO\s+\$[a-zA-Z0-9_]+', snippet, re.IGNORECASE):
+                context = SinkContext.SQL_IDENTIFIER
+            else:
+                context = SinkContext.SQL_VALUE
+        elif "COMMAND" in rule_category.upper() or "EXEC" in rule_category.upper() or "SHELL" in rule_category.upper():
+            context = SinkContext.SHELL_ARGUMENT
+        elif "XSS" in rule_category.upper() or "HTML" in rule_category.upper():
+            context = SinkContext.HTML_TEXT
+        elif "FILE" in rule_category.upper() or "PATH" in rule_category.upper() or "LFI" in rule_category.upper():
+            context = SinkContext.FILE_PATH
+
+        ev_bundle = self._correlator.correlate_and_evaluate(
+            sink_node_id=f"sink_{hash(snippet)}",
+            snippet=snippet,
+            full_source=full_source,
+            language=lang,
+            sink_category=rule_category,
+            sink_context=context,
+        )
+
+        return self._decision_engine.evaluate_verdict(
+            bundle=ev_bundle,
+            rule_id=rule_id,
+            file_path=file_path,
+            function_name=function_name,
+            line_number=line_number,
+            variable_version=variable_version,
+            call_context=call_context,
+            branch_polarity=branch_polarity,
+        )
 
 
 # Global default instance

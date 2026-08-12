@@ -18,6 +18,9 @@ from karsasec.graph.dataflow.model import (
     TaintPathHop,
     TaintState,
 )
+from karsasec.graph.dataflow.abstract_state import AbstractEnvironment, TaintState as AbstractTaintState
+from karsasec.graph.dataflow.interprocedural_analyzer import InterproceduralDataflowAnalyzer
+from karsasec.graph.dataflow.provenance import CallContext
 from karsasec.graph.dataflow.sanitizers import SanitizerCapability, sanitizer_registry
 from karsasec.graph.dataflow.sinks import SinkCategory, sink_registry
 from karsasec.graph.dataflow.sources import source_registry
@@ -25,7 +28,7 @@ from karsasec.rules.enums import Confidence, Severity
 
 # Explicit analysis limits
 MAX_FLOW_DEPTH: int = 10
-MAX_CALL_DEPTH: int = 3
+MAX_CALL_DEPTH: int = 5
 MAX_NODES_VISITED: int = 100
 MAX_ASSIGNMENT_HOPS: int = 10
 
@@ -36,6 +39,7 @@ class DataFlowAnalyzer:
     def __init__(self) -> None:
         self.builder = DataFlowGraphBuilder()
         self.const_resolver = ConstantResolver()
+        self.interproc_analyzer = InterproceduralDataflowAnalyzer()
 
     def analyze_sink(
         self,
@@ -279,7 +283,7 @@ class DataFlowAnalyzer:
                         sink_category=sink_category,
                         visited_vars=new_visited,
                         flow_depth=flow_depth + 1,
-                        call_depth=call_depth + 1,
+                        call_depth=call_depth,
                         assignment_hops=assignment_hops + 1,
                         nodes_visited=nodes_visited + 1,
                     )
@@ -290,6 +294,13 @@ class DataFlowAnalyzer:
 
         # Take latest definition preceding reference line
         latest_def = assignments[-1]
+
+        # Single static assignment check: if variable is assigned exactly once to a static literal/constant without request superglobals
+        if len(assignments) == 1:
+            rhs = latest_def.rhs_expression.strip()
+            if re.match(r"^['\"][^'\"]*['\"]$", rhs) or re.match(r"^array\s*\(.*\)$", rhs):
+                if not re.search(r"\$(?:_GET|_POST|_COOKIE|_REQUEST|_SERVER)", rhs):
+                    return TaintState.STATIC, [], "", False
 
         # Check if var_name is assigned across multiple control-flow branches dependent on helper functions returning untrusted input
         if len(assignments) > 1:
@@ -339,19 +350,25 @@ class DataFlowAnalyzer:
             fn_name = func_call_match.group(1).lower()
             if fn_name in func_map:
                 fdef = func_map[fn_name]
-                for ret_expr in fdef.return_expressions:
-                    ret_san = sanitizer_registry.identify_sanitizer("", ret_expr, language=graph_data.get("language", "php"))
-                    if ret_san and sink_category and sanitizer_registry.is_compatible(ret_san, sink_category):
-                        hop = TaintPathHop(
-                            step=flow_depth + 2,
-                            kind=FlowNodeKind.SANITIZER,
-                            symbol=var_name,
-                            snippet=ret_expr,
-                            location=FlowLocation(file_path=graph_data.get("file_path"), line=latest_def.line),
-                            description=f"Function '{fdef.function_name}' return expression contains sink-compatible sanitizer '{ret_san.value}'",
-                        )
-                        return TaintState.SANITIZED, [hop], "", False
+                if fdef.return_expressions and all(
+                    bool(
+                        (ret_san := sanitizer_registry.identify_sanitizer("", rexp, language=graph_data.get("language", "php")))
+                        and sink_category
+                        and sanitizer_registry.is_compatible(ret_san, sink_category)
+                    )
+                    for rexp in fdef.return_expressions
+                ):
+                    hop = TaintPathHop(
+                        step=flow_depth + 2,
+                        kind=FlowNodeKind.SANITIZER,
+                        symbol=var_name,
+                        snippet=", ".join(fdef.return_expressions),
+                        location=FlowLocation(file_path=graph_data.get("file_path"), line=latest_def.line),
+                        description=f"All return expressions in function '{fdef.function_name}' contain sink-compatible sanitizers",
+                    )
+                    return TaintState.SANITIZED, [hop], "", False
 
+                for ret_expr in fdef.return_expressions:
                     if source_registry.contains_source(ret_expr, language=graph_data.get("language", "php")):
                         matched_srcs = source_registry.find_matching_sources(ret_expr, language=graph_data.get("language", "php"))
                         src_sym = matched_srcs[0] if matched_srcs else "UNTRUSTED_SOURCE"
@@ -364,6 +381,56 @@ class DataFlowAnalyzer:
                             description=f"Function '{fdef.function_name}' returned untrusted source '{src_sym}' assigned to '{var_name}'",
                         )
                         return TaintState.TAINTED, [hop], src_sym, False
+
+                summary = self.interproc_analyzer.analyze_function(
+                    fdef.function_name,
+                    str(graph_data.get("file_path", "")),
+                    getattr(fdef, "raw_statements", None) or (fdef.body_source.splitlines() if hasattr(fdef, "body_source") else []),
+                    fdef.parameters,
+                )
+                call_args_match = re.search(rf'\b{re.escape(fdef.function_name)}\s*\((.*?)\)', latest_def.rhs_expression, re.IGNORECASE)
+                if call_args_match:
+                    c_args = self._split_call_args(call_args_match.group(1))
+                    ctx = CallContext(
+                        caller_file=str(graph_data.get("file_path", "")),
+                        caller_function="main",
+                        line_number=latest_def.line,
+                        callee_function=fdef.function_name,
+                        call_site_id=f"cs_{latest_def.line}",
+                        callee_file=str(graph_data.get("file_path", "")),
+                    )
+                    caller_env = AbstractEnvironment()
+                    for c_arg in c_args:
+                        arg_st, _, _, _ = self._propagate_var(
+                            var_name=c_arg,
+                            before_line=latest_def.line,
+                            graph_data=graph_data,
+                            sink_category=sink_category,
+                            visited_vars=new_visited,
+                            flow_depth=flow_depth + 1,
+                            call_depth=call_depth + 1,
+                            assignment_hops=assignment_hops + 1,
+                            nodes_visited=nodes_visited + 1,
+                        )
+                        abs_st = AbstractTaintState.TAINTED if getattr(arg_st, "value", str(arg_st)) == "TAINTED" else (
+                            AbstractTaintState.CONSTRAINED if getattr(arg_st, "value", str(arg_st)) in ("SANITIZED", "CONSTRAINED") else AbstractTaintState.UNKNOWN
+                        )
+                        caller_env.assignment_kill(c_arg, new_taint=abs_st)
+
+                    res_env = self.interproc_analyzer.summary_applicator.apply_summary(
+                        ctx, summary, c_args, var_name, caller_env
+                    )
+                    res_val = res_env.get_value(var_name)
+                    if res_val.taint.value in ("TAINTED", "CONSTRAINED"):
+                        hop = TaintPathHop(
+                            step=flow_depth + 2,
+                            kind=FlowNodeKind.CALL,
+                            symbol=var_name,
+                            snippet=latest_def.rhs_expression,
+                            location=FlowLocation(file_path=graph_data.get("file_path"), line=latest_def.line),
+                            description=f"Function '{fdef.function_name}' returned tainted state for '{var_name}'",
+                        )
+                        return TaintState.TAINTED, [hop], "INTERPROCEDURAL_SOURCE", False
 
                     ret_vars = set(re.findall(r'\$[a-zA-Z_][a-zA-Z0-9_]*', ret_expr)) if graph_data.get("language") == "php" else set(re.findall(r'\b[a-zA-Z_][a-zA-Z0-9_]*\b', ret_expr))
                     for rvar in ret_vars:
@@ -444,6 +511,27 @@ class DataFlowAnalyzer:
 
             return overall_state, all_hops, primary_src, is_any_trunc
 
+        # If no local definition found, check if var_name is a parameter of the containing function
+        func_map = graph_data.get("functions", {})
+        for fdef in func_map.values():
+            s_line = getattr(fdef, "start_line", None) or 0
+            e_line = getattr(fdef, "end_line", None) or 999999
+            if before_line is None or (s_line <= before_line <= e_line):
+                clean_params = [p.lstrip("$") for p in fdef.parameters]
+                clean_var = var_name.lstrip("$")
+                if clean_var in clean_params:
+                    return self._resolve_interprocedural_param(
+                        func_def=fdef,
+                        param_name=var_name,
+                        graph_data=graph_data,
+                        sink_category=sink_category,
+                        visited_vars=visited_vars,
+                        flow_depth=flow_depth,
+                        call_depth=call_depth,
+                        assignment_hops=assignment_hops,
+                        nodes_visited=nodes_visited,
+                    )
+
         return TaintState.STATIC, [], "", False
 
     def _resolve_interprocedural_param(
@@ -462,7 +550,9 @@ class DataFlowAnalyzer:
         fname = func_def.function_name
         source_text = graph_data["source_text"]
         lang = graph_data["language"]
-        param_idx = func_def.parameters.index(param_name) if param_name in func_def.parameters else 0
+        clean_params = [p.lstrip("$") for p in func_def.parameters]
+        clean_name = param_name.lstrip("$")
+        param_idx = clean_params.index(clean_name) if clean_name in clean_params else 0
 
         call_pattern = re.compile(rf'(?<!function\s)\b{re.escape(fname)}\s*\(([^)]*)\)', re.IGNORECASE)
         call_matches = list(call_pattern.finditer(source_text))
@@ -488,6 +578,22 @@ class DataFlowAnalyzer:
             return TaintState.UNKNOWN, [], "", True
 
         passed_arg = raw_args[param_idx]
+        call_line = source_text[:call_match.start()].count("\n") + 1
+
+        # E12-15 Interprocedural Correlation Binding
+        ctx = CallContext(
+            caller_file=str(graph_data.get("file_path", "")),
+            caller_function="main",
+            line_number=call_line,
+            callee_function=fname,
+            call_site_id=f"cs_{call_line}",
+            callee_file=str(graph_data.get("file_path", "")),
+        )
+        from karsasec.graph.dataflow.abstract_state import AbstractEnvironment, TaintState as AbstTaintState
+        caller_env = AbstractEnvironment()
+        caller_env.assignment_kill(passed_arg, new_taint=AbstTaintState.TAINTED if source_registry.contains_source(passed_arg, language=lang) else AbstTaintState.UNKNOWN)
+        callee_env = AbstractEnvironment()
+        self.interproc_analyzer.bind_parameter(ctx, caller_env, passed_arg, param_name, callee_env)
 
         # Check if passed argument is direct source
         if source_registry.contains_source(passed_arg, language=lang):
@@ -509,8 +615,6 @@ class DataFlowAnalyzer:
         if not arg_vars:
             return TaintState.STATIC, [], "", False
 
-        call_line = source_text[:call_match.start()].count("\n") + 1
-
         return self._propagate_var(
             var_name=arg_vars[0],
             before_line=call_line,
@@ -522,6 +626,26 @@ class DataFlowAnalyzer:
             assignment_hops=assignment_hops + 1,
             nodes_visited=nodes_visited + 1,
         )
+
+    def _split_call_args(self, args_str: str) -> list[str]:
+        args = []
+        current = []
+        depth = 0
+        for char in args_str:
+            if char in "([{":
+                depth += 1
+                current.append(char)
+            elif char in ")]}":
+                depth -= 1
+                current.append(char)
+            elif char == "," and depth == 0:
+                args.append("".join(current).strip())
+                current = []
+            else:
+                current.append(char)
+        if current:
+            args.append("".join(current).strip())
+        return [a for a in args if a]
 
 
 # Global default instance

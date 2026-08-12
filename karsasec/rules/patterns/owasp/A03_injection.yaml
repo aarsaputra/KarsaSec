@@ -36,9 +36,8 @@ condition:
     - system
     - shell_exec
     - popen
-    - query
     - eval
-  pattern: '(?i)(shell_exec\s*\(|exec\s*\(|system\s*\(|popen\s*\(|mysqli_query\s*\(|eval\s*\(|child_process)'
+  pattern: '(?i)(shell_exec\s*\(|exec\s*\(|system\s*\(|popen\s*\(|eval\s*\(|child_process)'
   # Candidate pre-filter: exclude JS obfuscation minifier patterns and comments
   node_text_not_matches: '(eval\s*\(\s*function\s*\(|//|<!--|\*\s|#\s)'
 

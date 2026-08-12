@@ -402,6 +402,16 @@ def execute_scan_command(
     _canonical = _correlator.correlate(all_findings)
     findings_tuple = _correlator.to_findings(_canonical)
 
+    # Phase 5.6 — Deterministic Semantic Qualification & False Positive Elimination
+    from karsasec.core.finding.qualifier import SemanticFindingQualifier, QualificationState
+    _qualifier = SemanticFindingQualifier()
+    qualified_findings = []
+    for cand in findings_tuple:
+        q_f = _qualifier.qualify_candidate(cand)
+        if getattr(q_f, "qualification_state", None) != QualificationState.REJECTED:
+            qualified_findings.append(q_f)
+    findings_tuple = tuple(qualified_findings)
+
     if baseline_path and baseline_path.exists():
         try:
             baseline = baseline_manager.load_baseline(baseline_path)

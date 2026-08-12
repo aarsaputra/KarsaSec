@@ -46,6 +46,18 @@ class SARIFReporter(Reporter):
             level = SARIF_SEVERITY_MAP.get(finding.severity, "warning")
             uri = str(finding.file_path).replace("\\", "/")
 
+            props = {
+                "finding_id": finding.finding_id,
+                "remediation": finding.remediation,
+            }
+            if getattr(finding, "verdict", None) is not None:
+                v = finding.verdict
+                props["karsasec.verdict"] = v.status.value if hasattr(v.status, "value") else str(v.status)
+                props["karsasec.verdict_confidence"] = v.confidence.value if hasattr(v.confidence, "value") else str(v.confidence)
+                props["karsasec.evidence_fingerprint"] = v.evidence_fingerprint
+                props["karsasec.reason_codes"] = [r.value if hasattr(r, "value") else str(r) for r in v.reason_codes]
+                props["karsasec.provenance"] = list(v.provenance_path)
+
             sarif_results.append({
                 "ruleId": finding.rule_id,
                 "ruleIndex": rule_idx,
@@ -64,10 +76,7 @@ class SARIFReporter(Reporter):
                 "partialFingerprints": {
                     "primaryLocationLineHash": finding.fingerprint,
                 },
-                "properties": {
-                    "finding_id": finding.finding_id,
-                    "remediation": finding.remediation,
-                },
+                "properties": props,
             })
 
         # 3. Assemble SARIF 2.1.0 Object

@@ -100,9 +100,21 @@ class CanonicalFindingIdentity:
         exact_raw = f"EXACT|{norm_path}|{line}|{rule_id}"
         exact_key = hashlib.sha256(exact_raw.encode("utf-8")).hexdigest()[:32]
 
+        _CWE_MAP = {
+            "CWE-89": "SQL_EXECUTION",
+            "CWE-78": "COMMAND_EXECUTION",
+            "CWE-74": "COMMAND_EXECUTION",
+            "CWE-98": "FILE_INCLUSION",
+            "CWE-22": "FILE_READ",
+            "CWE-326": "CRYPTOGRAPHIC_OPERATION",
+            "CWE-916": "CRYPTOGRAPHIC_OPERATION",
+            "CWE-287": "AUTHENTICATION",
+            "CWE-918": "SSRF",
+            "CWE-862": "BROKEN_ACCESS_CONTROL",
+        }
         sink_ident = sink_symbol.strip() or snippet_norm
-        hops_ident = "->".join(canonical_hops)
-        semantic_raw = f"SEM|{norm_path}|{line}|{cwe}|{sink_category}|{sink_ident}|{hops_ident}"
+        cat_key = sink_category.upper() if sink_category and sink_category != "UNKNOWN" else _CWE_MAP.get(cwe, cwe)
+        semantic_raw = f"SEM|{norm_path}|{line}|{cat_key}"
         semantic_key = hashlib.sha256(semantic_raw.encode("utf-8")).hexdigest()[:32]
 
         return cls(
@@ -154,9 +166,10 @@ class Finding:
     remediation: str
     rule_version: str = "1.0"
     metadata: dict[str, Any] = field(default_factory=dict)
+    verdict: Any | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        res = {
             "finding_id": self.finding_id,
             "rule_id": self.rule_id,
             "fingerprint": self.fingerprint,
@@ -172,6 +185,9 @@ class Finding:
             "rule_version": self.rule_version,
             "metadata": self.metadata,
         }
+        if self.verdict is not None and hasattr(self.verdict, "to_dict"):
+            res["verdict"] = self.verdict.to_dict()
+        return res
 
 
 @dataclass(frozen=True)

@@ -103,10 +103,13 @@ class QualificationClassifier:
         """
         findings_list = list(findings)
 
-        # Separate UNKNOWN-confidence findings (tracked separately, never TP/FP)
+        # Separate UNKNOWN-confidence and REJECTED findings (tracked separately, never TP/FP)
         unknown_findings: list[Finding] = []
         active_findings: list[Finding] = []
         for f in findings_list:
+            qstate = getattr(f, "qualification_state", None)
+            if qstate == "REJECTED" or getattr(qstate, "value", str(qstate)) == "REJECTED":
+                continue
             if str(f.confidence).upper() == "UNKNOWN":
                 unknown_findings.append(f)
             else:

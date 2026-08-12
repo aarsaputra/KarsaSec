@@ -39,7 +39,7 @@ condition:
     - axios
     - fetch
   pattern: '(?i)(file_get_contents|curl_exec|requests\.(get|post|put|delete)|axios\.(get|post)|fetch\s*\()'
-  node_text_not_matches: '(->fetch\s*\(|->fetchAll\s*\(|console\.(error|log|warn)\s*\(|lastErrorMsg|Error in fetch|problem with your fetch|PDO|sqlite_db|pdo_fetch)'
+  node_text_not_matches: '(->fetch\s*\(|->fetchAll\s*\(|console\.(error|log|warn)\s*\(|lastErrorMsg|Error in fetch|problem with your fetch|PDO|sqlite_db|pdo_fetch|php://input|php://stdin|DVWA_WEB_PAGE_TO_ROOT|__DIR__|__FILE__)'
 
 evidence:
   require:

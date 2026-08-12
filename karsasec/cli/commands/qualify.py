@@ -129,6 +129,16 @@ def _scan_target(scan_root: Path) -> tuple[list, list]:
     all_raw: list = []
     php_files = sorted(list(scan_root.rglob("*.php")))
 
+    project_files: dict[str, str] = {}
+    for pf in php_files:
+        try:
+            project_files[str(pf)] = pf.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            pass
+
+    from karsasec.graph.taint_verifier import taint_verifier
+    taint_verifier.project_files = project_files
+
     from unittest.mock import patch
 
     from karsasec.parser.generic_parser import php_parser

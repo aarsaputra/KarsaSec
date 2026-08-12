@@ -77,6 +77,7 @@ class DataFlowEvidence:
     path: tuple[TaintPathHop, ...] = ()
     source_symbol: str = ""
     sink_symbol: str = ""
+    sanitizer_capability: str = "NONE"
     adjusted_confidence: Confidence = Confidence.CONFIDENT
     adjusted_severity: Severity = Severity.HIGH
     reason: str = ""
