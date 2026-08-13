@@ -20,6 +20,7 @@ Validates Security Invariants:
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 import pytest
 
 from karsasec.ai.rca.models import (
@@ -30,15 +31,13 @@ from karsasec.ai.rca.models import (
 )
 from karsasec.ai.remediation.approval import ApprovalStatus, PatchApprovalToken
 from karsasec.ai.remediation.applier import ApplicationResult, ApplicationStatus
-from karsasec.ai.remediation.lifecycle import RemediationLifecycleEngine, RemediationLifecycleResult
+from karsasec.ai.remediation.lifecycle import RemediationLifecycleEngine
 from karsasec.ai.remediation.models import (
     PatchHunk,
     PatchProposal,
     PatchValidationStatus,
-    RemediationStrategy,
-    RemediationStrategyType,
 )
-from karsasec.ai.remediation.snapshot import FileSnapshot, SourceSnapshot
+from karsasec.ai.remediation.snapshot import SourceSnapshot
 from karsasec.ai.remediation.state_machine import (
     InvalidStateTransitionError,
     LifecycleStateMachine,

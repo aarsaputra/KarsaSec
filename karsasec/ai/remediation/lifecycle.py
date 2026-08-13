@@ -35,7 +35,7 @@ from karsasec.ai.rca.models import RootCauseAnalysis
 from karsasec.ai.remediation.agent import RemediationAgent
 from karsasec.ai.remediation.applier import ApplicationResult, ApplicationStatus
 from karsasec.ai.remediation.application_agent import RemediationApplicationAgent
-from karsasec.ai.remediation.approval import ApprovalStatus, PatchApprovalToken
+from karsasec.ai.remediation.approval import PatchApprovalToken
 from karsasec.ai.remediation.audit import AuditEventType, LifecycleAuditEvent
 from karsasec.ai.remediation.ledger import RemediationLedger
 from karsasec.ai.remediation.models import PatchProposal, RemediationStrategy

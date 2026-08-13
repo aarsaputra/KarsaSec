@@ -23,12 +23,12 @@ from __future__ import annotations
 from pathlib import Path
 import pytest
 
-from karsasec.ai.remediation.applier import ApplicationResult, ApplicationStatus
+from karsasec.ai.remediation.agent import RemediationAgent
 from karsasec.ai.remediation.approval import PatchApprovalToken
 from karsasec.ai.remediation.audit import AuditEventType, LifecycleAuditEvent
 from karsasec.ai.remediation.ledger import RemediationLedger
 from karsasec.ai.remediation.lifecycle import RemediationLifecycleEngine
-from karsasec.ai.remediation.models import PatchHunk, PatchProposal, PatchValidationStatus
+from karsasec.ai.remediation.models import PatchHunk, PatchProposal
 from karsasec.ai.remediation.provenance import ProvenanceNode, RemediationProvenanceGraph
 from karsasec.ai.remediation.snapshot import SourceSnapshot
 from karsasec.ai.remediation.state_machine import (
@@ -37,7 +37,7 @@ from karsasec.ai.remediation.state_machine import (
     VerificationAuthority,
     VerificationEvidenceContract,
 )
-from karsasec.ai.remediation.verification import VerificationContract, VerificationResult, VerificationStatus
+from karsasec.ai.remediation.verification import VerificationStatus
 from karsasec.core.execution.result import ExecutionResult
 from karsasec.core.finding.evidence import Evidence
 from karsasec.core.finding.model import Finding
@@ -274,13 +274,14 @@ def test_e2e_09_snapshot_mismatch_toctou(tmp_path: Path) -> None:
 
 def test_e2e_10_failed_application_lifecycle(tmp_path: Path) -> None:
     """10. Failed application lifecycle handling when patch hunk application fails."""
+    from karsasec.ai.remediation.provider import MockPatchProvider
+
     app_file = tmp_path / "app.py"
     app_file.write_text("print('completely unrelated code')\n", encoding="utf-8")
 
     finding = _create_test_finding(tmp_path, "F-E2E-10")
-    engine = RemediationLifecycleEngine(repository_root=tmp_path)
 
-    bad_hunk = PatchHunk(
+    unmatchable_hunk = PatchHunk(
         file_path="app.py",
         start_line=1,
         end_line=1,
@@ -289,26 +290,8 @@ def test_e2e_10_failed_application_lifecycle(tmp_path: Path) -> None:
         context="",
         evidence_reference="app.py:1",
     )
-    diff = "diff"
-    fp = PatchProposal.compute_fingerprint(finding.finding_id, ("app.py",), diff, PatchValidationStatus.VALID)
-    bad_proposal = PatchProposal(
-        proposal_id="prop_bad_10",
-        finding_id=finding.finding_id,
-        target_files=("app.py",),
-        hunks=(bad_hunk,),
-        unified_diff=diff,
-        rationale="Invalid patch",
-        root_cause_reference="RCA-10",
-        evidence_references=(),
-        expected_effect="",
-        risk_level="LOW",
-        assumptions=(),
-        validation_status=PatchValidationStatus.VALID,
-        proposal_fingerprint=fp,
-    )
-
-    def _proposal_cb(f: Finding) -> PatchProposal:
-        return bad_proposal
+    bad_agent = RemediationAgent(patch_provider=MockPatchProvider(custom_hunks=[unmatchable_hunk]))
+    engine = RemediationLifecycleEngine(repository_root=tmp_path, remediation_agent=bad_agent)
 
     def _approval_cb(proposal: PatchProposal, snapshot: SourceSnapshot) -> PatchApprovalToken:
         return PatchApprovalToken.create(
@@ -322,7 +305,6 @@ def test_e2e_10_failed_application_lifecycle(tmp_path: Path) -> None:
 
     res = engine.execute(
         finding=finding,
-        proposal_provider=_proposal_cb,
         approval_provider=_approval_cb,
     )
 
