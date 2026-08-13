@@ -58,6 +58,48 @@ class SARIFReporter(Reporter):
                 props["karsasec.reason_codes"] = [r.value if hasattr(r, "value") else str(r) for r in v.reason_codes]
                 props["karsasec.provenance"] = list(v.provenance_path)
 
+            if isinstance(finding.metadata, dict) and "explanation_fingerprint" in finding.metadata:
+                props["karsasec.ai.explanation_available"] = True
+                props["karsasec.ai.explanation_fingerprint"] = finding.metadata["explanation_fingerprint"]
+                props["karsasec.ai.explanation_schema_version"] = finding.metadata.get("explanation_schema_version", "v1.0")
+
+            if isinstance(finding.metadata, dict) and "rca_fingerprint" in finding.metadata:
+                props["karsasec.ai.rca_available"] = True
+                props["karsasec.ai.rca_fingerprint"] = finding.metadata["rca_fingerprint"]
+                props["karsasec.ai.root_cause_category"] = finding.metadata.get("root_cause_category", "UNKNOWN_ROOT_CAUSE")
+                props["karsasec.ai.evidence_completeness"] = finding.metadata.get("evidence_completeness", "PROVEN")
+                props["karsasec.ai.fp_risk"] = finding.metadata.get("fp_risk", "HIGH_RISK")
+
+            if isinstance(finding.metadata, dict) and "remediation_fingerprint" in finding.metadata:
+                props["karsasec.ai.remediation_available"] = True
+                props["karsasec.ai.remediation_fingerprint"] = finding.metadata["remediation_fingerprint"]
+                props["karsasec.ai.strategy_type"] = finding.metadata.get("strategy_type", "UNKNOWN_REMEDIATION")
+
+            if isinstance(finding.metadata, dict) and "patch_fingerprint" in finding.metadata:
+                props["karsasec.ai.patch_proposal_available"] = True
+                props["karsasec.ai.patch_validation_status"] = finding.metadata.get("patch_validation_status", "REQUIRES_HUMAN_REVIEW")
+                props["karsasec.ai.patch_fingerprint"] = finding.metadata["patch_fingerprint"]
+
+            if isinstance(finding.metadata, dict) and "patch_application_status" in finding.metadata:
+                props["karsasec.ai.patch_application_available"] = True
+                props["karsasec.ai.patch_application_status"] = finding.metadata["patch_application_status"]
+                props["karsasec.ai.approval_token_id"] = finding.metadata.get("approval_token_id", "N/A")
+                props["karsasec.ai.application_transaction_id"] = finding.metadata.get("application_transaction_id", "N/A")
+                props["karsasec.ai.post_apply_verification_status"] = finding.metadata.get("post_apply_verification_status", "UNVERIFIED")
+                props["karsasec.ai.rollback_status"] = finding.metadata.get("rollback_status", "NOT_NEEDED")
+
+            if isinstance(finding.metadata, dict):
+                if "remediation_state" in finding.metadata:
+                    props["karsasec.ai.remediation_state"] = str(finding.metadata["remediation_state"])
+                if "lifecycle_fingerprint" in finding.metadata:
+                    props["karsasec.ai.lifecycle_fingerprint"] = str(finding.metadata["lifecycle_fingerprint"])
+                if "provenance_fingerprint" in finding.metadata:
+                    props["karsasec.ai.provenance_fingerprint"] = str(finding.metadata["provenance_fingerprint"])
+                if "verification_run_id" in finding.metadata:
+                    props["karsasec.ai.verification_run_id"] = str(finding.metadata["verification_run_id"])
+                if "verification_status" in finding.metadata:
+                    props["karsasec.ai.verification_status"] = str(finding.metadata["verification_status"])
+
             sarif_results.append({
                 "ruleId": finding.rule_id,
                 "ruleIndex": rule_idx,

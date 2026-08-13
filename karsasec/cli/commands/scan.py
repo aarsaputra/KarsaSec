@@ -238,6 +238,53 @@ def scan_file_task(
     return findings, nodes_processed, exec_time_ms, errors
 
 
+def _run_scan_pipeline(target_path: Path) -> tuple[list[Finding], Any, float]:
+    """Internal scan pipeline runner for CLI subcommands."""
+    start_time = time.perf_counter()
+    resolved_path = target_path.resolve()
+    if not resolved_path.exists():
+        return [], None, 0.0
+
+    rules_dir = get_default_rules_directory()
+    loader = YAMLRuleLoader()
+    try:
+        rules = loader.load_directory(rules_dir)
+    except Exception:
+        return [], None, 0.0
+
+    project_config = load_project_config(search_root=resolved_path)
+    exclude_patterns = {pattern for pattern in get_scan_exclusions(project_config)}
+
+    if resolved_path.is_file():
+        files_to_scan = [resolved_path] if not should_skip_path(resolved_path, resolved_path.parent, [], exclude_patterns) else []
+    else:
+        files_to_scan = iter_candidate_files(resolved_path, exclude_patterns)
+
+    files_to_scan = files_to_scan or []
+    all_findings = []
+    target_detector = TargetDetector()
+
+    for file_path in files_to_scan:
+        res_findings, _, _, _ = scan_file_task(file_path, target_detector, rule_executor, rules, [])
+        all_findings.extend(res_findings)
+
+    from karsasec.core.finding.correlator import FindingCorrelator
+    _correlator = FindingCorrelator()
+    _canonical = _correlator.correlate(all_findings)
+    findings_tuple = _correlator.to_findings(_canonical)
+
+    from karsasec.core.finding.qualifier import SemanticFindingQualifier, QualificationState
+    _qualifier = SemanticFindingQualifier()
+    qualified_findings = []
+    for cand in findings_tuple:
+        q_f = _qualifier.qualify_candidate(cand)
+        if getattr(q_f, "qualification_state", None) != QualificationState.REJECTED:
+            qualified_findings.append(q_f)
+
+    duration = time.perf_counter() - start_time
+    return qualified_findings, None, duration
+
+
 def execute_scan_command(
     target_path: Path,
     format_type: str = "console",

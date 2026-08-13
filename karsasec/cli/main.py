@@ -11,10 +11,12 @@ from karsasec import __version__
 from karsasec.cli.commands.cfg import cfg_app
 from karsasec.cli.commands.cpg import cpg_app
 from karsasec.cli.commands.debug import debug_app
+from karsasec.cli.commands.explain import explain_app
 from karsasec.cli.commands.framework import framework_app
 from karsasec.cli.commands.interprocedural import interprocedural_app
 from karsasec.cli.commands.qualify import qualify_app
 from karsasec.cli.commands.query import query_app
+from karsasec.cli.commands.remediation import remediation_app
 from karsasec.cli.commands.rules import rules_app
 from karsasec.cli.commands.scan import execute_scan_command
 from karsasec.cli.commands.taint import taint_app
@@ -37,6 +39,8 @@ app.add_typer(interprocedural_app, name="interprocedural")
 app.add_typer(cpg_app, name="cpg")
 app.add_typer(query_app, name="query")
 app.add_typer(framework_app, name="framework")
+app.add_typer(explain_app, name="explain")
+app.add_typer(remediation_app, name="remediation")
 
 def version_callback(value: bool) -> None:
     """Callback for printing the CLI version."""
