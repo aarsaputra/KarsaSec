@@ -63,6 +63,37 @@ class TaskRepository(ABC):
         """List tasks optionally filtered by state."""
         pass
 
+    @abstractmethod
+    def assign_task(self, task_id: str, worker_id: str) -> RemediationTask:
+        """Assigns a task to a worker and transitions state to RUNNING."""
+        pass
+
+    @abstractmethod
+    def complete_task(
+        self,
+        task_id: str,
+        expected_lease_version: int,
+        worker_id: str,
+        worker_fencing_token: int = 1,
+        receipt_id: str | None = None,
+        receipt_fingerprint: str | None = None,
+        security_verification_status: str | None = None,
+    ) -> RemediationTask:
+        """Completes a task atomically and transitions state to COMPLETED."""
+        pass
+
+    @abstractmethod
+    def record_execution_failure(
+        self,
+        task_id: str,
+        expected_lease_version: int,
+        worker_id: str,
+        worker_fencing_token: int = 1,
+        error_message: str = "",
+    ) -> RemediationTask:
+        """Records execution failure, re-queuing or transitioning to FAILED if max_attempts reached."""
+        pass
+
 
 class InMemoryTaskRepository(TaskRepository):
     """Process-local thread-safe in-memory task repository.
@@ -157,3 +188,74 @@ class InMemoryTaskRepository(TaskRepository):
                 if len(res) >= limit:
                     break
             return res
+
+    def assign_task(self, task_id: str, worker_id: str) -> RemediationTask:
+        with self._lock:
+            task = self._tasks.get(task_id)
+            if not task:
+                raise ValueError(f"Task with ID {task_id} not found")
+            if task.state in {TaskState.COMPLETED, TaskState.FAILED, TaskState.CANCELLED}:
+                raise InvalidTaskStateError("Terminal state task cannot be assigned.")
+            if task.attempts >= task.max_attempts:
+                raise InvalidTaskStateError(f"Task '{task_id}' attempts exhausted.")
+            if task.state not in {TaskState.QUEUED, TaskState.PENDING}:
+                raise InvalidTaskStateError(f"Task '{task_id}' is in state '{task.state}', expected QUEUED.")
+            task.transition_to(TaskState.RUNNING)
+            task.increment_lease_version()
+            return task
+
+    def complete_task(
+        self,
+        task_id: str,
+        expected_lease_version: int,
+        worker_id: str,
+        worker_fencing_token: int = 1,
+        receipt_id: str | None = None,
+        receipt_fingerprint: str | None = None,
+        security_verification_status: str | None = None,
+    ) -> RemediationTask:
+        with self._lock:
+            task = self._tasks.get(task_id)
+            if not task:
+                raise ValueError(f"Task with ID {task_id} not found")
+            if task.lease_version != expected_lease_version:
+                raise StaleLeaseVersionError(
+                    f"Task fencing lease version mismatch for '{task_id}'. Expected v{expected_lease_version}, active is v{task.lease_version}."
+                )
+            if task.state != TaskState.RUNNING:
+                raise InvalidTaskStateError(f"Task state '{task.state}' cannot be completed")
+            task.transition_to(TaskState.COMPLETED)
+            task.increment_lease_version()
+            if receipt_id:
+                task.receipt_id = receipt_id
+            if receipt_fingerprint:
+                task.receipt_fingerprint = receipt_fingerprint
+            if security_verification_status:
+                task.security_verification_status = security_verification_status
+            return task
+
+    def record_execution_failure(
+        self,
+        task_id: str,
+        expected_lease_version: int,
+        worker_id: str,
+        worker_fencing_token: int = 1,
+        error_message: str = "",
+    ) -> RemediationTask:
+        with self._lock:
+            task = self._tasks.get(task_id)
+            if not task:
+                raise ValueError(f"Task with ID {task_id} not found")
+            if task.lease_version != expected_lease_version:
+                raise StaleLeaseVersionError(
+                    f"Task fencing lease version mismatch for '{task_id}'. Expected v{expected_lease_version}, active is v{task.lease_version}."
+                )
+            if task.state != TaskState.RUNNING:
+                raise InvalidTaskStateError(f"Task state '{task.state}' cannot be recorded as failure.")
+            task.error_message = error_message
+            if task.attempts >= task.max_attempts:
+                task.transition_to(TaskState.FAILED)
+            else:
+                task.transition_to(TaskState.QUEUED)
+            task.increment_lease_version()
+            return task

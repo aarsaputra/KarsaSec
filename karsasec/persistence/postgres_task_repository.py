@@ -1,31 +1,49 @@
-"""PostgreSQL-backed Authoritative Task Repository for Sprint F5.
-
-Provides atomic CAS task state transitions, persistent fencing version tracking,
-and database-enforced state machine semantics adhering to INV-F5-01 and INV-F5-02.
-"""
-
-from __future__ import annotations
-
+import uuid
 from typing import List, Optional, Any
 from sqlalchemy import update, select
 from sqlalchemy.orm import Session
 
 from karsasec.persistence.db import DatabaseSessionFactory, get_session_factory
-from karsasec.persistence.models import TaskModel
+from karsasec.persistence.models import TaskModel, WorkerModel, DeadLetterEventModel
+from karsasec.events.audit_ledger import TaskAuditLedger
+from karsasec.events.outbox import TransactionalOutbox
 from karsasec.workers.repository import TaskRepository
 from karsasec.workers.task import (
     RemediationTask,
     TaskState,
     StaleLeaseVersionError,
     InvalidTaskStateError,
+    WorkerFencedError,
+    InvalidWorkerStateError,
 )
 
 
 class PostgresTaskRepository(TaskRepository):
     """Authoritative PostgreSQL Task Repository enforcing atomic CAS & fencing version invariants."""
 
-    def __init__(self, session_factory: DatabaseSessionFactory | None = None) -> None:
-        self._session_factory = session_factory or get_session_factory()
+    def __init__(
+        self,
+        session_factory: DatabaseSessionFactory | None = None,
+        factory: DatabaseSessionFactory | None = None,
+        audit_repo: Any = None,
+        metrics_registry: Any = None,
+        **kwargs: Any,
+    ) -> None:
+        self._session_factory = session_factory or factory or get_session_factory()
+        self._audit_repo = audit_repo
+        self._metrics_registry = metrics_registry
+
+    def _append_audit(self, event_type: str, task_id: str, details: dict[str, Any]) -> None:
+        if self._audit_repo:
+            try:
+                from karsasec.persistence.audit_repository import AuditEvent
+                self._audit_repo.append(AuditEvent(
+                    task_id=task_id,
+                    event_type=event_type,
+                    details=details,
+                ))
+            except Exception:
+                pass
 
     def _model_to_domain(self, model: TaskModel) -> RemediationTask:
         """Map TaskModel ORM object to domain RemediationTask."""
@@ -49,18 +67,19 @@ class PostgresTaskRepository(TaskRepository):
         return task
 
     def create_task(self, task: RemediationTask) -> None:
-        """Saves a new task to PostgreSQL persistence."""
+        """Saves a new task to PostgreSQL persistence and stages genesis audit/outbox events."""
         with self._session_factory.session_scope() as session:
             existing = session.scalar(select(TaskModel).where(TaskModel.task_id == task.task_id))
             if existing:
                 raise ValueError(f"Task with ID {task.task_id} already exists")
 
+            state_str = task.state.value if isinstance(task.state, TaskState) else str(task.state)
             model = TaskModel(
                 task_id=task.task_id,
                 finding_id=task.finding_id,
                 approval_token_id=task.approval_token_id,
                 fingerprint=task.fingerprint,
-                state=task.state.value if isinstance(task.state, TaskState) else str(task.state),
+                state=state_str,
                 attempts=task.attempts,
                 max_attempts=task.max_attempts,
                 lease_seconds=task.lease_seconds,
@@ -71,6 +90,26 @@ class PostgresTaskRepository(TaskRepository):
                 security_verification_status=task.security_verification_status,
             )
             session.add(model)
+            session.flush()
+
+            # Automatic Audit and Outbox Staging
+            TaskAuditLedger.record_transition(
+                session,
+                task_id=task.task_id,
+                previous_state="NONE",
+                new_state=state_str,
+                lease_version=task.lease_version,
+                reason="TASK_CREATED",
+            )
+            TransactionalOutbox.stage_event(
+                session,
+                aggregate_type="remediation_task",
+                aggregate_id=task.task_id,
+                event_type="TASK_CREATED",
+                payload={"task_id": task.task_id, "state": state_str},
+                lease_version=task.lease_version,
+                deduplication_key=f"task_created_{task.task_id}",
+            )
 
     def get_task(self, task_id: str) -> Optional[RemediationTask]:
         """Retrieves a task by ID from PostgreSQL."""
@@ -120,12 +159,7 @@ class PostgresTaskRepository(TaskRepository):
         new_state: TaskState,
         **kwargs,
     ) -> RemediationTask:
-        """Atomically validates lease_version & state via single SQL UPDATE statement (INV-F5-02).
-
-        SQL Equivalent:
-            UPDATE tasks SET state = :new_state, lease_version = :next_version ...
-            WHERE task_id = :task_id AND lease_version = :expected_version AND state IN (:expected_states)
-        """
+        """Atomically validates lease_version & state via single SQL UPDATE statement (INV-F5-02)."""
         expected_state_strs = [
             s.value if isinstance(s, TaskState) else str(s) for s in expected_states
         ]
@@ -156,6 +190,10 @@ class PostgresTaskRepository(TaskRepository):
             # Increment attempts on transition to RUNNING
             update_values["attempts"] = TaskModel.attempts + 1
 
+        stale_lease_error = None
+        invalid_state_error = None
+        result_domain = None
+
         with self._session_factory.session_scope() as session:
             stmt = (
                 update(TaskModel)
@@ -173,32 +211,323 @@ class PostgresTaskRepository(TaskRepository):
                 model = session.scalar(select(TaskModel).where(TaskModel.task_id == task_id))
                 if not model:
                     raise ValueError(f"Task with ID '{task_id}' not found after update")
-                return self._model_to_domain(model)
 
-            # Zero rows updated — analyze cause for authoritative domain exception
-            current_model = session.scalar(select(TaskModel).where(TaskModel.task_id == task_id))
-            if not current_model:
+                TaskAuditLedger.record_transition(
+                    session,
+                    task_id=task_id,
+                    previous_state=expected_state_strs[0] if expected_state_strs else "UNKNOWN",
+                    new_state=target_state_str,
+                    worker_id=kwargs.get("assigned_worker_id"),
+                    fencing_token=kwargs.get("recovery_fencing_token"),
+                    lease_version=next_lease_version,
+                    reason=kwargs.get("reason", "ATOMIC_TRANSITION"),
+                )
+                TransactionalOutbox.stage_event(
+                    session,
+                    aggregate_type="remediation_task",
+                    aggregate_id=task_id,
+                    event_type=f"TASK_{target_state_str}",
+                    payload={"task_id": task_id, "state": target_state_str},
+                    lease_version=next_lease_version,
+                    deduplication_key=f"task_transition_{task_id}_{next_lease_version}",
+                )
+                result_domain = self._model_to_domain(model)
+
+            else:
+                # Zero rows updated — analyze cause for authoritative domain exception
+                current_model = session.scalar(select(TaskModel).where(TaskModel.task_id == task_id))
+                if not current_model:
+                    raise ValueError(f"Task with ID '{task_id}' not found")
+
+                # Check terminal state resurrection guard
+                if current_model.state in terminal_states:
+                    invalid_state_error = InvalidTaskStateError(
+                        f"Terminal state task '{task_id}' (state='{current_model.state}') cannot be resurrected to '{target_state_str}'."
+                    )
+                elif current_model.lease_version != expected_lease_version:
+                    stale_lease_error = (
+                        StaleLeaseVersionError(
+                            f"Task fencing lease version mismatch for '{task_id}'. Expected v{expected_lease_version}, active is v{current_model.lease_version}."
+                        ),
+                        current_model.lease_version,
+                    )
+                elif current_model.state not in expected_state_strs:
+                    invalid_state_error = InvalidTaskStateError(
+                        f"Task state transition rejected for '{task_id}'. Current state '{current_model.state}' not in expected {expected_state_strs}."
+                    )
+                else:
+                    invalid_state_error = InvalidTaskStateError(
+                        f"Atomic state transition failed for task '{task_id}'."
+                    )
+
+        if result_domain:
+            self._append_audit(
+                "TASK_STATE_CHANGED",
+                task_id,
+                {
+                    "previous_state": expected_state_strs[0] if expected_state_strs else "UNKNOWN",
+                    "new_state": target_state_str,
+                    "lease_version": next_lease_version,
+                },
+            )
+            return result_domain
+
+        if stale_lease_error:
+            err, active_ver = stale_lease_error
+            self._append_audit(
+                "TASK_CAS_REJECTED",
+                task_id,
+                {
+                    "expected_lease_version": expected_lease_version,
+                    "active_lease_version": active_ver,
+                    "reason": "STALE_LEASE_VERSION",
+                },
+            )
+            raise err
+
+        if invalid_state_error:
+            raise invalid_state_error
+
+    def assign_task(self, task_id: str, worker_id: str) -> RemediationTask:
+        """Assigns a task to an online worker and transitions state from QUEUED/PENDING to RUNNING."""
+        with self._session_factory.session_scope() as session:
+            worker = session.scalar(select(WorkerModel).where(WorkerModel.worker_id == worker_id))
+            if worker and worker.status in ("DRAINING", "DRAINED", "FENCED", "OFFLINE"):
+                raise InvalidWorkerStateError(
+                    f"Worker '{worker_id}' status is '{worker.status}', expected ONLINE for assignment."
+                )
+
+            worker_fencing_token = worker.fencing_token if worker else 1
+
+            model = session.scalar(select(TaskModel).where(TaskModel.task_id == task_id).with_for_update())
+            if not model:
                 raise ValueError(f"Task with ID '{task_id}' not found")
 
-            # Check terminal state resurrection guard
-            if current_model.state in terminal_states:
+            terminal_states = {TaskState.COMPLETED.value, TaskState.FAILED.value, TaskState.CANCELLED.value}
+            if model.state in terminal_states:
+                raise InvalidTaskStateError(f"Terminal state task '{task_id}' cannot be assigned.")
+
+            if model.attempts >= model.max_attempts:
+                raise InvalidTaskStateError(f"Task '{task_id}' attempts exhausted ({model.attempts}/{model.max_attempts}).")
+
+            if model.state not in (TaskState.QUEUED.value, TaskState.PENDING.value):
                 raise InvalidTaskStateError(
-                    f"Terminal state task '{task_id}' (state='{current_model.state}') cannot be resurrected to '{target_state_str}'."
+                    f"Task state transition rejected for '{task_id}'. Current state '{model.state}' not in expected QUEUED/PENDING."
                 )
 
-            if current_model.lease_version != expected_lease_version:
-                raise StaleLeaseVersionError(
-                    f"Task fencing lease version mismatch for '{task_id}'. Expected v{expected_lease_version}, active is v{current_model.lease_version}."
-                )
+            prev_state = model.state
+            model.state = TaskState.RUNNING.value
+            model.assigned_worker_id = worker_id
+            model.assigned_worker_fencing_token = worker_fencing_token
+            model.attempts = model.attempts + 1
+            model.lease_version = model.lease_version + 1
 
-            if current_model.state not in expected_state_strs:
-                raise InvalidTaskStateError(
-                    f"Task state transition rejected for '{task_id}'. Current state '{current_model.state}' not in expected {expected_state_strs}."
-                )
+            session.flush()
 
-            raise InvalidTaskStateError(
-                f"Atomic state transition failed for task '{task_id}'."
+            TaskAuditLedger.record_transition(
+                session,
+                task_id=task_id,
+                previous_state=prev_state,
+                new_state=TaskState.RUNNING.value,
+                worker_id=worker_id,
+                fencing_token=worker_fencing_token,
+                lease_version=model.lease_version,
+                reason="TASK_ASSIGNED",
             )
+            TransactionalOutbox.stage_event(
+                session,
+                aggregate_type="remediation_task",
+                aggregate_id=task_id,
+                event_type="TASK_ASSIGNED",
+                payload={"task_id": task_id, "worker_id": worker_id, "state": "RUNNING"},
+                lease_version=model.lease_version,
+                deduplication_key=f"task_assigned_{task_id}_{model.lease_version}",
+            )
+
+            return self._model_to_domain(model)
+
+    def complete_task(
+        self,
+        task_id: str,
+        expected_lease_version: int,
+        worker_id: str,
+        worker_fencing_token: int = 1,
+        receipt_id: str | None = None,
+        receipt_fingerprint: str | None = None,
+        security_verification_status: str | None = None,
+    ) -> RemediationTask:
+        """Atomically completes a RUNNING task."""
+        with self._session_factory.session_scope() as session:
+            worker = session.scalar(select(WorkerModel).where(WorkerModel.worker_id == worker_id))
+            if worker:
+                if worker.status in ("FENCED", "OFFLINE"):
+                    raise WorkerFencedError(
+                        f"Worker '{worker_id}' status is '{worker.status}' and cannot mutate task '{task_id}'."
+                    )
+                if worker.fencing_token > worker_fencing_token:
+                    raise WorkerFencedError(
+                        f"Worker '{worker_id}' fencing token mismatch (active {worker.fencing_token} > provided {worker_fencing_token})."
+                    )
+
+            model = session.scalar(select(TaskModel).where(TaskModel.task_id == task_id).with_for_update())
+            if not model:
+                raise ValueError(f"Task with ID '{task_id}' not found")
+
+            if model.assigned_worker_id and model.assigned_worker_id != worker_id:
+                raise WorkerFencedError(
+                    f"Worker '{worker_id}' cannot mutate task '{task_id}' assigned to '{model.assigned_worker_id}'."
+                )
+
+            if model.lease_version != expected_lease_version:
+                raise StaleLeaseVersionError(
+                    f"Task fencing lease version mismatch for '{task_id}'. Expected v{expected_lease_version}, active is v{model.lease_version}."
+                )
+
+            if model.state != TaskState.RUNNING.value:
+                raise InvalidTaskStateError(
+                    f"Task state '{model.state}' cannot be completed."
+                )
+
+            prev_state = model.state
+            model.state = TaskState.COMPLETED.value
+            model.lease_version = expected_lease_version + 1
+            if receipt_id:
+                model.receipt_id = receipt_id
+            if receipt_fingerprint:
+                model.receipt_fingerprint = receipt_fingerprint
+            if security_verification_status:
+                model.security_verification_status = security_verification_status
+
+            session.flush()
+
+            TaskAuditLedger.record_transition(
+                session,
+                task_id=task_id,
+                previous_state=prev_state,
+                new_state=TaskState.COMPLETED.value,
+                worker_id=worker_id,
+                fencing_token=worker_fencing_token,
+                lease_version=model.lease_version,
+                reason="TASK_COMPLETED",
+            )
+            TransactionalOutbox.stage_event(
+                session,
+                aggregate_type="remediation_task",
+                aggregate_id=task_id,
+                event_type="TASK_COMPLETED",
+                payload={"task_id": task_id, "worker_id": worker_id, "state": "COMPLETED"},
+                lease_version=model.lease_version,
+                deduplication_key=f"task_completed_{task_id}_{model.lease_version}",
+            )
+
+            return self._model_to_domain(model)
+
+    def record_execution_failure(
+        self,
+        task_id: str,
+        expected_lease_version: int,
+        worker_id: str,
+        worker_fencing_token: int = 1,
+        error_message: str = "",
+    ) -> RemediationTask:
+        """Records execution failure, requeuing or DLQ-exhausting task."""
+        with self._session_factory.session_scope() as session:
+            worker = session.scalar(select(WorkerModel).where(WorkerModel.worker_id == worker_id))
+            if worker:
+                if worker.status in ("FENCED", "OFFLINE"):
+                    raise WorkerFencedError(
+                        f"Worker '{worker_id}' status is '{worker.status}' and cannot mutate task '{task_id}'."
+                    )
+                if worker.fencing_token > worker_fencing_token:
+                    raise WorkerFencedError(
+                        f"Worker '{worker_id}' fencing token mismatch (active {worker.fencing_token} > provided {worker_fencing_token})."
+                    )
+
+            model = session.scalar(select(TaskModel).where(TaskModel.task_id == task_id).with_for_update())
+            if not model:
+                raise ValueError(f"Task with ID '{task_id}' not found")
+
+            if model.assigned_worker_id and model.assigned_worker_id != worker_id:
+                raise WorkerFencedError(
+                    f"Worker '{worker_id}' cannot mutate task '{task_id}' assigned to '{model.assigned_worker_id}'."
+                )
+
+            if model.lease_version != expected_lease_version:
+                raise StaleLeaseVersionError(
+                    f"Task fencing lease version mismatch for '{task_id}'. Expected v{expected_lease_version}, active is v{model.lease_version}."
+                )
+
+            if model.state != TaskState.RUNNING.value:
+                raise InvalidTaskStateError(
+                    f"Task state '{model.state}' cannot record execution failure."
+                )
+
+            prev_state = model.state
+            model.lease_version = expected_lease_version + 1
+            model.error_message = error_message
+
+            if model.attempts >= model.max_attempts:
+                # Exhausted -> FAILED state
+                model.state = TaskState.FAILED.value
+                dlq = DeadLetterEventModel(
+                    event_id=f"dlq_{uuid.uuid4().hex[:16]}",
+                    task_id=task_id,
+                    reason="EXHAUSTED",
+                    attempts=model.attempts,
+                    max_attempts=model.max_attempts,
+                    sanitized_error_message=error_message[:8192],
+                    worker_id=worker_id,
+                )
+                session.add(dlq)
+                session.flush()
+
+                TaskAuditLedger.record_transition(
+                    session,
+                    task_id=task_id,
+                    previous_state=prev_state,
+                    new_state=TaskState.FAILED.value,
+                    worker_id=worker_id,
+                    fencing_token=worker_fencing_token,
+                    lease_version=model.lease_version,
+                    reason="TASK_FAILED",
+                )
+                TransactionalOutbox.stage_event(
+                    session,
+                    aggregate_type="remediation_task",
+                    aggregate_id=task_id,
+                    event_type="TASK_FAILED",
+                    payload={"task_id": task_id, "worker_id": worker_id, "state": "FAILED"},
+                    lease_version=model.lease_version,
+                    deduplication_key=f"task_failure_{task_id}_{model.lease_version}",
+                )
+            else:
+                # Retryable -> QUEUED state
+                model.state = TaskState.QUEUED.value
+                model.assigned_worker_id = None
+                model.assigned_worker_fencing_token = None
+                session.flush()
+
+                TaskAuditLedger.record_transition(
+                    session,
+                    task_id=task_id,
+                    previous_state=prev_state,
+                    new_state=TaskState.QUEUED.value,
+                    worker_id=worker_id,
+                    fencing_token=worker_fencing_token,
+                    lease_version=model.lease_version,
+                    reason="TASK_RETRIED",
+                )
+                TransactionalOutbox.stage_event(
+                    session,
+                    aggregate_type="remediation_task",
+                    aggregate_id=task_id,
+                    event_type="TASK_RETRIED",
+                    payload={"task_id": task_id, "worker_id": worker_id, "state": "QUEUED"},
+                    lease_version=model.lease_version,
+                    deduplication_key=f"task_transition_{task_id}_{model.lease_version}",
+                )
+
+            return self._model_to_domain(model)
 
     def get_active_task_by_fingerprint(self, fingerprint: str) -> Optional[RemediationTask]:
         """Finds any non-terminal task matching the fingerprint."""
