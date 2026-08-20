@@ -14,9 +14,11 @@ from __future__ import annotations
 
 from datetime import datetime, UTC
 
-
 from karsasec.persistence.models import TaskModel
 from karsasec.workers.task import RemediationTask, TaskState
+from karsasec.persistence.postgres_task_repository import PostgresTaskRepository
+
+__all__ = ["PostgresTaskRepository"]
 
 
 def _model_to_domain(model: TaskModel) -> RemediationTask:
