@@ -1,1 +1,0 @@
-/usr/lib/postgresql/18/bin/postgres "-D" "/home/lota1337/python/KarsaSec/db_local" "-p" "5432" "-k" "/home/lota1337/python/KarsaSec/db_local"

@@ -66,8 +66,17 @@ htmlcov/
 ehthumbs.db
 Thumbs.db
 
-# KarsaSec Runtime, Reports & Cache Artifacts
+# KarsaSec Runtime, Databases, Reports & Cache Artifacts
 *.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-shm
+*.db-wal
+file:*
+db_local/
+*.rdb
+dump.rdb
 codebase_memory.db
 .karsasec_cache/
 *.sarif
