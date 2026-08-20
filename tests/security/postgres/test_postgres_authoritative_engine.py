@@ -17,7 +17,7 @@ from karsasec.persistence.postgres_task_repository import PostgresTaskRepository
 from karsasec.persistence.postgres_worker_repository import PostgresWorkerRepository
 from karsasec.persistence.postgres_recovery_lock import PostgresRecoveryLock
 from karsasec.persistence.outbox_publisher import OutboxRepository, OutboxPublisher
-from karsasec.workers.queue import InMemoryTaskQueue
+from karsasec.workers.queue import InMemoryTaskQueue, TaskQueue
 from karsasec.workers.scheduler import ConsistentHashScheduler, ConsistentHashRing, NoWorkersAvailableError
 from karsasec.workers.task import (
     RemediationTask,
@@ -330,14 +330,20 @@ class TestOutboxPattern:
         assert sum(results) == 10  # Exactly 10 total events published without duplicates
 
     def test_outbox_publisher_enqueue_exception_preserves_event_retry(self, test_db_factory):
-        class FailingQueue:
-            def __init__(self):
+        class FailingQueue(TaskQueue):
+            def __init__(self) -> None:
                 self.should_fail = True
-                self.enqueued = []
-            def enqueue(self, task_id: str):
+                self.enqueued: list[str] = []
+            def enqueue(self, task_id: str) -> None:
                 if self.should_fail:
                     raise RuntimeError("Queue connection failed")
                 self.enqueued.append(task_id)
+            def dequeue(self, timeout: int = 1) -> str | None:
+                return None
+            def acknowledge(self, task_id: str) -> None:
+                pass
+            def requeue(self, task_id: str) -> None:
+                pass
 
         queue = FailingQueue()
         outbox_repo = OutboxRepository(test_db_factory)
