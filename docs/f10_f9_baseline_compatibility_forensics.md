@@ -118,7 +118,7 @@ The F10 AI Provider Gateway is **100% independent** from the missing `assign_tas
 
 - **F10 Invariants**: Fully preserved. 19/19 adversarial tests pass.
 - **F9 Immutability**: 100% intact. Zero modifications to protected files.
-- **Production Vulnerability Risk**: Zero. The issue is strictly a test-fixture contract mismatch in `tests/recovery/`.
+- **Operational Risk & Contract Gap**: F10 does not depend on the missing contract gap and the F10 adversarial suite is 19/19 PASS. However, because `tests/recovery` fails on clean HEAD, operational impact on F9 production recovery workflows remains unverified until F9 contract reconciliation is executed.
 
 ---
 
