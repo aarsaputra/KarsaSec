@@ -1,8 +1,8 @@
 # Sprint F11 — Implementation Plan: AI Gateway Resilience & Provider Execution Security
 
-**Date**: 2026-08-20  
-**Target Repository**: `karsasec`  
-**Status**: In Progress (F11.1 & F11.2 Complete)  
+**Date**: 2026-08-20
+**Target Repository**: `karsasec`
+**Status**: In Progress (F11.1, F11.2 & F11.3 Complete)
 
 ---
 
@@ -11,11 +11,11 @@
 ```text
 F11.1 Provider Execution Boundary [COMPLETED - 7a59d71]
   ↓
-F11.2 Hard Timeout Isolation [COMPLETED - INV-F11-TIMEOUT-01, ADV-01 PASS]
+F11.2 Hard Timeout Isolation [COMPLETED - 5899c37]
   ↓
-F11.3 Failure Classification Engine [NEXT]
+F11.3 Failure Classification Engine [COMPLETED - INV-F11-FAILURE-15, ADV-17, ADV-20 PASS]
   ↓
-F11.4 Bounded Retry Engine
+F11.4 Bounded Retry Engine [NEXT]
   ↓
 F11.5 Circuit Breaker Engine
   ↓
@@ -42,7 +42,13 @@ F11.10 Adversarial Security Test Suite
 - **Target Invariants**: `INV-F11-TIMEOUT-01`
 - **Target Adversarial Test**: `ADV-01` (`test_hard_timeout_aborts_hanging_worker`)
 - **Files Modified**: `karsasec/ai/execution.py` `[UPDATED]`, `tests/ai/test_f11_phase5_execution_boundary.py` `[UPDATED]`
-- **Verification**: `ADV-01` passes in 0.05s. Hanging coroutine task receives `asyncio.CancelledError` signal (`executor.cancelled == True`), reservation tokens released cleanly, status transitions to `FAILED`, taxonomy mapped to `ATTEMPT_ERROR_TIMEOUT`.
+- **Status**: **COMPLETE** (Commit `5899c37`)
+
+#### F11.3: Deterministic Failure Classification Engine
+- **Target Invariants**: `INV-F11-FAILURE-15`
+- **Target Adversarial Tests**: `ADV-17` (`test_malformed_response_json_failure_classification`), `ADV-20` (`test_circuit_breaker_does_not_trip_on_4xx_client_errors`)
+- **Files Modified**: `karsasec/ai/provider.py` `[UPDATED]`, `karsasec/ai/failure_classifier.py` `[NEW]`, `tests/ai/test_f11_phase5_failure_classifier.py` `[NEW]`
+- **Verification**: Complete classification matrix verified. 4xx client errors mapped to `client_failure=True, provider_failure=False, retryable=False`. 5xx server errors and timeouts mapped to `provider_failure=True, retryable=True`. Malformed JSON mapped to `INVALID_RESPONSE, retryable=False`.
 - **Status**: **COMPLETE**
 
 ---
