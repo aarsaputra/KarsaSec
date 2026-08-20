@@ -10,6 +10,7 @@ from karsasec.framework.origin import Evidence
 @dataclass(frozen=True)
 class HandlerCandidate:
     """Candidate representation of a Flask controller handler function or method."""
+
     name: str
     qualified_name: str
     function_name: str
@@ -25,6 +26,7 @@ class HandlerCandidate:
 @dataclass(frozen=True)
 class ControllerCandidate:
     """Candidate representation of a Flask function-based or class-based controller."""
+
     name: str
     qualified_name: str
     controller_type: str = "function_controller"  # function_controller, method_view, class_view

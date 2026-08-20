@@ -9,6 +9,7 @@ from karsasec.rules.schema import Rule
 @dataclass(slots=True)
 class CompiledRule:
     """Pre-compiled rule containing compiled regex patterns and indexed lookup sets."""
+
     rule: Rule
     compiled_pattern: re.Pattern[str] | None = None
     cleaned_symbol_triggers: tuple[str, ...] = field(default_factory=tuple)
@@ -17,6 +18,7 @@ class CompiledRule:
     @property
     def id(self) -> str:
         return self.rule.id
+
 
 class RuleCompiler:
     """Compiles raw Rule definitions into optimized CompiledRule instances."""
@@ -39,6 +41,7 @@ class RuleCompiler:
             cleaned_symbol_triggers=symbols,
             ast_node_types_set=node_types_set,
         )
+
 
 # Singleton compiler instance
 rule_compiler = RuleCompiler()

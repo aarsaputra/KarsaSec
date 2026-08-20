@@ -24,6 +24,7 @@ Anti-circularity note:
     This classifier is pure: it receives ground truth and findings as inputs.
     It never modifies or re-derives ground truth from KarsaSec output.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -37,19 +38,21 @@ from karsasec.qualification.model import GroundTruthBenchmark, GroundTruthCase, 
 @dataclass(frozen=True, slots=True)
 class ClassificationResult:
     """Output of a single ground-truth case classification."""
+
     case: GroundTruthCase
-    outcome: str            # "TP" | "FP" | "FN" | "TN"
+    outcome: str  # "TP" | "FP" | "FN" | "TN"
     matched_finding: Finding | None = None
 
 
 @dataclass(frozen=True)
 class ClassificationReport:
     """Full classification report for one benchmark run."""
+
     benchmark_id: str
     scan_root: Path
     results: tuple[ClassificationResult, ...]
-    unmatched_findings: tuple[Finding, ...]   # Findings with no TP expectation → FP candidates
-    unknown_findings: tuple[Finding, ...]     # UNKNOWN confidence findings
+    unmatched_findings: tuple[Finding, ...]  # Findings with no TP expectation → FP candidates
+    unknown_findings: tuple[Finding, ...]  # UNKNOWN confidence findings
 
     @property
     def tp(self) -> int:
@@ -129,7 +132,9 @@ class QualificationClassifier:
             matched: Finding | None = None
 
             for fi, f in finding_identities:
-                corr_rules = f.metadata.get("correlated_rules") if isinstance(getattr(f, "metadata", None), dict) else None
+                corr_rules = (
+                    f.metadata.get("correlated_rules") if isinstance(getattr(f, "metadata", None), dict) else None
+                )
                 if case_identity.matches_finding(fi, correlated_rules=corr_rules):
                     matched = f
                     matched_finding_ids.add(f.finding_id)
@@ -143,9 +148,7 @@ class QualificationClassifier:
             results.append(ClassificationResult(case=case, outcome=outcome, matched_finding=matched))
 
         # --- Unmatched findings → FP candidates ---
-        unmatched: list[Finding] = [
-            f for _, f in finding_identities if f.finding_id not in matched_finding_ids
-        ]
+        unmatched: list[Finding] = [f for _, f in finding_identities if f.finding_id not in matched_finding_ids]
 
         return ClassificationReport(
             benchmark_id=benchmark.benchmark_id,

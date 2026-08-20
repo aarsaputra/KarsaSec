@@ -1,4 +1,5 @@
 """Unit tests for path normalization and FindingIdentity stability (E12-2)."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -8,7 +9,6 @@ from karsasec.qualification.model import GroundTruthCase, GroundTruthExpectation
 
 
 class TestNormalization:
-
     def test_normalize_path_str_variations(self) -> None:
         p1 = _normalize_path_str("vulnerabilities/sqli/source/low.php")
         p2 = _normalize_path_str("./vulnerabilities/sqli/source/low.php")

@@ -150,7 +150,11 @@ class ISRValidator:
 
         # 7. Broken Dependencies
         for dep in isr.dependencies:
-            if dep.target_class_or_fn and dep.target_class_or_fn not in known_handlers and dep.target_class_or_fn not in known_controllers:
+            if (
+                dep.target_class_or_fn
+                and dep.target_class_or_fn not in known_handlers
+                and dep.target_class_or_fn not in known_controllers
+            ):
                 diagnostics.append(
                     SemanticDiagnostic(
                         code=ErrorCode.BROKEN_DEP,

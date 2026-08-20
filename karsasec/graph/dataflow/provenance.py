@@ -22,6 +22,7 @@ from karsasec.graph.dataflow.abstract_state import SemanticConstraint, TaintStat
 
 class ProvenanceNodeKind(StrEnum):
     """Categorization of nodes within the Dataflow Provenance Graph."""
+
     SOURCE = "SOURCE"
     ASSIGNMENT = "ASSIGNMENT"
     TRANSFORMATION = "TRANSFORMATION"
@@ -48,6 +49,7 @@ class ProvenanceEdgeKind(StrEnum):
       - REACHES: Control/data reachability between statements or nodes.
       - INVALIDATED_BY: Re-assignment kills previous SSA version or constraint.
     """
+
     DERIVES_FROM = "DERIVES_FROM"
     ASSIGNED_FROM = "ASSIGNED_FROM"
     PASSES_PARAMETER = "PASSES_PARAMETER"
@@ -64,6 +66,7 @@ class ProvenanceEdgeKind(StrEnum):
 @dataclass(frozen=True, slots=True)
 class ProvenanceNode:
     """Immutable dataflow provenance node recording variable versioning and semantic state."""
+
     node_id: str
     kind: ProvenanceNodeKind
     var_name: str
@@ -80,6 +83,7 @@ class ProvenanceNode:
 @dataclass(frozen=True, slots=True)
 class ProvenanceEdge:
     """Directed semantic relationship edge connecting two provenance nodes."""
+
     src_node_id: str
     target_node_id: str
     kind: ProvenanceEdgeKind
@@ -90,6 +94,7 @@ class ProvenanceEdge:
 @dataclass(frozen=True, slots=True)
 class CallContext:
     """Distinct semantic context for a function invocation at a specific call site."""
+
     caller_file: str
     caller_function: str
     line_number: int
@@ -113,6 +118,7 @@ class CallContext:
 
 class SummaryStatus(StrEnum):
     """Semantic confidence / completeness classification of FunctionSummary."""
+
     PRECISE = "PRECISE"
     PARTIAL = "PARTIAL"
     UNKNOWN = "UNKNOWN"
@@ -122,6 +128,7 @@ class SummaryStatus(StrEnum):
 @dataclass(frozen=True, slots=True)
 class PathSummary:
     """A single control-flow path summary within a function."""
+
     path_id: str
     return_expr: str = ""
     return_var: str = ""
@@ -160,6 +167,7 @@ class PathSummary:
 @dataclass(frozen=True, slots=True)
 class FunctionSummary:
     """Formal semantic summary describing interprocedural dataflow effects of a function."""
+
     function_name: str
     file_path: str
     parameters: tuple[str, ...] = ()
@@ -193,7 +201,7 @@ class FunctionSummary:
                     p.return_expr,
                     str(p.taint_state),
                     tuple(sorted([c.value for c in p.constraints])),
-                )
+                ),
             )
         )
         return FunctionSummary(
@@ -221,7 +229,6 @@ class FunctionSummary:
         }
         json_bytes = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
         return hashlib.sha256(json_bytes).hexdigest()
-
 
 
 class DataflowProvenanceGraph:

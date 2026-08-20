@@ -53,7 +53,12 @@ def test_thread_safe_registry() -> None:
                     "target": {"languages": ["Python"]},
                     "match": {"language": "Python", "ast_node_types": ["call"]},
                     "condition": {"symbol_triggers": ["eval"]},
-                    "output": {"severity": "INFO", "confidence": "CONFIDENT", "message": "Test rule", "remediation": "test"}
+                    "output": {
+                        "severity": "INFO",
+                        "confidence": "CONFIDENT",
+                        "message": "Test rule",
+                        "remediation": "test",
+                    },
                 }
                 rule = validate_rule_dict(rule_dict)
                 registry.register(rule)

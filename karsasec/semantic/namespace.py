@@ -1,7 +1,6 @@
 """Namespace resolution and formatting helpers."""
 
 
-
 class NamespaceResolver:
     """Helper class to resolve fully qualified namespaces and path resolution."""
 

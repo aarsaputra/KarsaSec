@@ -1,6 +1,5 @@
 """Severity and SARIF level mapping layer for report interoperability."""
 
-
 from karsasec.rules.enums import Severity
 
 # Maps KarsaSec Severity to SARIF 2.1.0 level strings

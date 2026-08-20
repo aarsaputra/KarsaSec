@@ -13,7 +13,7 @@ Invariants:
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import Dict, Any
+from typing import Any
 
 
 class HealthStatus(StrEnum):
@@ -35,10 +35,10 @@ class ClusterHealthMonitor:
         self._queue = queue
         self._db_factory = db_factory
 
-    def evaluate_cluster_health(self) -> Dict[str, Any]:
+    def evaluate_cluster_health(self) -> dict[str, Any]:
         return self.get_health_report()
 
-    def get_health_report(self) -> Dict[str, Any]:
+    def get_health_report(self) -> dict[str, Any]:
         """Generate privacy-safe cluster health JSON payload."""
         db_status = HealthStatus.HEALTHY
         if self._db_factory is not None:

@@ -1,6 +1,5 @@
 """Unit tests for evidence provenance, FindingEvidence model, and EvidenceCompleteness validation (E12-4)."""
 
-
 from karsasec.core.finding.evidence import EvidenceCompleteness, FindingEvidence, ProvenanceStatus
 from karsasec.graph.dataflow.model import TaintState
 

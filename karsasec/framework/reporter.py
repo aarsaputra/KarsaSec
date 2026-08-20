@@ -32,7 +32,11 @@ class FrameworkReporter:
 
     def export_dot(self, graph: FrameworkGraph) -> str:
         """Exports FrameworkGraph to Graphviz DOT format."""
-        lines = ["digraph FrameworkGraph {", '  rankdir="LR";', '  node [shape="box", style="rounded,filled", fillcolor="#eef2ff"];']
+        lines = [
+            "digraph FrameworkGraph {",
+            '  rankdir="LR";',
+            '  node [shape="box", style="rounded,filled", fillcolor="#eef2ff"];',
+        ]
         for node in graph.nodes.values():
             lines.append(f'  "{node.id}" [label="{node.name}\\n({node.node_type.value})"];')
         for edge in graph.edges:

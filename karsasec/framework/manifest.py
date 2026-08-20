@@ -15,6 +15,7 @@ logger = logging.getLogger("karsasec.framework.manifest")
 @dataclass(frozen=True)
 class FrameworkManifest:
     """Dataclass representing a framework plugin.yaml manifest definition (V2 Schema)."""
+
     framework: str
     language: str = "Generic"
     version: str = ">=1.0"
@@ -37,9 +38,10 @@ class FrameworkManifest:
                     pass
             object.__setattr__(self, "capabilities", tuple(caps))
 
-
     def to_dict(self) -> dict[str, Any]:
-        supp_caps = list(self.supported_capabilities) if self.supported_capabilities else [c.value for c in self.capabilities]
+        supp_caps = (
+            list(self.supported_capabilities) if self.supported_capabilities else [c.value for c in self.capabilities]
+        )
         return {
             "framework": self.framework,
             "language": self.language,
@@ -81,8 +83,6 @@ class FrameworkManifest:
         )
 
 
-
-
 class ManifestLoader:
     """Loader for plugin.yaml manifest files."""
 
@@ -96,6 +96,7 @@ class ManifestLoader:
     def load_from_yaml(yaml_content: str) -> FrameworkManifest:
         """Parses manifest from YAML string content."""
         import yaml
+
         raw = yaml.safe_load(yaml_content) or {}
         return ManifestLoader.load_from_dict(raw)
 

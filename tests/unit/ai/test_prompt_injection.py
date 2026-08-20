@@ -63,4 +63,8 @@ def test_prompt_injection_in_source_code_ignored() -> None:
     # Assert that prompt injection cannot change verdict or suppress finding
     assert explanation.finding_id == "F-INJ"
     assert "SAFE" not in explanation.summary
-    assert "Confirmed Vulnerable" in explanation.summary or "RULE-SQLI" in explanation.vulnerability_type or "CWE-89" in explanation.vulnerability_type
+    assert (
+        "Confirmed Vulnerable" in explanation.summary
+        or "RULE-SQLI" in explanation.vulnerability_type
+        or "CWE-89" in explanation.vulnerability_type
+    )

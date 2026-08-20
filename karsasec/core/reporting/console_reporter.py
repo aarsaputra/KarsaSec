@@ -1,6 +1,5 @@
 """ConsoleReporter producing clean terminal security reports for developers."""
 
-
 from karsasec.core.execution.result import ExecutionResult
 from karsasec.core.finding.collection import FindingCollection
 from karsasec.core.reporting.formatter import SeverityFormatter
@@ -55,7 +54,7 @@ class ConsoleReporter(Reporter):
             for idx, context in enumerate(result.rag_context, start=1):
                 lines.append(f"{idx}. {context.get('document_id')} (score={context.get('score'):.4f})")
                 lines.append(f"   Source: {context.get('source_path')}")
-                text_snippet = str(context.get('text', '')).strip().replace('\n', ' ')
+                text_snippet = str(context.get("text", "")).strip().replace("\n", " ")
                 lines.append(f"   Snippet: {text_snippet[:200]}")
                 lines.append("")
 

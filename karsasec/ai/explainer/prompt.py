@@ -44,13 +44,15 @@ def build_explainer_user_prompt(
 
     knowledge_list = []
     for chunk in knowledge_chunks:
-        knowledge_list.append({
-            "chunk_id": chunk.chunk_id,
-            "title": sanitize_input_text(chunk.title),
-            "source": sanitize_input_text(chunk.source),
-            "content": sanitize_input_text(chunk.content),
-            "relevance_score": chunk.relevance_score,
-        })
+        knowledge_list.append(
+            {
+                "chunk_id": chunk.chunk_id,
+                "title": sanitize_input_text(chunk.title),
+                "source": sanitize_input_text(chunk.source),
+                "content": sanitize_input_text(chunk.content),
+                "relevance_score": chunk.relevance_score,
+            }
+        )
 
     prompt_body = {
         "DETERMINISTIC_SECURITY_CONTEXT": ctx_data,

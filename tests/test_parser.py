@@ -14,10 +14,13 @@ def test_ts_engine_python(tmp_path: Path) -> None:
     assert ast is not None
     assert ast.node_type == "file"
 
+
 def test_python_parser_plugin(tmp_path: Path) -> None:
     """Test PythonParserPlugin extracting functions and imports."""
     file_path = tmp_path / "sample.py"
-    file_path.write_text("import sys\n\nclass MyClass:\n    pass\n\ndef calculate():\n    return 42\n", encoding="utf-8")
+    file_path.write_text(
+        "import sys\n\nclass MyClass:\n    pass\n\ndef calculate():\n    return 42\n", encoding="utf-8"
+    )
 
     plugin = PythonParserPlugin()
     assert plugin.can_parse(".py") is True
@@ -32,10 +35,13 @@ def test_python_parser_plugin(tmp_path: Path) -> None:
 def test_generic_parser_plugin_rust_and_java(tmp_path: Path) -> None:
     """Test generic parser support for Rust and Java file extensions."""
     rust_path = tmp_path / "sample.rs"
-    rust_path.write_text("fn main() { println!(\"hello\"); }\n", encoding="utf-8")
+    rust_path.write_text('fn main() { println!("hello"); }\n', encoding="utf-8")
 
     java_path = tmp_path / "Sample.java"
-    java_path.write_text("public class Sample { public static void main(String[] args) { System.out.println(\"hello\"); } }\n", encoding="utf-8")
+    java_path.write_text(
+        'public class Sample { public static void main(String[] args) { System.out.println("hello"); } }\n',
+        encoding="utf-8",
+    )
 
     rust_plugin = GenericParserPlugin("Rust", [".rs"])
     assert rust_plugin.can_parse(".rs") is True

@@ -12,6 +12,7 @@ class ScopeType(Enum):
     BLOCK = "block"
     LAMBDA = "lambda"
 
+
 class Scope:
     """Represents a lexical scope in hierarchical scoping hierarchy."""
 

@@ -101,7 +101,6 @@ class FlaskRouteNormalizer:
             return f"/{p2}"
         return f"/{p1}/{p2}"
 
-
     def _parse_url_converters(self, raw_path: str) -> tuple[str, list[dict[str, str]]]:
         """Parses <int:id> URL converters into parameter metadata."""
         params: list[dict[str, str]] = []
@@ -138,14 +137,12 @@ class FlaskRouteNormalizer:
             for ev in rec.evidence
         ]
 
-
         origin = OriginMetadata(
             extractor_info=ext_info,
             location_info=loc,
             evidence_list=tuple(evidence_items),
             framework_name="FLASK",
         )
-
 
         method_str = methods[0] if methods else "GET"
 

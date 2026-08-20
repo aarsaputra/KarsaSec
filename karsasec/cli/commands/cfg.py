@@ -76,7 +76,9 @@ def validate_cfg(
 @cfg_app.command("export")
 def export_cfg(
     file_path: Path = typer.Argument(..., help="Source code file path to export CFGs for."),
-    output_dir: Path = typer.Option(Path("."), "--output-dir", "-o", help="Output directory for generated diagram files."),
+    output_dir: Path = typer.Option(
+        Path("."), "--output-dir", "-o", help="Output directory for generated diagram files."
+    ),
 ) -> None:
     """Exports Control Flow Graphs for a file in JSON, Mermaid (.mmd), and Graphviz DOT (.dot) formats."""
     if not file_path.exists() or not file_path.is_file():
@@ -108,4 +110,6 @@ def export_cfg(
         dot_path = output_dir / f"cfg_{safe_name}.dot"
         dot_path.write_text(cfg.to_dot())
 
-        console.print(f"[bold green]Exported CFG for '{name}':[/bold green] {json_path.name}, {mmd_path.name}, {dot_path.name}")
+        console.print(
+            f"[bold green]Exported CFG for '{name}':[/bold green] {json_path.name}, {mmd_path.name}, {dot_path.name}"
+        )

@@ -218,11 +218,7 @@ class PatchApprovalToken:
 
         # 7. Expiration Check (H19)
         if self.expires_at:
-            now_dt = (
-                datetime.fromisoformat(current_timestamp_iso)
-                if current_timestamp_iso
-                else datetime.now(UTC)
-            )
+            now_dt = datetime.fromisoformat(current_timestamp_iso) if current_timestamp_iso else datetime.now(UTC)
             exp_dt = datetime.fromisoformat(self.expires_at)
             if now_dt > exp_dt:
                 return False, f"TOKEN_EXPIRED: Token expired at {self.expires_at}."

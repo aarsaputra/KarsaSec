@@ -12,6 +12,7 @@ logger = logging.getLogger("karsasec.framework.symbol_table")
 @dataclass(frozen=True)
 class SymbolBinding:
     """Immutable binding mapping a semantic symbol path to a target CPG Node ID."""
+
     symbol_path: str
     route_path: str | None = None
     handler_name: str | None = None
@@ -91,7 +92,6 @@ class SemanticSymbolTable:
         return tuple(self._forward_bindings.values())
 
     def clear(self) -> None:
-
         """Clears all bindings in symbol table."""
         self._forward_bindings.clear()
         self._reverse_cpg_map.clear()

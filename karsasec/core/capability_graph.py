@@ -1,6 +1,5 @@
 """Capability Dependency Graph module defining prerequisites and graph traversal."""
 
-
 from karsasec.rules.enums import AnalysisCapability
 
 

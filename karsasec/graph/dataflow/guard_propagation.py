@@ -8,6 +8,7 @@ Design Principles:
   - Worklist fixpoint convergence with state equality checks.
   - Anti-hardcoding: Pure dataflow solver. Zero rule-ID or benchmark strings.
 """
+
 from __future__ import annotations
 
 import re
@@ -98,18 +99,28 @@ class WorklistFixpointAnalyzer:
                 continue
 
             # Detect variable assignments: $var = expr
-            assign_match = re.search(r'(\$[a-zA-Z0-9_]+)\s*=\s*(.+)', text)
+            assign_match = re.search(r"(\$[a-zA-Z0-9_]+)\s*=\s*(.+)", text)
             if assign_match:
                 lhs_var = assign_match.group(1).strip()
                 rhs_expr = assign_match.group(2).strip()
 
                 # Check for ValueTransformation e.g. intval($y), (int)$y, escapeshellarg($y)
                 trans_found = False
-                for trans_name in ("intval", "floatval", "escapeshellarg", "escapeshellcmd", "htmlspecialchars", "htmlentities", "basename", "realpath", "(int)"):
+                for trans_name in (
+                    "intval",
+                    "floatval",
+                    "escapeshellarg",
+                    "escapeshellcmd",
+                    "htmlspecialchars",
+                    "htmlentities",
+                    "basename",
+                    "realpath",
+                    "(int)",
+                ):
                     if trans_name in rhs_expr.lower():
                         trans = guard_registry.lookup_transformation(trans_name)
                         if trans:
-                            arg_match = re.search(r'\(\s*(\$[a-zA-Z0-9_]+)\s*\)', rhs_expr)
+                            arg_match = re.search(r"\(\s*(\$[a-zA-Z0-9_]+)\s*\)", rhs_expr)
                             src_var = arg_match.group(1) if arg_match else ""
                             src_val = env.get_value(src_var) if src_var else None
                             src_taint = src_val.taint if src_val else TaintState.TAINTED
@@ -126,7 +137,7 @@ class WorklistFixpointAnalyzer:
 
                 if not trans_found:
                     # Check if RHS is variable copy e.g. $x = $y
-                    rhs_var_match = re.match(r'^(\$[a-zA-Z0-9_]+);?$', rhs_expr)
+                    rhs_var_match = re.match(r"^(\$[a-zA-Z0-9_]+);?$", rhs_expr)
                     if rhs_var_match:
                         rhs_var = rhs_var_match.group(1)
                         rhs_val = env.get_value(rhs_var)
@@ -138,8 +149,10 @@ class WorklistFixpointAnalyzer:
                         )
                         env.set_value(new_val.with_constraints(set(rhs_val.all_constraints)))
                     else:
-                        rhs_vars = re.findall(r'\$[a-zA-Z0-9_]+', rhs_expr)
-                        is_superglobal = any(sg in rhs_expr for sg in ("$_GET", "$_POST", "$_REQUEST", "$_COOKIE", "$_FILES", "$_SERVER"))
+                        rhs_vars = re.findall(r"\$[a-zA-Z0-9_]+", rhs_expr)
+                        is_superglobal = any(
+                            sg in rhs_expr for sg in ("$_GET", "$_POST", "$_REQUEST", "$_COOKIE", "$_FILES", "$_SERVER")
+                        )
 
                         collected_constraints: set[SemanticConstraint] = set()
                         inherited_taint = TaintState.TAINTED if is_superglobal else TaintState.UNKNOWN
@@ -150,9 +163,13 @@ class WorklistFixpointAnalyzer:
                                 if r_val:
                                     collected_constraints.update(r_val.all_constraints)
                                     if r_val.taint in (TaintState.TAINTED, TaintState.CONSTRAINED):
-                                        inherited_taint = TaintState.CONSTRAINED if collected_constraints else TaintState.TAINTED
+                                        inherited_taint = (
+                                            TaintState.CONSTRAINED if collected_constraints else TaintState.TAINTED
+                                        )
 
-                        new_val = env.assignment_kill(lhs_var, new_taint=inherited_taint, prov_desc=f"Assigned {rhs_expr[:30]}")
+                        new_val = env.assignment_kill(
+                            lhs_var, new_taint=inherited_taint, prov_desc=f"Assigned {rhs_expr[:30]}"
+                        )
                         if collected_constraints:
                             new_val = new_val.with_constraints(collected_constraints)
                         env.set_value(new_val)
@@ -191,7 +208,11 @@ class WorklistFixpointAnalyzer:
             val2 = env2.values.get(version_key)
             if not val2:
                 return False
-            if (val1.taint, val1.type_facts, val1.sanitization_facts) != (val2.taint, val2.type_facts, val2.sanitization_facts):
+            if (val1.taint, val1.type_facts, val1.sanitization_facts) != (
+                val2.taint,
+                val2.type_facts,
+                val2.sanitization_facts,
+            ):
                 return False
         return True
 

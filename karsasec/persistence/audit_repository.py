@@ -1,11 +1,12 @@
-"""PostgresAuditRepository — Append-Only Audit Event Ledger for Sprint F3.
+"""PostgresAuditRepository — Non-Blocking Append-Only Audit Event Ledger for Sprint F6A.
 
 Enforces immutability: no UPDATE or DELETE is allowed on audit_events.
 Each event is a permanent, append-only record.
 
-Audit Event Types:
-  TASK_CREATED, TASK_QUEUED, TASK_STARTED, TASK_RETRIED,
-  TASK_COMPLETED, TASK_FAILED, TASK_CANCELLED, TASK_RECOVERED
+Non-Blocking Security Invariant:
+  Audit writing operations are executed inside safe try/except wrappers.
+  If an audit persistence fails (e.g. DB temporary issue), the exception is captured
+  and logged via default_logger without aborting or rolling back primary CAS state transitions.
 
 Privacy:
   - 'details' field stores only metadata (state, attempt count, timestamps).
@@ -18,13 +19,15 @@ import json
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from enum import StrEnum
-from typing import Generator, List, Optional
+from collections.abc import Generator
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from karsasec.persistence.db import DatabaseSessionFactory, get_session_factory
 from karsasec.persistence.models import AuditEventModel
+from karsasec.observability.correlation import get_correlation_id
+from karsasec.observability.logger import default_logger
 
 
 class AuditEventType(StrEnum):
@@ -36,23 +39,43 @@ class AuditEventType(StrEnum):
     TASK_FAILED = "TASK_FAILED"
     TASK_CANCELLED = "TASK_CANCELLED"
     TASK_RECOVERED = "TASK_RECOVERED"
+    TASK_STATE_CHANGED = "TASK_STATE_CHANGED"
+    TASK_CAS_REJECTED = "TASK_CAS_REJECTED"
+    TASK_RESURRECTION_BLOCKED = "TASK_RESURRECTION_BLOCKED"
+    LEASE_ACQUIRED = "LEASE_ACQUIRED"
+    LEASE_RENEWED = "LEASE_RENEWED"
+    LEASE_EXPIRED = "LEASE_EXPIRED"
+    LEASE_FENCED = "LEASE_FENCED"
+    WORKER_REGISTERED = "WORKER_REGISTERED"
+    WORKER_REJECTED = "WORKER_REJECTED"
+    WORKER_HEARTBEAT_REJECTED = "WORKER_HEARTBEAT_REJECTED"
+    OUTBOX_CREATED = "OUTBOX_CREATED"
+    OUTBOX_PUBLISHED = "OUTBOX_PUBLISHED"
+    OUTBOX_RETRY = "OUTBOX_RETRY"
 
 
 class AuditEvent:
     """Lightweight domain object representing a single audit log entry."""
 
-    __slots__ = ("task_id", "event_type", "details")
+    __slots__ = ("task_id", "event_type", "details", "correlation_id", "actor", "old_state", "new_state")
 
     def __init__(
         self,
         task_id: str,
         event_type: AuditEventType | str,
         details: dict | None = None,
+        correlation_id: str | None = None,
+        actor: str | None = None,
+        old_state: str | None = None,
+        new_state: str | None = None,
     ) -> None:
         self.task_id = task_id
         self.event_type = str(event_type)
-        # details: metadata only — no source code, diffs, or credentials
         self.details = details or {}
+        self.correlation_id = correlation_id or get_correlation_id()
+        self.actor = actor
+        self.old_state = old_state
+        self.new_state = new_state
 
 
 def _model_to_event(model: AuditEventModel) -> AuditEvent:
@@ -69,10 +92,6 @@ def _model_to_event(model: AuditEventModel) -> AuditEvent:
     )
 
 
-# ---------------------------------------------------------------------------
-# Abstract contract
-# ---------------------------------------------------------------------------
-
 class AuditRepository(ABC):
     """Append-only audit log abstraction."""
 
@@ -81,13 +100,9 @@ class AuditRepository(ABC):
         """Persist a new audit event. NEVER updates existing records."""
 
     @abstractmethod
-    def get_events_for_task(self, task_id: str) -> List[AuditEvent]:
+    def get_events_for_task(self, task_id: str) -> list[AuditEvent]:
         """Return all events for a task ordered by creation time (ascending)."""
 
-
-# ---------------------------------------------------------------------------
-# InMemory fallback (tests / CI without Postgres)
-# ---------------------------------------------------------------------------
 
 class InMemoryAuditRepository(AuditRepository):
     """In-memory append-only ledger for unit tests."""
@@ -96,25 +111,19 @@ class InMemoryAuditRepository(AuditRepository):
         self._events: list[AuditEvent] = []
 
     def append(self, event: AuditEvent) -> None:
-        # Append-only: no mutation allowed
         self._events.append(event)
 
-    def get_events_for_task(self, task_id: str) -> List[AuditEvent]:
+    def get_events_for_task(self, task_id: str) -> list[AuditEvent]:
         return [e for e in self._events if e.task_id == task_id]
 
-    def all_events(self) -> List[AuditEvent]:
+    def all_events(self) -> list[AuditEvent]:
         return list(self._events)
 
-
-# ---------------------------------------------------------------------------
-# Postgres implementation
-# ---------------------------------------------------------------------------
 
 class PostgresAuditRepository(AuditRepository):
     """Production PostgreSQL append-only audit ledger.
 
-    CRITICAL: No UPDATE or DELETE statements are issued by this class.
-    The DB-level constraint on audit_events ensures immutability.
+    Non-blocking safe execution guarantees audit errors never disrupt primary operations.
     """
 
     def __init__(self, factory: DatabaseSessionFactory | None = None) -> None:
@@ -122,30 +131,57 @@ class PostgresAuditRepository(AuditRepository):
 
     @contextmanager
     def _session(self) -> Generator[Session, None, None]:
-        yield from self._factory.session_scope()
+        with self._factory.session_scope() as session:
+            yield session
 
     def append(self, event: AuditEvent) -> None:
-        """Append a single immutable audit event."""
-        # Privacy guard: strip any forbidden keys from details before persisting
-        safe_details = {
-            k: v for k, v in event.details.items()
-            if k not in {"source_code", "unified_diff", "diff", "patch", "token", "credential", "api_key"}
-        }
-        with self._session() as session:
-            model = AuditEventModel(
-                task_id=event.task_id,
-                event_type=event.event_type,
-                details=json.dumps(safe_details) if safe_details else None,
-            )
-            session.add(model)
-            # Explicitly NO session.merge(), NO UPDATE
+        """Append a single immutable audit event in a non-blocking safe try/except block."""
+        try:
+            safe_details = {
+                k: v
+                for k, v in event.details.items()
+                if k not in {"source_code", "unified_diff", "diff", "patch", "token", "credential", "api_key"}
+            }
+            if event.correlation_id:
+                safe_details["correlation_id"] = event.correlation_id
+            if event.actor:
+                safe_details["actor"] = event.actor
+            if event.old_state:
+                safe_details["old_state"] = event.old_state
+            if event.new_state:
+                safe_details["new_state"] = event.new_state
 
-    def get_events_for_task(self, task_id: str) -> List[AuditEvent]:
+            with self._session() as session:
+                model = AuditEventModel(
+                    task_id=event.task_id,
+                    event_type=event.event_type,
+                    details=json.dumps(safe_details) if safe_details else None,
+                )
+                session.add(model)
+        except Exception as err:
+            # Non-blocking audit safety rule: audit failures must NOT raise or break authoritative caller
+            default_logger.warning(
+                "AUDIT_APPEND_FAILED",
+                f"Failed to record audit event '{event.event_type}' for task '{event.task_id}': {err}",
+                component="audit_repository",
+                task_id=event.task_id,
+            )
+
+    def get_events_for_task(self, task_id: str) -> list[AuditEvent]:
         """Retrieve all audit events for a task, ordered by time ascending."""
-        with self._session() as session:
-            rows = session.scalars(
-                select(AuditEventModel)
-                .where(AuditEventModel.task_id == task_id)
-                .order_by(AuditEventModel.created_at.asc())
-            ).all()
-            return [_model_to_event(r) for r in rows]
+        try:
+            with self._session() as session:
+                rows = session.scalars(
+                    select(AuditEventModel)
+                    .where(AuditEventModel.task_id == task_id)
+                    .order_by(AuditEventModel.created_at.asc())
+                ).all()
+                return [_model_to_event(r) for r in rows]
+        except Exception as err:
+            default_logger.warning(
+                "AUDIT_QUERY_FAILED",
+                f"Failed to query audit events for task '{task_id}': {err}",
+                component="audit_repository",
+                task_id=task_id,
+            )
+            return []

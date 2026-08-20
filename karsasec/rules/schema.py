@@ -7,40 +7,52 @@ from karsasec.rules.enums import Confidence, LanguageEnum, Severity, TargetForma
 
 RULE_ID_PATTERN = re.compile(r"^KS-[A-Z0-9_-]{2,10}-\d{4}$")
 
+
 class AnalysisEngine(StrEnum):
     """Engine modes for rule analysis."""
+
     AST = "AST"
     PATTERN = "PATTERN"
     CPG = "CPG"
 
+
 class AnalysisBehavior(StrEnum):
     """Vulnerability role behavior classification."""
+
     SOURCE = "SOURCE"
     SINK = "SINK"
     SANITIZER = "SANITIZER"
 
+
 @dataclass(slots=True)
 class TargetSpec:
     """Target language and framework scope specification (Schema v2)."""
+
     languages: list[LanguageEnum] = field(default_factory=list)
     frameworks: list[str] = field(default_factory=list)
+
 
 @dataclass(slots=True)
 class AnalysisSpec:
     """Analysis engine, behavior, and required capabilities specification (Schema v2)."""
+
     engine: AnalysisEngine = AnalysisEngine.AST
     behavior: AnalysisBehavior = AnalysisBehavior.SINK
     requires: list[str] = field(default_factory=lambda: ["ast"])
 
+
 @dataclass(slots=True)
 class EvidenceSpec:
     """Evidence requirements and score weight definitions (Schema v2)."""
+
     require: list[str] = field(default_factory=list)
     score_weights: dict[str, int] = field(default_factory=dict)
+
 
 @dataclass(slots=True)
 class RuleMetadataV2:
     """Metadata describing rule authorship, versioning, references, and tags (Schema v2)."""
+
     name: str
     author: str
     version: str
@@ -53,10 +65,12 @@ class RuleMetadataV2:
     references: list[str] = field(default_factory=list)
     tags: list[str] = field(default_factory=list)
 
+
 # Backward Compatible Dataclasses (Schema v1)
 @dataclass(slots=True)
 class RuleMetadata:
     """Metadata describing rule authorship, versioning, and security classification (Schema v1)."""
+
     name: str
     author: str
     version: str
@@ -65,24 +79,30 @@ class RuleMetadata:
     cwe: str = "CWE-20"
     owasp: str = "A03:2021-Injection"
 
+
 @dataclass(slots=True)
 class RuleMatch:
     """Target language and AST node selection scope."""
+
     language: LanguageEnum
     ast_node_types: list[str] = field(default_factory=list)
+
 
 @dataclass(slots=True)
 class RuleCondition:
     """Predicate condition triggering rule matching."""
+
     symbol_triggers: list[str] = field(default_factory=list)
     pattern: str | None = None
     value_evidence_equals: str | None = None
     value_evidence_not_in: list[str] = field(default_factory=list)
     node_text_not_matches: str | None = None
 
+
 @dataclass(slots=True)
 class RuleOutput:
     """Finding metadata produced when a rule matches."""
+
     severity: Severity
     confidence: Confidence
     message: str
@@ -93,19 +113,24 @@ class RuleOutput:
 # Rule Contract (E10-3J) — four-section formal quality gate
 # ---------------------------------------------------------------------------
 
+
 @dataclass(slots=True, frozen=True)
 class DetectionContract:
     """Describes what makes a rule match semantically dangerous."""
-    source_kind: str = ""               # e.g. 'credential_assignment', 'hash_for_password'
-    semantic_context: str = ""          # Human description of the vulnerability intent
+
+    source_kind: str = ""  # e.g. 'credential_assignment', 'hash_for_password'
+    semantic_context: str = ""  # Human description of the vulnerability intent
     unsafe_evidence: tuple[str, ...] = field(default_factory=tuple)  # ValueEvidenceKind values
+
 
 @dataclass(slots=True, frozen=True)
 class SafetyContract:
     """Describes what evidence proves a match is safe (no finding)."""
-    safe_evidence: tuple[str, ...] = field(default_factory=tuple)    # ValueEvidenceKind -> suppress
-    unknown_evidence: tuple[str, ...] = field(default_factory=tuple) # ValueEvidenceKind -> suppress
+
+    safe_evidence: tuple[str, ...] = field(default_factory=tuple)  # ValueEvidenceKind -> suppress
+    unknown_evidence: tuple[str, ...] = field(default_factory=tuple)  # ValueEvidenceKind -> suppress
     unknown_resolution: UnknownResolution = UnknownResolution.SUPPRESS
+
 
 @dataclass(slots=True, frozen=True)
 class FixtureContract:
@@ -115,14 +140,18 @@ class FixtureContract:
     negative: snippets that MUST NOT produce any Finding.
     Both are verified by RuleContractValidator in CI.
     """
+
     positive: tuple[str, ...] = field(default_factory=tuple)
     negative: tuple[str, ...] = field(default_factory=tuple)
+
 
 @dataclass(slots=True, frozen=True)
 class RegressionContract:
     """Tracks known FP patterns this rule has been explicitly hardened against."""
+
     fp_regression_ids: tuple[str, ...] = field(default_factory=tuple)
-    regression_context: str = ""        # Human description of FP source
+    regression_context: str = ""  # Human description of FP source
+
 
 @dataclass(slots=True)
 class RuleContract:
@@ -131,6 +160,7 @@ class RuleContract:
     Rules without a contract section are valid (backward compatible).
     Rules modified after E10-3J MUST carry a contract before merging.
     """
+
     detection: DetectionContract = field(default_factory=DetectionContract)
     safety: SafetyContract = field(default_factory=SafetyContract)
     fixtures: FixtureContract = field(default_factory=FixtureContract)
@@ -140,6 +170,7 @@ class RuleContract:
 @dataclass(slots=True)
 class Rule:
     """Structured security rule definition supporting both Schema v1 and v2 contracts."""
+
     id: str
     metadata: RuleMetadataV2
     match: RuleMatch
@@ -150,6 +181,7 @@ class Rule:
     evidence: EvidenceSpec | None = None
     contract: RuleContract | None = None
     schema_version: str = "2.0"
+
 
 def validate_rule_dict(raw_data: dict[str, Any]) -> Rule:
     """Validates raw dict structure and converts it into a validated Rule object.

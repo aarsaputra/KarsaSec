@@ -70,9 +70,7 @@ FRAMEWORK_CAPABILITIES_MAP: dict[FrameworkType, tuple[FrameworkCapability, ...]]
         FrameworkCapability.CONFIG,
         FrameworkCapability.API,
     ),
-    FrameworkType.GENERIC: (
-        FrameworkCapability.CONFIG,
-    ),
+    FrameworkType.GENERIC: (FrameworkCapability.CONFIG,),
 }
 
 

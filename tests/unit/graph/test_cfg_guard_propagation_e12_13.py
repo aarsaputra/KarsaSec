@@ -17,6 +17,7 @@ Test Scenarios (15 Mandatory Adversarial & Semantic Invariants):
  14. Negated guard early exit
  15. Unknown helper predicate (treated as NOT_PROVEN)
 """
+
 from __future__ import annotations
 
 import pytest
@@ -64,7 +65,8 @@ def test_1_guard_invalidation_on_reassignment(cfg_builder: CFGBuilder, analyzer:
 
     # Find the leaf block containing mysql_query($id);
     sink_block_id = [
-        b for b in sorted(cfg.reachable_blocks)
+        b
+        for b in sorted(cfg.reachable_blocks)
         if not b.startswith("cond") and any("mysql_query" in str(s) for s in cfg.blocks[b].statements)
     ][0]
     # State after executing statements in sink_block_id
@@ -131,7 +133,9 @@ def test_5_wrong_sink_context_rejection(matrix: SinkCompatibilityMatrix) -> None
     assert res.decision == CompatibilityDecision.NOT_PROVEN
 
 
-def test_6_early_exit_dominance_propagation(cfg_builder: CFGBuilder, analyzer: WorklistFixpointAnalyzer, matrix: SinkCompatibilityMatrix) -> None:
+def test_6_early_exit_dominance_propagation(
+    cfg_builder: CFGBuilder, analyzer: WorklistFixpointAnalyzer, matrix: SinkCompatibilityMatrix
+) -> None:
     code_stmts = [
         "$id = $_GET['id'];",
         "if (!is_numeric($id)) {",
@@ -277,7 +281,9 @@ def test_13_short_circuit_condition(cfg_builder: CFGBuilder, analyzer: WorklistF
     assert SemanticConstraint.NUMERIC in val_x.all_constraints
 
 
-def test_14_negated_guard_early_exit(cfg_builder: CFGBuilder, analyzer: WorklistFixpointAnalyzer, matrix: SinkCompatibilityMatrix) -> None:
+def test_14_negated_guard_early_exit(
+    cfg_builder: CFGBuilder, analyzer: WorklistFixpointAnalyzer, matrix: SinkCompatibilityMatrix
+) -> None:
     code_stmts = [
         "$id = $_GET['id'];",
         "if (!is_numeric($id)) {",

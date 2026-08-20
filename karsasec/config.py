@@ -17,8 +17,7 @@ class Settings(BaseSettings):
 
     # Storage & Cache paths
     cache_dir: Path = Field(
-        default=Path.home() / ".karsasec" / "cache",
-        description="Directory for local database and RAG indices"
+        default=Path.home() / ".karsasec" / "cache", description="Directory for local database and RAG indices"
     )
 
     # LLM Settings
@@ -27,11 +26,9 @@ class Settings(BaseSettings):
     max_token_budget_per_scan: int = Field(default=50000, description="Max token limit per audit session")
 
     model_config = SettingsConfigDict(
-        env_prefix="KARSASEC_",
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore"
+        env_prefix="KARSASEC_", env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
+
 
 settings = Settings()
 

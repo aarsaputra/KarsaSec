@@ -61,9 +61,7 @@ class InterproceduralSolver:
 
         for scc in sccs:
             is_recursive_scc = len(scc) > 1 or any(
-                edge.callee_id == edge.caller_id
-                for node_id in scc
-                for edge in call_graph.get_call_sites(node_id)
+                edge.callee_id == edge.caller_id for node_id in scc for edge in call_graph.get_call_sites(node_id)
             )
 
             if not is_recursive_scc:
@@ -95,6 +93,7 @@ class InterproceduralSolver:
             )
 
         from karsasec.graph.dataflow.interprocedural_analyzer import InterproceduralDataflowAnalyzer
+
         analyzer = InterproceduralDataflowAnalyzer(self.resource_graph)
         summary = analyzer.analyze_function(
             function_name=ast_info["function_name"],

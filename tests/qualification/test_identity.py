@@ -1,4 +1,5 @@
 """Tests for karsasec.qualification.identity (E12-1)."""
+
 from __future__ import annotations
 
 from karsasec.qualification.identity import FindingIdentity, _normalize_path_str

@@ -63,9 +63,7 @@ class TestHealthEndpoint:
 # -------------------------------------------------------------------------
 class TestScansEndpoint:
     def test_scan_create_requires_auth(self, client):
-        resp = client.post("/api/v1/scans", json={
-            "target": {"identity": "/some/path"}
-        })
+        resp = client.post("/api/v1/scans", json={"target": {"identity": "/some/path"}})
         assert resp.status_code == 401
 
     def test_scan_get_requires_auth(self, client):
@@ -114,10 +112,9 @@ class TestFindingsEndpoint:
 # -------------------------------------------------------------------------
 class TestRemediationsEndpoint:
     def test_remediation_trigger_requires_auth(self, client):
-        resp = client.post("/api/v1/remediations", json={
-            "finding_id": "f1",
-            "approval": {"approval_token_id": "t1", "token": "tok"}
-        })
+        resp = client.post(
+            "/api/v1/remediations", json={"finding_id": "f1", "approval": {"approval_token_id": "t1", "token": "tok"}}
+        )
         assert resp.status_code == 401
 
     def test_remediation_get_requires_auth(self, client):

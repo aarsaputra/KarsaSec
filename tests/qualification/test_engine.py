@@ -1,4 +1,5 @@
 """Tests for karsasec.qualification.engine (E12-1)."""
+
 from __future__ import annotations
 
 import hashlib
@@ -38,10 +39,15 @@ def _f(rule_id: str = "KS-PHP-0002", file: str = "sqli/low.php", line: int = 10)
     )
 
 
-def _c(case_id: str, file: str = "sqli/low.php", line: int = 10,
-       expected: GroundTruthExpectation = GroundTruthExpectation.TRUE_POSITIVE) -> GroundTruthCase:
-    return GroundTruthCase(case_id=case_id, benchmark="t", file=file, line=line,
-                           rule_id="KS-PHP-0002", expected=expected, description="t")
+def _c(
+    case_id: str,
+    file: str = "sqli/low.php",
+    line: int = 10,
+    expected: GroundTruthExpectation = GroundTruthExpectation.TRUE_POSITIVE,
+) -> GroundTruthCase:
+    return GroundTruthCase(
+        case_id=case_id, benchmark="t", file=file, line=line, rule_id="KS-PHP-0002", expected=expected, description="t"
+    )
 
 
 def _bm(*cases: GroundTruthCase) -> GroundTruthBenchmark:

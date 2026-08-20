@@ -258,7 +258,9 @@ if (isset($_GET['action']) && isset($_GET['user_id']) && isset($_COOKIE['user_id
     )
     result = executor.execute_scan(scan_ctx, bac_rules)
 
-    assert len(result.findings) >= 1, "Expected at least one Broken Access Control finding when user-controlled IDs determine access"
+    assert len(result.findings) >= 1, (
+        "Expected at least one Broken Access Control finding when user-controlled IDs determine access"
+    )
 
 
 def test_python_weak_crypto_rule_detects_md5() -> None:
@@ -267,27 +269,27 @@ password = 'secret'
 hash_result = hashlib.md5(password.encode('utf-8')).hexdigest()
 print(hash_result)
 """
-    file_path = Path('/tmp/test_python_crypto.py')
-    file_path.write_text(python_code, encoding='utf-8')
+    file_path = Path("/tmp/test_python_crypto.py")
+    file_path.write_text(python_code, encoding="utf-8")
 
     parse_result = PythonParserPlugin().parse_file(file_path)
-    parse_result.root.language = 'Python'
+    parse_result.root.language = "Python"
 
     loader = YAMLRuleLoader()
-    rules = loader.load_directory(Path('karsasec/rules/patterns/python'))
-    crypto_rules = [rule for rule in rules if rule.id == 'KS-PY-0004']
+    rules = loader.load_directory(Path("karsasec/rules/patterns/python"))
+    crypto_rules = [rule for rule in rules if rule.id == "KS-PY-0004"]
 
     executor = RuleExecutor()
     scan_ctx = ScanContext(
         file_node=parse_result.root,
-        source_bytes=python_code.encode('utf-8'),
+        source_bytes=python_code.encode("utf-8"),
         file_path=file_path,
         symbol_table=parse_result.symbol_table,
-        language='Python',
+        language="Python",
     )
     result = executor.execute_scan(scan_ctx, crypto_rules)
 
-    assert len(result.findings) >= 1, 'Expected weak crypto finding for hashlib.md5 usage'
+    assert len(result.findings) >= 1, "Expected weak crypto finding for hashlib.md5 usage"
 
 
 def test_javascript_cors_misconfig_rule_detects_wildcard_origin(tmp_path: Path) -> None:
@@ -296,29 +298,29 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 """
-    file_path = tmp_path / 'test_cors_misconfig.js'
-    file_path.write_text(js_code, encoding='utf-8')
+    file_path = tmp_path / "test_cors_misconfig.js"
+    file_path.write_text(js_code, encoding="utf-8")
 
-    with patch.object(ts_engine, 'get_language', return_value=None):
+    with patch.object(ts_engine, "get_language", return_value=None):
         parse_result = js_parser.parse_file(file_path)
 
-    parse_result.root.language = 'JavaScript'
+    parse_result.root.language = "JavaScript"
 
     loader = YAMLRuleLoader()
-    rules = loader.load_directory(Path('karsasec/rules/patterns/javascript'))
-    cors_rules = [rule for rule in rules if rule.id == 'KS-JS-0006']
+    rules = loader.load_directory(Path("karsasec/rules/patterns/javascript"))
+    cors_rules = [rule for rule in rules if rule.id == "KS-JS-0006"]
 
     executor = RuleExecutor()
     scan_ctx = ScanContext(
         file_node=parse_result.root,
-        source_bytes=js_code.encode('utf-8'),
+        source_bytes=js_code.encode("utf-8"),
         file_path=file_path,
         symbol_table=parse_result.symbol_table,
-        language='JavaScript',
+        language="JavaScript",
     )
     result = executor.execute_scan(scan_ctx, cors_rules)
 
-    assert len(result.findings) >= 1, 'Expected CORS misconfiguration finding on cors() wildcard usage'
+    assert len(result.findings) >= 1, "Expected CORS misconfiguration finding on cors() wildcard usage"
 
 
 def test_go_deserialization_rule_detects_gob_decoder(tmp_path: Path) -> None:
@@ -340,27 +342,26 @@ func handler(w http.ResponseWriter, r *http.Request) {
     w.Write([]byte(payload.Name))
 }
 """
-    file_path = tmp_path / 'test_deserialize.go'
-    file_path.write_text(go_code, encoding='utf-8')
+    file_path = tmp_path / "test_deserialize.go"
+    file_path.write_text(go_code, encoding="utf-8")
 
-    with patch.object(ts_engine, 'get_language', return_value=None):
+    with patch.object(ts_engine, "get_language", return_value=None):
         parse_result = go_parser.parse_file(file_path)
 
-    parse_result.root.language = 'Go'
+    parse_result.root.language = "Go"
 
     loader = YAMLRuleLoader()
-    rules = loader.load_directory(Path('karsasec/rules/patterns/go'))
-    deser_rules = [rule for rule in rules if rule.id == 'KS-GO-0008']
+    rules = loader.load_directory(Path("karsasec/rules/patterns/go"))
+    deser_rules = [rule for rule in rules if rule.id == "KS-GO-0008"]
 
     executor = RuleExecutor()
     scan_ctx = ScanContext(
         file_node=parse_result.root,
-        source_bytes=go_code.encode('utf-8'),
+        source_bytes=go_code.encode("utf-8"),
         file_path=file_path,
         symbol_table=parse_result.symbol_table,
-        language='Go',
+        language="Go",
     )
     result = executor.execute_scan(scan_ctx, deser_rules)
 
-    assert len(result.findings) >= 1, 'Expected unsafe deserialization finding for gob.NewDecoder usage'
-
+    assert len(result.findings) >= 1, "Expected unsafe deserialization finding for gob.NewDecoder usage"

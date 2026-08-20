@@ -6,6 +6,7 @@ from dataclasses import dataclass
 @dataclass
 class MatcherStatistics:
     """Telemetry counter tracking matching efficiency, predicate checks, and short-circuits."""
+
     nodes_checked: int = 0
     rules_checked: int = 0
     predicates_checked: int = 0

@@ -18,7 +18,9 @@ class SymbolResolver:
     def __init__(self) -> None:
         pass
 
-    def build_symbol_graph(self, file_nodes: list[FileNode], source_bytes_map: dict[str, bytes] | None = None) -> SymbolGraph:
+    def build_symbol_graph(
+        self, file_nodes: list[FileNode], source_bytes_map: dict[str, bytes] | None = None
+    ) -> SymbolGraph:
         """Builds a unified SymbolGraph across one or multiple FileNode instances."""
         graph = SymbolGraph()
         source_bytes_map = source_bytes_map or {}
@@ -47,7 +49,12 @@ class SymbolResolver:
             line_no = node.start.line
 
             # Function symbols
-            if isinstance(node, FunctionNode) or node.node_type in ["function_definition", "function_declaration", "def", "func_decl"]:
+            if isinstance(node, FunctionNode) or node.node_type in [
+                "function_definition",
+                "function_declaration",
+                "def",
+                "func_decl",
+            ]:
                 func_name = getattr(node, "name", "") or "anonymous"
                 symbol_id = f"{file_path_str}::{func_name}::{line_no}"
                 sym = Symbol(
@@ -79,7 +86,11 @@ class SymbolResolver:
                 graph.bind_identifier(node.node_id, symbol_id)
 
             # Variable assignments (e.g., db = sqlite3.connect())
-            elif isinstance(node, AssignmentNode) or node.node_type in ["assignment", "assignment_expression", "var_decl"]:
+            elif isinstance(node, AssignmentNode) or node.node_type in [
+                "assignment",
+                "assignment_expression",
+                "var_decl",
+            ]:
                 var_name = getattr(node, "target", "") or getattr(node, "variable_name", "") or ""
                 if not var_name and source_bytes:
                     var_name = node.get_text(source_bytes)

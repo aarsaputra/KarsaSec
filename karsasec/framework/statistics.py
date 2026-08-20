@@ -12,6 +12,7 @@ from karsasec.framework.semantic_models import FrameworkSemanticGraph, SemanticN
 @dataclass(frozen=True)
 class GraphStatistics:
     """Dataclass holding semantic graph topology statistics."""
+
     node_count: int
     edge_count: int
     route_count: int

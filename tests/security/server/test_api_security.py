@@ -42,13 +42,16 @@ def auth_headers():
 # SEC-01: Unauthorized access — no credentials
 # -------------------------------------------------------------------------
 class TestUnauthorizedAccess:
-    @pytest.mark.parametrize("path", [
-        "/api/v1/scans/x",
-        "/api/v1/findings",
-        "/api/v1/findings/x",
-        "/api/v1/remediations/x",
-        "/api/v1/remediations/x/receipt",
-    ])
+    @pytest.mark.parametrize(
+        "path",
+        [
+            "/api/v1/scans/x",
+            "/api/v1/findings",
+            "/api/v1/findings/x",
+            "/api/v1/remediations/x",
+            "/api/v1/remediations/x/receipt",
+        ],
+    )
     def test_unauthenticated_get_returns_401(self, client, path):
         resp = client.get(path)
         assert resp.status_code == 401
@@ -58,10 +61,9 @@ class TestUnauthorizedAccess:
         assert resp.status_code == 401
 
     def test_unauthenticated_post_remediations_returns_401(self, client):
-        resp = client.post("/api/v1/remediations", json={
-            "finding_id": "f1",
-            "approval": {"approval_token_id": "t1", "token": "tok"}
-        })
+        resp = client.post(
+            "/api/v1/remediations", json={"finding_id": "f1", "approval": {"approval_token_id": "t1", "token": "tok"}}
+        )
         assert resp.status_code == 401
 
 
@@ -90,6 +92,7 @@ class TestForbiddenScope:
         """A principal with only finding:read cannot create scans."""
         from karsasec.server.security.authorization import authorize
         from fastapi import HTTPException
+
         limited = Principal(identity="limited", scopes=frozenset({Permission.FINDING_READ}))
         with pytest.raises(HTTPException) as exc:
             authorize(limited, Permission.SCAN_CREATE)
@@ -98,6 +101,7 @@ class TestForbiddenScope:
     def test_limited_principal_cannot_trigger_remediation(self):
         from karsasec.server.security.authorization import authorize
         from fastapi import HTTPException
+
         limited = Principal(identity="limited", scopes=frozenset({Permission.SCAN_READ}))
         with pytest.raises(HTTPException) as exc:
             authorize(limited, Permission.REMEDIATION_CREATE)
@@ -106,6 +110,7 @@ class TestForbiddenScope:
     def test_limited_principal_cannot_read_receipt(self):
         from karsasec.server.security.authorization import authorize
         from fastapi import HTTPException
+
         limited = Principal(identity="limited", scopes=frozenset())
         with pytest.raises(HTTPException) as exc:
             authorize(limited, Permission.RECEIPT_READ)
@@ -121,6 +126,7 @@ class TestNoDirectSecurityAuthority:
         Any payload containing it should be ignored (extra fields stripped by Pydantic).
         """
         from karsasec.server.dto.remediation import RemediationRequestDTO
+
         raw = {
             "finding_id": "f1",
             "approval": {"approval_token_id": "t1", "token": "tok"},
@@ -132,8 +138,11 @@ class TestNoDirectSecurityAuthority:
     def test_remediation_response_security_status_is_output_field(self):
         """RemediationResponseDTO contains security_verification_status as an output-only field."""
         from karsasec.server.dto.remediation import RemediationResponseDTO
+
         dto = RemediationResponseDTO(
-            transaction_id="t1", finding_id="f1", state="REJECTED",
+            transaction_id="t1",
+            finding_id="f1",
+            state="REJECTED",
             integrity_status="INVALID",
             security_verification_status="SECURITY_NOT_VERIFIED",
         )
@@ -144,10 +153,9 @@ class TestNoDirectSecurityAuthority:
         """Verify router source files do not contain hardcoded VERIFIED_FIXED or SECURITY_VERIFIED assignments."""
         import re
         from pathlib import Path
+
         router_dir = Path("karsasec/server/api")
-        forbidden = re.compile(
-            r'security_status\s*=\s*["\']?(VERIFIED_FIXED|SECURITY_VERIFIED)["\']?'
-        )
+        forbidden = re.compile(r'security_status\s*=\s*["\']?(VERIFIED_FIXED|SECURITY_VERIFIED)["\']?')
         for f in router_dir.rglob("*.py"):
             content = f.read_text(encoding="utf-8")
             assert not forbidden.search(content), (
@@ -161,10 +169,14 @@ class TestNoDirectSecurityAuthority:
 class TestPrivacyLeakagePrevention:
     def test_scan_response_has_no_source_code_field(self):
         from karsasec.server.dto.scan import ScanResponseDTO
+
         dto = ScanResponseDTO(
-            scan_id="s1", status="COMPLETED",
-            created_at="2026-01-01T00:00:00Z", finding_count=0,
-            files_scanned=0, duration_ms=0,
+            scan_id="s1",
+            status="COMPLETED",
+            created_at="2026-01-01T00:00:00Z",
+            finding_count=0,
+            files_scanned=0,
+            duration_ms=0,
         )
         d = dto.model_dump()
         assert "source_code" not in d
@@ -173,6 +185,7 @@ class TestPrivacyLeakagePrevention:
 
     def test_finding_dto_has_no_snippet(self):
         from karsasec.server.dto.finding import FindingDTO
+
         dto = FindingDTO(finding_id="f", rule_id="R", severity="LOW", file_path="a.py")
         d = dto.model_dump()
         assert "snippet" not in d
@@ -181,8 +194,11 @@ class TestPrivacyLeakagePrevention:
 
     def test_receipt_dto_has_no_credential_fields(self):
         from karsasec.server.dto.receipt import VerificationReceiptResponseDTO
+
         dto = VerificationReceiptResponseDTO(
-            receipt_id="r", transaction_id="t", finding_id="f",
+            receipt_id="r",
+            transaction_id="t",
+            finding_id="f",
             integrity_status="INVALID",
             security_verification_status="SECURITY_NOT_VERIFIED",
             receipt_fingerprint="fp" * 20,
@@ -198,6 +214,7 @@ class TestPrivacyLeakagePrevention:
 class TestCapabilityAudit:
     def test_no_subprocess_in_server_package(self):
         from pathlib import Path
+
         server_dir = Path("karsasec/server")
         for f in server_dir.rglob("*.py"):
             content = f.read_text(encoding="utf-8")
@@ -206,14 +223,16 @@ class TestCapabilityAudit:
     def test_no_os_system_in_server_package(self):
         import re
         from pathlib import Path
+
         server_dir = Path("karsasec/server")
-        pattern = re.compile(r'\bos\.system\b')
+        pattern = re.compile(r"\bos\.system\b")
         for f in server_dir.rglob("*.py"):
             content = f.read_text(encoding="utf-8")
             assert not pattern.search(content), f"Forbidden 'os.system' in {f}"
 
     def test_no_shell_true_in_server_package(self):
         from pathlib import Path
+
         server_dir = Path("karsasec/server")
         for f in server_dir.rglob("*.py"):
             content = f.read_text(encoding="utf-8")
@@ -222,8 +241,9 @@ class TestCapabilityAudit:
     def test_no_eval_in_server_package(self):
         import re
         from pathlib import Path
+
         server_dir = Path("karsasec/server")
-        pattern = re.compile(r'\beval\s*\(')
+        pattern = re.compile(r"\beval\s*\(")
         for f in server_dir.rglob("*.py"):
             content = f.read_text(encoding="utf-8")
             assert not pattern.search(content), f"Forbidden 'eval(' in {f}"
@@ -231,8 +251,9 @@ class TestCapabilityAudit:
     def test_no_exec_in_server_package(self):
         import re
         from pathlib import Path
+
         server_dir = Path("karsasec/server")
-        pattern = re.compile(r'\bexec\s*\(')
+        pattern = re.compile(r"\bexec\s*\(")
         for f in server_dir.rglob("*.py"):
             content = f.read_text(encoding="utf-8")
             assert not pattern.search(content), f"Forbidden 'exec(' in {f}"
@@ -246,7 +267,7 @@ class TestErrorHandlerPrivacy:
         resp = client.get("/api/v1/findings/nonexistent", headers=auth_headers)
         body = resp.text
         assert "Traceback" not in body
-        assert "File \"" not in body
+        assert 'File "' not in body
 
     def test_422_error_body_is_structured(self, client, auth_headers):
         resp = client.post("/api/v1/scans", json={"bad": "body"}, headers=auth_headers)

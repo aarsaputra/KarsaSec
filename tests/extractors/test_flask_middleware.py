@@ -37,6 +37,7 @@ def extractor() -> FlaskMiddlewareExtractor:
 # Category 1: Before Request Hooks (15 Tests)
 # ============================================================================
 
+
 def test_before_request_basic():
     code = "@app.before_request\ndef auth(): pass"
     tree = PythonASTAdapter.parse_code(code)
@@ -109,6 +110,7 @@ def test_before_request_fixture(extractor: FlaskMiddlewareExtractor):
 # Category 2: After Request Hooks (10 Tests)
 # ============================================================================
 
+
 def test_after_request_basic():
     code = "@app.after_request\ndef add_headers(resp): return resp"
     tree = PythonASTAdapter.parse_code(code)
@@ -127,7 +129,19 @@ def test_after_request_async():
     assert state.middleware_candidates[0].handler == "async_headers"
 
 
-@pytest.mark.parametrize("fn_name", ["set_cookie", "cors_headers", "security_header", "metrics_collector", "audit_log", "compress_response", "flush_session", "timing_header"])
+@pytest.mark.parametrize(
+    "fn_name",
+    [
+        "set_cookie",
+        "cors_headers",
+        "security_header",
+        "metrics_collector",
+        "audit_log",
+        "compress_response",
+        "flush_session",
+        "timing_header",
+    ],
+)
 def test_after_request_variations(fn_name: str):
     code = f"@app.after_request\ndef {fn_name}(r): return r"
     tree = PythonASTAdapter.parse_code(code)
@@ -139,6 +153,7 @@ def test_after_request_variations(fn_name: str):
 # ============================================================================
 # Category 3: Blueprint Middleware (15 Tests)
 # ============================================================================
+
 
 def test_bp_before_request():
     code = "@auth_bp.before_request\ndef bp_auth(): pass"
@@ -159,7 +174,24 @@ def test_bp_after_request():
     assert state.middleware_candidates[0].blueprint == "api"
 
 
-@pytest.mark.parametrize("bp_var", ["user_bp", "admin_bp", "v1_bp", "v2_bp", "health_bp", "billing_bp", "checkout_bp", "reports_bp", "internal_bp", "webhook_bp", "oauth_bp", "saml_bp", "mfa_bp"])
+@pytest.mark.parametrize(
+    "bp_var",
+    [
+        "user_bp",
+        "admin_bp",
+        "v1_bp",
+        "v2_bp",
+        "health_bp",
+        "billing_bp",
+        "checkout_bp",
+        "reports_bp",
+        "internal_bp",
+        "webhook_bp",
+        "oauth_bp",
+        "saml_bp",
+        "mfa_bp",
+    ],
+)
 def test_bp_middleware_naming(bp_var: str):
     code = f"@{bp_var}.before_request\ndef check(): pass"
     tree = PythonASTAdapter.parse_code(code)
@@ -172,6 +204,7 @@ def test_bp_middleware_naming(bp_var: str):
 # ============================================================================
 # Category 4: Error Handlers (15 Tests)
 # ============================================================================
+
 
 def test_errorhandler_status_code_404():
     code = "@app.errorhandler(404)\ndef handle_404(e): return '404', 404"
@@ -221,6 +254,7 @@ def test_errorhandler_blueprint():
 # Category 5: Teardown Hooks (10 Tests)
 # ============================================================================
 
+
 def test_teardown_request():
     code = "@app.teardown_request\ndef cleanup_req(e): pass"
     tree = PythonASTAdapter.parse_code(code)
@@ -238,7 +272,19 @@ def test_teardown_appcontext():
     assert state.middleware_candidates[0].phase == "application_teardown"
 
 
-@pytest.mark.parametrize("func_name", ["db_close", "session_remove", "file_close", "temp_cleanup", "metric_flush", "cache_sync", "socket_disconnect", "tracker_close"])
+@pytest.mark.parametrize(
+    "func_name",
+    [
+        "db_close",
+        "session_remove",
+        "file_close",
+        "temp_cleanup",
+        "metric_flush",
+        "cache_sync",
+        "socket_disconnect",
+        "tracker_close",
+    ],
+)
 def test_teardown_variations(func_name: str):
     code = f"@app.teardown_request\ndef {func_name}(e): pass"
     tree = PythonASTAdapter.parse_code(code)
@@ -250,6 +296,7 @@ def test_teardown_variations(func_name: str):
 # ============================================================================
 # Category 6: Extensions (15 Tests)
 # ============================================================================
+
 
 def test_extension_cors():
     code = "CORS(app)"
@@ -302,7 +349,21 @@ def test_extension_init_app():
     assert len(state.extensions) == 1
 
 
-@pytest.mark.parametrize("ext_class", ["CORS", "Limiter", "LoginManager", "Cache", "CSRFProtect", "Session", "Bcrypt", "Talisman", "FlaskCors", "FlaskLimiter"])
+@pytest.mark.parametrize(
+    "ext_class",
+    [
+        "CORS",
+        "Limiter",
+        "LoginManager",
+        "Cache",
+        "CSRFProtect",
+        "Session",
+        "Bcrypt",
+        "Talisman",
+        "FlaskCors",
+        "FlaskLimiter",
+    ],
+)
 def test_extension_parametrized(ext_class: str):
     code = f"{ext_class}(app)"
     tree = PythonASTAdapter.parse_code(code)
@@ -316,6 +377,7 @@ def test_extension_parametrized(ext_class: str):
 # ============================================================================
 # Category 7: Class Middleware (10 Tests)
 # ============================================================================
+
 
 def test_class_middleware_before():
     code = "class AuthMiddleware:\n    def before_request(self): pass"
@@ -334,7 +396,19 @@ def test_class_middleware_after():
     assert state.class_middlewares[0].phase == "after_response"
 
 
-@pytest.mark.parametrize("cls_name", ["SecurityMiddleware", "SessionMiddleware", "RateLimitMiddleware", "CorsMiddleware", "TracingMiddleware", "MetricsMiddleware", "AuditMiddleware", "CSRFMiddleware"])
+@pytest.mark.parametrize(
+    "cls_name",
+    [
+        "SecurityMiddleware",
+        "SessionMiddleware",
+        "RateLimitMiddleware",
+        "CorsMiddleware",
+        "TracingMiddleware",
+        "MetricsMiddleware",
+        "AuditMiddleware",
+        "CSRFMiddleware",
+    ],
+)
 def test_class_middleware_variations(cls_name: str):
     code = f"class {cls_name}:\n    def before_request(self): pass"
     tree = PythonASTAdapter.parse_code(code)
@@ -346,6 +420,7 @@ def test_class_middleware_variations(cls_name: str):
 # ============================================================================
 # Category 8: Multi-File Resolution (5 Tests)
 # ============================================================================
+
 
 def test_multi_file_collection():
     code1 = "@app.before_request\ndef f1(): pass"
@@ -402,9 +477,16 @@ def test_multi_file_normalizer_ordering():
 # Category 9: ISR Validation & Diagnostics (5 Tests)
 # ============================================================================
 
+
 def test_duplicate_middleware_diagnostic():
     state = FlaskMiddlewareState()
-    cand = MiddlewareCandidate(name="a.auth", middleware_type="BEFORE_REQUEST", handler="auth", phase="before_request", decorator="@app.before_request")
+    cand = MiddlewareCandidate(
+        name="a.auth",
+        middleware_type="BEFORE_REQUEST",
+        handler="auth",
+        phase="before_request",
+        decorator="@app.before_request",
+    )
     state.add_middleware_candidate(cand)
     state.add_middleware_candidate(cand)
     extractor = FlaskMiddlewareExtractor()
@@ -435,7 +517,9 @@ def test_invalid_handler_diagnostic():
 
 def test_isr_schema_version_compliance():
     state = FlaskMiddlewareState()
-    state.add_middleware_candidate(MiddlewareCandidate(name="test_mw", middleware_type="BEFORE_REQUEST", handler="test_mw"))
+    state.add_middleware_candidate(
+        MiddlewareCandidate(name="test_mw", middleware_type="BEFORE_REQUEST", handler="test_mw")
+    )
     normalizer = FlaskMiddlewareNormalizer(state)
     mw_defs = normalizer.normalize()
     assert mw_defs[0].schema_version == "1.0"
@@ -444,7 +528,9 @@ def test_isr_schema_version_compliance():
 
 def test_middleware_definition_semantic_id():
     state = FlaskMiddlewareState()
-    state.add_middleware_candidate(MiddlewareCandidate(name="sec_mw", middleware_type="BEFORE_REQUEST", handler="sec_mw"))
+    state.add_middleware_candidate(
+        MiddlewareCandidate(name="sec_mw", middleware_type="BEFORE_REQUEST", handler="sec_mw")
+    )
     normalizer = FlaskMiddlewareNormalizer(state)
     mw_defs = normalizer.normalize()
     assert len(mw_defs[0].semantic_id) == 64
@@ -452,7 +538,9 @@ def test_middleware_definition_semantic_id():
 
 def test_middleware_target_routes_wildcard():
     state = FlaskMiddlewareState()
-    state.add_middleware_candidate(MiddlewareCandidate(name="global_mw", middleware_type="BEFORE_REQUEST", handler="global_mw"))
+    state.add_middleware_candidate(
+        MiddlewareCandidate(name="global_mw", middleware_type="BEFORE_REQUEST", handler="global_mw")
+    )
     normalizer = FlaskMiddlewareNormalizer(state)
     mw_defs = normalizer.normalize()
     assert mw_defs[0].target_routes == ("*",)
@@ -460,7 +548,9 @@ def test_middleware_target_routes_wildcard():
 
 def test_middleware_blueprint_target_routes():
     state = FlaskMiddlewareState()
-    state.add_middleware_candidate(MiddlewareCandidate(name="auth.check", middleware_type="BEFORE_REQUEST", handler="check", blueprint="auth"))
+    state.add_middleware_candidate(
+        MiddlewareCandidate(name="auth.check", middleware_type="BEFORE_REQUEST", handler="check", blueprint="auth")
+    )
     normalizer = FlaskMiddlewareNormalizer(state)
     mw_defs = normalizer.normalize()
     assert mw_defs[0].target_routes == ("auth/*",)
@@ -476,5 +566,5 @@ def test_extractor_supported_frameworks(extractor: FlaskMiddlewareExtractor):
 
 def test_extractor_capability(extractor: FlaskMiddlewareExtractor):
     from karsasec.framework.extractors.base import ExtractorCapability
-    assert ExtractorCapability.MIDDLEWARE in extractor.capabilities
 
+    assert ExtractorCapability.MIDDLEWARE in extractor.capabilities

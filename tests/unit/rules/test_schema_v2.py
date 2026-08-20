@@ -41,6 +41,7 @@ def test_schema_v1_backward_compatibility() -> None:
     assert rule.output.severity == Severity.HIGH
     assert rule.schema_version == "1.0"
 
+
 def test_schema_v2_full_features() -> None:
     raw_v2 = {
         "rule": {"id": "KS-PY-0002"},

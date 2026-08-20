@@ -21,6 +21,7 @@ rules_app = typer.Typer(
 VALID_CWES = re.compile(r"^CWE-\d+$")
 VALID_OWASP = re.compile(r"^A(0[1-9]|10):\d{4}-.+$")
 
+
 @rules_app.command("list")
 def list_rules(
     language: str | None = typer.Option(None, "--language", "-l", help="Filter by target language."),
@@ -52,6 +53,7 @@ def list_rules(
     console.print(table)
     console.print(f"Total Rules Displayed: {count} / {len(rules)}")
 
+
 @rules_app.command("validate")
 def validate_rules() -> None:
     """Validate all YAML rules for structural correctness, regex validity, and required metadata."""
@@ -69,14 +71,21 @@ def validate_rules() -> None:
             raw_doc = yaml.safe_load(content)
 
             # Check if this is a Graph Security Rule (E10-3D schema)
-            if isinstance(raw_doc, dict) and isinstance(raw_doc.get("target"), dict) and "node_type" in raw_doc["target"]:
+            if (
+                isinstance(raw_doc, dict)
+                and isinstance(raw_doc.get("target"), dict)
+                and "node_type" in raw_doc["target"]
+            ):
                 from karsasec.framework.framework_semantics.rules.loader import GraphRuleLoader
+
                 g_loader = GraphRuleLoader()
                 gr = g_loader.load_file(yaml_path)
 
                 # 1. Duplicate ID check
                 if gr.id in seen_ids:
-                    errors.append(f"Duplicate Rule ID '{gr.id}' in {yaml_path.name} (already defined in {seen_ids[gr.id].name})")
+                    errors.append(
+                        f"Duplicate Rule ID '{gr.id}' in {yaml_path.name} (already defined in {seen_ids[gr.id].name})"
+                    )
                 else:
                     seen_ids[gr.id] = yaml_path
 
@@ -95,7 +104,9 @@ def validate_rules() -> None:
                 # 4. OWASP Check
                 owasp_val = str(gr.metadata.get("owasp", ""))
                 if owasp_val and not VALID_OWASP.match(owasp_val):
-                    errors.append(f"Rule '{gr.id}': Invalid OWASP format '{owasp_val}' (expected e.g. A03:2021-Injection)")
+                    errors.append(
+                        f"Rule '{gr.id}': Invalid OWASP format '{owasp_val}' (expected e.g. A03:2021-Injection)"
+                    )
 
                 # 5. Missing Remediation
                 if not gr.output.remediation or gr.output.remediation == "N/A":
@@ -111,7 +122,9 @@ def validate_rules() -> None:
             for r in file_rules:
                 # 1. Duplicate ID check
                 if r.id in seen_ids:
-                    errors.append(f"Duplicate Rule ID '{r.id}' in {yaml_path.name} (already defined in {seen_ids[r.id].name})")
+                    errors.append(
+                        f"Duplicate Rule ID '{r.id}' in {yaml_path.name} (already defined in {seen_ids[r.id].name})"
+                    )
                 else:
                     seen_ids[r.id] = yaml_path
 
@@ -127,7 +140,9 @@ def validate_rules() -> None:
 
                 # 4. OWASP Check
                 if r.metadata.owasp and not VALID_OWASP.match(r.metadata.owasp):
-                    errors.append(f"Rule '{r.id}': Invalid OWASP format '{r.metadata.owasp}' (expected e.g. A03:2021-Injection)")
+                    errors.append(
+                        f"Rule '{r.id}': Invalid OWASP format '{r.metadata.owasp}' (expected e.g. A03:2021-Injection)"
+                    )
 
                 # 5. Regex Pattern Compilation
                 if r.condition and r.condition.pattern:
@@ -167,6 +182,7 @@ def validate_rules() -> None:
     else:
         console.print("\n[green]All security rules passed validation checks successfully.[/green]")
 
+
 @rules_app.command("contract")
 def validate_contracts(
     rule_id: str | None = typer.Option(None, "--rule", "-r", help="Validate a specific rule ID only."),
@@ -187,7 +203,7 @@ def validate_contracts(
     if rule_id:
         all_rules = [r for r in all_rules if r.id == rule_id]
         if not all_rules:
-            console.print(f"[red]No rule found with ID \'{rule_id}\'[/red]")
+            console.print(f"[red]No rule found with ID '{rule_id}'[/red]")
             raise typer.Exit(code=1)
 
     validator = RuleContractValidator()
@@ -199,15 +215,17 @@ def validate_contracts(
     all_passing = suite.rules_all_passing
 
     status_color = "green" if all_passing == with_contract else "red"
-    console.print(Panel(
-        f"[bold cyan]KarsaSec Rule Contract Validation[/bold cyan]\n"
-        f"Rules Evaluated    : {total}\n"
-        f"Rules with Contract: [cyan]{with_contract}[/cyan] / {total} "
-        f"([bold]{suite.contract_coverage_pct}%[/bold])\n"
-        f"All Fixtures Passing: [{status_color}]{all_passing}[/{status_color}] / {with_contract}",
-        border_style="cyan",
-        title="Rule Contract Coverage",
-    ))
+    console.print(
+        Panel(
+            f"[bold cyan]KarsaSec Rule Contract Validation[/bold cyan]\n"
+            f"Rules Evaluated    : {total}\n"
+            f"Rules with Contract: [cyan]{with_contract}[/cyan] / {total} "
+            f"([bold]{suite.contract_coverage_pct}%[/bold])\n"
+            f"All Fixtures Passing: [{status_color}]{all_passing}[/{status_color}] / {with_contract}",
+            border_style="cyan",
+            title="Rule Contract Coverage",
+        )
+    )
 
     if coverage:
         raise typer.Exit(code=0)
@@ -230,7 +248,10 @@ def validate_contracts(
     if with_contract == 0:
         console.print("[yellow]No rules carry a contract section yet.[/yellow]")
     else:
-        console.print(f"[green]All {with_contract} contract(s) passed {all_passing}/{with_contract} fixture suites.[/green]")
+        console.print(
+            f"[green]All {with_contract} contract(s) passed {all_passing}/{with_contract} fixture suites.[/green]"
+        )
+
 
 @rules_app.command("lint")
 def lint_rules() -> None:
@@ -264,9 +285,12 @@ def lint_rules() -> None:
     if not lint_issues:
         console.print("[green]No lint issues detected across all YAML rules.[/green]")
 
+
 @rules_app.command("docs")
 def generate_rule_docs(
-    output_dir: Path = typer.Option(Path("docs/rules"), "--output-dir", "-o", help="Target output directory for rule markdown files.")
+    output_dir: Path = typer.Option(
+        Path("docs/rules"), "--output-dir", "-o", help="Target output directory for rule markdown files."
+    ),
 ) -> None:
     """Generate Markdown documentation for every rule under docs/rules/."""
     loader = YAMLRuleLoader()
@@ -282,12 +306,12 @@ def generate_rule_docs(
 ## Metadata
 - **Severity**: {r.output.severity.value}
 - **Confidence**: {r.output.confidence.value}
-- **CWE**: {r.metadata.cwe or 'N/A'}
-- **OWASP**: {r.metadata.owasp or 'N/A'}
-- **Author**: {r.metadata.author or 'KarsaSec Team'}
-- **Version**: {r.metadata.version or '1.0'}
-- **Target Languages**: {', '.join([str(l) for l in r.target.languages]) if r.target else 'N/A'}
-- **Tags**: {', '.join(r.metadata.tags or [])}
+- **CWE**: {r.metadata.cwe or "N/A"}
+- **OWASP**: {r.metadata.owasp or "N/A"}
+- **Author**: {r.metadata.author or "KarsaSec Team"}
+- **Version**: {r.metadata.version or "1.0"}
+- **Target Languages**: {", ".join([str(l) for l in r.target.languages]) if r.target else "N/A"}
+- **Tags**: {", ".join(r.metadata.tags or [])}
 
 ## Description
 {r.output.message}
@@ -307,7 +331,10 @@ def generate_rule_docs(
         doc_filename.write_text(doc_content, encoding="utf-8")
         generated_count += 1
 
-    console.print(f"[green]Successfully generated {generated_count} rule documentation pages in {output_dir.resolve()}[/green]")
+    console.print(
+        f"[green]Successfully generated {generated_count} rule documentation pages in {output_dir.resolve()}[/green]"
+    )
+
 
 @rules_app.command("coverage")
 def rule_coverage() -> None:
@@ -342,10 +369,9 @@ def rule_coverage() -> None:
 
     console.print(f"\nTotal Rules Across Repository: {len(rules)}")
 
+
 @rules_app.command("profile")
-def profile_rules(
-    top: int = typer.Option(10, "--top", "-t", help="Number of slowest rules to display.")
-) -> None:
+def profile_rules(top: int = typer.Option(10, "--top", "-t", help="Number of slowest rules to display.")) -> None:
     """Profile latency and evaluation performance across all loaded rules."""
     from karsasec.quality.profiler import RuleProfiler
 
@@ -363,6 +389,7 @@ def profile_rules(
 
     console.print(table)
     console.print(f"Total Rules Profiling Evaluated: {len(results)}")
+
 
 @rules_app.command("conflicts")
 def detect_rule_conflicts() -> None:
@@ -387,6 +414,7 @@ def detect_rule_conflicts() -> None:
     if not duplicates and not overlaps:
         console.print("[green]No rule conflicts or pattern overlaps detected.[/green]")
 
+
 @rules_app.command("dead-code")
 def detect_dead_code() -> None:
     """Detect unused, incomplete, or dead rules across the repository."""
@@ -403,4 +431,3 @@ def detect_dead_code() -> None:
 
     if not issues:
         console.print("[green]No dead or incomplete rules found across the repository.[/green]")
-

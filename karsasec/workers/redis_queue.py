@@ -34,9 +34,7 @@ class RedisTaskQueue(TaskQueue):
 
     def dequeue(self, timeout: int = 1) -> str | None:
         """BRPOPLPUSH from main to processing queue."""
-        val = self.r.brpoplpush(
-            self.queue_name, self.processing_name, timeout=timeout
-        )
+        val = self.r.brpoplpush(self.queue_name, self.processing_name, timeout=timeout)
         if val:
             return val.decode("utf-8") if isinstance(val, bytes) else str(val)
         return None
@@ -55,6 +53,4 @@ class RedisTaskQueue(TaskQueue):
     def get_processing_tasks(self) -> list[str]:
         """Returns all task IDs currently in the processing list."""
         vals = self.r.lrange(self.processing_name, 0, -1)
-        return [
-            v.decode("utf-8") if isinstance(v, bytes) else str(v) for v in vals
-        ]
+        return [v.decode("utf-8") if isinstance(v, bytes) else str(v) for v in vals]

@@ -35,6 +35,7 @@ class TestAuthorize:
 
     def test_authorize_all_permissions_passes_all_scopes(self):
         from karsasec.server.security.models import ALL_PERMISSIONS
+
         principal = Principal(identity="admin", scopes=ALL_PERMISSIONS)
         for perm in Permission:
             authorize(principal, perm)  # Must not raise

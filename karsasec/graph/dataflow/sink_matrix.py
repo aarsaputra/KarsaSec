@@ -8,6 +8,7 @@ Design Principles:
   - SHELL_ESCAPED + SQL => NOT_PROVEN; HTML_ESCAPED + SQL => NOT_PROVEN.
   - Anti-hardcoding: Pure security compatibility semantics. Zero rule-ID or benchmark strings.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -18,6 +19,7 @@ from karsasec.graph.dataflow.abstract_state import SemanticConstraint
 
 class SinkContext(StrEnum):
     """Specific contextual position of data within a target sink."""
+
     SQL_VALUE = "SQL_VALUE"
     SQL_IDENTIFIER = "SQL_IDENTIFIER"
     SQL_ORDER_BY = "SQL_ORDER_BY"
@@ -30,9 +32,10 @@ class SinkContext(StrEnum):
 
 class CompatibilityDecision(StrEnum):
     """Three-valued outcome of sink safety evaluation."""
-    COMPATIBLE = "COMPATIBLE"      # Constraint is proven sufficient for sink & context
-    NOT_PROVEN = "NOT_PROVEN"      # Constraint is insufficient or incompatible
-    CONFLICT = "CONFLICT"          # Contradictory facts or unresolvable state
+
+    COMPATIBLE = "COMPATIBLE"  # Constraint is proven sufficient for sink & context
+    NOT_PROVEN = "NOT_PROVEN"  # Constraint is insufficient or incompatible
+    CONFLICT = "CONFLICT"  # Contradictory facts or unresolvable state
 
 
 @dataclass(frozen=True, slots=True)
@@ -63,8 +66,15 @@ class SinkCompatibilityMatrix:
         norm_category = str(sink_category).upper().strip()
 
         # 1. Type Constraints (NUMERIC, INTEGER, DIGITS_ONLY)
-        if any(c in constraints for c in (SemanticConstraint.NUMERIC, SemanticConstraint.INTEGER, SemanticConstraint.DIGITS_ONLY)):
-            matched_c = next(c for c in (SemanticConstraint.INTEGER, SemanticConstraint.DIGITS_ONLY, SemanticConstraint.NUMERIC) if c in constraints)
+        if any(
+            c in constraints
+            for c in (SemanticConstraint.NUMERIC, SemanticConstraint.INTEGER, SemanticConstraint.DIGITS_ONLY)
+        ):
+            matched_c = next(
+                c
+                for c in (SemanticConstraint.INTEGER, SemanticConstraint.DIGITS_ONLY, SemanticConstraint.NUMERIC)
+                if c in constraints
+            )
 
             if "SQL" in norm_category:
                 if sink_context in (SinkContext.SQL_VALUE, SinkContext.UNKNOWN):
@@ -135,7 +145,12 @@ class SinkCompatibilityMatrix:
 
         # 4. Path Normalization (PATH_NORMALIZED)
         if SemanticConstraint.PATH_NORMALIZED in constraints:
-            if "FILE" in norm_category or "PATH" in norm_category or "LFI" in norm_category or "TRAVERSAL" in norm_category:
+            if (
+                "FILE" in norm_category
+                or "PATH" in norm_category
+                or "LFI" in norm_category
+                or "TRAVERSAL" in norm_category
+            ):
                 return EvaluationResult(
                     decision=CompatibilityDecision.COMPATIBLE,
                     reason="PATH_NORMALIZED constraint satisfies FILE_PATH traversal sink",

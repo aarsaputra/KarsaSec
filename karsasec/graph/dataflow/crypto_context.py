@@ -26,6 +26,7 @@ from typing import Any
 
 class CryptoContextKind(StrEnum):
     """Categorization of cryptographic hash usage context."""
+
     PASSWORD_HASH = "PASSWORD_HASH"
     SECURITY_TOKEN = "SECURITY_TOKEN"
     CACHE_KEY = "CACHE_KEY"
@@ -37,6 +38,7 @@ class CryptoContextKind(StrEnum):
 @dataclass(frozen=True)
 class CryptoContextEvidence:
     """Collected evidence for a cryptographic function invocation."""
+
     context_kind: CryptoContextKind
     has_semantic_usage: bool = False
     has_dataflow_provenance: bool = False
@@ -63,7 +65,9 @@ class CryptoContextAnalyzer:
         stmts_text = " ".join(str(s) for s in surrounding_stmts).lower()
 
         # 1. Check for Security-Sensitive Password / Credential Context
-        if any(pw in input_lower or pw in stmts_text for pw in ("password", "passwd", "pwd", "secret", "token", "auth")):
+        if any(
+            pw in input_lower or pw in stmts_text for pw in ("password", "passwd", "pwd", "secret", "token", "auth")
+        ):
             if "password" in input_lower or "passwd" in input_lower or "pwd" in input_lower or "password" in stmts_text:
                 return CryptoContextEvidence(
                     context_kind=CryptoContextKind.PASSWORD_HASH,
@@ -78,7 +82,10 @@ class CryptoContextAnalyzer:
 
         # 2. Check for Semantic Usage (Prioritized over variable naming!)
         # Semantic Usage Evidence A: Array indexing e.g. $cache[$key] = ... or $table[md5($x)]
-        if re.search(r'\$\w+\s*\[\s*(?:' + re.escape(assigned_var) + r'|md5|sha1|hash)\s*\]', stmts_text) or "array_key_exists" in stmts_text:
+        if (
+            re.search(r"\$\w+\s*\[\s*(?:" + re.escape(assigned_var) + r"|md5|sha1|hash)\s*\]", stmts_text)
+            or "array_key_exists" in stmts_text
+        ):
             return CryptoContextEvidence(
                 context_kind=CryptoContextKind.NON_SECURITY_IDENTIFIER,
                 has_semantic_usage=True,

@@ -28,6 +28,7 @@ RULE_CORPUS_MAP = {
     "KS-COMMON-0001": CORPUS_DIR / "common" / "secret",
 }
 
+
 def test_all_production_rules_against_security_corpus() -> None:
     """Verifies all 10 production rules against vulnerable, safe, and regression corpus suites."""
     loader = YAMLRuleLoader()

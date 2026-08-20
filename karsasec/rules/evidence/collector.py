@@ -9,15 +9,19 @@ from karsasec.rules.schema import Rule
 @dataclass(slots=True)
 class EvidenceItem:
     """Individual evidence artifact contributing positive or negative weight to security confidence."""
+
     description: str
     score_impact: int
     evidence_type: str  # "SINK", "SOURCE", "SANITIZER", "FRAMEWORK"
 
+
 @dataclass(slots=True)
 class EvidenceReport:
     """Report summarizing collected evidence items and computed total score."""
+
     evidence_items: list[EvidenceItem] = field(default_factory=list)
     total_score: int = 0
+
 
 class EvidenceCollector:
     """Extracts security evidence items from matched AST nodes and source context."""
@@ -33,7 +37,9 @@ class EvidenceCollector:
         items: list[EvidenceItem] = []
 
         # 1. Dangerous Sink Evidence
-        sink_symbol = matched_symbol or (rule.condition.symbol_triggers[0] if rule.condition.symbol_triggers else "dangerous_sink")
+        sink_symbol = matched_symbol or (
+            rule.condition.symbol_triggers[0] if rule.condition.symbol_triggers else "dangerous_sink"
+        )
         items.append(
             EvidenceItem(
                 description=f"Matched dangerous sink symbol '{sink_symbol}'",

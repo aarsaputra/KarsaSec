@@ -3,6 +3,7 @@
 These 5 tests execute the real production KarsaSec analysis pipeline:
   TargetDetector -> Parser -> AST -> CFG -> Abstract Interpretation -> Interprocedural Correlation -> SinkCompatibilityMatrix -> Finding
 """
+
 from pathlib import Path
 import pytest
 
@@ -41,7 +42,10 @@ def test_e2e_01_parameter_propagation_to_sink(tmp_path: Path, rules, target_dete
 
     findings, nodes, exec_time, errors = scan_file_task(file_path, target_detector, rule_executor, rules, [])
     assert len(errors) == 0
-    assert any("KS-PHP-0006" in f.rule_id or "SQL" in f.rule_id or "KS-PHP-DESER-0001" in f.rule_id for f in findings) or len(findings) >= 1
+    assert (
+        any("KS-PHP-0006" in f.rule_id or "SQL" in f.rule_id or "KS-PHP-DESER-0001" in f.rule_id for f in findings)
+        or len(findings) >= 1
+    )
 
 
 def test_e2e_02_guarded_callee_sanitization(tmp_path: Path, rules, target_detector):
@@ -93,19 +97,25 @@ def test_e2e_03_call_site_context_isolation(tmp_path: Path, rules, target_detect
 def test_e2e_04_cross_file_resource_graph_propagation(tmp_path: Path, rules, target_detector):
     """E2E-04: Cross-file analysis with explicit ResourceGraph include link."""
     inc_file = tmp_path / "db_helper.php"
-    inc_file.write_text("""<?php
+    inc_file.write_text(
+        """<?php
     function run_sql($sql) {
         $db = new PDO("sqlite::memory:");
         $db->query($sql);
     }
-    """, encoding="utf-8")
+    """,
+        encoding="utf-8",
+    )
 
     main_file = tmp_path / "main.php"
-    main_file.write_text("""<?php
+    main_file.write_text(
+        """<?php
     require_once "db_helper.php";
     $p = $_POST['data'];
     run_sql("SELECT * FROM logs WHERE data = " . $p);
-    """, encoding="utf-8")
+    """,
+        encoding="utf-8",
+    )
 
     rg = ResourceGraph()
     n_main = ResourceNode("n1", ResourceKind.FILE, str(main_file), "main.php")
@@ -243,4 +253,3 @@ def test_e2e_10_mutual_recursion_production(tmp_path: Path, rules, target_detect
     findings, nodes, exec_time, errors = scan_file_task(file_path, target_detector, rule_executor, rules, [])
     assert len(errors) == 0
     assert len(findings) >= 1
-

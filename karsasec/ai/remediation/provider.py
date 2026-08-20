@@ -25,8 +25,7 @@ class PatchGenerationProviderProtocol(Protocol):
         strategy: RemediationStrategy,
         original_source: str,
         start_line: int = 1,
-    ) -> list[PatchHunk]:
-        ...
+    ) -> list[PatchHunk]: ...
 
 
 class MockPatchProvider:
@@ -61,7 +60,9 @@ class MockPatchProvider:
             original_text=orig_text,
             proposed_text=proposed_text,
             context=orig_text,
-            evidence_reference=strategy.evidence_references[0] if strategy.evidence_references else f"{strategy.target_file}:{start_line}",
+            evidence_reference=strategy.evidence_references[0]
+            if strategy.evidence_references
+            else f"{strategy.target_file}:{start_line}",
         )
         return [hunk]
 
@@ -134,10 +135,12 @@ class LLMPatchProvider:
 
         try:
             # Construct structured prompt separating untrusted data
-            user_prompt = json.dumps({
-                "UNTRUSTED_SOURCE_CONTEXT": original_source,
-                "STRATEGY": strategy.to_dict(),
-            })
+            user_prompt = json.dumps(
+                {
+                    "UNTRUSTED_SOURCE_CONTEXT": original_source,
+                    "STRATEGY": strategy.to_dict(),
+                }
+            )
             resp = self.llm_provider.generate("System Prompt: Generate Patch Proposal Hunks", user_prompt)
             data = json.loads(resp)
 

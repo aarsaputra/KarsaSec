@@ -35,9 +35,15 @@ class TestE11TPRecallProtection:
         )
 
         # E12-4 Hard Recall Protection Gates
-        assert result.per_category["COMMAND_INJECTION"].recall >= 1.0, f"Command Injection recall dropped! {result.per_category['COMMAND_INJECTION'].recall}"
-        assert result.per_category["PATH_TRAVERSAL"].recall == 1.0, f"Path Traversal recall dropped! {result.per_category['PATH_TRAVERSAL'].recall}"
-        assert result.per_category["SQL_INJECTION"].recall >= 0.85, f"SQL Injection recall dropped! {result.per_category['SQL_INJECTION'].recall}"
+        assert result.per_category["COMMAND_INJECTION"].recall >= 1.0, (
+            f"Command Injection recall dropped! {result.per_category['COMMAND_INJECTION'].recall}"
+        )
+        assert result.per_category["PATH_TRAVERSAL"].recall == 1.0, (
+            f"Path Traversal recall dropped! {result.per_category['PATH_TRAVERSAL'].recall}"
+        )
+        assert result.per_category["SQL_INJECTION"].recall >= 0.85, (
+            f"SQL Injection recall dropped! {result.per_category['SQL_INJECTION'].recall}"
+        )
         assert result.recall >= 0.70, f"Overall recall dropped! {result.recall}"
 
         # E12-4 Telemetry & Provenance Assertions

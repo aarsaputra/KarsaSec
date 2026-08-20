@@ -9,9 +9,7 @@ from karsasec.rules.matcher.compiler import CompiledRule
 from karsasec.rules.matcher.predicates.base import BasePredicate
 from karsasec.rules.matcher.statistics import MatcherStatistics
 
-ENV_PATTERNS = re.compile(
-    r"(?i)\b(env|getenv|os\.getenv|os\.environ|process\.env)\b"
-)
+ENV_PATTERNS = re.compile(r"(?i)\b(env|getenv|os\.getenv|os\.environ|process\.env)\b")
 
 SECRET_PROVIDER_PATTERNS = re.compile(
     r"(?i)\b(config|Secret::|Vault::|secrets_manager|key_vault|aws_secrets|Vault|SecretsManager)\b"
@@ -55,8 +53,9 @@ class ValueEvidenceClassifier:
             return ValueEvidenceKind.NULL_LITERAL
 
         # 5. Check LITERAL_SECRET (non-empty quoted string literal)
-        if (val_strip.startswith("'") and val_strip.endswith("'") and len(val_strip) > 2) or \
-           (val_strip.startswith('"') and val_strip.endswith('"') and len(val_strip) > 2):
+        if (val_strip.startswith("'") and val_strip.endswith("'") and len(val_strip) > 2) or (
+            val_strip.startswith('"') and val_strip.endswith('"') and len(val_strip) > 2
+        ):
             return ValueEvidenceKind.LITERAL_SECRET
 
         return ValueEvidenceKind.UNKNOWN

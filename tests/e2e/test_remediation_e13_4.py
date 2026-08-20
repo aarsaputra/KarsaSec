@@ -274,7 +274,9 @@ def test_e2e_05_ambiguous_hunk_rejection_leaves_files_untouched(tmp_path: Path) 
         risk_level="LOW",
         assumptions=(),
         validation_status=PatchValidationStatus.VALID,
-        proposal_fingerprint=PatchProposal.compute_fingerprint("F-DUP", ("app.py",), "diff", PatchValidationStatus.VALID),
+        proposal_fingerprint=PatchProposal.compute_fingerprint(
+            "F-DUP", ("app.py",), "diff", PatchValidationStatus.VALID
+        ),
     )
 
     snap = SourceSnapshot.capture(tmp_path, ("app.py",))
@@ -288,7 +290,9 @@ def test_e2e_05_ambiguous_hunk_rejection_leaves_files_untouched(tmp_path: Path) 
 
     dummy_finding = _create_dummy_finding("F-DUP", "app.py")
     app_agent = RemediationApplicationAgent(repository_root=tmp_path)
-    app_res, _, _ = app_agent.execute_transaction(proposal=proposal, token=token, finding=dummy_finding, rescan_callback=lambda: ())
+    app_res, _, _ = app_agent.execute_transaction(
+        proposal=proposal, token=token, finding=dummy_finding, rescan_callback=lambda: ()
+    )
 
     assert app_res.status == ApplicationStatus.REJECTED
     assert "AMBIGUOUS_HUNK_MATCH" in app_res.failure_reason
@@ -358,7 +362,9 @@ def test_e2e_07_repository_mismatch_rejection(tmp_path: Path) -> None:
 
     dummy_finding = _create_dummy_finding("F1", "app.py")
     app_agent = RemediationApplicationAgent(repository_root=tmp_path)
-    app_res, _, _ = app_agent.execute_transaction(proposal=proposal, token=token, finding=dummy_finding, rescan_callback=lambda: ())
+    app_res, _, _ = app_agent.execute_transaction(
+        proposal=proposal, token=token, finding=dummy_finding, rescan_callback=lambda: ()
+    )
     assert app_res.status == ApplicationStatus.REJECTED
     assert "REPOSITORY_MISMATCH" in app_res.failure_reason
 
@@ -394,7 +400,9 @@ def test_e2e_08_expired_token_rejection(tmp_path: Path) -> None:
 
     dummy_finding = _create_dummy_finding("F1", "app.py")
     app_agent = RemediationApplicationAgent(repository_root=tmp_path)
-    app_res, _, _ = app_agent.execute_transaction(proposal=proposal, token=token, finding=dummy_finding, rescan_callback=lambda: ())
+    app_res, _, _ = app_agent.execute_transaction(
+        proposal=proposal, token=token, finding=dummy_finding, rescan_callback=lambda: ()
+    )
     assert app_res.status == ApplicationStatus.REJECTED
     assert "TOKEN_EXPIRED" in app_res.failure_reason
 
@@ -485,7 +493,9 @@ def test_e2e_10_tampered_token_fingerprint_rejection(tmp_path: Path) -> None:
 
     dummy_finding = _create_dummy_finding("F1", "app.py")
     app_agent = RemediationApplicationAgent(repository_root=tmp_path)
-    app_res, _, _ = app_agent.execute_transaction(proposal=proposal, token=tampered_token, finding=dummy_finding, rescan_callback=lambda: ())
+    app_res, _, _ = app_agent.execute_transaction(
+        proposal=proposal, token=tampered_token, finding=dummy_finding, rescan_callback=lambda: ()
+    )
     assert app_res.status == ApplicationStatus.REJECTED
     assert "TOKEN_TAMPERED" in app_res.failure_reason
 
@@ -577,7 +587,9 @@ def test_e2e_13_audit_trail_generation_without_secret_leak(tmp_path: Path) -> No
     dummy_finding = _create_dummy_finding("F1", "app.py")
     audits: list[ApplicationAuditRecord] = []
     app_agent = RemediationApplicationAgent(repository_root=tmp_path)
-    app_agent.execute_transaction(proposal=proposal, token=token, finding=dummy_finding, rescan_callback=lambda: (), audit_records=audits)
+    app_agent.execute_transaction(
+        proposal=proposal, token=token, finding=dummy_finding, rescan_callback=lambda: (), audit_records=audits
+    )
 
     assert len(audits) == 1
     d = audits[0].to_dict()
@@ -619,7 +631,9 @@ def test_e2e_14_preflight_hunk_zero_matches_blocks_file_writes(tmp_path: Path) -
 
     dummy_finding = _create_dummy_finding("F1", "app.py")
     app_agent = RemediationApplicationAgent(repository_root=tmp_path)
-    app_res, _, _ = app_agent.execute_transaction(proposal=proposal, token=token, finding=dummy_finding, rescan_callback=lambda: ())
+    app_res, _, _ = app_agent.execute_transaction(
+        proposal=proposal, token=token, finding=dummy_finding, rescan_callback=lambda: ()
+    )
 
     assert app_res.status == ApplicationStatus.REJECTED
     assert "EXACT_HUNK_MATCH_FAILED" in app_res.failure_reason

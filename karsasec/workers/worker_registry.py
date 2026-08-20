@@ -14,14 +14,17 @@ from __future__ import annotations
 import hashlib
 import threading
 import time
-from typing import Dict, List, Optional, Any
+from typing import Any
 from enum import StrEnum
 
-from karsasec.persistence.audit_repository import AuditEvent, AuditEventType, AuditRepository
+from karsasec.persistence.audit_repository import AuditEvent, AuditRepository
 
 
 class WorkerStatus(StrEnum):
     ONLINE = "ONLINE"
+    DRAINING = "DRAINING"
+    DRAINED = "DRAINED"
+    FENCED = "FENCED"
     DEGRADED = "DEGRADED"
     OFFLINE = "OFFLINE"
 
@@ -68,7 +71,7 @@ class WorkerNode:
         if self.status != WorkerStatus.ONLINE:
             self.status = WorkerStatus.ONLINE
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Privacy-safe dictionary representation (token hash omitted)."""
         return {
             "worker_id": self.worker_id,
@@ -90,7 +93,7 @@ class WorkerRegistry:
     """
 
     def __init__(self, audit_repository: AuditRepository | None = None) -> None:
-        self._workers: Dict[str, WorkerNode] = {}
+        self._workers: dict[str, WorkerNode] = {}
         self._audit = audit_repository
         self._lock = threading.Lock()
 
@@ -135,11 +138,13 @@ class WorkerRegistry:
         with self._lock:
             if worker_id not in self._workers:
                 if self._audit:
-                    self._audit.append(AuditEvent(
-                        task_id=f"sys_{worker_id}",
-                        event_type="FORGED_WORKER_HEARTBEAT",
-                        details={"worker_id": worker_id, "reason": "unregistered_worker"},
-                    ))
+                    self._audit.append(
+                        AuditEvent(
+                            task_id=f"sys_{worker_id}",
+                            event_type="FORGED_WORKER_HEARTBEAT",
+                            details={"worker_id": worker_id, "reason": "unregistered_worker"},
+                        )
+                    )
                 return False
 
             worker = self._workers[worker_id]
@@ -148,26 +153,30 @@ class WorkerRegistry:
 
             if provided_hash != worker.auth_token_hash:
                 if self._audit:
-                    self._audit.append(AuditEvent(
-                        task_id=f"sys_{worker_id}",
-                        event_type="FORGED_WORKER_HEARTBEAT",
-                        details={"worker_id": worker_id, "reason": "invalid_auth_token"},
-                    ))
+                    self._audit.append(
+                        AuditEvent(
+                            task_id=f"sys_{worker_id}",
+                            event_type="FORGED_WORKER_HEARTBEAT",
+                            details={"worker_id": worker_id, "reason": "invalid_auth_token"},
+                        )
+                    )
                 return False
 
             # Point 4: Replay Attack Defense (Monotonic sequence check under lock)
             if sequence is not None and sequence <= worker.heartbeat_sequence:
                 if self._audit:
-                    self._audit.append(AuditEvent(
-                        task_id=f"sys_{worker_id}",
-                        event_type="FORGED_WORKER_HEARTBEAT",
-                        details={
-                            "worker_id": worker_id,
-                            "reason": "replayed_heartbeat_sequence",
-                            "provided_sequence": sequence,
-                            "last_sequence": worker.heartbeat_sequence,
-                        },
-                    ))
+                    self._audit.append(
+                        AuditEvent(
+                            task_id=f"sys_{worker_id}",
+                            event_type="FORGED_WORKER_HEARTBEAT",
+                            details={
+                                "worker_id": worker_id,
+                                "reason": "replayed_heartbeat_sequence",
+                                "provided_sequence": sequence,
+                                "last_sequence": worker.heartbeat_sequence,
+                            },
+                        )
+                    )
                 return False
 
             worker.update_heartbeat(sequence=sequence)
@@ -179,20 +188,17 @@ class WorkerRegistry:
             if worker_id in self._workers:
                 self._workers[worker_id].status = WorkerStatus.OFFLINE
 
-    def get_worker(self, worker_id: str) -> Optional[WorkerNode]:
+    def get_worker(self, worker_id: str) -> WorkerNode | None:
         with self._lock:
             return self._workers.get(worker_id)
 
-    def list_active(self) -> List[WorkerNode]:
+    def list_active(self) -> list[WorkerNode]:
         """Return all ONLINE or DEGRADED workers, deterministically ordered by worker_id."""
         with self._lock:
-            active = [
-                w for w in self._workers.values()
-                if w.status in (WorkerStatus.ONLINE, WorkerStatus.DEGRADED)
-            ]
+            active = [w for w in self._workers.values() if w.status in (WorkerStatus.ONLINE, WorkerStatus.DEGRADED)]
             return sorted(active, key=lambda w: w.worker_id)
 
-    def list_all(self) -> List[WorkerNode]:
+    def list_all(self) -> list[WorkerNode]:
         """Return all registered workers, deterministically ordered by worker_id."""
         with self._lock:
             return sorted(self._workers.values(), key=lambda w: w.worker_id)

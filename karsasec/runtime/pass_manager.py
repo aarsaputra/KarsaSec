@@ -70,9 +70,7 @@ class PassManager:
                 success = p.run(store)
                 elapsed = (time.perf_counter() - start) * 1000.0
                 results[pass_name] = success
-                self._telemetry.append(
-                    PassTelemetry(pass_name=pass_name, success=success, elapsed_ms=elapsed)
-                )
+                self._telemetry.append(PassTelemetry(pass_name=pass_name, success=success, elapsed_ms=elapsed))
             except Exception as err:
                 elapsed = (time.perf_counter() - start) * 1000.0
                 logger.error(f"Pass '{pass_name}' failed with exception: {err}. Isolating failure.")

@@ -65,9 +65,7 @@ def test_evidence_reference_validator_rejects_hallucinated_sanitizer() -> None:
         sanitizer_analysis="The input is sanitized using htmlspecialchars before execution.",  # Hallucinated claim!
         remediation_guidance="Fix it",
         limitations="None",
-        evidence_claims=[
-            EvidenceClaim(claim_type="SANITIZER", described_entity="htmlspecialchars", is_supported=True)
-        ],
+        evidence_claims=[EvidenceClaim(claim_type="SANITIZER", described_entity="htmlspecialchars", is_supported=True)],
         provenance=ExplanationProvenance(
             finding_id="F-301",
             verdict_fingerprint="can_fp_301",

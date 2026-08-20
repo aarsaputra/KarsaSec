@@ -24,6 +24,7 @@ def extractor() -> FlaskAuthExtractor:
 
 # --- Category A: Flask-Login Tests ---
 
+
 def test_flask_login_required(extractor: FlaskAuthExtractor):
     filepath = FIXTURES_DIR / "login_required.py"
     ctx = ExtractorContext(project_path=str(filepath))
@@ -68,6 +69,7 @@ def route_{i}():
 
 # --- Category B: Flask-JWT-Extended Tests ---
 
+
 def test_jwt_required(extractor: FlaskAuthExtractor):
     filepath = FIXTURES_DIR / "jwt_required.py"
     ctx = ExtractorContext(project_path=str(filepath))
@@ -110,6 +112,7 @@ def api_func_{i}():
 
 # --- Category C: Flask-HTTPAuth Tests ---
 
+
 def test_http_basic_auth(extractor: FlaskAuthExtractor):
     filepath = FIXTURES_DIR / "basic_auth.py"
     ctx = ExtractorContext(project_path=str(filepath))
@@ -139,6 +142,7 @@ def endpoint_{i}():
 
 
 # --- Category D & E: Session & Cookie Tests ---
+
 
 def test_session_identity(extractor: FlaskAuthExtractor):
     filepath = FIXTURES_DIR / "session_identity.py"
@@ -184,6 +188,7 @@ def handler_{i}():
 
 # --- Category F & G: RBAC Roles & Permissions Tests ---
 
+
 def test_rbac_roles(extractor: FlaskAuthExtractor):
     filepath = FIXTURES_DIR / "roles.py"
     ctx = ExtractorContext(project_path=str(filepath))
@@ -223,6 +228,7 @@ def view_{i}():
 
 # --- Category H: Custom Decorators & Evidence Tests ---
 
+
 def test_custom_wrapper(extractor: FlaskAuthExtractor):
     filepath = FIXTURES_DIR / "custom_wrapper.py"
     ctx = ExtractorContext(project_path=str(filepath))
@@ -257,6 +263,7 @@ def func_{i}():
 
 # --- Category L: False Positives & Negative Fixtures Tests ---
 
+
 def test_false_positives(extractor: FlaskAuthExtractor):
     filepath = FIXTURES_DIR / "false_positive.py"
     ctx = ExtractorContext(project_path=str(filepath))
@@ -288,6 +295,7 @@ def non_auth_{i}():
 
 
 # --- Category J, K, M: Diagnostics, Registry & Determinism Tests ---
+
 
 def test_diagnostics_generation(extractor: FlaskAuthExtractor):
     code = """

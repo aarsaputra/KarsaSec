@@ -8,6 +8,7 @@ Verifies:
 5. SSRF stream filtering (php://input, local path constants).
 6. Accurate FP Taxonomy reason classification.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -48,8 +49,7 @@ def dvwa_e12_9_scan_results():
     final_findings = correlator.to_findings(canon)
 
     active_findings = [
-        f for f in final_findings
-        if getattr(f, "qualification_state", None) != QualificationState.REJECTED
+        f for f in final_findings if getattr(f, "qualification_state", None) != QualificationState.REJECTED
     ]
 
     bm = ManifestLoader().load(Path("/home/lota1337/python/KarsaSec/benchmarks/dvwa/manifest.yaml"))
@@ -99,7 +99,10 @@ def test_e12_9_candidate_rejection_validation_guards():
     )
     res_isset = qualifier.qualify_candidate(cand_isset)
     assert res_isset.qualification_state == QualificationState.REJECTED
-    assert res_isset.rejection_reason in (FPTaxonomyReason.SANITIZED_INPUT.value, FPTaxonomyReason.NON_EXECUTING_OPERATION.value)
+    assert res_isset.rejection_reason in (
+        FPTaxonomyReason.SANITIZED_INPUT.value,
+        FPTaxonomyReason.NON_EXECUTING_OPERATION.value,
+    )
 
 
 def test_e12_9_ssrf_local_stream_filtering():
@@ -143,5 +146,7 @@ def test_e12_9_dfg_precedence_over_regex():
 
     # Static assignment case
     src = "$id = 123;\n$result = mysqli_query($conn, 'SELECT * FROM users WHERE id = ' . $id);"
-    res = verifier.verify_sink(node=node, snippet="mysqli_query($conn, 'SELECT * FROM users')", context_text="mysqli_query", source_text=src)
+    res = verifier.verify_sink(
+        node=node, snippet="mysqli_query($conn, 'SELECT * FROM users')", context_text="mysqli_query", source_text=src
+    )
     assert not res.has_taint_source or res.is_whitelisted_guard or res.is_hardcoded_static

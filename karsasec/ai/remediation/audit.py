@@ -87,7 +87,7 @@ _SENSITIVE_KEY_SUBSTRINGS: set[str] = {
 
 
 def sanitize_metadata(
-    metadata: dict[str, Any] | tuple[tuple[str, str], ...] | list[tuple[str, str]]
+    metadata: dict[str, Any] | tuple[tuple[str, str], ...] | list[tuple[str, str]],
 ) -> tuple[tuple[str, str], ...]:
     """Sanitizes metadata to enforce Privacy Boundary (L27).
 

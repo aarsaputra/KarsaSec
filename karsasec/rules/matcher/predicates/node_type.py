@@ -1,6 +1,5 @@
 """NodeTypePredicate plugin evaluating language scope and AST node_type."""
 
-
 from karsasec.parser.ast.context import VisitorContext
 from karsasec.parser.ast_nodes import ASTNode
 from karsasec.rules.matcher.compiler import CompiledRule
@@ -29,7 +28,11 @@ class NodeTypePredicate(BasePredicate):
         # 1. Language Scope check
         if context.language:
             rule_lang = rule.match.language.value if hasattr(rule.match.language, "value") else str(rule.match.language)
-            if rule_lang.lower() != context.language.lower() and rule_lang.lower() != "generic" and context.language.lower() != "generic":
+            if (
+                rule_lang.lower() != context.language.lower()
+                and rule_lang.lower() != "generic"
+                and context.language.lower() != "generic"
+            ):
                 stats.short_circuit += 1
                 return False, None, None
 

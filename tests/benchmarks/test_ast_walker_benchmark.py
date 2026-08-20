@@ -44,5 +44,7 @@ if __name__ == '__main__':
     elapsed = time.perf_counter() - start_time
     nodes_per_sec = total_nodes_visited / elapsed if elapsed > 0 else 0
 
-    print(f"\n[ASTWalker Benchmark] Visited {total_nodes_visited} nodes in {elapsed:.4f}s ({nodes_per_sec:,.0f} nodes/sec)")
+    print(
+        f"\n[ASTWalker Benchmark] Visited {total_nodes_visited} nodes in {elapsed:.4f}s ({nodes_per_sec:,.0f} nodes/sec)"
+    )
     assert total_nodes_visited > 0

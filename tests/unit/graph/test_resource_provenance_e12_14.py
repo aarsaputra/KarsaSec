@@ -165,7 +165,11 @@ def test_10_static_vs_tainted_include() -> None:
     assert ev_static.resolution == ConstantResolution.DERIVED_STATIC
 
     ev_tainted = resolver.resolve_expression("$_GET['page']", files)
-    assert ev_tainted.resolution not in (ConstantResolution.DERIVED_STATIC, ConstantResolution.STATIC_CONSTANT, ConstantResolution.STATIC_LITERAL)
+    assert ev_tainted.resolution not in (
+        ConstantResolution.DERIVED_STATIC,
+        ConstantResolution.STATIC_CONSTANT,
+        ConstantResolution.STATIC_LITERAL,
+    )
 
 
 def test_11_conditional_constant_definition() -> None:

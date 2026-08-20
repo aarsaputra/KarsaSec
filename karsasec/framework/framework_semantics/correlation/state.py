@@ -22,6 +22,7 @@ from karsasec.framework.semantic_models import FrameworkSemanticNode
 @dataclass
 class CorrelationState:
     """Accumulator holding state across collect, correlate, validate, and emit passes."""
+
     isr: IntermediateSemanticRepresentation
     nodes: dict[str, FrameworkSemanticNode] = field(default_factory=dict)
     candidates: list[RelationshipCandidate] = field(default_factory=list)

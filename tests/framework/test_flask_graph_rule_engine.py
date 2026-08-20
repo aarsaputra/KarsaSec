@@ -43,6 +43,7 @@ from karsasec.rules.enums import Severity
 # FIXTURES GENERATOR
 # ---------------------------------------------------------------------------
 
+
 def create_sample_rule_auth_0001() -> GraphSecurityRule:
     raw = {
         "rule": {"id": "KS-FLASK-AUTH-0001", "version": "1.0", "framework": "FLASK"},
@@ -80,7 +81,12 @@ def create_sample_config_rule(rule_id: str, key_name: str, key_val: bool | str) 
         "conditions": {
             "all": [
                 {"attribute_equals": {"key": "key", "value": key_name}},
-                {"attribute_equals": {"key": "value" if isinstance(key_val, bool) else "source_kind", "value": key_val}},
+                {
+                    "attribute_equals": {
+                        "key": "value" if isinstance(key_val, bool) else "source_kind",
+                        "value": key_val,
+                    }
+                },
             ]
         },
         "traversal": {"max_depth": 1, "max_nodes_visited": 10, "max_edges_examined": 20},
@@ -97,6 +103,7 @@ def create_sample_config_rule(rule_id: str, key_name: str, key_val: bool | str) 
 # ---------------------------------------------------------------------------
 # 1. SCHEMA & VALIDATOR TESTS
 # ---------------------------------------------------------------------------
+
 
 def test_validator_valid_rule():
     rule = create_sample_rule_auth_0001()
@@ -166,6 +173,7 @@ def test_validator_duplicate_rule_id_in_registry():
 # 2. MISSING EVIDENCE VS RULE MATCH TESTS
 # ---------------------------------------------------------------------------
 
+
 def test_valid_rule_missing_evidence_returns_false():
     rule = create_sample_config_rule("KS-FLASK-SESS-0001", "SESSION_COOKIE_SECURE", False)
     engine = GraphSecurityRuleEngine()
@@ -190,6 +198,7 @@ def test_valid_rule_missing_evidence_returns_false():
 # ---------------------------------------------------------------------------
 # 3. PROTECTION CONTRACT TEST (AUTH vs MIDDLEWARE)
 # ---------------------------------------------------------------------------
+
 
 def test_protection_composite_contract():
     rule = create_sample_rule_auth_0001()
@@ -228,6 +237,7 @@ def test_protection_composite_contract():
 # ---------------------------------------------------------------------------
 # 4. TIER-A 6 FLASK RULES INTEGRATION TEST
 # ---------------------------------------------------------------------------
+
 
 def test_tier_a_rule_pack_loading():
     rules_dir = Path(__file__).parents[2] / "karsasec" / "rules" / "patterns" / "flask"
@@ -320,6 +330,7 @@ def test_tier_a_rule_evaluation_fixtures():
 # 5. DETERMINISM & ORDER INVARIANCE TESTS
 # ---------------------------------------------------------------------------
 
+
 def test_10x_repeated_execution_invariance():
     rules_dir = Path(__file__).parents[2] / "karsasec" / "rules" / "patterns" / "flask"
     rules = GraphRuleLoader().load_directory(rules_dir)
@@ -351,7 +362,9 @@ def test_shuffled_input_determinism():
     rules = GraphRuleLoader().load_directory(rules_dir)
 
     nodes_list = [
-        FrameworkSemanticNode(id="c-1", node_type=SemanticNodeType.CONFIG, name="DEBUG", attributes={"key": "DEBUG", "value": True}),
+        FrameworkSemanticNode(
+            id="c-1", node_type=SemanticNodeType.CONFIG, name="DEBUG", attributes={"key": "DEBUG", "value": True}
+        ),
         FrameworkSemanticNode(id="r-1", node_type=SemanticNodeType.ROUTE, name="/r1"),
         FrameworkSemanticNode(id="h-1", node_type=SemanticNodeType.HANDLER, name="h1"),
         FrameworkSemanticNode(id="r-2", node_type=SemanticNodeType.ROUTE, name="/r2"),
@@ -387,6 +400,7 @@ def test_shuffled_input_determinism():
 # 6. STATIC ARCHITECTURAL IMPORT BOUNDARY TEST
 # ---------------------------------------------------------------------------
 
+
 def test_static_architectural_import_boundary():
     rules_pkg_dir = Path(__file__).parents[2] / "karsasec" / "framework" / "framework_semantics" / "rules"
     assert rules_pkg_dir.exists() and rules_pkg_dir.is_dir()
@@ -412,6 +426,7 @@ def test_static_architectural_import_boundary():
 # 7. PERFORMANCE BENCHMARK (100, 1000, 10000 NODES)
 # ---------------------------------------------------------------------------
 
+
 def test_performance_scaling_benchmark():
     rule = create_sample_rule_auth_0001()
     engine = GraphSecurityRuleEngine()
@@ -435,6 +450,7 @@ def test_performance_scaling_benchmark():
 # ---------------------------------------------------------------------------
 # 8. TIER-B GRAPH RULE EVALUATION TESTS
 # ---------------------------------------------------------------------------
+
 
 def test_tier_b_auth_0002_sensitive_endpoint_unprotected():
     """KS-FLASK-AUTH-0002: High-sensitivity route missing protection edge creates CRITICAL finding."""
@@ -566,4 +582,3 @@ def test_tier_b_jwt_0001_weak_jwt_algorithm():
     graph_hs256 = FrameworkSemanticGraph(nodes={"auth-jwt-hs256": n_jwt_hs256})
     res_hs256 = engine.evaluate(graph_hs256, [rule])
     assert res_hs256.total == 0
-

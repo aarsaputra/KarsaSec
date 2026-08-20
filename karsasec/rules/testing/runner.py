@@ -14,15 +14,18 @@ from karsasec.rules.schema import Rule
 @dataclass
 class RuleTestCase:
     """TestCase DTO specifying rule validation files and expectations."""
+
     rule_id: str
     vulnerable_files: list[Path] = field(default_factory=list)
     safe_files: list[Path] = field(default_factory=list)
     regression_files: list[Path] = field(default_factory=list)
     min_expected_findings: int = 1
 
+
 @dataclass
 class RuleTestReport:
     """Report DTO summarizing rule verification test results."""
+
     rule_id: str
     passed: bool
     vulnerable_passed: bool
@@ -31,6 +34,7 @@ class RuleTestReport:
     vulnerable_findings_count: int
     safe_findings_count: int
     details: list[str] = field(default_factory=list)
+
 
 class RuleTestRunner:
     """Reusable runner executing a Rule against security corpus files.

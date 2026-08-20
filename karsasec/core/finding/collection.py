@@ -14,6 +14,7 @@ SEVERITY_WEIGHTS: dict[Severity, int] = {
     Severity.INFO: 1,
 }
 
+
 @dataclass(frozen=True)
 class FindingCollection:
     """Immutable collection wrapping Finding objects with filtering, sorting, and grouping abstractions."""

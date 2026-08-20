@@ -7,6 +7,7 @@ Public surface:
     classifier → QualificationClassifier
     engine     → QualificationEngine, QualificationResult
 """
+
 from __future__ import annotations
 
 from karsasec.qualification.engine import QualificationEngine, QualificationResult, RuleQualificationResult

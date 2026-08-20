@@ -23,6 +23,7 @@ from karsasec.framework.semantic_models import FrameworkSemanticGraph
 @dataclass(frozen=True)
 class CorrelationResult:
     """Immutable result container returned by FlaskSemanticCorrelator."""
+
     graph: FrameworkSemanticGraph
     diagnostics: tuple[SemanticDiagnostic, ...]
     is_valid: bool

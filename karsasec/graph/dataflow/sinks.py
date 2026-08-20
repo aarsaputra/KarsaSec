@@ -1,4 +1,5 @@
 """Sink categories and central sink registry (E11, E12-10)."""
+
 from __future__ import annotations
 
 import re
@@ -7,6 +8,7 @@ from enum import StrEnum
 
 class SinkCategory(StrEnum):
     """Semantic classifications of dangerous sink functions and language constructs."""
+
     COMMAND_EXECUTION = "COMMAND_EXECUTION"
     SQL_EXECUTION = "SQL_EXECUTION"
     SQL_PREPARATION = "SQL_PREPARATION"
@@ -81,21 +83,23 @@ class SinkRegistry:
 
             # Structural snippet inspection if symbol is generic or unknown
             if snippet:
-                if re.search(r'->(?:bindParam|bindValue|bind_param)\s*\(|\bmysqli_stmt_bind_param\s*\(', snippet, re.IGNORECASE):
+                if re.search(
+                    r"->(?:bindParam|bindValue|bind_param)\s*\(|\bmysqli_stmt_bind_param\s*\(", snippet, re.IGNORECASE
+                ):
                     return SinkCategory.PARAMETER_BINDING
-                if re.search(r'->prepare\s*\(|\bmysqli_prepare\s*\(', snippet, re.IGNORECASE):
+                if re.search(r"->prepare\s*\(|\bmysqli_prepare\s*\(", snippet, re.IGNORECASE):
                     return SinkCategory.SQL_PREPARATION
-                if re.search(r'\b(shell_exec|exec|system|passthru|popen|proc_open)\s*\(', snippet, re.IGNORECASE):
+                if re.search(r"\b(shell_exec|exec|system|passthru|popen|proc_open)\s*\(", snippet, re.IGNORECASE):
                     return SinkCategory.COMMAND_EXECUTION
-                if re.search(r'\b(include|require)(?:_once)?\b', snippet, re.IGNORECASE):
+                if re.search(r"\b(include|require)(?:_once)?\b", snippet, re.IGNORECASE):
                     return SinkCategory.FILE_INCLUSION
-                if re.search(r'->(?:query|exec|execute)\s*\(', snippet, re.IGNORECASE):
+                if re.search(r"->(?:query|exec|execute)\s*\(", snippet, re.IGNORECASE):
                     return SinkCategory.SQL_EXECUTION
-                if re.search(r'\b(mysqli_query|mysql_query|pg_query)\s*\(', snippet, re.IGNORECASE):
+                if re.search(r"\b(mysqli_query|mysql_query|pg_query)\s*\(", snippet, re.IGNORECASE):
                     return SinkCategory.SQL_EXECUTION
-                if re.search(r'\b(eval|assert)\s*\(', snippet, re.IGNORECASE):
+                if re.search(r"\b(eval|assert)\s*\(", snippet, re.IGNORECASE):
                     return SinkCategory.CODE_EVALUATION
-                if re.search(r'\b(echo|print|printf)\b', snippet, re.IGNORECASE):
+                if re.search(r"\b(echo|print|printf)\b", snippet, re.IGNORECASE):
                     return SinkCategory.HTML_OUTPUT
 
         return None

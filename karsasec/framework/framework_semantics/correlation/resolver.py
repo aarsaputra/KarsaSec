@@ -12,6 +12,7 @@ from karsasec.framework.framework_semantics.correlation.state import Correlation
 @dataclass(frozen=True)
 class ResolutionResult:
     """Result of attempting to resolve a target relationship across Tiers 1-5."""
+
     status: ResolutionStatus
     method: ResolutionMethod
     matched_id: str | None = None
@@ -99,7 +100,9 @@ class RelationshipResolver:
             meta_matches: list[str] = []
             for entity_id, entity in candidate_pool.items():
                 attr_val = getattr(entity, explicit_ref_attr, None)
-                if attr_val and (attr_val == target_ref or (isinstance(attr_val, (tuple, list)) and target_ref in attr_val)):
+                if attr_val and (
+                    attr_val == target_ref or (isinstance(attr_val, (tuple, list)) and target_ref in attr_val)
+                ):
                     meta_matches.append(entity_id)
 
             if len(meta_matches) == 1:

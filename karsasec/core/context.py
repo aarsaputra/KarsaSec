@@ -8,6 +8,7 @@ from typing import Any
 @dataclass
 class Finding:
     """Dataclass representing a security finding."""
+
     id: str
     title: str
     severity: str  # CRITICAL, HIGH, MEDIUM, LOW, INFO
@@ -19,24 +20,30 @@ class Finding:
     recommendation: str
     confidence_score: float = 0.9
 
+
 @dataclass(slots=True)
 class ProjectCapabilities:
     """Capabilities supported for a target project by KarsaSec engines."""
+
     supports_ast: bool = True
     supports_cpg: bool = True
     supports_semgrep: bool = False
     supports_ai_fix: bool = True
 
+
 @dataclass(slots=True)
 class FrameworkMatch:
     """Detail of framework detection with confidence scoring."""
+
     name: str
     score: int
     confidence: str  # CONFIDENT, LIKELY, POSSIBLE
 
+
 @dataclass(slots=True)
 class ProjectProfile:
     """Centralized technical profile of the target project."""
+
     root: Path
     languages: list[str] = field(default_factory=list)
     frameworks: list[str] = field(default_factory=list)
@@ -69,12 +76,13 @@ class ProjectProfile:
         """Backward compatibility alias for manifest files."""
         return [str(m) for m in self.manifests]
 
+
 @dataclass
 class AnalysisContext:
     """Unified context object shared across execution stages."""
+
     scan_id: str
     target_path: Path
     profile: ProjectProfile = field(default_factory=lambda: ProjectProfile(root=Path(".")))
     findings: list[Finding] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
-

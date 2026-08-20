@@ -22,6 +22,7 @@ from karsasec.framework.semantic_models import (
 @dataclass
 class PredicateEvaluationResult:
     """Result of evaluating a predicate on a node."""
+
     matched: bool
     evidence_node_ids: tuple[str, ...] = ()
     evidence_edge_ids: tuple[str, ...] = ()
@@ -30,6 +31,7 @@ class PredicateEvaluationResult:
 @dataclass
 class GraphRuleEvaluationContext:
     """Evaluation context enforcing resource bounds and visited-set cycle protection."""
+
     graph: FrameworkSemanticGraph
     max_depth: int = 1
     max_nodes_visited: int = 100
@@ -185,7 +187,9 @@ def _evaluate_single_predicate(
         return PredicateEvaluationResult(matched=matched)
 
     if key == "is_sink_compatible":
-        trans_sym = str(node.attributes.get("sanitizer_symbols", [None])[0] if node.attributes.get("sanitizer_symbols") else "")
+        trans_sym = str(
+            node.attributes.get("sanitizer_symbols", [None])[0] if node.attributes.get("sanitizer_symbols") else ""
+        )
         sink_kind = str(node.attributes.get("sink_kind", ""))
         compat = evaluate_sink_compatibility(trans_sym, sink_kind)
         matched = compat == SinkCompatibility(str(val).upper())

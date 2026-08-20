@@ -5,14 +5,11 @@ import pytest
 from karsasec.observability.metrics import MetricsCollector
 from karsasec.observability.prometheus_exporter import PrometheusExporter
 from karsasec.observability.tracing import TraceContext, canonicalize_trace_fields
-from karsasec.observability.health import ClusterHealthMonitor, HealthStatus
-from karsasec.workers.worker_registry import WorkerRegistry, WorkerNode, WorkerStatus
-from karsasec.workers.heartbeat import HeartbeatEngine
+from karsasec.workers.worker_registry import WorkerRegistry
 from karsasec.workers.scheduler import ClusterScheduler
 from karsasec.workers.cluster_recovery import (
     ClusterRecoveryEngine,
     DistributedRecoveryLock,
-    RecoveryLease,
     FencedLeaderError,
 )
 from karsasec.workers.repository import InMemoryTaskRepository
@@ -26,7 +23,9 @@ from karsasec.workers.task import (
 from karsasec.persistence.audit_repository import InMemoryAuditRepository
 
 
-def _make_task(task_id: str, state: TaskState = TaskState.PENDING, attempts: int = 0, max_attempts: int = 3) -> RemediationTask:
+def _make_task(
+    task_id: str, state: TaskState = TaskState.PENDING, attempts: int = 0, max_attempts: int = 3
+) -> RemediationTask:
     return RemediationTask(
         task_id=task_id,
         finding_id="f1",
@@ -46,11 +45,11 @@ class TestForgedWorkerHeartbeat:
     def test_unregistered_worker_heartbeat_rejected_and_audited(self):
         audit = InMemoryAuditRepository()
         registry = WorkerRegistry(audit_repository=audit)
-        
+
         # Attempt heartbeat for non-registered worker
         res = registry.heartbeat("forged_worker_999", auth_token="bad_token")
         assert res is False
-        
+
         # Verify FORGED_WORKER_HEARTBEAT audit event logged
         events = audit.get_events_for_task("sys_forged_worker_999")
         assert len(events) == 1
@@ -168,7 +167,7 @@ class TestQueueDepthOverflow:
         collector = MetricsCollector()
         collector.set_queue_depth(1_000_000_000)
         assert collector.queue_depth == MetricsCollector.MAX_METRIC_VALUE
-        
+
         collector.set_queue_depth(-50)
         assert collector.queue_depth == 0
 
@@ -446,10 +445,7 @@ class TestRecoveryLeaseFencing:
             if lease:
                 leases.append((node_id, lease))
 
-        threads = [
-            threading.Thread(target=acquire_lock, args=(f"node_{i}",))
-            for i in range(3)
-        ]
+        threads = [threading.Thread(target=acquire_lock, args=(f"node_{i}",)) for i in range(3)]
         for t in threads:
             t.start()
         for t in threads:
@@ -573,5 +569,3 @@ class TestTraceSecurityBoundary:
 
         headers = ctx.to_headers(secret_key=secret_key)
         assert "X-Trace-Signature" in headers
-
-

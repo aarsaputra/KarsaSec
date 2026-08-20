@@ -27,8 +27,11 @@ class TestSeverityRank:
 class TestFindingService:
     def _make_dto(self, fid, severity, path, line) -> FindingDTO:
         return FindingDTO(
-            finding_id=fid, rule_id="R1", severity=severity,
-            file_path=path, line_number=line,
+            finding_id=fid,
+            rule_id="R1",
+            severity=severity,
+            file_path=path,
+            line_number=line,
         )
 
     def test_empty_service_returns_empty_list(self):
@@ -39,9 +42,7 @@ class TestFindingService:
 
     def test_pagination_meta_correct(self):
         svc = FindingService()
-        svc._findings = [
-            self._make_dto(f"f{i}", "LOW", "a.py", i) for i in range(5)
-        ]
+        svc._findings = [self._make_dto(f"f{i}", "LOW", "a.py", i) for i in range(5)]
         result = svc.list_findings(page=1, page_size=3)
         assert result.pagination.total == 5
         assert len(result.items) == 3
@@ -89,10 +90,8 @@ class TestFindingService:
     def test_filter_by_scan_id(self):
         svc = FindingService()
         svc._findings = [
-            FindingDTO(finding_id="f1", rule_id="R", severity="LOW",
-                       file_path="a.py", line_number=1, scan_id="scan-A"),
-            FindingDTO(finding_id="f2", rule_id="R", severity="LOW",
-                       file_path="b.py", line_number=1, scan_id="scan-B"),
+            FindingDTO(finding_id="f1", rule_id="R", severity="LOW", file_path="a.py", line_number=1, scan_id="scan-A"),
+            FindingDTO(finding_id="f2", rule_id="R", severity="LOW", file_path="b.py", line_number=1, scan_id="scan-B"),
         ]
         result = svc.list_findings(scan_id="scan-A")
         assert len(result.items) == 1

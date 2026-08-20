@@ -30,7 +30,6 @@ class FlaskBlueprintVisitor:
         if isinstance(raw, ast.Call):
             self._check_blueprint_registration(raw, node)
 
-
     def _check_blueprint_assignment(self, assign_node: ast.Assign, node: ASTNodeWrapper) -> None:
         if not isinstance(assign_node.value, ast.Call):
             return

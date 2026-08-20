@@ -388,7 +388,10 @@ def test_12_application_failure(tmp_path: Path) -> None:
         rescan_callback=_failing_rescan,
     )
 
-    assert res.current_state in (RemediationLifecycleState.ROLLED_BACK, RemediationLifecycleState.CRITICAL_RECOVERY_FAILURE)
+    assert res.current_state in (
+        RemediationLifecycleState.ROLLED_BACK,
+        RemediationLifecycleState.CRITICAL_RECOVERY_FAILURE,
+    )
     assert res.application_result is not None
     assert res.application_result.status in (ApplicationStatus.FAILED, ApplicationStatus.ROLLED_BACK)
 

@@ -8,14 +8,15 @@ from __future__ import annotations
 
 import hashlib
 from datetime import datetime, UTC, timedelta
-from typing import Optional, List, Dict, Any
 
 from sqlalchemy import update, select
-from sqlalchemy.orm import Session
 
 from karsasec.persistence.db import DatabaseSessionFactory, get_session_factory
 from karsasec.persistence.models import WorkerModel
 from karsasec.workers.worker_registry import WorkerNode, WorkerStatus
+
+
+from karsasec.observability.metrics import MetricsRegistry, get_metrics_registry
 
 
 def _hash_token(token: str) -> str:
@@ -25,8 +26,13 @@ def _hash_token(token: str) -> str:
 class PostgresWorkerRepository:
     """Authoritative PostgreSQL Worker Registry & Repository."""
 
-    def __init__(self, session_factory: DatabaseSessionFactory | None = None) -> None:
+    def __init__(
+        self,
+        session_factory: DatabaseSessionFactory | None = None,
+        metrics_registry: MetricsRegistry | None = None,
+    ) -> None:
         self._session_factory = session_factory or get_session_factory()
+        self._metrics = metrics_registry or get_metrics_registry()
 
     def register_worker(
         self, worker_id: str, auth_token: str = "secret-worker-token", hostname: str = "localhost"
@@ -37,15 +43,11 @@ class PostgresWorkerRepository:
         try:
             with self._session_factory.session_scope() as session:
                 existing = session.scalar(
-                    select(WorkerModel)
-                    .where(WorkerModel.worker_id == worker_id)
-                    .with_for_update()
+                    select(WorkerModel).where(WorkerModel.worker_id == worker_id).with_for_update()
                 )
                 if existing:
                     if existing.auth_token_hash != token_hash:
-                        raise ValueError(
-                            f"Worker '{worker_id}' already registered with conflicting credentials."
-                        )
+                        raise ValueError(f"Worker '{worker_id}' already registered with conflicting credentials.")
                     # Idempotent re-registration under matching credentials
                     existing.hostname = hostname
                     existing.status = WorkerStatus.ONLINE.value
@@ -80,13 +82,9 @@ class PostgresWorkerRepository:
             err_msg = str(err).lower()
             if "unique" in err_msg or "duplicate key" in err_msg or "integrityerror" in err_msg:
                 with self._session_factory.session_scope() as retry_session:
-                    existing = retry_session.scalar(
-                        select(WorkerModel).where(WorkerModel.worker_id == worker_id)
-                    )
+                    existing = retry_session.scalar(select(WorkerModel).where(WorkerModel.worker_id == worker_id))
                     if existing and existing.auth_token_hash != token_hash:
-                        raise ValueError(
-                            f"Worker '{worker_id}' already registered with conflicting credentials."
-                        )
+                        raise ValueError(f"Worker '{worker_id}' already registered with conflicting credentials.")
                     elif existing:
                         node = WorkerNode(
                             worker_id=existing.worker_id,
@@ -108,9 +106,7 @@ class PostgresWorkerRepository:
         finally:
             session.close()
 
-    def heartbeat(
-        self, worker_id: str, sequence: int, auth_token: str | None = None
-    ) -> None:
+    def heartbeat(self, worker_id: str, sequence: int, auth_token: str | None = None) -> None:
         """Execute atomic conditional UPDATE for heartbeat sequence ordering and authentication (INV-F5-07)."""
         raw_token = auth_token or "secret-worker-token"
         token_hash = _hash_token(raw_token)
@@ -131,17 +127,17 @@ class PostgresWorkerRepository:
             )
             result = session.execute(stmt)
             if getattr(result, "rowcount", 0) == 1:
+                self._metrics.worker_heartbeat(result="success")
                 return
 
+            self._metrics.worker_heartbeat_rejected(result="rejected")
             # Zero rows updated — analyze cause
             model = session.scalar(select(WorkerModel).where(WorkerModel.worker_id == worker_id))
             if not model:
                 raise ValueError(f"Worker '{worker_id}' is not registered.")
 
             if model.auth_token_hash != token_hash:
-                raise ValueError(
-                    f"Unauthenticated/invalid auth token provided for worker '{worker_id}'."
-                )
+                raise ValueError(f"Unauthenticated/invalid auth token provided for worker '{worker_id}'.")
 
             if model.heartbeat_sequence >= sequence:
                 raise ValueError(
@@ -150,7 +146,7 @@ class PostgresWorkerRepository:
 
             raise ValueError(f"Heartbeat update failed for worker '{worker_id}'.")
 
-    def get_worker(self, worker_id: str) -> Optional[WorkerNode]:
+    def get_worker(self, worker_id: str) -> WorkerNode | None:
         """Fetch worker record from database."""
         session = self._session_factory.get_session()
         try:
@@ -167,13 +163,67 @@ class PostgresWorkerRepository:
             session.close()
 
     def mark_offline(self, worker_id: str) -> None:
-        """Mark worker status as OFFLINE."""
+        """Mark worker status as OFFLINE under Worker Row FOR UPDATE lock (INV-F6-LOCK-01)."""
         with self._session_factory.session_scope() as session:
-            model = session.scalar(select(WorkerModel).where(WorkerModel.worker_id == worker_id))
+            model = session.scalar(select(WorkerModel).where(WorkerModel.worker_id == worker_id).with_for_update())
             if model:
                 model.status = WorkerStatus.OFFLINE.value
 
-    def list_active(self, max_heartbeat_age_seconds: int = 30) -> List[WorkerNode]:
+    def mark_draining(self, worker_id: str) -> None:
+        """Mark worker status as DRAINING under Worker Row FOR UPDATE lock (INV-F6-DRAIN-04, INV-F6-LOCK-01)."""
+        with self._session_factory.session_scope() as session:
+            model = session.scalar(select(WorkerModel).where(WorkerModel.worker_id == worker_id).with_for_update())
+            if model and model.status == WorkerStatus.ONLINE.value:
+                model.status = WorkerStatus.DRAINING.value
+
+    def mark_drained(self, worker_id: str) -> bool:
+        """Mark worker status as DRAINED if 0 active RUNNING tasks exist (INV-F6-LOCK-01).
+
+        Database itself validates NOT EXISTS RUNNING tasks for worker.
+        Returns True if worker is DRAINED, False if active tasks remain.
+        """
+        from karsasec.persistence.models import TaskModel
+
+        with self._session_factory.session_scope() as session:
+            model = session.scalar(select(WorkerModel).where(WorkerModel.worker_id == worker_id).with_for_update())
+            if not model or model.status != WorkerStatus.DRAINING.value:
+                return False
+
+            active_count = session.scalar(
+                select(TaskModel).where(
+                    TaskModel.assigned_worker_id == worker_id,
+                    TaskModel.state == "RUNNING",
+                )
+            )
+            if active_count is None:
+                model.status = WorkerStatus.DRAINED.value
+                return True
+            return False
+
+    def mark_fenced(self, worker_id: str) -> None:
+        """Mark worker status as FENCED and increment worker fencing_token (INV-F6-SHUTDOWN-05, INV-F6-LOCK-01)."""
+        with self._session_factory.session_scope() as session:
+            model = session.scalar(select(WorkerModel).where(WorkerModel.worker_id == worker_id).with_for_update())
+            if model and model.status in (WorkerStatus.DRAINING.value, WorkerStatus.ONLINE.value):
+                model.status = WorkerStatus.FENCED.value
+                model.fencing_token = model.fencing_token + 1
+
+    def get_active_task_count(self, worker_id: str) -> int:
+        """Query authoritative count of active RUNNING tasks assigned to worker from PostgreSQL."""
+        from karsasec.persistence.models import TaskModel
+
+        session = self._session_factory.get_session()
+        try:
+            stmt = select(TaskModel).where(
+                TaskModel.assigned_worker_id == worker_id,
+                TaskModel.state == "RUNNING",
+            )
+            models = session.scalars(stmt).all()
+            return len(models)
+        finally:
+            session.close()
+
+    def list_active(self, max_heartbeat_age_seconds: int = 30) -> list[WorkerNode]:
         """List active ONLINE or DEGRADED workers with fresh heartbeats."""
         cutoff = datetime.now(UTC) - timedelta(seconds=max_heartbeat_age_seconds)
         session = self._session_factory.get_session()

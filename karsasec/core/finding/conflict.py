@@ -35,7 +35,9 @@ class EvidenceConflict:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "conflict_type": self.conflict_type.value if isinstance(self.conflict_type, ConflictCategory) else str(self.conflict_type),
+            "conflict_type": self.conflict_type.value
+            if isinstance(self.conflict_type, ConflictCategory)
+            else str(self.conflict_type),
             "evidence_a": self.evidence_a.to_dict() if hasattr(self.evidence_a, "to_dict") else str(self.evidence_a),
             "evidence_b": self.evidence_b.to_dict() if hasattr(self.evidence_b, "to_dict") else str(self.evidence_b),
             "originating_rules": list(self.originating_rules),

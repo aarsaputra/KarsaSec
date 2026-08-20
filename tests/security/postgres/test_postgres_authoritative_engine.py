@@ -8,11 +8,10 @@ from __future__ import annotations
 import concurrent.futures
 import time
 import pytest
-from sqlalchemy import create_engine, select
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import select
 
 from karsasec.persistence.db import DatabaseSessionFactory
-from karsasec.persistence.models import Base, TaskModel, WorkerModel, RecoveryLeaseModel, OutboxEventModel
+from karsasec.persistence.models import Base, TaskModel, OutboxEventModel
 from karsasec.persistence.postgres_task_repository import PostgresTaskRepository
 from karsasec.persistence.postgres_worker_repository import PostgresWorkerRepository
 from karsasec.persistence.postgres_recovery_lock import PostgresRecoveryLock
@@ -248,11 +247,16 @@ class TestOutboxPattern:
             t = _create_sample_task("tsk-outbox-1")
             # Create task record
             model = TaskModel(
-                task_id=t.task_id, finding_id=t.finding_id, approval_token_id=t.approval_token_id,
-                fingerprint=t.fingerprint, state="QUEUED"
+                task_id=t.task_id,
+                finding_id=t.finding_id,
+                approval_token_id=t.approval_token_id,
+                fingerprint=t.fingerprint,
+                state="QUEUED",
             )
             session.add(model)
-            outbox_repo.create_event_in_session(session, aggregate_id=t.task_id, event_type="TASK_QUEUED", payload={"task_id": t.task_id})
+            outbox_repo.create_event_in_session(
+                session, aggregate_id=t.task_id, event_type="TASK_QUEUED", payload={"task_id": t.task_id}
+            )
 
         # Verify task and outbox event exist in DB
         fetched_task = task_repo.get_task("tsk-outbox-1")
@@ -268,7 +272,9 @@ class TestOutboxPattern:
 
         try:
             with test_db_factory.session_scope() as session:
-                outbox_repo.create_event_in_session(session, aggregate_id="tsk-fail", event_type="TASK_QUEUED", payload={"task_id": "tsk-fail"})
+                outbox_repo.create_event_in_session(
+                    session, aggregate_id="tsk-fail", event_type="TASK_QUEUED", payload={"task_id": "tsk-fail"}
+                )
                 raise RuntimeError("Transaction failure injection")
         except RuntimeError:
             pass
@@ -282,7 +288,9 @@ class TestOutboxPattern:
         outbox_repo = OutboxRepository(test_db_factory)
 
         with test_db_factory.session_scope() as session:
-            outbox_repo.create_event_in_session(session, aggregate_id="tsk-retry", event_type="TASK_QUEUED", payload={"task_id": "tsk-retry"})
+            outbox_repo.create_event_in_session(
+                session, aggregate_id="tsk-retry", event_type="TASK_QUEUED", payload={"task_id": "tsk-retry"}
+            )
 
         publisher = OutboxPublisher(queue, test_db_factory, outbox_repo)
         count = publisher.process_pending_events()
@@ -294,7 +302,13 @@ class TestOutboxPattern:
         outbox_repo = OutboxRepository(test_db_factory)
 
         with test_db_factory.session_scope() as session:
-            outbox_repo.create_event_in_session(session, aggregate_id="tsk-idemp", event_type="TASK_QUEUED", payload={"task_id": "tsk-idemp"}, event_id="evt-fixed-id")
+            outbox_repo.create_event_in_session(
+                session,
+                aggregate_id="tsk-idemp",
+                event_type="TASK_QUEUED",
+                payload={"task_id": "tsk-idemp"},
+                event_id="evt-fixed-id",
+            )
 
         publisher = OutboxPublisher(queue, test_db_factory, outbox_repo)
         c1 = publisher.process_pending_events()
@@ -310,7 +324,12 @@ class TestOutboxPattern:
         # Populate 10 pending events
         for i in range(10):
             with test_db_factory.session_scope() as session:
-                outbox_repo.create_event_in_session(session, aggregate_id=f"tsk-conc-{i}", event_type="TASK_QUEUED", payload={"task_id": f"tsk-conc-{i}"})
+                outbox_repo.create_event_in_session(
+                    session,
+                    aggregate_id=f"tsk-conc-{i}",
+                    event_type="TASK_QUEUED",
+                    payload={"task_id": f"tsk-conc-{i}"},
+                )
 
         publisher = OutboxPublisher(queue, test_db_factory, outbox_repo)
 
@@ -334,14 +353,18 @@ class TestOutboxPattern:
             def __init__(self) -> None:
                 self.should_fail = True
                 self.enqueued: list[str] = []
+
             def enqueue(self, task_id: str) -> None:
                 if self.should_fail:
                     raise RuntimeError("Queue connection failed")
                 self.enqueued.append(task_id)
+
             def dequeue(self, timeout: int = 1) -> str | None:
                 return None
+
             def acknowledge(self, task_id: str) -> None:
                 pass
+
             def requeue(self, task_id: str) -> None:
                 pass
 
@@ -350,11 +373,14 @@ class TestOutboxPattern:
 
         with test_db_factory.session_scope() as session:
             outbox_repo.create_event_in_session(
-                session, aggregate_id="tsk-enqueue-fail", event_type="TASK_QUEUED", payload={"task_id": "tsk-enqueue-fail"}
+                session,
+                aggregate_id="tsk-enqueue-fail",
+                event_type="TASK_QUEUED",
+                payload={"task_id": "tsk-enqueue-fail"},
             )
 
         publisher = OutboxPublisher(queue, test_db_factory, outbox_repo)
-        
+
         # First attempt: queue fails
         c1 = publisher.process_pending_events()
         assert c1 == 0
@@ -377,8 +403,6 @@ class TestOutboxPattern:
             evt = session.scalar(select(OutboxEventModel).where(OutboxEventModel.aggregate_id == "tsk-enqueue-fail"))
             assert evt is not None
             assert evt.status == "PUBLISHED"
-
-
 
 
 class TestConsistentHashSchedulerF5:
@@ -458,6 +482,7 @@ class TestAdversarialHardeningF51:
         repo.atomic_transition("tsk-adv-1", 2, [TaskState.QUEUED], TaskState.RUNNING)
 
         successes, failures = [], []
+
         def worker_attempt():
             try:
                 repo.atomic_transition("tsk-adv-1", 3, [TaskState.RUNNING], TaskState.COMPLETED)
@@ -565,7 +590,9 @@ class TestAdversarialHardeningF51:
         outbox_repo = OutboxRepository(test_db_factory)
         try:
             with test_db_factory.session_scope() as session:
-                outbox_repo.create_event_in_session(session, aggregate_id="tsk-ob-rb", event_type="QUEUED", payload={"task_id": "tsk-ob-rb"})
+                outbox_repo.create_event_in_session(
+                    session, aggregate_id="tsk-ob-rb", event_type="QUEUED", payload={"task_id": "tsk-ob-rb"}
+                )
                 raise RuntimeError("Aborted transaction")
         except RuntimeError:
             pass
@@ -578,7 +605,9 @@ class TestAdversarialHardeningF51:
         outbox_repo = OutboxRepository(test_db_factory)
 
         with test_db_factory.session_scope() as session:
-            outbox_repo.create_event_in_session(session, aggregate_id="tsk-crash", event_type="QUEUED", payload={"task_id": "tsk-crash"})
+            outbox_repo.create_event_in_session(
+                session, aggregate_id="tsk-crash", event_type="QUEUED", payload={"task_id": "tsk-crash"}
+            )
 
         # Simulate publisher enqueuing but crashing before mark_published
         queue.enqueue("tsk-crash")
@@ -593,7 +622,9 @@ class TestAdversarialHardeningF51:
         outbox_repo = OutboxRepository(test_db_factory)
 
         with test_db_factory.session_scope() as session:
-            outbox_repo.create_event_in_session(session, aggregate_id="tsk-dup-del", event_type="QUEUED", payload={"task_id": "tsk-dup-del"})
+            outbox_repo.create_event_in_session(
+                session, aggregate_id="tsk-dup-del", event_type="QUEUED", payload={"task_id": "tsk-dup-del"}
+            )
 
         pub = OutboxPublisher(queue, test_db_factory, outbox_repo)
         c1 = pub.process_pending_events()
@@ -607,7 +638,9 @@ class TestAdversarialHardeningF51:
 
         for i in range(10):
             with test_db_factory.session_scope() as session:
-                outbox_repo.create_event_in_session(session, aggregate_id=f"tsk-cp-{i}", event_type="QUEUED", payload={"task_id": f"tsk-cp-{i}"})
+                outbox_repo.create_event_in_session(
+                    session, aggregate_id=f"tsk-cp-{i}", event_type="QUEUED", payload={"task_id": f"tsk-cp-{i}"}
+                )
 
         pub = OutboxPublisher(queue, test_db_factory, outbox_repo)
 
@@ -626,11 +659,12 @@ class TestAdversarialHardeningF51:
 
         assert sum(res) == 10
 
-
     def test_database_connection_failure(self, test_db_factory):
+        from sqlalchemy.exc import SQLAlchemyError
+
         invalid_factory = DatabaseSessionFactory(url="sqlite:////nonexistent/invalid/path/db.sqlite")
         repo = PostgresTaskRepository(invalid_factory)
-        with pytest.raises(Exception):
+        with pytest.raises(SQLAlchemyError):
             repo.get_task("tsk-any")
 
     def test_stale_sqlalchemy_session_state(self, test_db_factory):
@@ -673,11 +707,15 @@ class TestAdversarialHardeningF51:
     def test_duplicate_event_id(self, test_db_factory):
         outbox_repo = OutboxRepository(test_db_factory)
         with test_db_factory.session_scope() as session:
-            outbox_repo.create_event_in_session(session, aggregate_id="t-1", event_type="Q", payload={}, event_id="evt-fixed")
+            outbox_repo.create_event_in_session(
+                session, aggregate_id="t-1", event_type="Q", payload={}, event_id="evt-fixed"
+            )
 
         with pytest.raises(ValueError, match="already exists"):
             with test_db_factory.session_scope() as session:
-                outbox_repo.create_event_in_session(session, aggregate_id="t-2", event_type="Q", payload={}, event_id="evt-fixed")
+                outbox_repo.create_event_in_session(
+                    session, aggregate_id="t-2", event_type="Q", payload={}, event_id="evt-fixed"
+                )
 
     def test_retry_after_transaction_failure(self, test_db_factory):
         repo = PostgresTaskRepository(test_db_factory)
@@ -699,4 +737,3 @@ class TestAdversarialHardeningF51:
 
         assert lock.is_valid("node-exp-adv", l.lease_id, l.fencing_token) is False
         assert lock.renew("node-exp-adv", l.lease_id, l.fencing_token) is False
-

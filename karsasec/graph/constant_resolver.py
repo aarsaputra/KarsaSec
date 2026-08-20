@@ -17,6 +17,7 @@ Design invariants:
   - constant identity != constant safety (only resolved value provenance matters)
   - No filesystem access, no subprocess, no runtime imports
 """
+
 from __future__ import annotations
 
 import re
@@ -35,6 +36,7 @@ class ConstantResolution(StrEnum):
         TAINTED         -> USER_INPUT      (finding)
         UNKNOWN         -> UNKNOWN         (suppress per E10-3J policy)
     """
+
     UNKNOWN = "UNKNOWN"
     STATIC_LITERAL = "STATIC_LITERAL"
     STATIC_CONSTANT = "STATIC_CONSTANT"
@@ -44,17 +46,27 @@ class ConstantResolution(StrEnum):
 
 
 # Set of safe resolutions — all parts must be in this set for an expression to be safe
-_STATIC_RESOLUTIONS: frozenset[ConstantResolution] = frozenset({
-    ConstantResolution.STATIC_LITERAL,
-    ConstantResolution.STATIC_CONSTANT,
-    ConstantResolution.DERIVED_STATIC,
-})
+_STATIC_RESOLUTIONS: frozenset[ConstantResolution] = frozenset(
+    {
+        ConstantResolution.STATIC_LITERAL,
+        ConstantResolution.STATIC_CONSTANT,
+        ConstantResolution.DERIVED_STATIC,
+    }
+)
 
 # PHP superglobals — constant defined from these is TAINTED
-_PHP_TAINT_SOURCES: frozenset[str] = frozenset({
-    "$_GET", "$_POST", "$_REQUEST", "$_SERVER",
-    "$_COOKIE", "$_FILES", "$_ENV", "$HTTP_RAW_POST_DATA",
-})
+_PHP_TAINT_SOURCES: frozenset[str] = frozenset(
+    {
+        "$_GET",
+        "$_POST",
+        "$_REQUEST",
+        "$_SERVER",
+        "$_COOKIE",
+        "$_FILES",
+        "$_ENV",
+        "$HTTP_RAW_POST_DATA",
+    }
+)
 
 # define('NAME', value) — group 1=name, group 2=raw value expr
 _RE_DEFINE = re.compile(
@@ -87,6 +99,7 @@ _MAX_RESOLVE_DEPTH: int = 8
 @dataclass(frozen=True)
 class ConstantDeclaration:
     """A single constant declaration found in source text."""
+
     name: str
     value_expr: str
     decl_kind: str  # "define" | "const"
@@ -95,6 +108,7 @@ class ConstantDeclaration:
 @dataclass(frozen=True)
 class ConstantEvidence:
     """Result of resolving a constant or expression."""
+
     name: str
     resolution: ConstantResolution
     resolved_value: str = ""
@@ -134,26 +148,28 @@ class ConstantResolver:
     ) -> ConstantEvidence:
         """Resolve a constant identifier to its value provenance."""
         if _depth > _MAX_RESOLVE_DEPTH:
-            return ConstantEvidence(identifier, ConstantResolution.UNKNOWN,
-                                    provenance="Max resolution depth exceeded")
+            return ConstantEvidence(identifier, ConstantResolution.UNKNOWN, provenance="Max resolution depth exceeded")
 
         visited = _visited or frozenset()
         if identifier in visited:
-            return ConstantEvidence(identifier, ConstantResolution.UNKNOWN,
-                                    provenance=f"Cycle detected: {identifier}")
+            return ConstantEvidence(identifier, ConstantResolution.UNKNOWN, provenance=f"Cycle detected: {identifier}")
         visited = visited | {identifier}
 
         decls = _decls if _decls is not None else self.discover_declarations(source_text)
 
         if identifier not in decls:
-            return ConstantEvidence(identifier, ConstantResolution.UNKNOWN,
-                                    provenance=f"No declaration found for '{identifier}'")
+            return ConstantEvidence(
+                identifier, ConstantResolution.UNKNOWN, provenance=f"No declaration found for '{identifier}'"
+            )
 
         decl_list = decls[identifier]
         # Multiple declarations -> ambiguous scope -> conservative UNKNOWN
         if len(decl_list) > 1:
-            return ConstantEvidence(identifier, ConstantResolution.UNKNOWN,
-                                    provenance=f"Multiple declarations for '{identifier}' (ambiguous scope)")
+            return ConstantEvidence(
+                identifier,
+                ConstantResolution.UNKNOWN,
+                provenance=f"Multiple declarations for '{identifier}' (ambiguous scope)",
+            )
 
         return self._classify_value(identifier, decl_list[0].value_expr, source_text, visited, decls, _depth)
 
@@ -182,49 +198,56 @@ class ConstantResolver:
 
         # 1. String literal
         if _RE_STRING_LITERAL.match(expr):
-            return ConstantEvidence(name, ConstantResolution.STATIC_CONSTANT,
-                                    resolved_value=expr[1:-1],
-                                    provenance=f"String literal: {expr}")
+            return ConstantEvidence(
+                name,
+                ConstantResolution.STATIC_CONSTANT,
+                resolved_value=expr[1:-1],
+                provenance=f"String literal: {expr}",
+            )
 
         # 2. Scalar literal
         if _RE_SCALAR.match(expr):
-            return ConstantEvidence(name, ConstantResolution.STATIC_CONSTANT,
-                                    resolved_value=expr,
-                                    provenance=f"Scalar literal: {expr}")
+            return ConstantEvidence(
+                name, ConstantResolution.STATIC_CONSTANT, resolved_value=expr, provenance=f"Scalar literal: {expr}"
+            )
 
         # 3. Tainted superglobal
         for src in _PHP_TAINT_SOURCES:
             if src in expr:
-                return ConstantEvidence(name, ConstantResolution.TAINTED,
-                                        provenance=f"Tainted source: {src}")
+                return ConstantEvidence(name, ConstantResolution.TAINTED, provenance=f"Tainted source: {src}")
 
         # 4. Environment reference
         if _RE_ENV.search(expr):
-            return ConstantEvidence(name, ConstantResolution.UNKNOWN,
-                                    provenance=f"Environment reference: {expr[:60]}")
+            return ConstantEvidence(name, ConstantResolution.UNKNOWN, provenance=f"Environment reference: {expr[:60]}")
 
         # 5. PHP variable -> DYNAMIC
-        if re.search(r'\$[A-Za-z_]', expr):
-            return ConstantEvidence(name, ConstantResolution.DYNAMIC,
-                                    provenance=f"Variable reference in value: {expr[:60]}")
+        if re.search(r"\$[A-Za-z_]", expr):
+            return ConstantEvidence(
+                name, ConstantResolution.DYNAMIC, provenance=f"Variable reference in value: {expr[:60]}"
+            )
 
         # 6. Concatenation
         if "." in expr:
             return self._resolve_concat(name, expr, source_text, visited, decls, depth)
 
         # 7. Another constant identifier (nested lookup)
-        if re.match(r'^[A-Za-z_][A-Za-z0-9_]*$', expr) and not _RE_SCALAR.match(expr):
+        if re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", expr) and not _RE_SCALAR.match(expr):
             nested = self.resolve(expr, source_text, visited, decls, depth + 1)
             if nested.resolution == ConstantResolution.STATIC_CONSTANT:
-                return ConstantEvidence(name, ConstantResolution.STATIC_CONSTANT,
-                                        resolved_value=nested.resolved_value,
-                                        provenance=f"Nested constant '{expr}': {nested.provenance}")
-            return ConstantEvidence(name, nested.resolution,
-                                    resolved_value=nested.resolved_value,
-                                    provenance=f"Inherits from '{expr}': {nested.provenance}")
+                return ConstantEvidence(
+                    name,
+                    ConstantResolution.STATIC_CONSTANT,
+                    resolved_value=nested.resolved_value,
+                    provenance=f"Nested constant '{expr}': {nested.provenance}",
+                )
+            return ConstantEvidence(
+                name,
+                nested.resolution,
+                resolved_value=nested.resolved_value,
+                provenance=f"Inherits from '{expr}': {nested.provenance}",
+            )
 
-        return ConstantEvidence(name, ConstantResolution.UNKNOWN,
-                                provenance=f"Cannot classify: {expr[:60]}")
+        return ConstantEvidence(name, ConstantResolution.UNKNOWN, provenance=f"Cannot classify: {expr[:60]}")
 
     def _resolve_concat(
         self,
@@ -245,18 +268,19 @@ class ConstantResolver:
         for part in parts:
             ev = self._classify_part(part, source_text, visited, decls, depth)
             if ev.resolution == ConstantResolution.TAINTED:
-                return ConstantEvidence(name, ConstantResolution.TAINTED,
-                                        provenance=f"Concat part tainted: {part}")
+                return ConstantEvidence(name, ConstantResolution.TAINTED, provenance=f"Concat part tainted: {part}")
             if ev.resolution not in _STATIC_RESOLUTIONS:
                 all_static = False
             resolved.append(ev.resolved_value)
 
         if all_static:
-            return ConstantEvidence(name, ConstantResolution.DERIVED_STATIC,
-                                    resolved_value="".join(resolved),
-                                    provenance=f"All concat parts static: {expr[:80]}")
-        return ConstantEvidence(name, ConstantResolution.UNKNOWN,
-                                provenance=f"Concat has non-static part: {expr[:80]}")
+            return ConstantEvidence(
+                name,
+                ConstantResolution.DERIVED_STATIC,
+                resolved_value="".join(resolved),
+                provenance=f"All concat parts static: {expr[:80]}",
+            )
+        return ConstantEvidence(name, ConstantResolution.UNKNOWN, provenance=f"Concat has non-static part: {expr[:80]}")
 
     @staticmethod
     def _split_php_concat(expr: str) -> list[str]:
@@ -309,12 +333,12 @@ class ConstantResolver:
             return self._resolve_concat(p, p, source_text, visited, decls, depth)
 
         if _RE_STRING_LITERAL.match(p):
-            return ConstantEvidence(p, ConstantResolution.STATIC_LITERAL,
-                                    resolved_value=p[1:-1], provenance="String literal")
+            return ConstantEvidence(
+                p, ConstantResolution.STATIC_LITERAL, resolved_value=p[1:-1], provenance="String literal"
+            )
 
         if _RE_SCALAR.match(p):
-            return ConstantEvidence(p, ConstantResolution.STATIC_LITERAL,
-                                    resolved_value=p, provenance="Scalar literal")
+            return ConstantEvidence(p, ConstantResolution.STATIC_LITERAL, resolved_value=p, provenance="Scalar literal")
 
         for src in _PHP_TAINT_SOURCES:
             if src in p:
@@ -323,13 +347,12 @@ class ConstantResolver:
         if _RE_ENV.search(p):
             return ConstantEvidence(p, ConstantResolution.UNKNOWN, provenance="Env reference")
 
-        if re.search(r'\$[A-Za-z_]', p):
+        if re.search(r"\$[A-Za-z_]", p):
             # Check for interpolated string like "foo/{$id}/bar" — contains variable inside
-            return ConstantEvidence(p, ConstantResolution.DYNAMIC,
-                                    provenance=f"Variable reference: {p[:40]}")
+            return ConstantEvidence(p, ConstantResolution.DYNAMIC, provenance=f"Variable reference: {p[:40]}")
 
         # Constant identifier
-        if re.match(r'^[A-Za-z_][A-Za-z0-9_]*$', p) and not _RE_SCALAR.match(p):
+        if re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", p) and not _RE_SCALAR.match(p):
             return self.resolve(p, source_text, visited, decls, depth + 1)
 
         return ConstantEvidence(p, ConstantResolution.UNKNOWN, provenance=f"Unknown: {p[:40]}")

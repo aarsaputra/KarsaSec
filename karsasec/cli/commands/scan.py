@@ -37,13 +37,44 @@ from karsasec.rules.loader import YAMLRuleLoader
 from karsasec.rules.patterns import get_default_rules_directory
 from karsasec.utils.logging import console
 
-IGNORE_DIRS = {".git", ".hg", ".svn", ".venv", "venv", ".pytest_cache", "__pycache__", "build", "dist", ".gemini", "node_modules", "vendor"}
+IGNORE_DIRS = {
+    ".git",
+    ".hg",
+    ".svn",
+    ".venv",
+    "venv",
+    ".pytest_cache",
+    "__pycache__",
+    "build",
+    "dist",
+    ".gemini",
+    "node_modules",
+    "vendor",
+}
 ALLOWED_HIDDEN_DIRS = {".github", ".vscode", ".devcontainer"}
 DEFAULT_IGNORED_FILES = {"package-lock.json", "yarn.lock", "pnpm-lock.yaml", "poetry.lock", "Cargo.lock"}
 
 SUPPORTED_EXTENSIONS = {
-    ".py", ".pyi", ".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs",
-    ".php", ".inc", ".phtml", ".go", ".rs", ".java", ".yaml", ".yml", ".json", ".dockerfile", ".tf", ".tfvars"
+    ".py",
+    ".pyi",
+    ".js",
+    ".jsx",
+    ".ts",
+    ".tsx",
+    ".mjs",
+    ".cjs",
+    ".php",
+    ".inc",
+    ".phtml",
+    ".go",
+    ".rs",
+    ".java",
+    ".yaml",
+    ".yml",
+    ".json",
+    ".dockerfile",
+    ".tf",
+    ".tfvars",
 }
 SUPPORTED_FILENAMES = {"dockerfile", "containerfile"}
 
@@ -130,7 +161,10 @@ def should_skip_path(
         if part.startswith(".") and part not in ALLOWED_HIDDEN_DIRS and part != ".gitignore":
             return True
 
-    if normalized_path.name.lower() in DEFAULT_IGNORED_FILES or normalized_path.name.lower() in {"karsasec.yaml", "karsasec.yml"}:
+    if normalized_path.name.lower() in DEFAULT_IGNORED_FILES or normalized_path.name.lower() in {
+        "karsasec.yaml",
+        "karsasec.yml",
+    }:
         return True
 
     if normalized_path.suffix.lower() == ".pyc":
@@ -190,6 +224,7 @@ def iter_candidate_files(root: Path, exclude_patterns: set[str] | None = None) -
                 files.append(candidate)
 
     return sorted(files)
+
 
 def scan_file_task(
     file_path: Path,
@@ -256,7 +291,9 @@ def _run_scan_pipeline(target_path: Path) -> tuple[list[Finding], Any, float]:
     exclude_patterns = {pattern for pattern in get_scan_exclusions(project_config)}
 
     if resolved_path.is_file():
-        files_to_scan = [resolved_path] if not should_skip_path(resolved_path, resolved_path.parent, [], exclude_patterns) else []
+        files_to_scan = (
+            [resolved_path] if not should_skip_path(resolved_path, resolved_path.parent, [], exclude_patterns) else []
+        )
     else:
         files_to_scan = iter_candidate_files(resolved_path, exclude_patterns)
 
@@ -269,11 +306,13 @@ def _run_scan_pipeline(target_path: Path) -> tuple[list[Finding], Any, float]:
         all_findings.extend(res_findings)
 
     from karsasec.core.finding.correlator import FindingCorrelator
+
     _correlator = FindingCorrelator()
     _canonical = _correlator.correlate(all_findings)
     findings_tuple = _correlator.to_findings(_canonical)
 
     from karsasec.core.finding.qualifier import SemanticFindingQualifier, QualificationState
+
     _qualifier = SemanticFindingQualifier()
     qualified_findings = []
     for cand in findings_tuple:
@@ -338,7 +377,9 @@ def execute_scan_command(
     exclude_patterns = {pattern for pattern in get_scan_exclusions(project_config)}
 
     if resolved_path.is_file():
-        files_to_scan = [resolved_path] if not should_skip_path(resolved_path, resolved_path.parent, [], exclude_patterns) else []
+        files_to_scan = (
+            [resolved_path] if not should_skip_path(resolved_path, resolved_path.parent, [], exclude_patterns) else []
+        )
     else:
         files_to_scan = iter_candidate_files(resolved_path, exclude_patterns)
 
@@ -367,7 +408,12 @@ def execute_scan_command(
                     for result in rag_results
                 ]
                 if format_type == "console":
-                    console.print(Panel(f"[bold green]RAG context retrieval[/bold green]\nQuery: [cyan]{query_text[:120]}[/cyan]", border_style="green"))
+                    console.print(
+                        Panel(
+                            f"[bold green]RAG context retrieval[/bold green]\nQuery: [cyan]{query_text[:120]}[/cyan]",
+                            border_style="green",
+                        )
+                    )
                     for result in rag_results:
                         console.print(
                             f"[yellow]{result.metadata.get('source_path')}[/yellow] (score={result.score:.4f})\n{result.text[:240]}...\n"
@@ -445,12 +491,14 @@ def execute_scan_command(
     # Phase 5.5 — Finding Correlation & Deduplication
     # Group findings by semantic fingerprint to eliminate duplicates from overlapping rules.
     from karsasec.core.finding.correlator import FindingCorrelator
+
     _correlator = FindingCorrelator()
     _canonical = _correlator.correlate(all_findings)
     findings_tuple = _correlator.to_findings(_canonical)
 
     # Phase 5.6 — Deterministic Semantic Qualification & False Positive Elimination
     from karsasec.core.finding.qualifier import SemanticFindingQualifier, QualificationState
+
     _qualifier = SemanticFindingQualifier()
     qualified_findings = []
     for cand in findings_tuple:

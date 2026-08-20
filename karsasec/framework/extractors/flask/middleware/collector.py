@@ -44,6 +44,7 @@ class FlaskMiddlewareCollector:
 
         # Pass 2: Hook, error handler & class-based middleware collection across all files
         for root in valid_roots:
+
             def pass2(node: ASTNodeWrapper) -> None:
                 self.before_visitor.visit(node)
                 self.after_visitor.visit(node)

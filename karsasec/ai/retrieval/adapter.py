@@ -43,8 +43,7 @@ class KnowledgeRetrieverProtocol(Protocol):
         query: str,
         filters: dict[str, str] | None = None,
         top_k: int = 5,
-    ) -> RetrievalResult:
-        ...
+    ) -> RetrievalResult: ...
 
 
 class KnowledgeRetrieverAdapter:

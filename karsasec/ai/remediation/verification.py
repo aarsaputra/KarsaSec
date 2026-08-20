@@ -84,6 +84,7 @@ class VerificationResult:
     def verification_fingerprint(self) -> str:
         """Compute deterministic SHA-256 fingerprint for verification result."""
         import hashlib
+
         raw = f"{self.verification_id}|{self.finding_id}|{self.status}|{self.pre_apply_verdict_status}|{self.post_apply_verdict_status}|{self.matching_findings_count}|{self.contract.evidence_fingerprint if self.contract else ''}"
         return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
@@ -140,7 +141,9 @@ class PostApplyVerificationEngine:
         if match_count == 0:
             status = VerificationStatus.VERIFIED_FIXED
             post_verdict_str = "SAFE"
-            details = f"Vulnerability {contract.rule_id} ({contract.cwe_id}) successfully eliminated in {contract.file_path}."
+            details = (
+                f"Vulnerability {contract.rule_id} ({contract.cwe_id}) successfully eliminated in {contract.file_path}."
+            )
         else:
             status = VerificationStatus.STILL_VULNERABLE
             post_verdict_str = "VULNERABLE"

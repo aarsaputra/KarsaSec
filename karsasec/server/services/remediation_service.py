@@ -13,7 +13,6 @@ import hashlib
 from pathlib import Path
 import json
 import logging
-from typing import Any
 
 try:
     import redis  # type: ignore # pyright: ignore[reportMissingImports]
@@ -59,6 +58,7 @@ class RemediationService:
         # ---------------------------------------------------------------
         try:
             from karsasec.persistence.db import get_session_factory
+
             factory = get_session_factory()
             # Smoke-test the connection
             engine = factory.engine
@@ -80,9 +80,7 @@ class RemediationService:
         try:
             if redis is None:
                 raise ImportError("redis package is not installed")
-            self.redis_client = redis.Redis(
-                host="127.0.0.1", port=6379, db=0, socket_timeout=1.0
-            )
+            self.redis_client = redis.Redis(host="127.0.0.1", port=6379, db=0, socket_timeout=1.0)
             self.redis_client.ping()
             self.queue = RedisTaskQueue(self.redis_client)
         except Exception:
@@ -131,22 +129,26 @@ class RemediationService:
         self.repository.create_task(task)
 
         # Audit: TASK_CREATED
-        self.audit_repository.append(AuditEvent(
-            task_id=task_id,
-            event_type=AuditEventType.TASK_CREATED,
-            details={"finding_id": finding_id, "approval_token_id": approval_token_id},
-        ))
+        self.audit_repository.append(
+            AuditEvent(
+                task_id=task_id,
+                event_type=AuditEventType.TASK_CREATED,
+                details={"finding_id": finding_id, "approval_token_id": approval_token_id},
+            )
+        )
 
         # Transition PENDING → QUEUED and submit to queue
         queued_task = self.repository.update_task(task_id, state=TaskState.QUEUED)
         self.queue.enqueue(task_id)
 
         # Audit: TASK_QUEUED
-        self.audit_repository.append(AuditEvent(
-            task_id=task_id,
-            event_type=AuditEventType.TASK_QUEUED,
-            details={},
-        ))
+        self.audit_repository.append(
+            AuditEvent(
+                task_id=task_id,
+                event_type=AuditEventType.TASK_QUEUED,
+                details={},
+            )
+        )
 
         return _task_to_dto(queued_task)
 

@@ -5,6 +5,7 @@ app = Flask(__name__)
 jwt = JWTManager()
 jwt.init_app(app)
 
+
 @app.route("/refresh")
 @jwt_required(refresh=True)
 def refresh_token():

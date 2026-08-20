@@ -72,7 +72,9 @@ def test_fluent_dsl_builders() -> None:
 
 
 def test_predicate_engine_evaluation() -> None:
-    node = CPGNode(id="n1", node_type=NodeType.FUNCTION, label="db.execute", file_path="db.py", attributes={"language": "python"})
+    node = CPGNode(
+        id="n1", node_type=NodeType.FUNCTION, label="db.execute", file_path="db.py", attributes={"language": "python"}
+    )
 
     p_eq = PredicateNode(operator="EQUALS", target="label", value="db.execute")
     p_and = AND(p_eq, CONTAINS("file_path", "db"))
@@ -101,9 +103,23 @@ def test_query_planner_and_optimizer() -> None:
 
 def test_query_executor_and_traversal() -> None:
     graph = CPGGraph()
-    n1 = CPGNode(id="n1", node_type=NodeType.FUNCTION, label="main", file_path="app.py", attributes={"function_name": "main"})
-    n2 = CPGNode(id="n2", node_type=NodeType.CFG, label="query = request.args", file_path="app.py", attributes={"function_name": "foo"})
-    n3 = CPGNode(id="n3", node_type=NodeType.CFG, label="db.execute(query)", file_path="app.py", attributes={"function_name": "bar"})
+    n1 = CPGNode(
+        id="n1", node_type=NodeType.FUNCTION, label="main", file_path="app.py", attributes={"function_name": "main"}
+    )
+    n2 = CPGNode(
+        id="n2",
+        node_type=NodeType.CFG,
+        label="query = request.args",
+        file_path="app.py",
+        attributes={"function_name": "foo"},
+    )
+    n3 = CPGNode(
+        id="n3",
+        node_type=NodeType.CFG,
+        label="db.execute(query)",
+        file_path="app.py",
+        attributes={"function_name": "bar"},
+    )
 
     graph.add_node(n1)
     graph.add_node(n2)
@@ -170,7 +186,14 @@ def test_rule_validator_and_compiler() -> None:
 
 def test_legacy_rule_adapter_and_semantic_runtime() -> None:
     graph = CPGGraph()
-    n1 = CPGNode(id="n1", node_type=NodeType.FUNCTION, label="eval(user_data)", file_path="app.py", line_number=5, attributes={"language": "python"})
+    n1 = CPGNode(
+        id="n1",
+        node_type=NodeType.FUNCTION,
+        label="eval(user_data)",
+        file_path="app.py",
+        line_number=5,
+        attributes={"language": "python"},
+    )
     graph.add_node(n1)
 
     legacy_yaml_rule = {

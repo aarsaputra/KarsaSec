@@ -116,7 +116,9 @@ class CFG:
         elif node.node_type == CFGNodeType.EXIT:
             self.exit_node_id = node.id
 
-    def add_edge(self, source_id: str, target_id: str, edge_type: CFGEdgeType = CFGEdgeType.NORMAL, condition_text: str = "") -> None:
+    def add_edge(
+        self, source_id: str, target_id: str, edge_type: CFGEdgeType = CFGEdgeType.NORMAL, condition_text: str = ""
+    ) -> None:
         edge = CFGEdge(source_id=source_id, target_id=target_id, edge_type=edge_type, condition_text=condition_text)
         self.edges.append(edge)
 
@@ -174,7 +176,11 @@ class CFG:
         for edge in self.edges:
             src = edge.source_id.replace("::", "_").replace(".", "_").replace("-", "_")
             tgt = edge.target_id.replace("::", "_").replace(".", "_").replace("-", "_")
-            label_attr = f' [label="{edge.condition_text or edge.edge_type.value}"]' if edge.condition_text or edge.edge_type != CFGEdgeType.NORMAL else ""
+            label_attr = (
+                f' [label="{edge.condition_text or edge.edge_type.value}"]'
+                if edge.condition_text or edge.edge_type != CFGEdgeType.NORMAL
+                else ""
+            )
             lines.append(f'    "{src}" -> "{tgt}"{label_attr};')
 
         lines.append("}")

@@ -29,7 +29,9 @@ from karsasec.ai.remediation.verification import VerificationResult, Verificatio
 class InvalidStateTransitionError(ValueError):
     """Raised when an illegal lifecycle state transition is attempted."""
 
-    def __init__(self, current_state: RemediationLifecycleState, target_state: RemediationLifecycleState, reason: str = "") -> None:
+    def __init__(
+        self, current_state: RemediationLifecycleState, target_state: RemediationLifecycleState, reason: str = ""
+    ) -> None:
         message = f"Illegal transition from '{current_state}' to '{target_state}'."
         if reason:
             message += f" Reason: {reason}"
@@ -276,7 +278,10 @@ class LifecycleStateMachine:
         self._history: list[LifecycleEvent] = []
 
         now_iso = created_at or datetime.now(UTC).isoformat()
-        evt_id = event_id or f"evt_{hashlib.sha256(f'{finding_id}|init|{initial_state.value}|{now_iso}'.encode()).hexdigest()[:12]}"
+        evt_id = (
+            event_id
+            or f"evt_{hashlib.sha256(f'{finding_id}|init|{initial_state.value}|{now_iso}'.encode()).hexdigest()[:12]}"
+        )
         fp = LifecycleEvent.compute_fingerprint(
             event_id=evt_id,
             finding_id=self._finding_id,
@@ -348,7 +353,10 @@ class LifecycleStateMachine:
             )
 
         now_iso = timestamp or datetime.now(UTC).isoformat()
-        evt_id = event_id or f"evt_{hashlib.sha256(f'{self._finding_id}|{self._current_state.value}|{target_state.value}|{now_iso}'.encode()).hexdigest()[:12]}"
+        evt_id = (
+            event_id
+            or f"evt_{hashlib.sha256(f'{self._finding_id}|{self._current_state.value}|{target_state.value}|{now_iso}'.encode()).hexdigest()[:12]}"
+        )
         fp = LifecycleEvent.compute_fingerprint(
             event_id=evt_id,
             finding_id=self._finding_id,
@@ -401,7 +409,10 @@ class LifecycleStateMachine:
             )
 
         now_iso = timestamp or datetime.now(UTC).isoformat()
-        evt_id = event_id or f"evt_{hashlib.sha256(f'{self._finding_id}|{self._current_state.value}|{target_state.value}|{now_iso}'.encode()).hexdigest()[:12]}"
+        evt_id = (
+            event_id
+            or f"evt_{hashlib.sha256(f'{self._finding_id}|{self._current_state.value}|{target_state.value}|{now_iso}'.encode()).hexdigest()[:12]}"
+        )
         ev_refs = (
             f"proposal:{evidence.proposal_fingerprint}",
             f"src_snap:{evidence.source_snapshot_hash}",

@@ -9,6 +9,7 @@ Design Principles:
         Dom(n) = {n} ∪ ⋂_{p ∈ Pred(n)} Dom(p)
   - Anti-hardcoding: Pure graph and AST structural builder. Zero rule-ID or benchmark strings.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -268,9 +269,7 @@ class CFGBuilder:
                     continue
 
                 # Predecessors that are reachable
-                reachable_preds = [
-                    p for p in cfg.blocks[block_id].predecessors if p in reachable
-                ]
+                reachable_preds = [p for p in cfg.blocks[block_id].predecessors if p in reachable]
 
                 if not reachable_preds:
                     new_dom = {block_id}
@@ -292,7 +291,6 @@ class CFGBuilder:
         processed: list[Any] = []
         i = 0
         n = len(raw_statements)
-
 
         while i < n:
             line = raw_statements[i].strip()
@@ -352,15 +350,22 @@ class CFGBuilder:
                         true_stmts.append(curr_line)
                     i += 1
 
-                processed.append({
-                    "kind": "if",
-                    "condition": cond_str,
-                    "true": self._preprocess_statements(true_stmts),
-                    "false": self._preprocess_statements(false_stmts),
-                    "text": line,
-                })
+                processed.append(
+                    {
+                        "kind": "if",
+                        "condition": cond_str,
+                        "true": self._preprocess_statements(true_stmts),
+                        "false": self._preprocess_statements(false_stmts),
+                        "text": line,
+                    }
+                )
 
-            elif line.startswith("while (") or line.startswith("while(") or line.startswith("for (") or line.startswith("foreach ("):
+            elif (
+                line.startswith("while (")
+                or line.startswith("while(")
+                or line.startswith("for (")
+                or line.startswith("foreach (")
+            ):
                 line_clean = line.rstrip("{").strip()
                 if "(" in line_clean:
                     first_open = line_clean.find("(")
@@ -385,18 +390,22 @@ class CFGBuilder:
                         body_stmts.append(curr_line)
                     i += 1
 
-                processed.append({
-                    "kind": kind_str,
-                    "condition": cond_str,
-                    "body": self._preprocess_statements(body_stmts),
-                    "text": line,
-                })
+                processed.append(
+                    {
+                        "kind": kind_str,
+                        "condition": cond_str,
+                        "body": self._preprocess_statements(body_stmts),
+                        "text": line,
+                    }
+                )
 
             elif any(line.startswith(k) for k in ("exit;", "exit(", "die;", "die(", "return", "throw")):
-                processed.append({
-                    "kind": "exit",
-                    "text": line,
-                })
+                processed.append(
+                    {
+                        "kind": "exit",
+                        "text": line,
+                    }
+                )
                 i += 1
 
             else:
@@ -421,7 +430,9 @@ class CFGBuilder:
             return "if"
         if text in ("while", "for", "foreach") or any(text.startswith(k) for k in ("while", "for", "foreach")):
             return "while"
-        if text in ("exit", "die", "return", "throw") or any(text.startswith(k) for k in ("exit", "die", "return", "throw")):
+        if text in ("exit", "die", "return", "throw") or any(
+            text.startswith(k) for k in ("exit", "die", "return", "throw")
+        ):
             return "exit"
         return "stmt"
 

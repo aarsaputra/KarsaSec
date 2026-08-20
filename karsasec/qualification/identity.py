@@ -15,6 +15,7 @@ Excluded from identity:
 Line-tolerance:
     E12-1 uses exact line matching. Line-range tolerance belongs to E12-2.
 """
+
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -35,8 +36,9 @@ class FindingIdentity:
     Used to match ground-truth cases against actual findings without relying
     on unstable attributes (timestamps, messages, generated IDs).
     """
-    normalized_file: str   # POSIX, lowercased, relative to scan root
-    line: int | None    # 1-indexed. None = file-level match
+
+    normalized_file: str  # POSIX, lowercased, relative to scan root
+    line: int | None  # 1-indexed. None = file-level match
     rule_id: str
 
     @classmethod

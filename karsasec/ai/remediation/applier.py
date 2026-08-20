@@ -293,7 +293,7 @@ class ControlledPatchApplier:
                     pre_apply_snapshot_hash=snap.aggregate_hash,
                     post_apply_snapshot_hash="N/A",
                     rollback_status="NOT_NEEDED",
-                    failure_reason=f"EXACT_HUNK_MATCH_FAILED: Hunk {idx+1} original_text not found in '{hunk.file_path}'.",
+                    failure_reason=f"EXACT_HUNK_MATCH_FAILED: Hunk {idx + 1} original_text not found in '{hunk.file_path}'.",
                 )
                 return res, token
             elif match_count > 1:
@@ -307,7 +307,7 @@ class ControlledPatchApplier:
                     pre_apply_snapshot_hash=snap.aggregate_hash,
                     post_apply_snapshot_hash="N/A",
                     rollback_status="NOT_NEEDED",
-                    failure_reason=f"AMBIGUOUS_HUNK_MATCH: Hunk {idx+1} matches {match_count} occurrences in '{hunk.file_path}'. Exact 1 match required.",
+                    failure_reason=f"AMBIGUOUS_HUNK_MATCH: Hunk {idx + 1} matches {match_count} occurrences in '{hunk.file_path}'. Exact 1 match required.",
                 )
                 return res, token
 

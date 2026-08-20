@@ -7,6 +7,7 @@ Design Principles:
   - Conservative Lattice Join: Fact Intersection (left & right).
   - Anti-hardcoding: Generic value domain without rule-ID or benchmark strings.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -15,6 +16,7 @@ from enum import StrEnum
 
 class ConstraintCategory(StrEnum):
     """Broad taxonomy of semantic constraints."""
+
     TYPE_CONSTRAINT = "TYPE_CONSTRAINT"
     SANITIZATION = "SANITIZATION"
     NORMALIZATION = "NORMALIZATION"
@@ -22,6 +24,7 @@ class ConstraintCategory(StrEnum):
 
 class SemanticConstraint(StrEnum):
     """Specific semantic constraints established by predicates or transformations."""
+
     # Type constraints
     NUMERIC = "NUMERIC"
     INTEGER = "INTEGER"
@@ -46,6 +49,7 @@ class SemanticConstraint(StrEnum):
 
 class TaintState(StrEnum):
     """Lattice states for dataflow provenance."""
+
     UNTAINTED = "UNTAINTED"
     TAINTED = "TAINTED"
     SANITIZED = "SANITIZED"
@@ -79,10 +83,10 @@ def join_constraints(
     return frozenset(set(a) & set(b))
 
 
-
 @dataclass(frozen=True, slots=True)
 class AbstractValue:
     """Immutable representation of a variable's abstract state at a specific program point."""
+
     var_name: str
     var_version: str
     taint: TaintState = TaintState.UNKNOWN
@@ -95,7 +99,9 @@ class AbstractValue:
     def all_constraints(self) -> frozenset[SemanticConstraint]:
         return self.type_facts | self.sanitization_facts
 
-    def with_constraints(self, new_constraints: set[SemanticConstraint] | frozenset[SemanticConstraint]) -> AbstractValue:
+    def with_constraints(
+        self, new_constraints: set[SemanticConstraint] | frozenset[SemanticConstraint]
+    ) -> AbstractValue:
         types = set(self.type_facts)
         sans = set(self.sanitization_facts)
         for c in new_constraints:
@@ -117,6 +123,7 @@ class AbstractValue:
 @dataclass(slots=True)
 class AbstractEnvironment:
     """Symbol environment mapping variables (and versions) to AbstractValues."""
+
     version_counters: dict[str, int] = field(default_factory=dict)
     values: dict[str, AbstractValue] = field(default_factory=dict)
 
@@ -138,7 +145,9 @@ class AbstractEnvironment:
     def set_value(self, value: AbstractValue) -> None:
         self.values[value.var_version] = value
 
-    def assignment_kill(self, var_name: str, new_taint: TaintState = TaintState.TAINTED, prov_id: str = "", prov_desc: str = "") -> AbstractValue:
+    def assignment_kill(
+        self, var_name: str, new_taint: TaintState = TaintState.TAINTED, prov_id: str = "", prov_desc: str = ""
+    ) -> AbstractValue:
         """Kills prior constraints by creating a new version of var_name."""
         curr_counter = self.version_counters.get(var_name, 0) + 1
         self.version_counters[var_name] = curr_counter

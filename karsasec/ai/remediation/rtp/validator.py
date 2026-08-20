@@ -100,7 +100,9 @@ class RTPValidator:
             norm_finding_file = rtp.finding.file_path.replace("\\", "/")
             norm_strat_file = rtp.strategy.target_file.replace("\\", "/")
             if norm_finding_file != norm_strat_file:
-                errors.append(f"Binding mismatch: finding file '{norm_finding_file}' != strategy target '{norm_strat_file}'")
+                errors.append(
+                    f"Binding mismatch: finding file '{norm_finding_file}' != strategy target '{norm_strat_file}'"
+                )
 
         # -------------------------------------------------------------
         # STAGE 5: Provenance DAG Validation
@@ -139,7 +141,9 @@ class RTPValidator:
                     else:
                         warnings.append("Verification status is VERIFIED_FIXED but application status is not APPLIED")
                 else:
-                    warnings.append(f"Verification status '{v.status}' or matching findings {v.matching_findings_count} does not prove fix")
+                    warnings.append(
+                        f"Verification status '{v.status}' or matching findings {v.matching_findings_count} does not prove fix"
+                    )
             else:
                 warnings.append("No verification evidence present in transaction package")
 

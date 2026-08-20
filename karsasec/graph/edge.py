@@ -6,19 +6,23 @@ from enum import Enum
 
 class EdgeType(Enum):
     """Structural and behavioral relationship types between graph nodes."""
+
     CALLS = "CALLS"
     IMPORTS = "IMPORTS"
     DEFINES = "DEFINES"
     INHERITS = "INHERITS"
     DATAFLOW = "DATAFLOW"
 
+
 class ResolutionMechanism(Enum):
     """Method used by the resolver engine to establish an edge."""
+
     AST_NATIVE = "AST_NATIVE"
     ALIAS_TRACKER = "ALIAS_TRACKER"
     REGEX_FALLBACK = "REGEX_FALLBACK"
     DYNAMIC = "DYNAMIC"
     UNRESOLVED = "UNRESOLVED"
+
 
 @dataclass(slots=True)
 class GraphEdge:
@@ -34,6 +38,7 @@ class GraphEdge:
         call_site_id: Node ID of the specific AST call site expression.
         attributes: Additional metadata dictionary.
     """
+
     caller_id: str
     callee_id: str
     edge_type: EdgeType = EdgeType.CALLS

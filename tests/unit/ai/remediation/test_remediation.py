@@ -155,7 +155,10 @@ def test_03_authorization_remediation():
     rca = _create_rca()
 
     strat = RemediationPlanner.plan(finding=finding, verdict=verdict, rca=rca)
-    assert strat.strategy_type in (RemediationStrategyType.ADD_AUTHORIZATION_CHECK, RemediationStrategyType.ADD_INPUT_VALIDATION)
+    assert strat.strategy_type in (
+        RemediationStrategyType.ADD_AUTHORIZATION_CHECK,
+        RemediationStrategyType.ADD_INPUT_VALIDATION,
+    )
 
 
 def test_04_csrf_remediation():
@@ -164,7 +167,10 @@ def test_04_csrf_remediation():
     rca = _create_rca()
 
     strat = RemediationPlanner.plan(finding=finding, verdict=verdict, rca=rca)
-    assert strat.strategy_type in (RemediationStrategyType.ADD_CSRF_PROTECTION, RemediationStrategyType.ADD_INPUT_VALIDATION)
+    assert strat.strategy_type in (
+        RemediationStrategyType.ADD_CSRF_PROTECTION,
+        RemediationStrategyType.ADD_INPUT_VALIDATION,
+    )
 
 
 def test_05_path_traversal_remediation():
@@ -191,7 +197,10 @@ def test_07_unsafe_deserialization_remediation():
     rca = _create_rca()
 
     strat = RemediationPlanner.plan(finding=finding, verdict=verdict, rca=rca)
-    assert strat.strategy_type == RemediationStrategyType.ADD_INPUT_VALIDATION or strat.strategy_type == RemediationStrategyType.REPLACE_UNSAFE_API
+    assert (
+        strat.strategy_type == RemediationStrategyType.ADD_INPUT_VALIDATION
+        or strat.strategy_type == RemediationStrategyType.REPLACE_UNSAFE_API
+    )
 
 
 def test_08_insecure_config_remediation():
@@ -200,7 +209,10 @@ def test_08_insecure_config_remediation():
     rca = _create_rca()
 
     strat = RemediationPlanner.plan(finding=finding, verdict=verdict, rca=rca)
-    assert strat.strategy_type in (RemediationStrategyType.FIX_INSECURE_CONFIGURATION, RemediationStrategyType.ADD_INPUT_VALIDATION)
+    assert strat.strategy_type in (
+        RemediationStrategyType.FIX_INSECURE_CONFIGURATION,
+        RemediationStrategyType.ADD_INPUT_VALIDATION,
+    )
 
 
 def test_09_secret_exposure_remediation():
@@ -323,7 +335,10 @@ def test_22_prompt_injection_in_comments():
 
     agent = RemediationAgent()
     strat, prop = agent.plan_and_propose(finding=finding, rca=rca)
-    assert strat.strategy_type != RemediationStrategyType.MANUAL_REVIEW_REQUIRED or prop.validation_status != PatchValidationStatus.INVALID
+    assert (
+        strat.strategy_type != RemediationStrategyType.MANUAL_REVIEW_REQUIRED
+        or prop.validation_status != PatchValidationStatus.INVALID
+    )
     assert "delete finding" not in prop.unified_diff
 
 

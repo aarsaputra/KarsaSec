@@ -1,6 +1,5 @@
 """Comprehensive unit test suite for ASTMatcher, PredicatePipeline, and RuleMatch models."""
 
-
 import pytest
 
 from karsasec.core.plugin import SymbolTable
@@ -35,6 +34,7 @@ def create_dummy_rule(
         output=RuleOutput(severity=Severity.HIGH, confidence="CONFIDENT", message="Test match", remediation="Fix"),
     )
 
+
 def test_frozen_rule_match_immutability() -> None:
     match_res = RuleMatch(
         matched=True,
@@ -49,16 +49,20 @@ def test_frozen_rule_match_immutability() -> None:
     with pytest.raises(AttributeError):
         match_res.matched = False  # Frozen dataclass check
 
+
 def test_language_mismatch_short_circuit() -> None:
     rule = create_dummy_rule(language=LanguageEnum.PYTHON)
     node = ASTNode(node_id="node_1", node_type="call_expression")
-    context = VisitorContext(file_node=FileNode(node_id="f1", node_type="file", language="javascript"), language="javascript")
+    context = VisitorContext(
+        file_node=FileNode(node_id="f1", node_type="file", language="javascript"), language="javascript"
+    )
 
     matcher = ASTMatcher()
     result = matcher.match(node, rule, context)
 
     assert result.matched is False
     assert matcher.statistics.short_circuit > 0
+
 
 def test_node_mismatch_short_circuit() -> None:
     rule = create_dummy_rule(node_types=["call_expression"])
@@ -70,6 +74,7 @@ def test_node_mismatch_short_circuit() -> None:
 
     assert result.matched is False
     assert matcher.statistics.short_circuit > 0
+
 
 def test_symbol_success() -> None:
     rule = create_dummy_rule(symbol_triggers=["os.system"])
@@ -83,6 +88,7 @@ def test_symbol_success() -> None:
     assert result.matched is True
     assert result.matched_symbol == "os.system"
 
+
 def test_symbol_fail() -> None:
     rule = create_dummy_rule(symbol_triggers=["os.system"])
     src = b"print('hello')"
@@ -93,6 +99,7 @@ def test_symbol_fail() -> None:
     result = matcher.match(node, rule, context, source_bytes=src)
 
     assert result.matched is False
+
 
 def test_regex_success() -> None:
     rule = create_dummy_rule(pattern=r"eval\(.*\)")
@@ -106,6 +113,7 @@ def test_regex_success() -> None:
     assert result.matched is True
     assert result.matched_text == "eval(user_input)"
 
+
 def test_regex_fail() -> None:
     rule = create_dummy_rule(pattern=r"eval\(.*\)")
     src = b"safe_func()"
@@ -116,6 +124,7 @@ def test_regex_fail() -> None:
     result = matcher.match(node, rule, context, source_bytes=src)
 
     assert result.matched is False
+
 
 def test_compiled_regex_optimization() -> None:
     rule = create_dummy_rule(pattern=r"exec\(.*\)")
@@ -132,6 +141,7 @@ def test_compiled_regex_optimization() -> None:
     result = matcher.match(node, compiled, context, source_bytes=src)
     assert result.matched is True
 
+
 def test_matcher_statistics_counters() -> None:
     rule = create_dummy_rule(symbol_triggers=["exec"])
     src = b"exec(code)"
@@ -146,6 +156,7 @@ def test_matcher_statistics_counters() -> None:
     assert stats_dict["rules_checked"] == 1
     assert stats_dict["predicates_checked"] > 0
 
+
 def test_compatibility_valid_and_invalid() -> None:
     valid_rule = create_dummy_rule(version="1.0")
     check_rule_compatibility(valid_rule)  # Should not raise exception
@@ -153,6 +164,7 @@ def test_compatibility_valid_and_invalid() -> None:
     invalid_rule = create_dummy_rule(version="99.0")
     with pytest.raises(RuleIncompatibleError):
         check_rule_compatibility(invalid_rule)
+
 
 def test_empty_predicate_handling() -> None:
     rule = create_dummy_rule()  # No symbols, no pattern
@@ -164,10 +176,12 @@ def test_empty_predicate_handling() -> None:
 
     assert result.matched is True  # Matches because node_type and language match
 
+
 def test_invalid_regex_pattern_compilation() -> None:
     rule = create_dummy_rule(pattern=r"[invalid regex")
     with pytest.raises(ValueError, match="Invalid regex pattern"):
         rule_compiler.compile(rule)
+
 
 def test_symbol_table_import_lookup() -> None:
     rule = create_dummy_rule(symbol_triggers=["subprocess"])

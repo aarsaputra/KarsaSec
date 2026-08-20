@@ -3,6 +3,7 @@
 Structural constant evaluation over AST/source expressions and symbol scope tables.
 Establishes value provenance and constant folding prior to dataflow and taint verification.
 """
+
 from __future__ import annotations
 
 import re
@@ -17,6 +18,7 @@ class LatticeKind(StrEnum):
     Safety Invariant: UNKNOWN != SAFE.
     Only positively proven static values resolve to CONSTANT.
     """
+
     CONSTANT = "CONSTANT"
     DYNAMIC = "DYNAMIC"
     UNKNOWN = "UNKNOWN"
@@ -25,6 +27,7 @@ class LatticeKind(StrEnum):
 @dataclass(frozen=True, slots=True)
 class LatticeValue:
     """Lattice state object representing expression value provenance."""
+
     kind: LatticeKind
     literal_value: str = ""
     provenance_node_id: str = ""
@@ -41,15 +44,33 @@ class LatticeValue:
 
 
 # Language-level dynamic sources (PHP superglobals and input streams)
-_DYNAMIC_SOURCES: frozenset[str] = frozenset({
-    "$_GET", "$_POST", "$_REQUEST", "$_COOKIE", "$_FILES", "$_SERVER", "$_ENV",
-    "$HTTP_RAW_POST_DATA", "php://input", "php://stdin",
-})
+_DYNAMIC_SOURCES: frozenset[str] = frozenset(
+    {
+        "$_GET",
+        "$_POST",
+        "$_REQUEST",
+        "$_COOKIE",
+        "$_FILES",
+        "$_SERVER",
+        "$_ENV",
+        "$HTTP_RAW_POST_DATA",
+        "php://input",
+        "php://stdin",
+    }
+)
 
 # Magic constants
-_MAGIC_CONSTANTS: frozenset[str] = frozenset({
-    "__DIR__", "__FILE__", "__LINE__", "__FUNCTION__", "__CLASS__", "__METHOD__", "__NAMESPACE__",
-})
+_MAGIC_CONSTANTS: frozenset[str] = frozenset(
+    {
+        "__DIR__",
+        "__FILE__",
+        "__LINE__",
+        "__FUNCTION__",
+        "__CLASS__",
+        "__METHOD__",
+        "__NAMESPACE__",
+    }
+)
 
 # Regex patterns for literals
 _RE_STRING_LITERAL = re.compile(r"""^(['"])(?:(?!\1).)*\1$""")
@@ -82,10 +103,7 @@ class ConstantEvaluator:
         # 2. Extract assignment statements (e.g. $var = expr;)
         if language == "php":
             # Match variable assignments: $var = expr;
-            assign_pattern = re.compile(
-                r'(\$[a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);',
-                re.DOTALL
-            )
+            assign_pattern = re.compile(r"(\$[a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);", re.DOTALL)
 
             # Track assignment counts to handle loop reassignments and branch divergence
             assign_counts: dict[str, int] = {}
@@ -107,10 +125,7 @@ class ConstantEvaluator:
                     all_same = True
                     for expr in expr_list[1:]:
                         next_val = self.evaluate_expression(expr, source_text, env, language=language)
-                        if (
-                            first_val.kind != next_val.kind
-                            or first_val.literal_value != next_val.literal_value
-                        ):
+                        if first_val.kind != next_val.kind or first_val.literal_value != next_val.literal_value:
                             all_same = False
                             break
 
@@ -172,7 +187,7 @@ class ConstantEvaluator:
         if _RE_STRING_LITERAL.match(expr):
             # Double-quoted strings in PHP may contain interpolated variables ($var or {$var})
             if expr.startswith('"') and language == "php":
-                if re.search(r'\{?\$[a-zA-Z_][a-zA-Z0-9_]*\}?', expr):
+                if re.search(r"\{?\$[a-zA-Z_][a-zA-Z0-9_]*\}?", expr):
                     return LatticeValue(
                         kind=LatticeKind.DYNAMIC,
                         provenance_description=f"Interpolated double-quoted string '{expr[:40]}'",
@@ -197,7 +212,7 @@ class ConstantEvaluator:
             return self._eval_php_concat(expr, source_text, local_env, depth)
 
         # 6. Single Variable lookup in env ($var)
-        if language == "php" and re.match(r'^\$[a-zA-Z_][a-zA-Z0-9_]*$', expr):
+        if language == "php" and re.match(r"^\$[a-zA-Z_][a-zA-Z0-9_]*$", expr):
             if expr in local_env:
                 return local_env[expr]
             # Check if variable is a dynamic superglobal or unknown
@@ -212,7 +227,7 @@ class ConstantEvaluator:
             )
 
         # 7. Function call (e.g. strlen("static") or some_func())
-        fn_match = re.match(r'^([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*)\)$', expr, re.DOTALL)
+        fn_match = re.match(r"^([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*)\)$", expr, re.DOTALL)
         if fn_match:
             fn_name = fn_match.group(1).lower()
             raw_args = fn_match.group(2).strip()

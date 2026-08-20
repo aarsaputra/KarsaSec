@@ -12,6 +12,7 @@ from typing import Any
 @dataclass
 class ASTNodeWrapper:
     """Wrapper around raw AST nodes providing unified node accessors."""
+
     raw_node: Any
     node_type: str
     file_path: str = ""

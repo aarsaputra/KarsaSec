@@ -37,7 +37,8 @@ class ExtractorRegistry:
         """Resolves extractors supporting specified framework, ordered by priority."""
         target_fw = framework.upper()
         matched = [
-            ext for ext in self._extractors.values()
+            ext
+            for ext in self._extractors.values()
             if "GENERIC" in ext.supported_frameworks or target_fw in [f.upper() for f in ext.supported_frameworks]
         ]
         return sorted(matched, key=lambda e: e.priority)
@@ -45,10 +46,7 @@ class ExtractorRegistry:
     def resolve_by_capability(self, capability: ExtractorCapability | str) -> Sequence[SemanticExtractor]:
         """Resolves extractors supporting specified capability, ordered by priority."""
         target_cap = ExtractorCapability(capability) if isinstance(capability, str) else capability
-        matched = [
-            ext for ext in self._extractors.values()
-            if target_cap in ext.capabilities
-        ]
+        matched = [ext for ext in self._extractors.values() if target_cap in ext.capabilities]
         return sorted(matched, key=lambda e: e.priority)
 
     def list(self) -> Sequence[SemanticExtractor]:

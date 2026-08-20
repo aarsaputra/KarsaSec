@@ -16,13 +16,20 @@ class FlaskExtensionVisitor:
     """Visits Call AST nodes to inspect extension middleware instantiations."""
 
     KNOWN_EXTENSIONS = {
-        "CORS", "FlaskCors",
-        "Limiter", "FlaskLimiter",
-        "LoginManager", "FlaskLogin",
-        "Cache", "FlaskCache",
-        "CSRFProtect", "FlaskWTF",
-        "Session", "FlaskSession",
-        "Bcrypt", "Talisman",
+        "CORS",
+        "FlaskCors",
+        "Limiter",
+        "FlaskLimiter",
+        "LoginManager",
+        "FlaskLogin",
+        "Cache",
+        "FlaskCache",
+        "CSRFProtect",
+        "FlaskWTF",
+        "Session",
+        "FlaskSession",
+        "Bcrypt",
+        "Talisman",
     }
 
     def __init__(self, state: FlaskMiddlewareState) -> None:
@@ -56,14 +63,18 @@ class FlaskExtensionVisitor:
         # Case 1: Direct instantiation e.g. CORS(app)
         if isinstance(call.func, ast.Name):
             func_name = call.func.id
-            if func_name in self.KNOWN_EXTENSIONS or any(k in func_name for k in ("CORS", "Limiter", "Login", "Cache", "CSRF")):
+            if func_name in self.KNOWN_EXTENSIONS or any(
+                k in func_name for k in ("CORS", "Limiter", "Login", "Cache", "CSRF")
+            ):
                 app_arg = self._resolve_arg(call.args[0]) if call.args else "app"
                 return func_name, func_name, app_arg
 
         # Case 2: Attribute constructor e.g. flask_cors.CORS(app)
         elif isinstance(call.func, ast.Attribute):
             attr_name = call.func.attr
-            if attr_name in self.KNOWN_EXTENSIONS or any(k in attr_name for k in ("CORS", "Limiter", "Login", "Cache", "CSRF")):
+            if attr_name in self.KNOWN_EXTENSIONS or any(
+                k in attr_name for k in ("CORS", "Limiter", "Login", "Cache", "CSRF")
+            ):
                 app_arg = self._resolve_arg(call.args[0]) if call.args else "app"
                 mod_name = self._resolve_arg(call.func.value)
                 return attr_name, f"{mod_name}.{attr_name}", app_arg

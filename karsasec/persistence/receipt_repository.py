@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
-from typing import Generator, Optional
+from collections.abc import Generator
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -22,6 +22,7 @@ from karsasec.persistence.models import ReceiptModel
 # ---------------------------------------------------------------------------
 # Domain DTO for receipt data (lightweight, no source code)
 # ---------------------------------------------------------------------------
+
 
 class ReceiptRecord:
     """Privacy-safe receipt record stored in and returned from the repository."""
@@ -95,6 +96,7 @@ def _model_to_record(model: ReceiptModel) -> ReceiptRecord:
 # Abstract contract
 # ---------------------------------------------------------------------------
 
+
 class ReceiptRepository(ABC):
     """Abstract base for receipt persistence."""
 
@@ -103,17 +105,18 @@ class ReceiptRepository(ABC):
         """Persist a receipt. Write-once: raises if receipt_fingerprint already exists."""
 
     @abstractmethod
-    def get_receipt(self, receipt_id: str) -> Optional[ReceiptRecord]:
+    def get_receipt(self, receipt_id: str) -> ReceiptRecord | None:
         """Retrieve a receipt by receipt_id."""
 
     @abstractmethod
-    def get_by_transaction(self, transaction_id: str) -> Optional[ReceiptRecord]:
+    def get_by_transaction(self, transaction_id: str) -> ReceiptRecord | None:
         """Retrieve the receipt associated with a transaction."""
 
 
 # ---------------------------------------------------------------------------
 # InMemory fallback (tests / CI without Postgres)
 # ---------------------------------------------------------------------------
+
 
 class InMemoryReceiptRepository(ReceiptRepository):
     def __init__(self) -> None:
@@ -128,16 +131,17 @@ class InMemoryReceiptRepository(ReceiptRepository):
         self._by_fingerprint[record.receipt_fingerprint] = record
         self._by_txn[record.transaction_id] = record
 
-    def get_receipt(self, receipt_id: str) -> Optional[ReceiptRecord]:
+    def get_receipt(self, receipt_id: str) -> ReceiptRecord | None:
         return self._by_id.get(receipt_id)
 
-    def get_by_transaction(self, transaction_id: str) -> Optional[ReceiptRecord]:
+    def get_by_transaction(self, transaction_id: str) -> ReceiptRecord | None:
         return self._by_txn.get(transaction_id)
 
 
 # ---------------------------------------------------------------------------
 # Postgres implementation
 # ---------------------------------------------------------------------------
+
 
 class PostgresReceiptRepository(ReceiptRepository):
     """Production PostgreSQL implementation of ReceiptRepository.
@@ -155,9 +159,7 @@ class PostgresReceiptRepository(ReceiptRepository):
     def save_receipt(self, record: ReceiptRecord) -> None:
         with self._session() as session:
             existing = session.scalar(
-                select(ReceiptModel).where(
-                    ReceiptModel.receipt_fingerprint == record.receipt_fingerprint
-                )
+                select(ReceiptModel).where(ReceiptModel.receipt_fingerprint == record.receipt_fingerprint)
             )
             if existing:
                 raise ValueError(
@@ -180,14 +182,12 @@ class PostgresReceiptRepository(ReceiptRepository):
             )
             session.add(model)
 
-    def get_receipt(self, receipt_id: str) -> Optional[ReceiptRecord]:
+    def get_receipt(self, receipt_id: str) -> ReceiptRecord | None:
         with self._session() as session:
-            model = session.scalar(
-                select(ReceiptModel).where(ReceiptModel.receipt_id == receipt_id)
-            )
+            model = session.scalar(select(ReceiptModel).where(ReceiptModel.receipt_id == receipt_id))
             return _model_to_record(model) if model else None
 
-    def get_by_transaction(self, transaction_id: str) -> Optional[ReceiptRecord]:
+    def get_by_transaction(self, transaction_id: str) -> ReceiptRecord | None:
         with self._session() as session:
             model = session.scalar(
                 select(ReceiptModel)

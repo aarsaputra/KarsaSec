@@ -21,6 +21,7 @@ logger = logging.getLogger("karsasec.framework.detector")
 @dataclass(frozen=True)
 class FrameworkDetectionResult:
     """Detailed result of deterministic framework detection."""
+
     framework: str
     version: str = "1.0.0"
     language: str = "Generic"
@@ -92,7 +93,6 @@ class FrameworkDetector:
         v_str = str(best.version) if best.version else "1.0.0"
 
         return FrameworkDetectionResult(
-
             framework=f_type_str,
             version=v_str,
             language=lang,
@@ -110,7 +110,15 @@ class FrameworkDetector:
         # Gather manifest files
         manifest_files: list[Path] = []
         if project_path.is_dir():
-            for m_name in ["requirements.txt", "pyproject.toml", "package.json", "composer.json", "go.mod", "Cargo.toml", "Pipfile"]:
+            for m_name in [
+                "requirements.txt",
+                "pyproject.toml",
+                "package.json",
+                "composer.json",
+                "go.mod",
+                "Cargo.toml",
+                "Pipfile",
+            ]:
                 m_file = project_path / m_name
                 if m_file.exists():
                     manifest_files.append(m_file)

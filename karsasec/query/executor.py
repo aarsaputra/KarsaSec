@@ -65,7 +65,9 @@ class QueryExecutor:
             if target_label and hasattr(NodeType, target_label):
                 return index.get_by_type(NodeType[target_label])
             if target_label:
-                return [n for n in graph.nodes.values() if target_label in n.labels or n.node_type.value == target_label]
+                return [
+                    n for n in graph.nodes.values() if target_label in n.labels or n.node_type.value == target_label
+                ]
             return list(graph.nodes.values())
 
         if not plan.children:
@@ -88,7 +90,9 @@ class QueryExecutor:
 
             for src in input_nodes:
                 context.check_timeout()
-                edges = graph.get_outgoing_edges(src.id) if direction == "OUTGOING" else graph.get_incoming_edges(src.id)
+                edges = (
+                    graph.get_outgoing_edges(src.id) if direction == "OUTGOING" else graph.get_incoming_edges(src.id)
+                )
                 context.metrics.edges_traversed += len(edges)
 
                 for e in edges:
@@ -97,7 +101,11 @@ class QueryExecutor:
                     tgt_id = e.target_id if direction == "OUTGOING" else e.source_id
                     tgt_node = graph.nodes.get(tgt_id)
                     if tgt_node:
-                        if target_type and target_type not in tgt_node.labels and tgt_node.node_type.value != target_type:
+                        if (
+                            target_type
+                            and target_type not in tgt_node.labels
+                            and tgt_node.node_type.value != target_type
+                        ):
                             continue
                         result.append(tgt_node)
 

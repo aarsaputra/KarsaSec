@@ -13,6 +13,7 @@ IMPORTANT: This test does NOT hard-code precision/recall thresholds.
 E12-1 establishes the baseline measurement infrastructure only.
 Thresholds belong to E12-4.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -57,6 +58,7 @@ class TestBaselineRuleIds:
 
     def test_all_rule_ids_exist(self, benchmark) -> None:
         from karsasec.rules.loader import YAMLRuleLoader
+
         loader = YAMLRuleLoader()
         try:
             all_rules = loader.load_directory(RULES_DIR)
@@ -78,6 +80,7 @@ class TestBaselineQualification:
         if not DVWA_ROOT.exists():
             pytest.skip("DVWA not at expected path — cannot run qualification")
         from karsasec.qualification.engine import QualificationEngine
+
         # Run a lightweight mock qualification (no actual scan) to verify determinism
         engine = QualificationEngine()
         return engine.qualify(benchmark, [], DVWA_ROOT)
@@ -88,9 +91,7 @@ class TestBaselineQualification:
         assert result.total_cases == len(benchmark.cases)
 
     def test_metrics_deterministic(self, benchmark) -> None:
-        engine = __import__(
-            "karsasec.qualification.engine", fromlist=["QualificationEngine"]
-        ).QualificationEngine()
+        engine = __import__("karsasec.qualification.engine", fromlist=["QualificationEngine"]).QualificationEngine()
         r1 = engine.qualify(benchmark, [], DVWA_ROOT if DVWA_ROOT.exists() else Path("/tmp"))
         r2 = engine.qualify(benchmark, [], DVWA_ROOT if DVWA_ROOT.exists() else Path("/tmp"))
         assert r1.precision == r2.precision
@@ -100,9 +101,7 @@ class TestBaselineQualification:
 
     def test_all_fn_with_no_findings_is_expected(self, benchmark) -> None:
         """With zero findings, all TP cases become FN. Verifies classification logic."""
-        engine = __import__(
-            "karsasec.qualification.engine", fromlist=["QualificationEngine"]
-        ).QualificationEngine()
+        engine = __import__("karsasec.qualification.engine", fromlist=["QualificationEngine"]).QualificationEngine()
         scan_root = DVWA_ROOT if DVWA_ROOT.exists() else Path("/tmp")
         result = engine.qualify(benchmark, [], scan_root)
         expected_fn = len(benchmark.tp_cases)
@@ -110,9 +109,7 @@ class TestBaselineQualification:
 
     def test_all_tn_correct_with_no_findings(self, benchmark) -> None:
         """With zero findings, all TN cases are correctly classified."""
-        engine = __import__(
-            "karsasec.qualification.engine", fromlist=["QualificationEngine"]
-        ).QualificationEngine()
+        engine = __import__("karsasec.qualification.engine", fromlist=["QualificationEngine"]).QualificationEngine()
         scan_root = DVWA_ROOT if DVWA_ROOT.exists() else Path("/tmp")
         result = engine.qualify(benchmark, [], scan_root)
         expected_tn = len(benchmark.tn_cases)

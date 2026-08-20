@@ -36,9 +36,17 @@ class WorkerRuntime(ABC):
 class CustomWorkerRuntime(WorkerRuntime):
     """Custom polling worker loop utilizing TaskQueue and TaskRepository."""
 
-    def __init__(self, queue: TaskQueue, repository: TaskRepository) -> None:
+    def __init__(
+        self,
+        queue: TaskQueue,
+        repository: TaskRepository,
+        worker_id: str = "worker-default",
+        fencing_token: int = 1,
+    ) -> None:
         self.queue = queue
         self.repository = repository
+        self.worker_id = worker_id
+        self.fencing_token = fencing_token
         self._stop_requested = False
 
     def start(self) -> None:
@@ -71,8 +79,14 @@ class CustomWorkerRuntime(WorkerRuntime):
             return
 
         try:
-            # Transition task to RUNNING
-            self.repository.update_task(task_id, state=TaskState.RUNNING)
+            # Transition task to RUNNING via assign_task or update_task
+            if hasattr(self.repository, "assign_task"):
+                try:
+                    task = self.repository.assign_task(task_id, self.worker_id)
+                except Exception:
+                    self.repository.update_task(task_id, state=TaskState.RUNNING)
+            else:
+                self.repository.update_task(task_id, state=TaskState.RUNNING)
 
             engine = RemediationLifecycleEngine(repository_root=Path("."))
 
@@ -105,38 +119,59 @@ class CustomWorkerRuntime(WorkerRuntime):
             validation_result = RTPValidator.validate(rtp)
 
             # Derive receipt
-            receipt = VerificationReceipt.from_rtp(
-                rtp=rtp, validation_result=validation_result
-            )
+            receipt = VerificationReceipt.from_rtp(rtp=rtp, validation_result=validation_result)
 
-            # Task succeeded -> transition to COMPLETED (L7 status updated from validation_result)
-            self.repository.update_task(
-                task_id,
-                state=TaskState.COMPLETED,
-                receipt_id=receipt.receipt_id,
-                receipt_fingerprint=receipt.receipt_fingerprint,
-                security_verification_status=str(
-                    validation_result.security_verification_status
-                ),
-            )
+            # Task succeeded -> transition to COMPLETED via complete_task
+            try:
+                self.repository.complete_task(
+                    task_id=task_id,
+                    expected_lease_version=task.lease_version,
+                    worker_id=self.worker_id,
+                    worker_fencing_token=self.fencing_token,
+                    receipt_id=receipt.receipt_id,
+                    receipt_fingerprint=receipt.receipt_fingerprint,
+                    security_verification_status=str(validation_result.security_verification_status),
+                )
+            except Exception:
+                self.repository.update_task(
+                    task_id,
+                    state=TaskState.COMPLETED,
+                    receipt_id=receipt.receipt_id,
+                    receipt_fingerprint=receipt.receipt_fingerprint,
+                    security_verification_status=str(validation_result.security_verification_status),
+                )
             self.queue.acknowledge(task_id)
 
         except Exception as exc:
-            # Retry policy logic
-            if task.attempts < task.max_attempts:
-                # Transition RUNNING -> FAILED_RETRYABLE -> QUEUED
-                self.repository.update_task(
-                    task_id,
-                    state=TaskState.FAILED_RETRYABLE,
-                    error_message=str(exc),
-                )
-                self.repository.update_task(task_id, state=TaskState.QUEUED)
-                self.queue.requeue(task_id)
+            # Failure recording via record_execution_failure / atomic authority
+            if hasattr(self.repository, "record_execution_failure"):
+                try:
+                    self.repository.record_execution_failure(
+                        task_id=task_id,
+                        expected_lease_version=task.lease_version,
+                        worker_id=self.worker_id,
+                        worker_fencing_token=self.fencing_token,
+                        error_message=str(exc),
+                    )
+                except Exception:
+                    pass
+                if task.attempts < task.max_attempts:
+                    self.queue.requeue(task_id)
+                else:
+                    self.queue.acknowledge(task_id)
             else:
-                self.repository.update_task(
-                    task_id, state=TaskState.FAILED, error_message=str(exc)
-                )
-                self.queue.acknowledge(task_id)
+                # InMemory fallback
+                if task.attempts < task.max_attempts:
+                    self.repository.update_task(
+                        task_id,
+                        state=TaskState.FAILED_RETRYABLE,
+                        error_message=str(exc),
+                    )
+                    self.repository.update_task(task_id, state=TaskState.QUEUED)
+                    self.queue.requeue(task_id)
+                else:
+                    self.repository.update_task(task_id, state=TaskState.FAILED, error_message=str(exc))
+                    self.queue.acknowledge(task_id)
 
     def recover_stale_tasks(self, current_time: float | None = None) -> None:
         """Identifies active tasks whose lease has expired, then requeues them."""
@@ -150,24 +185,40 @@ class CustomWorkerRuntime(WorkerRuntime):
                 task = self.repository.get_task(task_id)
                 if task and task.state == TaskState.RUNNING:
                     if task.is_lease_expired(current_time):
-                        # Lease has expired, trigger retry pipeline
-                        if task.attempts < task.max_attempts:
-                            self.repository.update_task(
-                                task_id,
-                                state=TaskState.FAILED_RETRYABLE,
-                                error_message="Lease expired",
-                            )
-                            self.repository.update_task(
-                                task_id, state=TaskState.QUEUED
-                            )
-                            self.queue.requeue(task_id)
+                        if hasattr(self.repository, "atomic_transition"):
+                            try:
+                                target_state = (
+                                    TaskState.QUEUED if task.attempts < task.max_attempts else TaskState.FAILED
+                                )
+                                self.repository.atomic_transition(
+                                    task_id=task_id,
+                                    expected_lease_version=task.lease_version,
+                                    expected_states=[TaskState.RUNNING],
+                                    new_state=target_state,
+                                    error_message="Lease expired",
+                                )
+                                if target_state == TaskState.QUEUED:
+                                    self.queue.requeue(task_id)
+                                else:
+                                    self.queue.acknowledge(task_id)
+                            except Exception:
+                                pass
                         else:
-                            self.repository.update_task(
-                                task_id,
-                                state=TaskState.FAILED,
-                                error_message="Lease expired, max attempts reached",
-                            )
-                            self.queue.acknowledge(task_id)
+                            if task.attempts < task.max_attempts:
+                                self.repository.update_task(
+                                    task_id,
+                                    state=TaskState.FAILED_RETRYABLE,
+                                    error_message="Lease expired",
+                                )
+                                self.repository.update_task(task_id, state=TaskState.QUEUED)
+                                self.queue.requeue(task_id)
+                            else:
+                                self.repository.update_task(
+                                    task_id,
+                                    state=TaskState.FAILED,
+                                    error_message="Lease expired, max attempts reached",
+                                )
+                                self.queue.acknowledge(task_id)
 
 
 class CeleryWorkerRuntime(WorkerRuntime):

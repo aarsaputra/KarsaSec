@@ -52,7 +52,10 @@ class PatchProposalEngine:
                 original_source = ""
 
         # 3. Handle MANUAL_REVIEW_REQUIRED or UNKNOWN_REMEDIATION strategies
-        if strategy.strategy_type in (RemediationStrategyType.MANUAL_REVIEW_REQUIRED, RemediationStrategyType.UNKNOWN_REMEDIATION):
+        if strategy.strategy_type in (
+            RemediationStrategyType.MANUAL_REVIEW_REQUIRED,
+            RemediationStrategyType.UNKNOWN_REMEDIATION,
+        ):
             proposal_id = f"proposal_{strategy.finding_id}"
             fp = PatchProposal.compute_fingerprint(
                 finding_id=strategy.finding_id,

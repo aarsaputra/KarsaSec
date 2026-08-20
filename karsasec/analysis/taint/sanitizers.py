@@ -40,7 +40,9 @@ class SanitizerRegistry:
     }
 
     def __init__(self) -> None:
-        self.sanitizers: dict[TaintCategory, list[str]] = {cat: list(pats) for cat, pats in self.DEFAULT_SANITIZERS.items()}
+        self.sanitizers: dict[TaintCategory, list[str]] = {
+            cat: list(pats) for cat, pats in self.DEFAULT_SANITIZERS.items()
+        }
 
     def register_sanitizer(self, category: TaintCategory, pattern: str) -> None:
         if category not in self.sanitizers:

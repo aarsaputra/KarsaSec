@@ -9,6 +9,7 @@ import threading
 
 class QueueCapacityExceededError(Exception):
     """Raised when queue saturation occurs under heavy backpressure."""
+
     pass
 
 

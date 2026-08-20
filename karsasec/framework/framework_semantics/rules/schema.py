@@ -12,6 +12,7 @@ from karsasec.rules.enums import Confidence, Severity
 @dataclass(frozen=True)
 class GraphRuleTraversal:
     """Resource bounds and depth limits for graph rule traversal."""
+
     max_depth: int = 1
     max_nodes_visited: int = 100
     max_edges_examined: int = 200
@@ -20,6 +21,7 @@ class GraphRuleTraversal:
 @dataclass(frozen=True)
 class GraphRuleMatch:
     """Result of evaluating a GraphSecurityRule against a target node."""
+
     matched: bool
     primary_node_id: str
     evidence_node_ids: tuple[str, ...] = ()
@@ -30,6 +32,7 @@ class GraphRuleMatch:
 @dataclass(frozen=True)
 class GraphRuleOutput:
     """Finding metadata produced when a graph rule matches."""
+
     severity: Severity
     confidence: Confidence
     message: str
@@ -39,6 +42,7 @@ class GraphRuleOutput:
 @dataclass(frozen=True)
 class GraphSecurityRule:
     """Immutable declarative security rule evaluated against FrameworkSemanticGraph."""
+
     id: str
     version: str
     framework: str

@@ -13,8 +13,6 @@ Algorithm (O(n) where n = number of active tasks):
 
 from __future__ import annotations
 
-import time
-from datetime import datetime, UTC, timedelta
 from typing import TYPE_CHECKING
 
 from karsasec.persistence.audit_repository import AuditEvent, AuditEventType
@@ -39,7 +37,7 @@ class StartupRecoveryEngine:
         self,
         task_repository: PostgresTaskRepository,
         queue: TaskQueue,
-        audit_repository: "AuditRepository | None" = None,
+        audit_repository: AuditRepository | None = None,
         lease_timeout_seconds: int = 300,
     ) -> None:
         self._repo = task_repository
@@ -54,57 +52,61 @@ class StartupRecoveryEngine:
         """
         recovered_ids: list[str] = []
 
-        expired_tasks = self._repo.find_expired_running_tasks(
-            lease_timeout_seconds=self._lease_timeout
-        )
+        expired_tasks = self._repo.find_expired_running_tasks(lease_timeout_seconds=self._lease_timeout)
 
         for task in expired_tasks:
             task_id = task.task_id
             try:
                 if task.attempts < task.max_attempts:
-                    # RUNNING → FAILED_RETRYABLE → QUEUED
-                    self._repo.update_task(
-                        task_id,
-                        state=TaskState.FAILED_RETRYABLE,
+                    # RUNNING → QUEUED atomically with lease_version bump & cleared worker assignment
+                    self._repo.atomic_transition(
+                        task_id=task_id,
+                        expected_lease_version=task.lease_version,
+                        expected_states=[TaskState.RUNNING],
+                        new_state=TaskState.QUEUED,
                         error_message="Recovered: lease expired at startup",
                     )
-                    self._repo.update_task(task_id, state=TaskState.QUEUED)
                     self._queue.enqueue(task_id)
                     recovered_ids.append(task_id)
 
                     if self._audit:
-                        self._audit.append(AuditEvent(
-                            task_id=task_id,
-                            event_type=AuditEventType.TASK_RECOVERED,
-                            details={
-                                "reason": "lease_expired_at_startup",
-                                "attempts": task.attempts,
-                                "max_attempts": task.max_attempts,
-                            },
-                        ))
+                        self._audit.append(
+                            AuditEvent(
+                                task_id=task_id,
+                                event_type=AuditEventType.TASK_RECOVERED,
+                                details={
+                                    "reason": "lease_expired_at_startup",
+                                    "attempts": task.attempts,
+                                    "max_attempts": task.max_attempts,
+                                },
+                            )
+                        )
                 else:
                     # Max retries exhausted → mark FAILED permanently
-                    self._repo.update_task(
-                        task_id,
-                        state=TaskState.FAILED,
+                    self._repo.atomic_transition(
+                        task_id=task_id,
+                        expected_lease_version=task.lease_version,
+                        expected_states=[TaskState.RUNNING],
+                        new_state=TaskState.FAILED,
                         error_message="Lease expired at startup; max attempts exhausted",
                     )
 
                     if self._audit:
-                        self._audit.append(AuditEvent(
-                            task_id=task_id,
-                            event_type=AuditEventType.TASK_FAILED,
-                            details={
-                                "reason": "lease_expired_at_startup_max_retries",
-                                "attempts": task.attempts,
-                            },
-                        ))
+                        self._audit.append(
+                            AuditEvent(
+                                task_id=task_id,
+                                event_type=AuditEventType.TASK_FAILED,
+                                details={
+                                    "reason": "lease_expired_at_startup_max_retries",
+                                    "attempts": task.attempts,
+                                },
+                            )
+                        )
 
             except Exception as exc:
                 # Log but do not raise — recovery must be best-effort
                 import logging
-                logging.getLogger(__name__).error(
-                    "Recovery failed for task %s: %s", task_id, exc
-                )
+
+                logging.getLogger(__name__).error("Recovery failed for task %s: %s", task_id, exc)
 
         return recovered_ids

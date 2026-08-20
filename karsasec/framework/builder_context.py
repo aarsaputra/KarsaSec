@@ -13,6 +13,7 @@ from karsasec.framework.symbol_table import SemanticSymbolTable, semantic_symbol
 @dataclass
 class BuilderOptions:
     """Configuration options controlling graph construction, optimization, and validation behavior."""
+
     auto_freeze: bool = True
     auto_optimize: bool = True
     validate_integrity: bool = True
@@ -26,6 +27,7 @@ class BuilderOptions:
 @dataclass
 class BuilderContext:
     """Context passed into FrameworkGraphBuilder for graph building."""
+
     isr: IntermediateSemanticRepresentation = field(default_factory=IntermediateSemanticRepresentation)
     registry: SemanticRegistry = field(default_factory=lambda: semantic_registry)
     symbol_table: SemanticSymbolTable = field(default_factory=lambda: semantic_symbol_table)

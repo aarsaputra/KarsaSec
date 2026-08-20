@@ -66,7 +66,19 @@ class DockerParserPlugin(ParserPlugin):
             instruction = parts[0].upper()
             node_type = "statement"
 
-            if instruction in ("FROM", "USER", "RUN", "ADD", "COPY", "ENV", "ARG", "EXPOSE", "ENTRYPOINT", "CMD", "WORKDIR"):
+            if instruction in (
+                "FROM",
+                "USER",
+                "RUN",
+                "ADD",
+                "COPY",
+                "ENV",
+                "ARG",
+                "EXPOSE",
+                "ENTRYPOINT",
+                "CMD",
+                "WORKDIR",
+            ):
                 node_type = "call"  # Represent as call/statement for uniform RuleMatcher matching
 
             clean_line = line.rstrip("\r\n")

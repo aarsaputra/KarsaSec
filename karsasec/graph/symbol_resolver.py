@@ -35,6 +35,7 @@ if TYPE_CHECKING:
 @dataclass(frozen=True)
 class SymbolLocation:
     """Location metadata for a constant declaration."""
+
     file_path: str
     line_number: int = 0
     is_conditional: bool = False
@@ -43,6 +44,7 @@ class SymbolLocation:
 @dataclass(frozen=True)
 class SymbolEntry:
     """Project-wide symbol table entry."""
+
     name: str
     value_expr: str
     decl_kind: str  # "define" | "const"
@@ -121,11 +123,7 @@ class SymbolResolver:
             )
         visited = visited | {identifier}
 
-        symbol_table = (
-            _symbol_table
-            if _symbol_table is not None
-            else self.build_symbol_table(file_contents)
-        )
+        symbol_table = _symbol_table if _symbol_table is not None else self.build_symbol_table(file_contents)
 
         if identifier not in symbol_table:
             return ConstantEvidence(
@@ -162,8 +160,7 @@ class SymbolResolver:
 
         # Case B: Multiple valid entries — check for identical vs. conflicting definitions
         resolved_values: list[ConstantEvidence] = [
-            self._resolve_entry(e, identifier, file_contents, visited, symbol_table)
-            for e in valid_entries
+            self._resolve_entry(e, identifier, file_contents, visited, symbol_table) for e in valid_entries
         ]
 
         # Check if all resolutions produce the exact same resolved_value and resolution
@@ -207,9 +204,11 @@ class SymbolResolver:
         for part in parts:
             p = part.strip()
             # If plain string literal or scalar
-            if re.match(r"""^(['"])(?:(?!\1).)*\1$""", p) or re.match(r"""^(?:true|false|null|-?\d+(?:\.\d+)?)$""", p, re.IGNORECASE):
+            if re.match(r"""^(['"])(?:(?!\1).)*\1$""", p) or re.match(
+                r"""^(?:true|false|null|-?\d+(?:\.\d+)?)$""", p, re.IGNORECASE
+            ):
                 ev = self._local_resolver._classify_part(p, "", frozenset(), {}, 0)
-            elif re.match(r'^[A-Za-z_][A-Za-z0-9_]*$', p):
+            elif re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", p):
                 # Try cross-file constant lookup
                 ev = self.resolve_constant(
                     p,
@@ -221,7 +220,11 @@ class SymbolResolver:
             else:
                 ev = ConstantEvidence(p, ConstantResolution.UNKNOWN, provenance=f"Dynamic/unsupported part: {p[:30]}")
 
-            if ev.resolution not in (ConstantResolution.STATIC_LITERAL, ConstantResolution.STATIC_CONSTANT, ConstantResolution.DERIVED_STATIC):
+            if ev.resolution not in (
+                ConstantResolution.STATIC_LITERAL,
+                ConstantResolution.STATIC_CONSTANT,
+                ConstantResolution.DERIVED_STATIC,
+            ):
                 all_static = False
 
             resolved_parts.append(ev.resolved_value)
@@ -264,7 +267,7 @@ class SymbolResolver:
 
         # If RHS references another constant not in local file, try cross-file lookup
         rhs_expr = entry.value_expr.strip()
-        if re.match(r'^[A-Za-z_][A-Za-z0-9_]*$', rhs_expr):
+        if re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", rhs_expr):
             return self.resolve_constant(
                 rhs_expr,
                 file_contents,
@@ -283,7 +286,7 @@ class SymbolResolver:
                 p = part.strip()
                 if re.match(r"""^(['"])(?:(?!\1).)*\1$""", p):
                     resolved_parts.append(p[1:-1])
-                elif re.match(r'^[A-Za-z_][A-Za-z0-9_]*$', p):
+                elif re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", p):
                     nested = self.resolve_constant(
                         p,
                         file_contents,
@@ -292,7 +295,11 @@ class SymbolResolver:
                         _visited=visited,
                         _symbol_table=symbol_table,
                     )
-                    if nested.resolution in (ConstantResolution.STATIC_CONSTANT, ConstantResolution.STATIC_LITERAL, ConstantResolution.DERIVED_STATIC):
+                    if nested.resolution in (
+                        ConstantResolution.STATIC_CONSTANT,
+                        ConstantResolution.STATIC_LITERAL,
+                        ConstantResolution.DERIVED_STATIC,
+                    ):
                         resolved_parts.append(nested.resolved_value)
                     else:
                         all_static = False

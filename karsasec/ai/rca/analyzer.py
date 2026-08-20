@@ -34,7 +34,7 @@ class RootCauseAnalyzer:
         # 1. Convert Graph nodes into RootCauseSteps in order
         for idx, node in enumerate(graph.nodes):
             step = RootCauseStep(
-                step_id=f"step_{idx+1}",
+                step_id=f"step_{idx + 1}",
                 node_id=node.node_id,
                 evidence_kind=str(node.node_type),
                 file_path=node.file_path,
@@ -83,7 +83,10 @@ class RootCauseAnalyzer:
                 if step.evidence_kind == GraphNodeType.GUARD.value:
                     primary_step = step
                     break
-        elif category == RootCauseCategory.CROSS_FILE_PROPAGATION or category == RootCauseCategory.INTERPROCEDURAL_PROPAGATION:
+        elif (
+            category == RootCauseCategory.CROSS_FILE_PROPAGATION
+            or category == RootCauseCategory.INTERPROCEDURAL_PROPAGATION
+        ):
             for step in chain:
                 if step.evidence_kind in (GraphNodeType.CROSS_FILE.value, GraphNodeType.CALL.value):
                     primary_step = step

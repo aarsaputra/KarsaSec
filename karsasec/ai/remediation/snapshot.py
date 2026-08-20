@@ -159,7 +159,10 @@ class SourceSnapshot:
         for rel_path, self_snap in self_dict.items():
             other_snap = other_dict[rel_path]
             if self_snap.sha256 != other_snap.sha256:
-                return False, f"FILE_MUTATED: File '{rel_path}' hash modified from {other_snap.sha256[:8]} to {self_snap.sha256[:8]}."
+                return (
+                    False,
+                    f"FILE_MUTATED: File '{rel_path}' hash modified from {other_snap.sha256[:8]} to {self_snap.sha256[:8]}.",
+                )
             if self_snap.exists != other_snap.exists:
                 return False, f"FILE_EXISTENCE_CHANGED: File '{rel_path}' existence changed."
 

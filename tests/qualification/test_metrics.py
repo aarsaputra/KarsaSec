@@ -1,4 +1,5 @@
 """Tests for karsasec.qualification.metrics (E12-1)."""
+
 from __future__ import annotations
 
 import pytest
@@ -55,8 +56,8 @@ class TestF1:
         assert calculate_f1(0.0, 0.0) == 0.0
 
     def test_asymmetric(self) -> None:
-        p = calculate_precision(8, 2)   # 0.8
-        r = calculate_recall(8, 2)      # 0.8
+        p = calculate_precision(8, 2)  # 0.8
+        r = calculate_recall(8, 2)  # 0.8
         f = calculate_f1(p, r)
         assert f == pytest.approx(0.8)
 

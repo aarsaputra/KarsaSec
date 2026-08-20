@@ -16,8 +16,10 @@ from karsasec.runtime.pass_manager import (
 
 # === Phase G.1: Pass Manager Crash Isolation ===
 
+
 class _HealthyPass(AnalysisPass):
     """Pass that always succeeds."""
+
     def run(self, store: ArtifactStore) -> bool:
         store.put(self.descriptor.outputs[0], "healthy_artifact")
         return True
@@ -25,12 +27,14 @@ class _HealthyPass(AnalysisPass):
 
 class _CrashingPass(AnalysisPass):
     """Pass that always raises RuntimeError to simulate crash."""
+
     def run(self, store: ArtifactStore) -> bool:
         raise RuntimeError("Simulated parser crash: segfault in tree-sitter binding")
 
 
 class _PostCrashPass(AnalysisPass):
     """Pass that runs after a crashed pass to verify pipeline continuity."""
+
     def run(self, store: ArtifactStore) -> bool:
         store.put(self.descriptor.outputs[0], "post_crash_artifact")
         return True
@@ -84,6 +88,7 @@ def test_pass_manager_telemetry_records_crash():
 
 # === Phase G.2: Parser Crash Isolation (Tree-sitter binding failure) ===
 
+
 def test_python_parser_survives_malformed_source():
     """Verifies PythonParserPlugin produces a ParseResult (possibly with diagnostics) for malformed input."""
     parser = PythonParserPlugin()
@@ -121,6 +126,7 @@ VALID_PHP_SOURCE = b"""<?php
 $cmd = shell_exec($_GET['input']);
 ?>
 """
+
 
 def test_scan_pipeline_isolates_single_file_failure():
     """Verifies that scan pipeline continues when one file in a batch throws an exception during parsing."""
@@ -175,6 +181,7 @@ def test_scan_pipeline_isolates_single_file_failure():
 
 
 # === Phase G.4: Multiple consecutive crashes ===
+
 
 def test_pass_manager_survives_all_passes_crashing():
     """Verifies PassManager completes even when ALL registered passes crash."""

@@ -90,7 +90,15 @@ def test_cpg_builder_and_linking() -> None:
 
 def test_graph_index_lookups() -> None:
     cpg = CPGGraph()
-    n1 = CPGNode(id="n1", node_type=NodeType.FUNCTION, label="main", file_path="app.py", line_number=5, labels=("Function", "Code"), attributes={"function_name": "main"})
+    n1 = CPGNode(
+        id="n1",
+        node_type=NodeType.FUNCTION,
+        label="main",
+        file_path="app.py",
+        line_number=5,
+        labels=("Function", "Code"),
+        attributes={"function_name": "main"},
+    )
     n2 = CPGNode(id="n2", node_type=NodeType.CFG, label="stmt", file_path="app.py", line_number=10, labels=("CFGNode",))
 
     cpg.add_node(n1)

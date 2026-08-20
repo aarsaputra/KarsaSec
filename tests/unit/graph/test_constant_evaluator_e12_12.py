@@ -70,47 +70,47 @@ class TestConstantEvaluatorCategories:
 
     # 9. Unknown function result
     def test_09_unknown_function_result(self, evaluator: ConstantEvaluator) -> None:
-        val = evaluator.evaluate_expression('some_custom_func()')
+        val = evaluator.evaluate_expression("some_custom_func()")
         assert val.kind == LatticeKind.UNKNOWN
         assert val.is_unknown()
         assert not val.is_constant()
 
     # 10. Branch assignment
     def test_10_branch_assignment(self, evaluator: ConstantEvaluator) -> None:
-        src = '''
+        src = """
         if ($cond) {
             $x = "a";
         } else {
             $x = "b";
         }
-        '''
+        """
         env = evaluator.build_scope_environment(src)
         assert env["$x"].kind == LatticeKind.UNKNOWN
 
     # 11. Loop assignment
     def test_11_loop_assignment(self, evaluator: ConstantEvaluator) -> None:
-        src = '''
+        src = """
         while ($cond) {
             $x = "a";
             $x = "b";
         }
-        '''
+        """
         env = evaluator.build_scope_environment(src)
         assert env["$x"].kind == LatticeKind.UNKNOWN
 
     # 12. Variable reassignment
     def test_12_variable_reassignment(self, evaluator: ConstantEvaluator) -> None:
-        src = '''
+        src = """
         $x = "a";
         $x = $_GET["b"];
-        '''
+        """
         env = evaluator.build_scope_environment(src)
         assert env["$x"].kind == LatticeKind.UNKNOWN or env["$x"].kind == LatticeKind.DYNAMIC
 
     # 13. Scope isolation
     def test_13_scope_isolation(self, evaluator: ConstantEvaluator) -> None:
         src_foo = 'function foo() { $x = "a"; }'
-        src_bar = 'function bar() { echo $x; }'
+        src_bar = "function bar() { echo $x; }"
         env_foo = evaluator.build_scope_environment(src_foo)
         env_bar = evaluator.build_scope_environment(src_bar)
         assert "$x" in env_foo

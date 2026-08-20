@@ -89,7 +89,9 @@ class RuleExecutor:
                         evidence = self.collector.extract_evidence(node, scan_context.source_bytes)
 
                         # Enforce rule evidence requirements for taint-sensitive rules.
-                        evidence_require = getattr(compiled_rule.rule.evidence, "require", []) if compiled_rule.rule.evidence else []
+                        evidence_require = (
+                            getattr(compiled_rule.rule.evidence, "require", []) if compiled_rule.rule.evidence else []
+                        )
                         if "user_input" in evidence_require:
                             taint_res = taint_verifier.verify_sink(
                                 node=node,
@@ -104,7 +106,11 @@ class RuleExecutor:
                             if not taint_res.has_taint_source:
                                 continue
 
-                        src_txt = scan_context.source_bytes.decode("utf-8", errors="ignore") if scan_context.source_bytes else ""
+                        src_txt = (
+                            scan_context.source_bytes.decode("utf-8", errors="ignore")
+                            if scan_context.source_bytes
+                            else ""
+                        )
                         finding = self.factory.create_finding(
                             rule=compiled_rule.rule,
                             file_path=file_path,
@@ -135,6 +141,7 @@ class RuleExecutor:
             statistics=self.matcher.statistics,
             rag_context=scan_context.rag_context,
         )
+
 
 # Global default executor instance
 rule_executor = RuleExecutor()

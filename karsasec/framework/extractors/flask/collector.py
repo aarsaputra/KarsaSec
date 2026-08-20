@@ -31,7 +31,6 @@ class FlaskRouteCollector:
         if root is None:
             return self.state
 
-
         # Pass 1: Decorators, Blueprints, MethodViews, Calls
         def pass1(node: ASTNodeWrapper) -> None:
             self.decorator_resolver.visit(node)

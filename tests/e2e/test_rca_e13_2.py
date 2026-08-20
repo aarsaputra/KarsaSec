@@ -117,7 +117,9 @@ def test_e2e_03_xss_incompatible_sanitizer() -> None:
 # E13-2-04: Three-level interprocedural propagation
 def test_e2e_04_three_level_interprocedural() -> None:
     prov = ("controllers/user.py:12", "services/user_service.py:45", "db/repository.py:88")
-    finding, verdict = _create_e2e_finding("E2E-04", "RULE-SQLI", VerdictStatus.VULNERABLE, provenance=prov, file_path="db/repository.py")
+    finding, verdict = _create_e2e_finding(
+        "E2E-04", "RULE-SQLI", VerdictStatus.VULNERABLE, provenance=prov, file_path="db/repository.py"
+    )
     rca = RCAAgent().analyze(finding, verdict=verdict)
     assert rca.root_cause_category == RootCauseCategory.INTERPROCEDURAL_PROPAGATION
 
@@ -125,14 +127,21 @@ def test_e2e_04_three_level_interprocedural() -> None:
 # E13-2-05: Cross-file propagation
 def test_e2e_05_cross_file_propagation() -> None:
     prov = ("api/v1/auth.py:10", "utils/sql_builder.py:30")
-    finding, verdict = _create_e2e_finding("E2E-05", "RULE-SQLI", VerdictStatus.VULNERABLE, provenance=prov, file_path="utils/sql_builder.py")
+    finding, verdict = _create_e2e_finding(
+        "E2E-05", "RULE-SQLI", VerdictStatus.VULNERABLE, provenance=prov, file_path="utils/sql_builder.py"
+    )
     rca = RCAAgent().analyze(finding, verdict=verdict)
     assert rca.finding_id == "E2E-05"
 
 
 # E13-2-06: Mixed return path
 def test_e2e_06_mixed_return_path() -> None:
-    finding, verdict = _create_e2e_finding("E2E-06", "RULE-SQLI", VerdictStatus.VULNERABLE, reason_codes=(DecisionReason.TAINT_REACHES_SINK, DecisionReason.UNKNOWN_EVIDENCE))
+    finding, verdict = _create_e2e_finding(
+        "E2E-06",
+        "RULE-SQLI",
+        VerdictStatus.VULNERABLE,
+        reason_codes=(DecisionReason.TAINT_REACHES_SINK, DecisionReason.UNKNOWN_EVIDENCE),
+    )
     rca = RCAAgent().analyze(finding, verdict=verdict)
     assert rca.finding_id == "E2E-06"
 
@@ -146,7 +155,9 @@ def test_e2e_07_ssa_reassignment() -> None:
 
 # E13-2-08: UNKNOWN dynamic call
 def test_e2e_08_unknown_dynamic_call() -> None:
-    finding, verdict = _create_e2e_finding("E2E-08", "RULE-SQLI", VerdictStatus.UNKNOWN, reason_codes=(DecisionReason.UNKNOWN_EVIDENCE,))
+    finding, verdict = _create_e2e_finding(
+        "E2E-08", "RULE-SQLI", VerdictStatus.UNKNOWN, reason_codes=(DecisionReason.UNKNOWN_EVIDENCE,)
+    )
     rca = RCAAgent().analyze(finding, verdict=verdict)
     assert rca.verdict_status == "UNKNOWN"
     assert rca.false_positive_risk == FalsePositiveAssessment.NOT_PROVEN

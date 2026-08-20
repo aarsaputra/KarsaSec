@@ -8,6 +8,7 @@ Verifies:
 5. 100% Recall retention lock on the DVWA ground-truth benchmark (20/20 TP, 0 FN).
 6. False positive volume lock (FP <= 110).
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -145,8 +146,7 @@ def dvwa_e12_10_scan_results():
     final_findings = correlator.to_findings(canon)
 
     active_findings = [
-        f for f in final_findings
-        if getattr(f, "qualification_state", None) != QualificationState.REJECTED
+        f for f in final_findings if getattr(f, "qualification_state", None) != QualificationState.REJECTED
     ]
 
     bm = ManifestLoader().load(Path("/home/lota1337/python/KarsaSec/benchmarks/dvwa/manifest.yaml"))

@@ -16,10 +16,13 @@ def test_ts_engine_python(tmp_path: Path) -> None:
     assert file_node.node_id != ""
     assert file_node.total_lines == 4
 
+
 def test_python_parser_plugin_parse_result(tmp_path: Path) -> None:
     """Test PythonParserPlugin extracting ParseResult and SymbolTable."""
     file_path = tmp_path / "sample.py"
-    file_path.write_text("import sys\n\nclass MyClass:\n    pass\n\ndef calculate():\n    return 42\n", encoding="utf-8")
+    file_path.write_text(
+        "import sys\n\nclass MyClass:\n    pass\n\ndef calculate():\n    return 42\n", encoding="utf-8"
+    )
 
     plugin = PythonParserPlugin()
     assert plugin.can_parse(".py") is True

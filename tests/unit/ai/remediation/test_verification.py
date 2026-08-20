@@ -11,7 +11,9 @@ from karsasec.graph.dataflow.security_verdict import DecisionReason, SecurityVer
 from karsasec.rules.enums import Confidence, Severity
 
 
-def _create_mock_finding(finding_id: str = "F-301", rule_id: str = "CWE-89-SQLI", file_path: str = "app.py", cwe_id: str | None = None) -> Finding:
+def _create_mock_finding(
+    finding_id: str = "F-301", rule_id: str = "CWE-89-SQLI", file_path: str = "app.py", cwe_id: str | None = None
+) -> Finding:
     cwe = cwe_id or ("CWE-79" if "CWE-79" in rule_id else "CWE-89")
     v = SecurityVerdict.create(
         status=VerdictStatus.VULNERABLE,

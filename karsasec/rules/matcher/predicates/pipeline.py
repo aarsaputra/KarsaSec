@@ -1,6 +1,5 @@
 """PredicatePipeline orchestrating sequential short-circuiting predicate evaluation."""
 
-
 from karsasec.parser.ast.context import VisitorContext
 from karsasec.parser.ast_nodes import ASTNode
 from karsasec.rules.matcher.compiler import CompiledRule

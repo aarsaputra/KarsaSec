@@ -11,6 +11,7 @@ class AnalysisAPIVersion(StrEnum):
 @dataclass(frozen=True)
 class PluginManifest:
     """Descriptor manifest for KarsaSec extensions."""
+
     name: str
     version: str
     author: str

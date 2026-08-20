@@ -9,6 +9,7 @@ def test_alias_tracker_flat():
     assert tracker.resolve("runner") == "os.system"
     assert tracker.resolve("other") == "other"
 
+
 def test_alias_tracker_transitive():
     tracker = AliasTracker()
     tracker.register_alias("a", "b")
@@ -17,6 +18,7 @@ def test_alias_tracker_transitive():
     assert tracker.resolve("a") == "os.system"
     assert tracker.resolve("b") == "os.system"
     assert tracker.resolve("c") == "os.system"
+
 
 def test_alias_tracker_cyclic_safety():
     tracker = AliasTracker()

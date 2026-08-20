@@ -111,7 +111,9 @@ class SemanticSinkCorrelator:
                         file_path=file_path_str,
                         var_name=var,
                         var_version=abs_val.var_version,
-                        taint_state=TaintState.TAINTED if abs_val.taint == AbstractTaintState.TAINTED else TaintState.STATIC,
+                        taint_state=TaintState.TAINTED
+                        if abs_val.taint == AbstractTaintState.TAINTED
+                        else TaintState.STATIC,
                         type_constraints=frozenset(abs_val.type_facts),
                         call_context=call_context,
                         proof_status=ProofStatus.PROVEN,
@@ -192,7 +194,9 @@ class SemanticSinkCorrelator:
         """Derive SinkContext from sink snippet and rule category."""
         cat_upper = sink_category.upper()
         if "SQL" in cat_upper:
-            if re.search(r'FROM\s+\$[a-zA-Z0-9_]+|INTO\s+\$[a-zA-Z0-9_]+|ORDER BY\s+\$[a-zA-Z0-9_]+', snippet, re.IGNORECASE):
+            if re.search(
+                r"FROM\s+\$[a-zA-Z0-9_]+|INTO\s+\$[a-zA-Z0-9_]+|ORDER BY\s+\$[a-zA-Z0-9_]+", snippet, re.IGNORECASE
+            ):
                 return SinkContext.SQL_IDENTIFIER
             return SinkContext.SQL_VALUE
         if "COMMAND" in cat_upper or "EXEC" in cat_upper or "SHELL" in cat_upper:
@@ -238,13 +242,18 @@ class SemanticSinkCorrelator:
                 break
 
         if not sink_block_id or sink_block_id not in in_states:
-            sink_block_id = cfg.exit_id if cfg.exit_id in in_states else (cfg.reachable_blocks[-1] if cfg.reachable_blocks else None)
+            sink_block_id = (
+                cfg.exit_id
+                if cfg.exit_id in in_states
+                else (cfg.reachable_blocks[-1] if cfg.reachable_blocks else None)
+            )
 
         if not sink_block_id or sink_block_id not in in_states:
             return None
 
         # Advance environment statement-by-statement inside sink block up to sink snippet
         import copy
+
         block_env = copy.deepcopy(in_states[sink_block_id])
         block = cfg.blocks.get(sink_block_id)
         if block:
@@ -264,7 +273,7 @@ class SemanticSinkCorrelator:
 
     @staticmethod
     def _extract_variables(text: str) -> list[str]:
-        vars_php = list(dict.fromkeys(re.findall(r'\$[a-zA-Z_][a-zA-Z0-9_]*', text)))
+        vars_php = list(dict.fromkeys(re.findall(r"\$[a-zA-Z_][a-zA-Z0-9_]*", text)))
         if vars_php:
             return vars_php
-        return list(dict.fromkeys(re.findall(r'\b([A-Za-z_][A-Za-z0-9_]*)\b', text)))
+        return list(dict.fromkeys(re.findall(r"\b([A-Za-z_][A-Za-z0-9_]*)\b", text)))

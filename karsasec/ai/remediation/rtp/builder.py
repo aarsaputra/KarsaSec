@@ -150,9 +150,17 @@ class RemediationTransactionPackageBuilder:
         # Application Commitment
         app_commit: ApplicationCommitment | None = None
         if lifecycle_result.source_snapshot and lifecycle_result.application_result:
-            src_snap = getattr(lifecycle_result.source_snapshot, "aggregate_hash", getattr(lifecycle_result.source_snapshot, "snapshot_hash", ""))
+            src_snap = getattr(
+                lifecycle_result.source_snapshot,
+                "aggregate_hash",
+                getattr(lifecycle_result.source_snapshot, "snapshot_hash", ""),
+            )
             app_res = lifecycle_result.application_result
-            post_snap = getattr(app_res, "post_apply_snapshot_hash", getattr(getattr(app_res, "post_apply_snapshot", None), "aggregate_hash", src_snap))
+            post_snap = getattr(
+                app_res,
+                "post_apply_snapshot_hash",
+                getattr(getattr(app_res, "post_apply_snapshot", None), "aggregate_hash", src_snap),
+            )
             app_commit = ApplicationCommitment(
                 source_snapshot_hash=str(src_snap),
                 post_apply_snapshot_hash=str(post_snap),

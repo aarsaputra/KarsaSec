@@ -15,11 +15,11 @@ class InterproceduralReporter:
         for idx, path in enumerate(itg.vulnerable_paths):
             src_func = path.source_func.replace("::", "_").replace(".", "_")
             snk_func = path.sink_func.replace("::", "_").replace(".", "_")
-            mermaid_lines.append(f'    subgraph CallChain_{idx} ["Call Chain #{idx+1}"]')
+            mermaid_lines.append(f'    subgraph CallChain_{idx} ["Call Chain #{idx + 1}"]')
             mermaid_lines.append(f'        {src_func}_src["Source: {path.source_func}"]')
             for cs in path.call_chain:
                 c_name = cs.callee_name.replace("::", "_").replace(".", "_")
-                mermaid_lines.append(f'        {src_func}_src -->|Line {cs.line_number}| {c_name}')
+                mermaid_lines.append(f"        {src_func}_src -->|Line {cs.line_number}| {c_name}")
             mermaid_lines.append(f'        {snk_func}_snk["Sink: {path.sink_func}"]')
             mermaid_lines.append("    end")
 
@@ -27,7 +27,11 @@ class InterproceduralReporter:
 
     def render_dot(self, itg: InterproceduralTaintGraph) -> str:
         """Generates DOT Graphviz representation for cross-function taint flows."""
-        dot_lines = ["digraph InterproceduralTaint {", '    rankdir="LR";', '    node [shape="box", style="filled", fillcolor="#1e293b", fontcolor="#ffffff"];']
+        dot_lines = [
+            "digraph InterproceduralTaint {",
+            '    rankdir="LR";',
+            '    node [shape="box", style="filled", fillcolor="#1e293b", fontcolor="#ffffff"];',
+        ]
 
         for path in itg.vulnerable_paths:
             src = path.source_func.replace("::", "_").replace(".", "_")

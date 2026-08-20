@@ -60,8 +60,12 @@ class TestFlaskInterproceduralFlow:
 
     def test_01_flow_construction_and_serialization(self) -> None:
         """1. Flow construction & serialization round-trip test."""
-        prov1 = ProvenanceEntry(attribute_name="source_kind", source_kind="explicit_decorator", file_path="app/routes.py", line=12)
-        prov2 = ProvenanceEntry(attribute_name="sink_kind", source_kind="explicit_assignment", file_path="app/service.py", line=45)
+        prov1 = ProvenanceEntry(
+            attribute_name="source_kind", source_kind="explicit_decorator", file_path="app/routes.py", line=12
+        )
+        prov2 = ProvenanceEntry(
+            attribute_name="sink_kind", source_kind="explicit_assignment", file_path="app/service.py", line=45
+        )
 
         flow = FlowDefinition(
             flow_id="flow-001",
@@ -125,8 +129,24 @@ class TestFlaskInterproceduralFlow:
         scope_a = _make_scope("route-a", "handler-a", "scope-a")
         scope_b = _make_scope("route-b", "handler-b", "scope-b")
 
-        flow_a = FlowDefinition(flow_id="flow-a", scope=scope_a, source_kind="untrusted_request_input", source_symbol="a", sink_kind="subprocess", sink_symbol="exec_a", origin=_make_origin())
-        flow_b = FlowDefinition(flow_id="flow-b", scope=scope_b, source_kind="trusted_constant", source_symbol="b", sink_kind="subprocess", sink_symbol="exec_b", origin=_make_origin())
+        flow_a = FlowDefinition(
+            flow_id="flow-a",
+            scope=scope_a,
+            source_kind="untrusted_request_input",
+            source_symbol="a",
+            sink_kind="subprocess",
+            sink_symbol="exec_a",
+            origin=_make_origin(),
+        )
+        flow_b = FlowDefinition(
+            flow_id="flow-b",
+            scope=scope_b,
+            source_kind="trusted_constant",
+            source_symbol="b",
+            sink_kind="subprocess",
+            sink_symbol="exec_b",
+            origin=_make_origin(),
+        )
 
         isr = IntermediateSemanticRepresentation(flows=(flow_a, flow_b))
         res = FlaskSemanticCorrelator().run(isr)
@@ -142,11 +162,36 @@ class TestFlaskInterproceduralFlow:
     def test_04_taint_transition_decision_table_execution(self) -> None:
         """4. Taint transition decision table execution."""
         # UNTRUSTED
-        flow_untrusted = FlowDefinition(flow_id="f-untrusted", scope=_make_scope(), source_kind="untrusted_request_input", source_symbol="req", sink_kind="subprocess", sink_symbol="run", origin=_make_origin())
+        flow_untrusted = FlowDefinition(
+            flow_id="f-untrusted",
+            scope=_make_scope(),
+            source_kind="untrusted_request_input",
+            source_symbol="req",
+            sink_kind="subprocess",
+            sink_symbol="run",
+            origin=_make_origin(),
+        )
         # SANITIZED
-        flow_sanitizer = FlowDefinition(flow_id="f-sanitized", scope=_make_scope(), source_kind="untrusted_request_input", source_symbol="req", sink_kind="template_rendering", sink_symbol="render", sanitizer_symbols=("html_escape",), origin=_make_origin())
+        flow_sanitizer = FlowDefinition(
+            flow_id="f-sanitized",
+            scope=_make_scope(),
+            source_kind="untrusted_request_input",
+            source_symbol="req",
+            sink_kind="template_rendering",
+            sink_symbol="render",
+            sanitizer_symbols=("html_escape",),
+            origin=_make_origin(),
+        )
         # SAFE
-        flow_safe = FlowDefinition(flow_id="f-safe", scope=_make_scope(), source_kind="trusted_constant", source_symbol="const", sink_kind="subprocess", sink_symbol="run", origin=_make_origin())
+        flow_safe = FlowDefinition(
+            flow_id="f-safe",
+            scope=_make_scope(),
+            source_kind="trusted_constant",
+            source_symbol="const",
+            sink_kind="subprocess",
+            sink_symbol="run",
+            origin=_make_origin(),
+        )
 
         isr = IntermediateSemanticRepresentation(flows=(flow_untrusted, flow_sanitizer, flow_safe))
         graph = FlaskSemanticCorrelator().run(isr).graph
@@ -175,7 +220,15 @@ class TestFlaskInterproceduralFlow:
     def test_06_conflict_resolution_resolves_unknown(self) -> None:
         """6. Conflicting evidence resolves to UNKNOWN."""
         # Empty or unknown source resolves safely to UNKNOWN
-        flow = FlowDefinition(flow_id="f-unknown", scope=_make_scope(), source_kind="unknown", source_symbol="?", sink_kind="subprocess", sink_symbol="run", origin=_make_origin())
+        flow = FlowDefinition(
+            flow_id="f-unknown",
+            scope=_make_scope(),
+            source_kind="unknown",
+            source_symbol="?",
+            sink_kind="subprocess",
+            sink_symbol="run",
+            origin=_make_origin(),
+        )
         graph = FlaskSemanticCorrelator().run(IntermediateSemanticRepresentation(flows=(flow,))).graph
         flow_node = graph.filter(SemanticNodeType.FLOW)[0]
 
@@ -183,7 +236,15 @@ class TestFlaskInterproceduralFlow:
 
     def test_07_unknown_resolution_for_missing_evidence(self) -> None:
         """7. Missing evidence resolves to UNKNOWN (0 security findings)."""
-        flow = FlowDefinition(flow_id="f-missing", scope=_make_scope(), source_kind="", source_symbol="", sink_kind="", sink_symbol="", origin=_make_origin())
+        flow = FlowDefinition(
+            flow_id="f-missing",
+            scope=_make_scope(),
+            source_kind="",
+            source_symbol="",
+            sink_kind="",
+            sink_symbol="",
+            origin=_make_origin(),
+        )
         graph = FlaskSemanticCorrelator().run(IntermediateSemanticRepresentation(flows=(flow,))).graph
         flow_node = graph.filter(SemanticNodeType.FLOW)[0]
 
@@ -192,12 +253,22 @@ class TestFlaskInterproceduralFlow:
     def test_08_determinism_under_input_order_shuffling(self) -> None:
         """8. 10x determinism under input order shuffling."""
         flows = [
-            FlowDefinition(flow_id=f"flow-{i:03d}", scope=_make_scope(), source_kind="untrusted_request_input", source_symbol=f"src_{i}", sink_kind="subprocess", sink_symbol=f"sink_{i}", origin=_make_origin())
+            FlowDefinition(
+                flow_id=f"flow-{i:03d}",
+                scope=_make_scope(),
+                source_kind="untrusted_request_input",
+                source_symbol=f"src_{i}",
+                sink_kind="subprocess",
+                sink_symbol=f"sink_{i}",
+                origin=_make_origin(),
+            )
             for i in range(10)
         ]
 
         engine = _get_engine()
-        baseline_findings = engine.evaluate(FlaskSemanticCorrelator().run(IntermediateSemanticRepresentation(flows=tuple(flows))).graph)
+        baseline_findings = engine.evaluate(
+            FlaskSemanticCorrelator().run(IntermediateSemanticRepresentation(flows=tuple(flows))).graph
+        )
         baseline_fingerprints = tuple(f.fingerprint for f in baseline_findings.findings)
 
         for seed in range(10):
@@ -217,7 +288,16 @@ class TestFlaskInterproceduralFlow:
         p_line50 = ProvenanceEntry(attribute_name="z", source_kind="explicit", file_path="app.py", line=50)
         p_line10 = ProvenanceEntry(attribute_name="a", source_kind="explicit", file_path="app.py", line=10)
 
-        flow = FlowDefinition(flow_id="f-prov", scope=_make_scope(), source_kind="untrusted_request_input", source_symbol="req", sink_kind="subprocess", sink_symbol="run", provenance_entries=(p_line50, p_line10), origin=_make_origin())
+        flow = FlowDefinition(
+            flow_id="f-prov",
+            scope=_make_scope(),
+            source_kind="untrusted_request_input",
+            source_symbol="req",
+            sink_kind="subprocess",
+            sink_symbol="run",
+            provenance_entries=(p_line50, p_line10),
+            origin=_make_origin(),
+        )
 
         serialized = flow.to_dict()
         entries = serialized["provenance_entries"]
@@ -226,7 +306,15 @@ class TestFlaskInterproceduralFlow:
 
     def test_10_ks_flask_flow_0001_dangerous_sink_rule(self) -> None:
         """10. KS-FLASK-FLOW-0001 Untrusted Input Reaches Dangerous Sink."""
-        flow = FlowDefinition(flow_id="f-cmd", scope=_make_scope(), source_kind="untrusted_request_input", source_symbol="req", sink_kind="subprocess", sink_symbol="subprocess.run", origin=_make_origin())
+        flow = FlowDefinition(
+            flow_id="f-cmd",
+            scope=_make_scope(),
+            source_kind="untrusted_request_input",
+            source_symbol="req",
+            sink_kind="subprocess",
+            sink_symbol="subprocess.run",
+            origin=_make_origin(),
+        )
         graph = FlaskSemanticCorrelator().run(IntermediateSemanticRepresentation(flows=(flow,))).graph
 
         engine = _get_engine()
@@ -238,7 +326,15 @@ class TestFlaskInterproceduralFlow:
 
     def test_11_ks_flask_flow_0002_sql_sink_rule(self) -> None:
         """11. KS-FLASK-FLOW-0002 Untrusted Input Reaches SQL Sink."""
-        flow = FlowDefinition(flow_id="f-sql", scope=_make_scope(), source_kind="untrusted_request_input", source_symbol="req", sink_kind="sql_execution", sink_symbol="cursor.execute", origin=_make_origin())
+        flow = FlowDefinition(
+            flow_id="f-sql",
+            scope=_make_scope(),
+            source_kind="untrusted_request_input",
+            source_symbol="req",
+            sink_kind="sql_execution",
+            sink_symbol="cursor.execute",
+            origin=_make_origin(),
+        )
         graph = FlaskSemanticCorrelator().run(IntermediateSemanticRepresentation(flows=(flow,))).graph
 
         engine = _get_engine()
@@ -250,7 +346,15 @@ class TestFlaskInterproceduralFlow:
 
     def test_12_ks_flask_flow_0003_unvalidated_redirect_rule(self) -> None:
         """12. KS-FLASK-FLOW-0003 Unvalidated Redirect Input."""
-        flow = FlowDefinition(flow_id="f-redir", scope=_make_scope(), source_kind="untrusted_request_input", source_symbol="req", sink_kind="redirect", sink_symbol="redirect", origin=_make_origin())
+        flow = FlowDefinition(
+            flow_id="f-redir",
+            scope=_make_scope(),
+            source_kind="untrusted_request_input",
+            source_symbol="req",
+            sink_kind="redirect",
+            sink_symbol="redirect",
+            origin=_make_origin(),
+        )
         graph = FlaskSemanticCorrelator().run(IntermediateSemanticRepresentation(flows=(flow,))).graph
 
         engine = _get_engine()
@@ -271,8 +375,24 @@ class TestFlaskInterproceduralFlow:
         scope1 = _make_scope("r1", "h1", "s1")
         scope2 = _make_scope("r2", "h2", "s2")
 
-        f1 = FlowDefinition(flow_id="f-r1", scope=scope1, source_kind="untrusted_request_input", source_symbol="args", sink_kind="subprocess", sink_symbol="run", origin=_make_origin())
-        f2 = FlowDefinition(flow_id="f-r2", scope=scope2, source_kind="trusted_constant", source_symbol="const", sink_kind="subprocess", sink_symbol="run", origin=_make_origin())
+        f1 = FlowDefinition(
+            flow_id="f-r1",
+            scope=scope1,
+            source_kind="untrusted_request_input",
+            source_symbol="args",
+            sink_kind="subprocess",
+            sink_symbol="run",
+            origin=_make_origin(),
+        )
+        f2 = FlowDefinition(
+            flow_id="f-r2",
+            scope=scope2,
+            source_kind="trusted_constant",
+            source_symbol="const",
+            sink_kind="subprocess",
+            sink_symbol="run",
+            origin=_make_origin(),
+        )
 
         graph = FlaskSemanticCorrelator().run(IntermediateSemanticRepresentation(flows=(f1, f2))).graph
         engine = _get_engine()
@@ -281,7 +401,11 @@ class TestFlaskInterproceduralFlow:
         flow_findings = [f for f in findings.findings if f.rule_id.startswith("KS-FLASK-FLOW")]
         # Only f1 (untrusted) should trigger a finding
         assert len(flow_findings) == 1
-        assert "f-r1" in flow_findings[0].description or "f-r1" in flow_findings[0].evidence.snippet or flow_findings[0].metadata.get("node_id")
+        assert (
+            "f-r1" in flow_findings[0].description
+            or "f-r1" in flow_findings[0].evidence.snippet
+            or flow_findings[0].metadata.get("node_id")
+        )
 
     def test_15_incompatible_sanitizer_remains_untrusted(self) -> None:
         """15. Same sanitizer symbol used against incompatible sink remains UNTRUSTED."""
@@ -307,8 +431,24 @@ class TestFlaskInterproceduralFlow:
         scope_mod1 = _make_scope("r-mod1", "h-mod1", "s-mod1")
         scope_mod2 = _make_scope("r-mod2", "h-mod2", "s-mod2")
 
-        f1 = FlowDefinition(flow_id="f-mod1", scope=scope_mod1, source_kind="untrusted_request_input", source_symbol="mod1.foo", sink_kind="subprocess", sink_symbol="run", origin=_make_origin("mod1.py"))
-        f2 = FlowDefinition(flow_id="f-mod2", scope=scope_mod2, source_kind="trusted_constant", source_symbol="mod2.foo", sink_kind="subprocess", sink_symbol="run", origin=_make_origin("mod2.py"))
+        f1 = FlowDefinition(
+            flow_id="f-mod1",
+            scope=scope_mod1,
+            source_kind="untrusted_request_input",
+            source_symbol="mod1.foo",
+            sink_kind="subprocess",
+            sink_symbol="run",
+            origin=_make_origin("mod1.py"),
+        )
+        f2 = FlowDefinition(
+            flow_id="f-mod2",
+            scope=scope_mod2,
+            source_kind="trusted_constant",
+            source_symbol="mod2.foo",
+            sink_kind="subprocess",
+            sink_symbol="run",
+            origin=_make_origin("mod2.py"),
+        )
 
         graph = FlaskSemanticCorrelator().run(IntermediateSemanticRepresentation(flows=(f1, f2))).graph
         nodes = graph.filter(SemanticNodeType.FLOW)
@@ -320,7 +460,16 @@ class TestFlaskInterproceduralFlow:
         """17. Propagation path claims hop absent from graph resolves to UNKNOWN."""
         # Unbacked graph flow node manually instantiated without edges
         node = FrameworkNodeFactory.create_flow_node(
-            FlowDefinition(flow_id="f-unbacked", scope=_make_scope(), source_kind="untrusted_request_input", source_symbol="req", sink_kind="subprocess", sink_symbol="run", propagation_path=("fake_hop_1", "fake_hop_2"), origin=_make_origin())
+            FlowDefinition(
+                flow_id="f-unbacked",
+                scope=_make_scope(),
+                source_kind="untrusted_request_input",
+                source_symbol="req",
+                sink_kind="subprocess",
+                sink_symbol="run",
+                propagation_path=("fake_hop_1", "fake_hop_2"),
+                origin=_make_origin(),
+            )
         )
         empty_graph = FrameworkSemanticGraph()
         empty_graph.add_node(node)
@@ -331,7 +480,15 @@ class TestFlaskInterproceduralFlow:
     def test_18_source_and_sink_disconnected_resolves_unknown(self) -> None:
         """18. Source and sink exist but are disconnected resolves to UNKNOWN."""
         node = FrameworkNodeFactory.create_flow_node(
-            FlowDefinition(flow_id="f-disconnected", scope=_make_scope(), source_kind="unknown", source_symbol="req", sink_kind="unknown", sink_symbol="run", origin=_make_origin())
+            FlowDefinition(
+                flow_id="f-disconnected",
+                scope=_make_scope(),
+                source_kind="unknown",
+                source_symbol="req",
+                sink_kind="unknown",
+                sink_symbol="run",
+                origin=_make_origin(),
+            )
         )
         graph = FrameworkSemanticGraph()
         graph.add_node(node)
@@ -396,8 +553,24 @@ class TestFlaskInterproceduralFlow:
 
     def test_22_duplicate_conflicting_flow_ids(self) -> None:
         """22. Duplicate/conflicting FlowDefinition IDs handled deterministically."""
-        f1 = FlowDefinition(flow_id="f-dup", scope=_make_scope(), source_kind="untrusted_request_input", source_symbol="a", sink_kind="subprocess", sink_symbol="run", origin=_make_origin("app1.py", 10))
-        f2 = FlowDefinition(flow_id="f-dup", scope=_make_scope(), source_kind="trusted_constant", source_symbol="b", sink_kind="subprocess", sink_symbol="run", origin=_make_origin("app2.py", 20))
+        f1 = FlowDefinition(
+            flow_id="f-dup",
+            scope=_make_scope(),
+            source_kind="untrusted_request_input",
+            source_symbol="a",
+            sink_kind="subprocess",
+            sink_symbol="run",
+            origin=_make_origin("app1.py", 10),
+        )
+        f2 = FlowDefinition(
+            flow_id="f-dup",
+            scope=_make_scope(),
+            source_kind="trusted_constant",
+            source_symbol="b",
+            sink_kind="subprocess",
+            sink_symbol="run",
+            origin=_make_origin("app2.py", 20),
+        )
 
         graph = FlaskSemanticCorrelator().run(IntermediateSemanticRepresentation(flows=(f1, f2))).graph
         nodes = graph.filter(SemanticNodeType.FLOW)
@@ -407,8 +580,28 @@ class TestFlaskInterproceduralFlow:
 
     def test_23_duplicate_semantic_edges_handling(self) -> None:
         """23. Duplicate semantic edges handled cleanly without graph inflation."""
-        n1 = FrameworkNodeFactory.create_flow_node(FlowDefinition(flow_id="f1", scope=_make_scope(), source_kind="untrusted_request_input", source_symbol="a", sink_kind="subprocess", sink_symbol="run", origin=_make_origin()))
-        n2 = FrameworkNodeFactory.create_flow_node(FlowDefinition(flow_id="f2", scope=_make_scope(), source_kind="untrusted_request_input", source_symbol="b", sink_kind="subprocess", sink_symbol="run", origin=_make_origin()))
+        n1 = FrameworkNodeFactory.create_flow_node(
+            FlowDefinition(
+                flow_id="f1",
+                scope=_make_scope(),
+                source_kind="untrusted_request_input",
+                source_symbol="a",
+                sink_kind="subprocess",
+                sink_symbol="run",
+                origin=_make_origin(),
+            )
+        )
+        n2 = FrameworkNodeFactory.create_flow_node(
+            FlowDefinition(
+                flow_id="f2",
+                scope=_make_scope(),
+                source_kind="untrusted_request_input",
+                source_symbol="b",
+                sink_kind="subprocess",
+                sink_symbol="run",
+                origin=_make_origin(),
+            )
+        )
 
         e1 = FrameworkEdgeFactory.create_edge(n1.id, n2.id, SemanticEdgeType.FLOWS_TO)
         e2 = FrameworkEdgeFactory.create_edge(n1.id, n2.id, SemanticEdgeType.FLOWS_TO)
@@ -424,8 +617,26 @@ class TestFlaskInterproceduralFlow:
         prov1 = ProvenanceEntry(attribute_name="attr_a", source_kind="explicit", file_path="a.py", line=10)
         prov2 = ProvenanceEntry(attribute_name="attr_b", source_kind="explicit", file_path="b.py", line=20)
 
-        f1 = FlowDefinition(flow_id="f-order", scope=_make_scope(), source_kind="untrusted_request_input", source_symbol="a", sink_kind="subprocess", sink_symbol="run", provenance_entries=(prov1, prov2), origin=_make_origin())
-        f2 = FlowDefinition(flow_id="f-order", scope=_make_scope(), source_kind="untrusted_request_input", source_symbol="a", sink_kind="subprocess", sink_symbol="run", provenance_entries=(prov2, prov1), origin=_make_origin())
+        f1 = FlowDefinition(
+            flow_id="f-order",
+            scope=_make_scope(),
+            source_kind="untrusted_request_input",
+            source_symbol="a",
+            sink_kind="subprocess",
+            sink_symbol="run",
+            provenance_entries=(prov1, prov2),
+            origin=_make_origin(),
+        )
+        f2 = FlowDefinition(
+            flow_id="f-order",
+            scope=_make_scope(),
+            source_kind="untrusted_request_input",
+            source_symbol="a",
+            sink_kind="subprocess",
+            sink_symbol="run",
+            provenance_entries=(prov2, prov1),
+            origin=_make_origin(),
+        )
 
         assert f1.to_dict() == f2.to_dict()
 

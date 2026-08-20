@@ -38,7 +38,11 @@ class CPGPass(AnalysisPass):
         ssa_functions = context.artifact_store.get("SSA") if context.artifact_store.has("SSA") else None
         dfg_map = context.artifact_store.get("DataFlowGraph") if context.artifact_store.has("DataFlowGraph") else None
         taint_graphs = context.artifact_store.get("TaintGraph") if context.artifact_store.has("TaintGraph") else None
-        itg = context.artifact_store.get("InterproceduralTaintGraph") if context.artifact_store.has("InterproceduralTaintGraph") else None
+        itg = (
+            context.artifact_store.get("InterproceduralTaintGraph")
+            if context.artifact_store.has("InterproceduralTaintGraph")
+            else None
+        )
 
         cpg: CPGGraph = self.builder.build_cpg(
             file_nodes=file_nodes,

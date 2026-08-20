@@ -19,9 +19,5 @@ def test_sanitizer_compatibility_matrix() -> None:
 
 
 def test_source_compatibility_matrix() -> None:
-    assert CompatibilityRegistry.is_source_compatible(
-        "USER_INPUT", CompatibilityRegistry.COMMAND_EXECUTION
-    )
-    assert not CompatibilityRegistry.is_source_compatible(
-        "STATIC_LITERAL", CompatibilityRegistry.COMMAND_EXECUTION
-    )
+    assert CompatibilityRegistry.is_source_compatible("USER_INPUT", CompatibilityRegistry.COMMAND_EXECUTION)
+    assert not CompatibilityRegistry.is_source_compatible("STATIC_LITERAL", CompatibilityRegistry.COMMAND_EXECUTION)

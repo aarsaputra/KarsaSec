@@ -46,7 +46,7 @@ def test_executor_and_traversal_benchmark() -> None:
         graph.add_node(node)
 
     for i in range(9999):
-        graph.add_edge(CPGEdge(f"node_{i}", f"node_{i+1}", EdgeType.CFG_FLOW))
+        graph.add_edge(CPGEdge(f"node_{i}", f"node_{i + 1}", EdgeType.CFG_FLOW))
 
     planner = QueryPlanner()
     optimizer = QueryOptimizer()

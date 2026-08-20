@@ -1,7 +1,6 @@
 """Alias tracking and resolution engine."""
 
 
-
 class AliasTracker:
     """Tracks variable references and resolves aliased symbols transitively."""
 

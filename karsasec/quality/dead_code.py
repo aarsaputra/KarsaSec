@@ -32,10 +32,12 @@ class DeadCodeDetector:
                 reasons.append("No target languages defined")
 
             if reasons:
-                dead_issues.append({
-                    "id": r.id,
-                    "name": r.metadata.name,
-                    "issues": reasons,
-                })
+                dead_issues.append(
+                    {
+                        "id": r.id,
+                        "name": r.metadata.name,
+                        "issues": reasons,
+                    }
+                )
 
         return dead_issues

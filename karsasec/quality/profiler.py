@@ -35,6 +35,7 @@ class RuleProfiler:
             # Simulate pattern compilation and evaluation check
             if r.condition and r.condition.pattern:
                 import re
+
                 try:
                     compiled = re.compile(r.condition.pattern)
                     for sample in samples:
@@ -45,13 +46,15 @@ class RuleProfiler:
 
             elapsed_ms = (time.perf_counter() - start_time) * 1000
 
-            results.append({
-                "id": r.id,
-                "name": r.metadata.name,
-                "severity": r.output.severity.value,
-                "elapsed_ms": round(elapsed_ms, 3),
-                "simulated_matches": match_count,
-            })
+            results.append(
+                {
+                    "id": r.id,
+                    "name": r.metadata.name,
+                    "severity": r.output.severity.value,
+                    "elapsed_ms": round(elapsed_ms, 3),
+                    "simulated_matches": match_count,
+                }
+            )
 
         # Sort by slowest evaluation time first
         results.sort(key=lambda x: x["elapsed_ms"], reverse=True)

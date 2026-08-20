@@ -58,43 +58,55 @@ class GraphSerializer:
         # Insert nodes
         node_rows = []
         for node in graph.nodes.values():
-            node_rows.append((
-                node.uuid,
-                node.kind.value if isinstance(node.kind, NodeKind) else str(node.kind),
-                node.language,
-                node.qualified_name,
-                node.namespace,
-                node.signature,
-                node.visibility.value if isinstance(node.visibility, Visibility) else str(node.visibility),
-                str(node.file_path) if node.file_path else "",
-                node.line,
-                node.column,
-                json.dumps(node.attributes),
-            ))
+            node_rows.append(
+                (
+                    node.uuid,
+                    node.kind.value if isinstance(node.kind, NodeKind) else str(node.kind),
+                    node.language,
+                    node.qualified_name,
+                    node.namespace,
+                    node.signature,
+                    node.visibility.value if isinstance(node.visibility, Visibility) else str(node.visibility),
+                    str(node.file_path) if node.file_path else "",
+                    node.line,
+                    node.column,
+                    json.dumps(node.attributes),
+                )
+            )
 
-        cursor.executemany("""
+        cursor.executemany(
+            """
             INSERT INTO nodes (uuid, kind, language, qualified_name, namespace, signature, visibility, file_path, line, column, attributes)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, node_rows)
+        """,
+            node_rows,
+        )
 
         # Insert edges
         edge_rows = []
         for edge in graph.edges:
-            edge_rows.append((
-                edge.caller_id,
-                edge.callee_id,
-                edge.edge_type.value if isinstance(edge.edge_type, EdgeType) else str(edge.edge_type),
-                edge.confidence,
-                edge.resolved_symbol,
-                edge.resolved_by.value if isinstance(edge.resolved_by, ResolutionMechanism) else str(edge.resolved_by),
-                edge.call_site_id or "",
-                json.dumps(edge.attributes),
-            ))
+            edge_rows.append(
+                (
+                    edge.caller_id,
+                    edge.callee_id,
+                    edge.edge_type.value if isinstance(edge.edge_type, EdgeType) else str(edge.edge_type),
+                    edge.confidence,
+                    edge.resolved_symbol,
+                    edge.resolved_by.value
+                    if isinstance(edge.resolved_by, ResolutionMechanism)
+                    else str(edge.resolved_by),
+                    edge.call_site_id or "",
+                    json.dumps(edge.attributes),
+                )
+            )
 
-        cursor.executemany("""
+        cursor.executemany(
+            """
             INSERT INTO edges (caller_id, callee_id, edge_type, confidence, resolved_symbol, resolved_by, call_site_id, attributes)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, edge_rows)
+        """,
+            edge_rows,
+        )
 
         conn.commit()
         conn.close()
@@ -110,7 +122,9 @@ class GraphSerializer:
         cursor = conn.cursor()
 
         # Read nodes
-        cursor.execute("SELECT uuid, kind, language, qualified_name, namespace, signature, visibility, file_path, line, column, attributes FROM nodes")
+        cursor.execute(
+            "SELECT uuid, kind, language, qualified_name, namespace, signature, visibility, file_path, line, column, attributes FROM nodes"
+        )
         for row in cursor.fetchall():
             uuid_val, kind_str, lang, qname, ns, sig, vis_str, fp_str, line_val, col_val, attr_json = row
             try:
@@ -139,7 +153,9 @@ class GraphSerializer:
             graph.add_node(node)
 
         # Read edges
-        cursor.execute("SELECT caller_id, callee_id, edge_type, confidence, resolved_symbol, resolved_by, call_site_id, attributes FROM edges")
+        cursor.execute(
+            "SELECT caller_id, callee_id, edge_type, confidence, resolved_symbol, resolved_by, call_site_id, attributes FROM edges"
+        )
         for row in cursor.fetchall():
             caller_id, callee_id, edge_type_str, conf, res_sym, res_by_str, cs_id, attr_json = row
             try:
@@ -193,7 +209,9 @@ class GraphSerializer:
                     "edge_type": e.edge_type.value if isinstance(e.edge_type, EdgeType) else str(e.edge_type),
                     "confidence": e.confidence,
                     "resolved_symbol": e.resolved_symbol,
-                    "resolved_by": e.resolved_by.value if isinstance(e.resolved_by, ResolutionMechanism) else str(e.resolved_by),
+                    "resolved_by": e.resolved_by.value
+                    if isinstance(e.resolved_by, ResolutionMechanism)
+                    else str(e.resolved_by),
                     "call_site_id": e.call_site_id or "",
                     "attributes": e.attributes,
                 }
@@ -215,7 +233,9 @@ class GraphSerializer:
                 qualified_name=item.get("qualified_name", ""),
                 namespace=item.get("namespace", ""),
                 signature=item.get("signature", ""),
-                visibility=Visibility(item["visibility"]) if item.get("visibility") in Visibility._value2member_map_ else Visibility.PUBLIC,
+                visibility=Visibility(item["visibility"])
+                if item.get("visibility") in Visibility._value2member_map_
+                else Visibility.PUBLIC,
                 file_path=Path(item["file_path"]) if item.get("file_path") else None,
                 line=item.get("line", 1),
                 column=item.get("column", 0),
@@ -227,10 +247,14 @@ class GraphSerializer:
             edge = GraphEdge(
                 caller_id=item["caller_id"],
                 callee_id=item["callee_id"],
-                edge_type=EdgeType(item["edge_type"]) if item["edge_type"] in EdgeType._value2member_map_ else EdgeType.CALLS,
+                edge_type=EdgeType(item["edge_type"])
+                if item["edge_type"] in EdgeType._value2member_map_
+                else EdgeType.CALLS,
                 confidence=item.get("confidence", 1.0),
                 resolved_symbol=item.get("resolved_symbol", ""),
-                resolved_by=ResolutionMechanism(item["resolved_by"]) if item["resolved_by"] in ResolutionMechanism._value2member_map_ else ResolutionMechanism.AST_NATIVE,
+                resolved_by=ResolutionMechanism(item["resolved_by"])
+                if item["resolved_by"] in ResolutionMechanism._value2member_map_
+                else ResolutionMechanism.AST_NATIVE,
                 call_site_id=item.get("call_site_id") if item.get("call_site_id") else None,
                 attributes=item.get("attributes", {}),
             )

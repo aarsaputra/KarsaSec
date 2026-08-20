@@ -58,17 +58,20 @@ class SampleStabilizedExtractor(SemanticExtractor):
     def supported_frameworks(self) -> tuple[str, ...]:
         return ("FLASK",)
 
-
     def collect(self, ctx: ExtractorContext) -> list[dict[str, str]]:
         return [{"path": "/test", "method": "GET", "handler": "test_h"}]
 
-    def validate(self, raw_items: list[dict[str, str]], ctx: ExtractorContext) -> tuple[list[dict[str, str]], list[str]]:
+    def validate(
+        self, raw_items: list[dict[str, str]], ctx: ExtractorContext
+    ) -> tuple[list[dict[str, str]], list[str]]:
         validated = [item for item in raw_items if item["path"].startswith("/")]
         return validated, []
 
     def emit(self, validated_items: list[dict[str, str]], ctx: ExtractorContext) -> ExtractionResult:
         routes = tuple(
-            RouteDefinition(path=item["path"], method=item["method"], handler=item["handler"], framework="FLASK", language="Python")
+            RouteDefinition(
+                path=item["path"], method=item["method"], handler=item["handler"], framework="FLASK", language="Python"
+            )
             for item in validated_items
         )
         return ExtractionResult(isr=IntermediateSemanticRepresentation(routes=routes))
@@ -77,6 +80,7 @@ class SampleStabilizedExtractor(SemanticExtractor):
 # ============================================================================
 # 1. Framework Detection Tests (1-15)
 # ============================================================================
+
 
 def test_framework_detection_result_defaults():
     res = FrameworkDetectionResult(framework="FLASK")
@@ -89,7 +93,12 @@ def test_framework_detection_result_defaults():
 
 def test_framework_detection_result_to_from_dict():
     res1 = FrameworkDetectionResult(
-        framework="FASTAPI", version="0.110.0", language="Python", confidence=0.95, capabilities=("routing", "auth"), evidence=("main.py: FastAPI()",)
+        framework="FASTAPI",
+        version="0.110.0",
+        language="Python",
+        confidence=0.95,
+        capabilities=("routing", "auth"),
+        evidence=("main.py: FastAPI()",),
     )
     d = res1.to_dict()
     res2 = FrameworkDetectionResult.from_dict(d)
@@ -202,6 +211,7 @@ def test_detector_multiple_fixture_scan():
 # 2. Extractor Lifecycle Tests (16-30)
 # ============================================================================
 
+
 def test_semantic_extractor_lifecycle_collect():
     extractor = SampleStabilizedExtractor()
     ctx = ExtractorContext(language="Python", framework="FLASK")
@@ -257,8 +267,12 @@ def test_semantic_extractor_properties_defaults():
 
 
 def test_extraction_result_merge():
-    r1 = ExtractionResult(isr=IntermediateSemanticRepresentation(routes=(RouteDefinition(path="/r1", method="GET", handler="h1"),)))
-    r2 = ExtractionResult(isr=IntermediateSemanticRepresentation(routes=(RouteDefinition(path="/r2", method="POST", handler="h2"),)))
+    r1 = ExtractionResult(
+        isr=IntermediateSemanticRepresentation(routes=(RouteDefinition(path="/r1", method="GET", handler="h1"),))
+    )
+    r2 = ExtractionResult(
+        isr=IntermediateSemanticRepresentation(routes=(RouteDefinition(path="/r2", method="POST", handler="h2"),))
+    )
     merged = r1.merge(r2)
     assert len(merged.isr.routes) == 2
 
@@ -326,6 +340,7 @@ def test_extractor_capability_enum_values():
 # ============================================================================
 # 3. ISR Contract Freeze & ISRMigrator Tests (31-50)
 # ============================================================================
+
 
 def test_current_isr_schema_version_constant():
     assert CURRENT_ISR_SCHEMA_VERSION == "1.0"
@@ -460,7 +475,9 @@ def test_isr_from_dict_defaults_schema_version():
 
 
 def test_isr_builder_interoperability():
-    isr = IntermediateSemanticRepresentation(routes=(RouteDefinition(path="/api/test", method="GET", handler="test_h"),))
+    isr = IntermediateSemanticRepresentation(
+        routes=(RouteDefinition(path="/api/test", method="GET", handler="test_h"),)
+    )
     builder = FrameworkGraphBuilder(context=BuilderContext(isr=isr, options=BuilderOptions(auto_freeze=False)))
     graph = builder.build()
     assert len(graph.nodes()) == 1
@@ -469,6 +486,7 @@ def test_isr_builder_interoperability():
 # ============================================================================
 # 4. Plugin Manifest V2 Tests (51-65)
 # ============================================================================
+
 
 def test_framework_manifest_v2_defaults():
     manifest = FrameworkManifest(framework="FLASK")
@@ -600,6 +618,7 @@ def test_manifest_to_dict_keys():
 # ============================================================================
 # 5. Framework Test Kit & Golden Fixture Tests (66-85)
 # ============================================================================
+
 
 def test_fixture_loader_get_fixture_path_flask():
     p = FixtureLoader.get_fixture_path("flask")

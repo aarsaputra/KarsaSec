@@ -21,18 +21,14 @@ def test_cfg_validation_success():
     cfg_data = {
         "entry_nodes": ["block_1"],
         "blocks": {"block_1": {}, "block_2": {}},
-        "edges": [{"from": "block_1", "to": "block_2"}]
+        "edges": [{"from": "block_1", "to": "block_2"}],
     }
     report = artifact_validator.validate_cfg(cfg_data)
     assert report.is_valid is True
 
 
 def test_cfg_validation_failure_multiple_entries():
-    cfg_data = {
-        "entry_nodes": ["block_1", "block_2"],
-        "blocks": {"block_1": {}, "block_2": {}},
-        "edges": []
-    }
+    cfg_data = {"entry_nodes": ["block_1", "block_2"], "blocks": {"block_1": {}, "block_2": {}}, "edges": []}
     report = artifact_validator.validate_cfg(cfg_data)
     assert report.is_valid is False
     assert "exactly one entry node" in report.errors[0]

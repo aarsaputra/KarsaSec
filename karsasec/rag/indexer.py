@@ -41,7 +41,27 @@ class RAGCorpusBuilder:
         files = sorted(
             p
             for p in self.corpus_path.rglob("*")
-            if p.is_file() and p.suffix.lower() in {".py", ".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".php", ".go", ".rs", ".java", ".yaml", ".yml", ".json", ".md", ".txt"} or p.name.lower() in {"dockerfile", "containerfile"}
+            if p.is_file()
+            and p.suffix.lower()
+            in {
+                ".py",
+                ".js",
+                ".jsx",
+                ".ts",
+                ".tsx",
+                ".mjs",
+                ".cjs",
+                ".php",
+                ".go",
+                ".rs",
+                ".java",
+                ".yaml",
+                ".yml",
+                ".json",
+                ".md",
+                ".txt",
+            }
+            or p.name.lower() in {"dockerfile", "containerfile"}
         )
         state: dict[str, Any] = {"files": []}
         for file_path in files:
@@ -72,13 +92,13 @@ class RAGCorpusBuilder:
 
         with self.documents_path.open("r", encoding="utf-8") as handle:
             raw_docs = json.load(handle)
-        return [RAGDocument(document_id=item["document_id"], text=item["text"], metadata=item["metadata"]) for item in raw_docs]
+        return [
+            RAGDocument(document_id=item["document_id"], text=item["text"], metadata=item["metadata"])
+            for item in raw_docs
+        ]
 
     def _write_cache(self, documents: list[RAGDocument], state: dict[str, Any]) -> None:
-        raw_docs = [
-            {"document_id": doc.document_id, "text": doc.text, "metadata": doc.metadata}
-            for doc in documents
-        ]
+        raw_docs = [{"document_id": doc.document_id, "text": doc.text, "metadata": doc.metadata} for doc in documents]
         with self.documents_path.open("w", encoding="utf-8") as handle:
             json.dump(raw_docs, handle, ensure_ascii=False, indent=2)
         with self.state_path.open("w", encoding="utf-8") as handle:
@@ -91,7 +111,24 @@ class RAGCorpusBuilder:
             if not file_path.is_file():
                 continue
             suffix = file_path.suffix.lower()
-            if suffix not in {".py", ".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".php", ".go", ".rs", ".java", ".yaml", ".yml", ".json", ".md", ".txt"} and file_path.name.lower() not in {"dockerfile", "containerfile"}:
+            if suffix not in {
+                ".py",
+                ".js",
+                ".jsx",
+                ".ts",
+                ".tsx",
+                ".mjs",
+                ".cjs",
+                ".php",
+                ".go",
+                ".rs",
+                ".java",
+                ".yaml",
+                ".yml",
+                ".json",
+                ".md",
+                ".txt",
+            } and file_path.name.lower() not in {"dockerfile", "containerfile"}:
                 continue
             try:
                 raw_text = file_path.read_text(encoding="utf-8", errors="ignore")

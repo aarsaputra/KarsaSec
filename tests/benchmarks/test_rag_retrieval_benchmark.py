@@ -23,12 +23,18 @@ def _build_security_corpus() -> list[BM25Document]:
 
     documents = []
     for idx, text in enumerate(sample_texts, start=1):
-        documents.append(BM25Document(document_id=f"doc_{idx}", text=text, metadata={"source":"benchmark"}))
+        documents.append(BM25Document(document_id=f"doc_{idx}", text=text, metadata={"source": "benchmark"}))
 
     # Duplicate and vary data to simulate larger corpus size
     for idx in range(11, 61):
         base = sample_texts[(idx - 1) % len(sample_texts)]
-        documents.append(BM25Document(document_id=f"doc_{idx}", text=f"{base} additional context for retrieval {idx}", metadata={"source":"benchmark"}))
+        documents.append(
+            BM25Document(
+                document_id=f"doc_{idx}",
+                text=f"{base} additional context for retrieval {idx}",
+                metadata={"source": "benchmark"},
+            )
+        )
 
     return documents
 

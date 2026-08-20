@@ -1,6 +1,5 @@
 """CallGraphBuilder module for constructing interprocedural CallGraph models from AST IR."""
 
-
 from karsasec.analysis.callgraph.models import CallEdge, CallGraph
 from karsasec.analysis.callgraph.models import CallNode as GraphCallNode
 from karsasec.parser.ast_nodes import CallNode as ASTCallNode
@@ -13,7 +12,9 @@ class CallGraphBuilder:
     def __init__(self) -> None:
         pass
 
-    def build_from_file_nodes(self, file_nodes: list[FileNode], source_bytes_map: dict[str, bytes] | None = None) -> CallGraph:
+    def build_from_file_nodes(
+        self, file_nodes: list[FileNode], source_bytes_map: dict[str, bytes] | None = None
+    ) -> CallGraph:
         """Builds a unified CallGraph across one or multiple FileNode instances."""
         graph = CallGraph()
         source_bytes_map = source_bytes_map or {}
@@ -34,7 +35,13 @@ class CallGraphBuilder:
         file_path_str = str(file_node.file_path) if file_node.file_path else "unknown"
 
         for node_id, node in file_node.nodes_map.items():
-            if isinstance(node, FunctionNode) or node.node_type in ["function_definition", "function_declaration", "method_declaration", "def", "func_decl"]:
+            if isinstance(node, FunctionNode) or node.node_type in [
+                "function_definition",
+                "function_declaration",
+                "method_declaration",
+                "def",
+                "func_decl",
+            ]:
                 func_name = getattr(node, "name", "") or "anonymous"
                 parameters = getattr(node, "parameters", [])
 
@@ -66,7 +73,12 @@ class CallGraphBuilder:
                     curr_parent_id = node.parent_id
                     while curr_parent_id and curr_parent_id in file_node.nodes_map:
                         parent_node = file_node.nodes_map[curr_parent_id]
-                        if isinstance(parent_node, FunctionNode) or parent_node.node_type in ["function_definition", "function_declaration", "def", "func_decl"]:
+                        if isinstance(parent_node, FunctionNode) or parent_node.node_type in [
+                            "function_definition",
+                            "function_declaration",
+                            "def",
+                            "func_decl",
+                        ]:
                             p_name = getattr(parent_node, "name", "anonymous")
                             caller_id = f"{file_path_str}::{p_name}::{parent_node.start.line}"
                             break

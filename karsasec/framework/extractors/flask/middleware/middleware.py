@@ -23,13 +23,20 @@ class FlaskMiddlewareExtractor(SemanticExtractor):
     """Semantic Extractor for Flask request lifecycle hooks, error handlers, extensions, and class middleware."""
 
     KNOWN_EXTENSIONS = {
-        "CORS", "FlaskCors",
-        "Limiter", "FlaskLimiter",
-        "LoginManager", "FlaskLogin",
-        "Cache", "FlaskCache",
-        "CSRFProtect", "FlaskWTF",
-        "Session", "FlaskSession",
-        "Bcrypt", "Talisman",
+        "CORS",
+        "FlaskCors",
+        "Limiter",
+        "FlaskLimiter",
+        "LoginManager",
+        "FlaskLogin",
+        "Cache",
+        "FlaskCache",
+        "CSRFProtect",
+        "FlaskWTF",
+        "Session",
+        "FlaskSession",
+        "Bcrypt",
+        "Talisman",
     }
 
     @property
@@ -82,7 +89,9 @@ class FlaskMiddlewareExtractor(SemanticExtractor):
         collector.collect_from_asts(ast_trees)
         return state
 
-    def validate(self, raw_state: FlaskMiddlewareState, ctx: ExtractorContext | None = None) -> tuple[list[MiddlewareDefinition], list[SemanticDiagnostic]]:
+    def validate(
+        self, raw_state: FlaskMiddlewareState, ctx: ExtractorContext | None = None
+    ) -> tuple[list[MiddlewareDefinition], list[SemanticDiagnostic]]:
         """Phase 2: Normalize candidate records and run diagnostic validation checks."""
         normalizer = FlaskMiddlewareNormalizer(raw_state)
         mw_defs = normalizer.normalize()
@@ -114,7 +123,9 @@ class FlaskMiddlewareExtractor(SemanticExtractor):
                 diagnostics.append(diag)
 
         for ext in raw_state.extensions:
-            if ext.extension_name not in self.KNOWN_EXTENSIONS and not any(k in ext.extension_name for k in ("CORS", "Limiter", "Login", "Cache")):
+            if ext.extension_name not in self.KNOWN_EXTENSIONS and not any(
+                k in ext.extension_name for k in ("CORS", "Limiter", "Login", "Cache")
+            ):
                 diag = SemanticDiagnostic(
                     code=ErrorCode.UNKNOWN_EXTENSION,
                     severity=Severity.INFO,

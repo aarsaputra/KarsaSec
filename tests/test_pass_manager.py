@@ -88,6 +88,7 @@ def test_pass_manager_missing_dependency() -> None:
     manager.register_pass(FailingPass())
 
     import pytest
+
     with pytest.raises(PassDependencyError) as exc_info:
         manager.run_passes(context)
     assert "requires artifact 'NonExistentArtifact'" in str(exc_info.value)

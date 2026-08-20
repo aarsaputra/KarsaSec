@@ -17,6 +17,7 @@ logger = logging.getLogger("karsasec.framework.serializer")
 
 class SerializationError(Exception):
     """Exception raised for errors during graph serialization/deserialization."""
+
     pass
 
 
@@ -69,6 +70,7 @@ class FrameworkGraphSerializer:
         data = cls.to_dict(graph)
         try:
             import msgpack
+
             return msgpack.packb(data, use_bin_type=True)
         except ImportError:
             logger.debug("msgpack package not installed; falling back to UTF-8 JSON bytes wrapper")
@@ -78,10 +80,11 @@ class FrameworkGraphSerializer:
     def from_msgpack(cls, msgpack_bytes: bytes) -> FrameworkSemanticGraph:
         """Deserializes graph from MessagePack bytes (or fallback payload)."""
         if msgpack_bytes.startswith(b"MSGPACK_FALLBACK:"):
-            json_str = msgpack_bytes[len(b"MSGPACK_FALLBACK:"):].decode("utf-8")
+            json_str = msgpack_bytes[len(b"MSGPACK_FALLBACK:") :].decode("utf-8")
             return cls.from_json(json_str)
         try:
             import msgpack
+
             data = msgpack.unpackb(msgpack_bytes, raw=False)
             return cls.from_dict(data)
         except Exception as exc:
@@ -109,5 +112,5 @@ class FrameworkGraphSerializer:
         if magic != b"KSG1":
             raise SerializationError(f"Invalid binary snapshot magic header: {magic!r}")
 
-        payload = binary_bytes[10:10 + payload_len]
+        payload = binary_bytes[10 : 10 + payload_len]
         return cls.from_compressed_json(payload)

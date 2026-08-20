@@ -21,7 +21,6 @@ class FlaskCallVisitor:
         if isinstance(raw, ast.Call):
             self._check_add_url_rule(raw, node)
 
-
     def _check_add_url_rule(self, call_node: ast.Call, node: ASTNodeWrapper) -> None:
         func = call_node.func
         if not isinstance(func, ast.Attribute) or func.attr != "add_url_rule":
@@ -29,7 +28,6 @@ class FlaskCallVisitor:
 
         if len(call_node.args) < 1:
             return
-
 
         # 1st arg: rule/path
         path = "/"
@@ -46,7 +44,6 @@ class FlaskCallVisitor:
                 endpoint = view_func_arg.value
             elif isinstance(view_func_arg, ast.Name):
                 handler_name = view_func_arg.id
-
 
         # Check view_func kwarg or 3rd arg
         if len(call_node.args) >= 3 and not handler_name:

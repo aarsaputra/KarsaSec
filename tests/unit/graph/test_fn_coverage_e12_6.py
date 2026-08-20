@@ -1,4 +1,5 @@
 """Unit test suite for Sprint E12-6 coverage and regression testing."""
+
 from __future__ import annotations
 
 from pathlib import Path

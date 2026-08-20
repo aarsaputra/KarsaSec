@@ -9,6 +9,7 @@ from karsasec.rules.enums import Confidence, Severity
 @dataclass(frozen=True)
 class Finding:
     """Immutable finding data structure representing a detected security vulnerability."""
+
     id: str
     rule_id: str
     title: str

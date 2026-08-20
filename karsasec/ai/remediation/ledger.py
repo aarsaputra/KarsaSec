@@ -74,14 +74,14 @@ class RemediationLedger:
 
         existing_fps = {e.event_fingerprint for e in self.events}
         if event.event_fingerprint in existing_fps:
-            raise ValueError(f"Duplicate event_fingerprint for event '{event.event_id}' rejected (L24 Replay Prevention).")
+            raise ValueError(
+                f"Duplicate event_fingerprint for event '{event.event_id}' rejected (L24 Replay Prevention)."
+            )
 
         # Validate Predecessor Linkage (L21, L22)
         if not self.events:
             if event.predecessor_event_id is not None or event.predecessor_event_fingerprint is not None:
-                raise ValueError(
-                    f"First event '{event.event_id}' in ledger must have None for predecessor linkage."
-                )
+                raise ValueError(f"First event '{event.event_id}' in ledger must have None for predecessor linkage.")
         else:
             last = self.events[-1]
             if event.predecessor_event_id != last.event_id:

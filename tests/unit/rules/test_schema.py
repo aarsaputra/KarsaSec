@@ -42,6 +42,7 @@ def test_valid_rule_schema() -> None:
     assert rule.output.severity == Severity.HIGH
     assert rule.output.confidence == Confidence.CONFIDENT
 
+
 def test_invalid_rule_id_format() -> None:
     raw = {
         "rule": {"id": "invalid_id_format"},
@@ -50,6 +51,7 @@ def test_invalid_rule_id_format() -> None:
     }
     with pytest.raises(ValueError, match="Invalid Rule ID format"):
         validate_rule_dict(raw)
+
 
 def test_invalid_language_enum() -> None:
     raw = {
@@ -60,6 +62,7 @@ def test_invalid_language_enum() -> None:
     with pytest.raises(ValueError, match="Invalid language"):
         validate_rule_dict(raw)
 
+
 def test_invalid_severity_enum() -> None:
     raw = {
         "rule": {"id": "KS-PY-0001"},
@@ -68,6 +71,7 @@ def test_invalid_severity_enum() -> None:
     }
     with pytest.raises(ValueError, match="Invalid severity"):
         validate_rule_dict(raw)
+
 
 def test_immutable_finding() -> None:
     finding = Finding(

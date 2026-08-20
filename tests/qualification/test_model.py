@@ -1,4 +1,5 @@
 """Tests for karsasec.qualification.model (E12-1)."""
+
 from __future__ import annotations
 
 import textwrap
@@ -15,9 +16,15 @@ from karsasec.qualification.model import (
 
 
 def _case(**kw) -> GroundTruthCase:
-    defaults = dict(case_id="t-001", benchmark="test", file="foo.php", line=10,
-                    rule_id="KS-PHP-0002", expected=GroundTruthExpectation.TRUE_POSITIVE,
-                    description="Test case")
+    defaults = dict(
+        case_id="t-001",
+        benchmark="test",
+        file="foo.php",
+        line=10,
+        rule_id="KS-PHP-0002",
+        expected=GroundTruthExpectation.TRUE_POSITIVE,
+        description="Test case",
+    )
     defaults.update(kw)
     return GroundTruthCase(**defaults)
 
@@ -89,7 +96,9 @@ class TestManifestLoader:
         return p
 
     def test_valid_manifest(self, tmp_path: Path) -> None:
-        p = self._write_yaml(tmp_path, """
+        p = self._write_yaml(
+            tmp_path,
+            """
             benchmark:
               id: test
               version: "1.0"
@@ -101,23 +110,29 @@ class TestManifestLoader:
                 rule_id: KS-PHP-0002
                 expected: TRUE_POSITIVE
                 description: A test case
-        """)
+        """,
+        )
         bm = ManifestLoader().load(p)
         assert bm.benchmark_id == "test"
         assert len(bm.cases) == 1
 
     def test_missing_id_raises(self, tmp_path: Path) -> None:
-        p = self._write_yaml(tmp_path, """
+        p = self._write_yaml(
+            tmp_path,
+            """
             benchmark:
               version: "1.0"
               description: missing id
             cases: []
-        """)
+        """,
+        )
         with pytest.raises(ValueError, match="benchmark.id"):
             ManifestLoader().load(p)
 
     def test_invalid_expected_raises(self, tmp_path: Path) -> None:
-        p = self._write_yaml(tmp_path, """
+        p = self._write_yaml(
+            tmp_path,
+            """
             benchmark:
               id: test
               version: "1.0"
@@ -129,12 +144,15 @@ class TestManifestLoader:
                 rule_id: KS-PHP-0002
                 expected: INVALID_VALUE
                 description: bad
-        """)
+        """,
+        )
         with pytest.raises(ValueError, match="invalid 'expected'"):
             ManifestLoader().load(p)
 
     def test_missing_description_raises(self, tmp_path: Path) -> None:
-        p = self._write_yaml(tmp_path, """
+        p = self._write_yaml(
+            tmp_path,
+            """
             benchmark:
               id: test
               version: "1.0"
@@ -145,12 +163,15 @@ class TestManifestLoader:
                 line: 10
                 rule_id: KS-PHP-0002
                 expected: TRUE_POSITIVE
-        """)
+        """,
+        )
         with pytest.raises(ValueError, match="description"):
             ManifestLoader().load(p)
 
     def test_duplicate_case_ids_raises(self, tmp_path: Path) -> None:
-        p = self._write_yaml(tmp_path, """
+        p = self._write_yaml(
+            tmp_path,
+            """
             benchmark:
               id: test
               version: "1.0"
@@ -168,7 +189,8 @@ class TestManifestLoader:
                 rule_id: KS-PHP-0002
                 expected: TRUE_POSITIVE
                 description: second
-        """)
+        """,
+        )
         with pytest.raises(ValueError, match="Duplicate case_id"):
             ManifestLoader().load(p)
 

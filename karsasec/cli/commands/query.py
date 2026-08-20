@@ -119,4 +119,6 @@ def run_benchmark() -> None:
         plan = QueryPlanner().create_plan(q_ast)
         QueryOptimizer().optimize(plan)
     elapsed = (time.time() - start) * 1000.0
-    console.print(f"[bold green]Benchmark Completed:[/bold green] 100 Query Plan & Optimization runs in {elapsed:.2f}ms (Avg {elapsed/100:.3f}ms/run).")
+    console.print(
+        f"[bold green]Benchmark Completed:[/bold green] 100 Query Plan & Optimization runs in {elapsed:.2f}ms (Avg {elapsed / 100:.3f}ms/run)."
+    )

@@ -44,8 +44,8 @@ class SecurityFindingContext:
 
     # Isolation parameters
     variable_version: str  # SSA version e.g. $x#1
-    call_context: str      # Call context ID/string
-    branch_polarity: str   # TRUE / FALSE / UNKNOWN
+    call_context: str  # Call context ID/string
+    branch_polarity: str  # TRUE / FALSE / UNKNOWN
     cross_file: bool
 
     # Metadata & Guidance
@@ -112,8 +112,14 @@ class SecurityFindingContextBuilder:
 
         # Verdict info
         if verdict_obj is not None:
-            verdict_status = verdict_obj.status.value if hasattr(verdict_obj.status, "value") else str(verdict_obj.status)
-            verdict_conf = verdict_obj.confidence.value if hasattr(verdict_obj.confidence, "value") else str(verdict_obj.confidence)
+            verdict_status = (
+                verdict_obj.status.value if hasattr(verdict_obj.status, "value") else str(verdict_obj.status)
+            )
+            verdict_conf = (
+                verdict_obj.confidence.value
+                if hasattr(verdict_obj.confidence, "value")
+                else str(verdict_obj.confidence)
+            )
             verdict_reasons = tuple(r.value if hasattr(r, "value") else str(r) for r in verdict_obj.reason_codes)
             ev_fp = verdict_obj.evidence_fingerprint or "NOT_AVAILABLE"
             can_fp = verdict_obj.canonical_fingerprint or finding.fingerprint or "NOT_AVAILABLE"

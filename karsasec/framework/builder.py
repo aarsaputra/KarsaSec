@@ -19,6 +19,7 @@ logger = logging.getLogger("karsasec.framework.builder")
 
 class GraphFrozenError(Exception):
     """Exception raised when attempting to mutate a frozen FrameworkSemanticGraph."""
+
     def __init__(self, message: str = "Cannot mutate a frozen FrameworkSemanticGraph") -> None:
         super().__init__(message)
 

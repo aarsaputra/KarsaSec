@@ -47,7 +47,7 @@ def test_e2e_02_escapeshellarg_command_injection(verifier: TaintVerifier):
     $safe_file = escapeshellarg($input);
     system("cat " . $safe_file);
     """
-    snippet = "system(\"cat \" . $safe_file);"
+    snippet = 'system("cat " . $safe_file);'
     is_guarded, reason, df_ev = verifier._evaluate_cfg_path_guards(
         snippet=snippet,
         full_source=source_code,
@@ -65,7 +65,7 @@ def test_e2e_03_htmlspecialchars_not_sufficient_for_sqli(verifier: TaintVerifier
     $clean = htmlspecialchars($input);
     mysql_query("SELECT * FROM users WHERE id = " . $clean);
     """
-    snippet = "mysql_query(\"SELECT * FROM users WHERE id = \" . $clean);"
+    snippet = 'mysql_query("SELECT * FROM users WHERE id = " . $clean);'
     is_guarded, reason, df_ev = verifier._evaluate_cfg_path_guards(
         snippet=snippet,
         full_source=source_code,
@@ -81,7 +81,7 @@ def test_e2e_04_intval_safe_for_sqli(verifier: TaintVerifier):
     $val = intval($raw);
     mysql_query("SELECT * FROM users WHERE id = " . $val);
     """
-    snippet = "mysql_query(\"SELECT * FROM users WHERE id = \" . $val);"
+    snippet = 'mysql_query("SELECT * FROM users WHERE id = " . $val);'
     is_guarded, reason, df_ev = verifier._evaluate_cfg_path_guards(
         snippet=snippet,
         full_source=source_code,
@@ -99,7 +99,7 @@ def test_e2e_05_reassignment_invalidates_previous_guard(verifier: TaintVerifier)
     $val = $_GET['other'];
     mysql_query("SELECT * FROM users WHERE id = " . $val);
     """
-    snippet = "mysql_query(\"SELECT * FROM users WHERE id = \" . $val);"
+    snippet = 'mysql_query("SELECT * FROM users WHERE id = " . $val);'
     is_guarded, reason, df_ev = verifier._evaluate_cfg_path_guards(
         snippet=snippet,
         full_source=source_code,

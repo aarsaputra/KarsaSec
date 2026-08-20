@@ -6,6 +6,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class ReportMetadata:
     """Immutable metadata descriptor attached to generated security report artifacts."""
+
     schema_version: str = "1.0"
     scanner_name: str = "KarsaSec"
     scanner_version: str = "0.1.0"

@@ -39,25 +39,29 @@ class RemediationCapability(StrEnum):
 class RemediationPolicy:
     """Policy enforcer guaranteeing read-only, non-mutating behavior for remediation planning."""
 
-    _ALLOWED_CAPABILITIES = frozenset({
-        RemediationCapability.READ_SOURCE,
-        RemediationCapability.READ_EVIDENCE,
-        RemediationCapability.READ_RAG,
-        RemediationCapability.GENERATE_PLAN,
-        RemediationCapability.GENERATE_PROPOSAL,
-        RemediationCapability.VALIDATE_PROPOSAL,
-    })
+    _ALLOWED_CAPABILITIES = frozenset(
+        {
+            RemediationCapability.READ_SOURCE,
+            RemediationCapability.READ_EVIDENCE,
+            RemediationCapability.READ_RAG,
+            RemediationCapability.GENERATE_PLAN,
+            RemediationCapability.GENERATE_PROPOSAL,
+            RemediationCapability.VALIDATE_PROPOSAL,
+        }
+    )
 
-    _PROHIBITED_CAPABILITIES = frozenset({
-        RemediationCapability.WRITE_SOURCE,
-        RemediationCapability.APPLY_PATCH,
-        RemediationCapability.EXECUTE_COMMAND,
-        RemediationCapability.GIT_COMMIT,
-        RemediationCapability.GIT_PUSH,
-        RemediationCapability.DELETE_FILE,
-        RemediationCapability.MODIFY_VERDICT,
-        RemediationCapability.SUPPRESS_FINDING,
-    })
+    _PROHIBITED_CAPABILITIES = frozenset(
+        {
+            RemediationCapability.WRITE_SOURCE,
+            RemediationCapability.APPLY_PATCH,
+            RemediationCapability.EXECUTE_COMMAND,
+            RemediationCapability.GIT_COMMIT,
+            RemediationCapability.GIT_PUSH,
+            RemediationCapability.DELETE_FILE,
+            RemediationCapability.MODIFY_VERDICT,
+            RemediationCapability.SUPPRESS_FINDING,
+        }
+    )
 
     @classmethod
     def is_allowed(cls, capability: RemediationCapability | str) -> bool:

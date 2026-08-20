@@ -11,8 +11,23 @@ from karsasec.rag.indexer import RAGCorpusBuilder
 from karsasec.rag.utils import chunk_text
 
 TEXT_FILE_EXTENSIONS = {
-    ".py", ".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".php", ".go", ".rs", ".java",
-    ".yaml", ".yml", ".json", ".md", ".txt", ".dockerfile",
+    ".py",
+    ".js",
+    ".jsx",
+    ".ts",
+    ".tsx",
+    ".mjs",
+    ".cjs",
+    ".php",
+    ".go",
+    ".rs",
+    ".java",
+    ".yaml",
+    ".yml",
+    ".json",
+    ".md",
+    ".txt",
+    ".dockerfile",
 }
 
 
@@ -33,7 +48,9 @@ class RAGService:
         )
 
     @classmethod
-    def from_directory(cls, corpus_path: Path, cache_dir: Path | None = None, force_rebuild: bool = False) -> RAGService:
+    def from_directory(
+        cls, corpus_path: Path, cache_dir: Path | None = None, force_rebuild: bool = False
+    ) -> RAGService:
         cache_root = cache_dir or settings.cache_dir / "rag"
         builder = RAGCorpusBuilder(corpus_path, cache_dir=cache_root)
         documents = builder.build(force_rebuild=force_rebuild)
@@ -41,7 +58,9 @@ class RAGService:
 
     @staticmethod
     def _text_file_filter(path: Path) -> bool:
-        return path.is_file() and (path.suffix.lower() in TEXT_FILE_EXTENSIONS or path.name.lower() in {"dockerfile", "containerfile"})
+        return path.is_file() and (
+            path.suffix.lower() in TEXT_FILE_EXTENSIONS or path.name.lower() in {"dockerfile", "containerfile"}
+        )
 
     @classmethod
     def _load_corpus(cls, corpus_path: Path) -> Iterator[RAGDocument]:

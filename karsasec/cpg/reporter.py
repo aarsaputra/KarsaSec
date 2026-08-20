@@ -31,7 +31,11 @@ class CPGReporter:
 
     def render_dot(self, graph: CPGGraph) -> str:
         """Generates Graphviz DOT representation for CPG graph."""
-        dot_lines = ["digraph CodePropertyGraph {", '    rankdir="TB";', '    node [shape="box", style="filled", fillcolor="#1e293b", fontcolor="#ffffff"];']
+        dot_lines = [
+            "digraph CodePropertyGraph {",
+            '    rankdir="TB";',
+            '    node [shape="box", style="filled", fillcolor="#1e293b", fontcolor="#ffffff"];',
+        ]
 
         for nid, node in graph.nodes.items():
             safe_id = f"n_{nid[:8]}"
@@ -71,11 +75,11 @@ class CPGReporter:
 <body>
     <h1>⚡ KarsaSec Enterprise Code Property Graph (CPG)</h1>
     <p>
-        <span class="badge">Schema v{meta.get('schema_version')}</span>
-        <strong>Project:</strong> {meta.get('project_name')} &nbsp;|&nbsp;
-        <strong>Nodes:</strong> {meta.get('node_count')} &nbsp;|&nbsp;
-        <strong>Edges:</strong> {meta.get('edge_count')} &nbsp;|&nbsp;
-        <strong>Build Duration:</strong> {meta.get('duration_seconds')}s
+        <span class="badge">Schema v{meta.get("schema_version")}</span>
+        <strong>Project:</strong> {meta.get("project_name")} &nbsp;|&nbsp;
+        <strong>Nodes:</strong> {meta.get("node_count")} &nbsp;|&nbsp;
+        <strong>Edges:</strong> {meta.get("edge_count")} &nbsp;|&nbsp;
+        <strong>Build Duration:</strong> {meta.get("duration_seconds")}s
     </p>
 
     <div class="container">

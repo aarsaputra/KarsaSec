@@ -13,6 +13,7 @@ from karsasec.framework.intermediate import IntermediateSemanticRepresentation
 
 class ExtractorCapability(StrEnum):
     """Capabilities provided by semantic extractors."""
+
     ROUTING = "routing"
     MIDDLEWARE = "middleware"
     CONTROLLER = "controller"
@@ -27,6 +28,7 @@ class ExtractorCapability(StrEnum):
 
 class ExtractionError(Exception):
     """Exception raised during semantic extraction failure."""
+
     def __init__(self, message: str, extractor_name: str = "UnknownExtractor", cause: Exception | None = None) -> None:
         super().__init__(message)
         self.message = message
@@ -37,6 +39,7 @@ class ExtractionError(Exception):
 @dataclass
 class ExtractorContext:
     """Context provided to semantic extractors containing metadata, AST, CPG, and store references."""
+
     project_path: str = ""
     language: str = "Generic"
     framework: str = "GENERIC"
@@ -51,6 +54,7 @@ class ExtractorContext:
 @dataclass
 class ExtractionResult:
     """Result object returned by a semantic extractor execution."""
+
     isr: IntermediateSemanticRepresentation = field(default_factory=IntermediateSemanticRepresentation)
     diagnostics: list[Any] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
@@ -146,10 +150,17 @@ class SemanticExtractor(ABC):
 
     def can_extract(self, ctx: ExtractorContext) -> bool:
         """Determines if extractor can run given current ExtractorContext."""
-        lang_ok = "Generic" in self.supported_languages or ctx.language == "Generic" or ctx.language in self.supported_languages
-        fw_ok = "GENERIC" in self.supported_frameworks or ctx.framework == "GENERIC" or ctx.framework in self.supported_frameworks
+        lang_ok = (
+            "Generic" in self.supported_languages
+            or ctx.language == "Generic"
+            or ctx.language in self.supported_languages
+        )
+        fw_ok = (
+            "GENERIC" in self.supported_frameworks
+            or ctx.framework == "GENERIC"
+            or ctx.framework in self.supported_frameworks
+        )
         return lang_ok and fw_ok
-
 
     def collect(self, ctx: ExtractorContext) -> Any:
         """Phase 1: Collects raw data and candidate elements from AST/CPG."""
@@ -171,4 +182,3 @@ class SemanticExtractor(ABC):
         if diagnostics:
             res.diagnostics.extend(diagnostics)
         return res
-

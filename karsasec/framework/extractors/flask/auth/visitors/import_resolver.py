@@ -62,7 +62,8 @@ class FlaskAuthImportResolverVisitor:
                 for known_mod, provider in self.KNOWN_MODULE_PROVIDERS.items():
                     if mod_name == known_mod or mod_name.startswith(f"{known_mod}."):
                         evidence = Evidence(
-                            snippet=f"from {mod_name} import {imported_symbol}" + (f" as {local_name}" if alias.asname else ""),
+                            snippet=f"from {mod_name} import {imported_symbol}"
+                            + (f" as {local_name}" if alias.asname else ""),
                             rule_or_marker=provider,
                             file_path=node.file_path,
                             line=node.line,

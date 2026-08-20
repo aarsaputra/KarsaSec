@@ -45,7 +45,11 @@ class FlaskHTTPAuthVisitor:
             if manager_cand and manager_cand.provider == "flask-httpauth":
                 is_httpauth = True
                 scheme = "token" if "Token" in manager_cand.manager_type else "basic"
-            elif attr_name in self.HTTPAUTH_HOOKS and var_name and var_name in ("auth", "basic_auth", "token_auth", "http_auth"):
+            elif (
+                attr_name in self.HTTPAUTH_HOOKS
+                and var_name
+                and var_name in ("auth", "basic_auth", "token_auth", "http_auth")
+            ):
                 is_httpauth = True
                 if "token" in var_name:
                     scheme = "token"

@@ -17,7 +17,7 @@ from __future__ import annotations
 import hashlib
 import threading
 from bisect import bisect_right
-from typing import Optional, TYPE_CHECKING, Tuple, Set, Dict, List
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from karsasec.workers.worker_registry import WorkerRegistry, WorkerNode
@@ -26,12 +26,12 @@ if TYPE_CHECKING:
 class ClusterScheduler:
     """Deterministic Round-Robin Cluster Scheduler."""
 
-    def __init__(self, registry: "WorkerRegistry") -> None:
+    def __init__(self, registry: WorkerRegistry) -> None:
         self._registry = registry
         self._counter: int = 0
         self._lock = threading.Lock()
 
-    def select_worker(self, task_id: str | None = None) -> Optional["WorkerNode"]:
+    def select_worker(self, task_id: str | None = None) -> WorkerNode | None:
         """Select a healthy worker for a task using Round-Robin v1."""
         active_workers = self._registry.list_active()
         if not active_workers:
@@ -50,6 +50,7 @@ class ClusterScheduler:
 
 class NoWorkersAvailableError(RuntimeError):
     """Raised when task assignment is attempted without workers in the hash ring."""
+
     pass
 
 
@@ -69,9 +70,9 @@ class ConsistentHashRing:
             raise ValueError("virtual_nodes must be > 0")
 
         self.virtual_nodes = virtual_nodes
-        self._ring: Dict[int, str] = {}
-        self._positions: List[int] = []
-        self._workers: Set[str] = set()
+        self._ring: dict[int, str] = {}
+        self._positions: list[int] = []
+        self._workers: set[str] = set()
 
     @staticmethod
     def _hash(value: str) -> int:
@@ -111,9 +112,7 @@ class ConsistentHashRing:
 
     def assign(self, task_id: str) -> str:
         if not self._positions:
-            raise NoWorkersAvailableError(
-                "No workers available for task assignment"
-            )
+            raise NoWorkersAvailableError("No workers available for task assignment")
 
         position = self._hash(task_id)
         index = bisect_right(self._positions, position)
@@ -133,9 +132,9 @@ class ConsistentHashScheduler:
 
     def __init__(
         self,
-        registry: Optional["WorkerRegistry"] = None,
+        registry: WorkerRegistry | None = None,
         virtual_nodes: int = 128,
-        replica_count: Optional[int] = None,
+        replica_count: int | None = None,
     ) -> None:
         vnodes = virtual_nodes if replica_count is None else replica_count
         self._ring = ConsistentHashRing(virtual_nodes=vnodes)
@@ -161,7 +160,7 @@ class ConsistentHashScheduler:
             except NoWorkersAvailableError:
                 raise RuntimeError("No workers available")
 
-    def select_worker(self, task_id: str | None = None) -> Optional["WorkerNode"]:
+    def select_worker(self, task_id: str | None = None) -> WorkerNode | None:
         """Select worker for WorkerRegistry integration."""
         if not self._registry:
             if not self._ring.workers:
@@ -169,6 +168,7 @@ class ConsistentHashScheduler:
             tid = task_id or "default-task"
             assigned_id = self.assign(tid)
             from karsasec.workers.worker_registry import WorkerNode, WorkerStatus
+
             node = WorkerNode(worker_id=assigned_id, hostname="localhost")
             node.status = WorkerStatus.ONLINE
             return node
@@ -193,8 +193,7 @@ class ConsistentHashScheduler:
         return worker_map.get(assigned_worker_id, active_workers[0])
 
     @property
-    def workers(self) -> Tuple[str, ...]:
+    def workers(self) -> tuple[str, ...]:
         """Return tuple of active worker IDs."""
         with self._lock:
             return tuple(sorted(self._ring.workers))
-

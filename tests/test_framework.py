@@ -18,6 +18,7 @@ def test_framework_nextjs_confidence(tmp_path: Path) -> None:
     assert next_match.confidence == "CONFIDENT"
     assert next_match.score >= 70
 
+
 def test_framework_laravel_artisan(tmp_path: Path) -> None:
     detector = FrameworkDetector()
     (tmp_path / "artisan").write_text("#!/usr/bin/env php", encoding="utf-8")
@@ -30,6 +31,7 @@ def test_framework_laravel_artisan(tmp_path: Path) -> None:
     laravel_match = next(m for m in matches if m.name == "Laravel")
     assert laravel_match.confidence == "CONFIDENT"
     assert laravel_match.score >= 70
+
 
 def test_framework_fastapi_requirements(tmp_path: Path) -> None:
     detector = FrameworkDetector()

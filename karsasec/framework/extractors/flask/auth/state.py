@@ -11,6 +11,7 @@ from karsasec.framework.origin import Evidence
 @dataclass(frozen=True)
 class ProviderCandidate:
     """Raw record for an identified authentication provider."""
+
     name: str  # flask-login, flask-jwt-extended, flask-httpauth, custom
     symbol: str
     source_module: str
@@ -22,6 +23,7 @@ class ProviderCandidate:
 @dataclass(frozen=True)
 class AuthManagerCandidate:
     """Raw record for an authentication manager initialization (LoginManager, JWTManager, etc.)."""
+
     manager_type: str  # LoginManager, JWTManager, HTTPBasicAuth, HTTPTokenAuth
     provider: str
     variable_name: str = ""
@@ -34,6 +36,7 @@ class AuthManagerCandidate:
 @dataclass(frozen=True)
 class AuthCandidate:
     """Raw record for an authentication policy candidate."""
+
     auth_type: str  # FLASK_LOGIN, JWT, BASIC_AUTH, TOKEN, RBAC, CUSTOM_DECORATOR, SESSION, COOKIE
     provider: str  # flask-login, flask-jwt-extended, flask-httpauth, custom, session
     scheme: str  # session, jwt, basic, bearer, token, custom
@@ -55,6 +58,7 @@ class AuthCandidate:
 @dataclass(frozen=True)
 class RoleCandidate:
     """Raw record for role-based authorization requirements."""
+
     handler: str
     roles: tuple[str, ...]
     file_path: str = ""
@@ -67,6 +71,7 @@ class RoleCandidate:
 @dataclass(frozen=True)
 class PermissionCandidate:
     """Raw record for permission-based authorization requirements."""
+
     handler: str
     permissions: tuple[str, ...]
     file_path: str = ""
@@ -79,6 +84,7 @@ class PermissionCandidate:
 @dataclass(frozen=True)
 class SessionCandidate:
     """Raw record for session usage classification."""
+
     key: str
     operation: str  # READ, WRITE
     classification: str  # AUTH_SESSION, IDENTITY_SESSION, ROLE_SESSION, GENERIC_SESSION
@@ -93,6 +99,7 @@ class SessionCandidate:
 @dataclass(frozen=True)
 class CookieCandidate:
     """Raw record for cookie usage classification."""
+
     name: str
     operation: str  # SET, DELETE, READ
     classification: str  # AUTH_COOKIE, SESSION_COOKIE, REMEMBER_COOKIE, GENERIC_COOKIE
@@ -106,6 +113,7 @@ class CookieCandidate:
 @dataclass(frozen=True)
 class DecoratorCandidate:
     """Raw record for custom auth decorator candidate."""
+
     name: str
     func_name: str
     wrapper_name: str

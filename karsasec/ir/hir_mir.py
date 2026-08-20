@@ -50,7 +50,7 @@ class LIRSource(LIRNode):
 
 @dataclass(frozen=True)
 class LIRSink(LIRNode):
-    sink_type: str    # e.g., "SQL_QUERY", "EXEC_CMD"
+    sink_type: str  # e.g., "SQL_QUERY", "EXEC_CMD"
     target_callee: str
 
 

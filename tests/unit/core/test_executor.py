@@ -35,6 +35,7 @@ def create_sample_rule(
         ),
     )
 
+
 def test_rule_indexer_filtering() -> None:
     rule1 = create_sample_rule("R1", node_type="call_expression")
     rule2 = create_sample_rule("R2", node_type="import_statement")
@@ -48,6 +49,7 @@ def test_rule_indexer_filtering() -> None:
     assert "R1" in rule_ids
     assert "R3" in rule_ids
     assert "R2" not in rule_ids  # O(1) filtering excluded R2
+
 
 def test_evidence_collector_snippet_and_context() -> None:
     source = b"import os\n# line 2\neval(user_input)\n# line 4"
@@ -67,12 +69,14 @@ def test_evidence_collector_snippet_and_context() -> None:
     assert evidence.line == 3
     assert len(evidence.context_lines) > 0
 
+
 def test_evidence_collector_missing_source_bytes_raises() -> None:
     node = ASTNode(node_id="n1", node_type="call_expression")
     collector = EvidenceCollector()
 
     with pytest.raises(EvidenceUnavailableError):
         collector.extract_evidence(node, source_bytes=None)
+
 
 def test_finding_factory_fingerprint_deduplication() -> None:
     factory = FindingFactory()
@@ -82,6 +86,7 @@ def test_finding_factory_fingerprint_deduplication() -> None:
 
     assert fp1 == fp2  # Identical findings share fingerprint
     assert fp1 != fp3  # Different line produces different fingerprint
+
 
 def test_rule_executor_single_match() -> None:
     source = b"eval(user_input)"
@@ -108,6 +113,7 @@ def test_rule_executor_single_match() -> None:
     assert finding.rule_id == "KS-PY-0001"
     assert finding.severity == Severity.CRITICAL
     assert finding.evidence.snippet == "eval(user_input)"
+
 
 def test_rule_executor_preserves_rag_context() -> None:
     source = b"eval(user_input)"
@@ -144,6 +150,7 @@ def test_rule_executor_preserves_rag_context() -> None:
 
     assert result.rag_context == rag_context
 
+
 def test_rule_executor_duplicate_findings_deduplicated() -> None:
     source = b"eval(user_input)"
     call_node = ASTNode(
@@ -164,6 +171,7 @@ def test_rule_executor_duplicate_findings_deduplicated() -> None:
     result = executor.execute_scan(scan_ctx, [rule1, rule2])
 
     assert len(result.findings) == 1  # Deduplicated by fingerprint
+
 
 def test_rule_executor_resilience_error_boundary() -> None:
     source = b"print('hello')"

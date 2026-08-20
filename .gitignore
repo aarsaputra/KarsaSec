@@ -41,6 +41,7 @@ venv.bak/
 .project
 .pydevproject
 .settings/
+pyrightconfig.json
 
 # Testing, Coverage & Quality tools
 .pytest_cache/

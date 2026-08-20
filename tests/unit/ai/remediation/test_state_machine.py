@@ -473,8 +473,12 @@ def test_35_evidence_references_ordering_is_deterministic() -> None:
     refs1 = ("b.py:10", "a.py:5")
     refs2 = ("a.py:5", "b.py:10")
 
-    fp1 = LifecycleEvent.compute_fingerprint("e1", "F1", RemediationLifecycleState.DETECTED, RemediationLifecycleState.EVIDENCE_VERIFIED, "actor", ts, refs1)
-    fp2 = LifecycleEvent.compute_fingerprint("e1", "F1", RemediationLifecycleState.DETECTED, RemediationLifecycleState.EVIDENCE_VERIFIED, "actor", ts, refs2)
+    fp1 = LifecycleEvent.compute_fingerprint(
+        "e1", "F1", RemediationLifecycleState.DETECTED, RemediationLifecycleState.EVIDENCE_VERIFIED, "actor", ts, refs1
+    )
+    fp2 = LifecycleEvent.compute_fingerprint(
+        "e1", "F1", RemediationLifecycleState.DETECTED, RemediationLifecycleState.EVIDENCE_VERIFIED, "actor", ts, refs2
+    )
 
     assert fp1 == fp2
 
@@ -690,4 +694,3 @@ def test_43_verification_result_with_mismatched_finding_id_rejected() -> None:
             authority=VerificationAuthority.DETERMINISTIC_SAST,
             verification_result=vr_mismatched,
         )
-

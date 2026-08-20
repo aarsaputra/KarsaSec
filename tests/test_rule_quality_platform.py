@@ -10,6 +10,7 @@ from karsasec.quality.profiler import RuleProfiler
 
 runner = CliRunner()
 
+
 def test_coverage_analyzer() -> None:
     analyzer = CoverageAnalyzer()
     res = analyzer.analyze()
@@ -17,11 +18,13 @@ def test_coverage_analyzer() -> None:
     assert "Go" in res["languages"]
     assert "PHP" in res["languages"]
 
+
 def test_rule_profiler() -> None:
     profiler = RuleProfiler()
     results = profiler.profile_execution()
     assert len(results) >= 120
     assert "elapsed_ms" in results[0]
+
 
 def test_conflict_detector() -> None:
     detector = ConflictDetector()
@@ -29,10 +32,12 @@ def test_conflict_detector() -> None:
     assert isinstance(report["duplicate_names"], list)
     assert isinstance(report["pattern_overlaps"], list)
 
+
 def test_dead_code_detector() -> None:
     detector = DeadCodeDetector()
     issues = detector.detect_dead_rules()
     assert len(issues) == 0
+
 
 def test_rules_quality_cli_subcommands() -> None:
     res_prof = runner.invoke(app, ["rules", "profile"])

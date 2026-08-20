@@ -80,7 +80,9 @@ class FlaskSessionVisitor:
                     )
                     self.state.add_session_candidate(cand)
 
-    def _check_function_access_control(self, func: ast.FunctionDef | ast.AsyncFunctionDef, node: ASTNodeWrapper) -> None:
+    def _check_function_access_control(
+        self, func: ast.FunctionDef | ast.AsyncFunctionDef, node: ASTNodeWrapper
+    ) -> None:
         # Check if function contains access-control logic checking session identity
         for stmt in func.body:
             if isinstance(stmt, ast.If):

@@ -324,7 +324,12 @@ def test_13_sink_provenance(decision_engine: SecurityDecisionEngine) -> None:
 def test_14_mixed_evidence(decision_engine: SecurityDecisionEngine) -> None:
     ev1 = SemanticEvidence(node_id="e1", evidence_kind=EvidenceKind.SOURCE, var_name="$_POST['data']")
     ev2 = SemanticEvidence(node_id="e2", evidence_kind=EvidenceKind.GUARD, proof_status=ProofStatus.PROVEN)
-    eval_res = EvaluationResult(decision=CompatibilityDecision.COMPATIBLE, reason="ok", matching_constraint=SemanticConstraint.NUMERIC, sink_context=SinkContext.SQL_VALUE)
+    eval_res = EvaluationResult(
+        decision=CompatibilityDecision.COMPATIBLE,
+        reason="ok",
+        matching_constraint=SemanticConstraint.NUMERIC,
+        sink_context=SinkContext.SQL_VALUE,
+    )
     bundle = SemanticEvidenceBundle(
         sink_node_id="sink_mix",
         sink_category="SQL_INJECTION",
@@ -344,7 +349,9 @@ def test_15_missing_evidence(decision_engine: SecurityDecisionEngine) -> None:
 
 
 def test_16_non_converged_evidence(decision_engine: SecurityDecisionEngine) -> None:
-    bundle = SemanticEvidenceBundle(sink_node_id="sink_loop", sink_category="SQL_INJECTION", proof_status=ProofStatus.NOT_PROVEN)
+    bundle = SemanticEvidenceBundle(
+        sink_node_id="sink_loop", sink_category="SQL_INJECTION", proof_status=ProofStatus.NOT_PROVEN
+    )
     verdict = decision_engine.evaluate_verdict(bundle)
     assert verdict.status == VerdictStatus.UNKNOWN
 
@@ -355,8 +362,28 @@ def test_16_non_converged_evidence(decision_engine: SecurityDecisionEngine) -> N
 
 
 def test_17_ssa_1_2_isolation(correlator: SemanticFindingCorrelator) -> None:
-    v1 = SecurityVerdict.create(VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, variable_version="$x#1")
-    v2 = SecurityVerdict.create(VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, variable_version="$x#2")
+    v1 = SecurityVerdict.create(
+        VerdictStatus.VULNERABLE,
+        VerdictConfidence.HIGH,
+        "R1",
+        "s1",
+        "SQL",
+        "f.php",
+        "func",
+        10,
+        variable_version="$x#1",
+    )
+    v2 = SecurityVerdict.create(
+        VerdictStatus.VULNERABLE,
+        VerdictConfidence.HIGH,
+        "R1",
+        "s1",
+        "SQL",
+        "f.php",
+        "func",
+        10,
+        variable_version="$x#2",
+    )
     key1 = correlator.compute_correlation_key(v1)
     key2 = correlator.compute_correlation_key(v2)
     assert key1 != key2
@@ -374,8 +401,20 @@ def test_18_reassignment_invalidation(decision_engine: SecurityDecisionEngine) -
 
 
 def test_19_call_context_isolation(correlator: SemanticFindingCorrelator) -> None:
-    v1 = SecurityVerdict.create(VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, call_context="ctx_tainted")
-    v2 = SecurityVerdict.create(VerdictStatus.SAFE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, call_context="ctx_trusted")
+    v1 = SecurityVerdict.create(
+        VerdictStatus.VULNERABLE,
+        VerdictConfidence.HIGH,
+        "R1",
+        "s1",
+        "SQL",
+        "f.php",
+        "func",
+        10,
+        call_context="ctx_tainted",
+    )
+    v2 = SecurityVerdict.create(
+        VerdictStatus.SAFE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, call_context="ctx_trusted"
+    )
     key1 = correlator.compute_correlation_key(v1)
     key2 = correlator.compute_correlation_key(v2)
     assert key1 != key2
@@ -398,8 +437,20 @@ def test_21_false_branch_guard(decision_engine: SecurityDecisionEngine) -> None:
 
 
 def test_22_branch_polarity_isolation(correlator: SemanticFindingCorrelator) -> None:
-    v1 = SecurityVerdict.create(VerdictStatus.SAFE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, branch_polarity="TRUE")
-    v2 = SecurityVerdict.create(VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, branch_polarity="FALSE")
+    v1 = SecurityVerdict.create(
+        VerdictStatus.SAFE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, branch_polarity="TRUE"
+    )
+    v2 = SecurityVerdict.create(
+        VerdictStatus.VULNERABLE,
+        VerdictConfidence.HIGH,
+        "R1",
+        "s1",
+        "SQL",
+        "f.php",
+        "func",
+        10,
+        branch_polarity="FALSE",
+    )
     key1 = correlator.compute_correlation_key(v1)
     key2 = correlator.compute_correlation_key(v2)
     assert key1 != key2
@@ -411,25 +462,66 @@ def test_22_branch_polarity_isolation(correlator: SemanticFindingCorrelator) -> 
 
 
 def test_23_sql_sink_html_sanitizer(decision_engine: SecurityDecisionEngine) -> None:
-    eval_res = EvaluationResult(CompatibilityDecision.NOT_PROVEN, reason="HTML_ESCAPED incompatible with SQL", sink_context=SinkContext.SQL_VALUE)
-    ev = SemanticEvidence(node_id="e1", evidence_kind=EvidenceKind.SANITIZER, sanitization_constraints=frozenset({SemanticConstraint.HTML_ESCAPED}))
-    bundle = SemanticEvidenceBundle(sink_node_id="s1", sink_category="SQL_INJECTION", evidences=(ev,), proof_status=ProofStatus.PROVEN, evaluation_result=eval_res)
+    eval_res = EvaluationResult(
+        CompatibilityDecision.NOT_PROVEN,
+        reason="HTML_ESCAPED incompatible with SQL",
+        sink_context=SinkContext.SQL_VALUE,
+    )
+    ev = SemanticEvidence(
+        node_id="e1",
+        evidence_kind=EvidenceKind.SANITIZER,
+        sanitization_constraints=frozenset({SemanticConstraint.HTML_ESCAPED}),
+    )
+    bundle = SemanticEvidenceBundle(
+        sink_node_id="s1",
+        sink_category="SQL_INJECTION",
+        evidences=(ev,),
+        proof_status=ProofStatus.PROVEN,
+        evaluation_result=eval_res,
+    )
     verdict = decision_engine.evaluate_verdict(bundle)
     assert verdict.status == VerdictStatus.VULNERABLE
 
 
 def test_24_html_sink_html_sanitizer(decision_engine: SecurityDecisionEngine) -> None:
-    eval_res = EvaluationResult(CompatibilityDecision.COMPATIBLE, reason="HTML_ESCAPED compatible with XSS", matching_constraint=SemanticConstraint.HTML_ESCAPED, sink_context=SinkContext.HTML_TEXT)
-    ev = SemanticEvidence(node_id="e1", evidence_kind=EvidenceKind.SANITIZER, sanitization_constraints=frozenset({SemanticConstraint.HTML_ESCAPED}))
-    bundle = SemanticEvidenceBundle(sink_node_id="s1", sink_category="XSS", evidences=(ev,), proof_status=ProofStatus.PROVEN, evaluation_result=eval_res)
+    eval_res = EvaluationResult(
+        CompatibilityDecision.COMPATIBLE,
+        reason="HTML_ESCAPED compatible with XSS",
+        matching_constraint=SemanticConstraint.HTML_ESCAPED,
+        sink_context=SinkContext.HTML_TEXT,
+    )
+    ev = SemanticEvidence(
+        node_id="e1",
+        evidence_kind=EvidenceKind.SANITIZER,
+        sanitization_constraints=frozenset({SemanticConstraint.HTML_ESCAPED}),
+    )
+    bundle = SemanticEvidenceBundle(
+        sink_node_id="s1",
+        sink_category="XSS",
+        evidences=(ev,),
+        proof_status=ProofStatus.PROVEN,
+        evaluation_result=eval_res,
+    )
     verdict = decision_engine.evaluate_verdict(bundle)
     assert verdict.status == VerdictStatus.SAFE
 
 
 def test_25_shell_sink_unrelated_sanitizer(decision_engine: SecurityDecisionEngine) -> None:
-    eval_res = EvaluationResult(CompatibilityDecision.NOT_PROVEN, reason="Unrelated sanitizer", sink_context=SinkContext.SHELL_ARGUMENT)
-    ev = SemanticEvidence(node_id="e1", evidence_kind=EvidenceKind.SANITIZER, sanitization_constraints=frozenset({SemanticConstraint.HTML_ESCAPED}))
-    bundle = SemanticEvidenceBundle(sink_node_id="s1", sink_category="COMMAND_INJECTION", evidences=(ev,), proof_status=ProofStatus.PROVEN, evaluation_result=eval_res)
+    eval_res = EvaluationResult(
+        CompatibilityDecision.NOT_PROVEN, reason="Unrelated sanitizer", sink_context=SinkContext.SHELL_ARGUMENT
+    )
+    ev = SemanticEvidence(
+        node_id="e1",
+        evidence_kind=EvidenceKind.SANITIZER,
+        sanitization_constraints=frozenset({SemanticConstraint.HTML_ESCAPED}),
+    )
+    bundle = SemanticEvidenceBundle(
+        sink_node_id="s1",
+        sink_category="COMMAND_INJECTION",
+        evidences=(ev,),
+        proof_status=ProofStatus.PROVEN,
+        evaluation_result=eval_res,
+    )
     verdict = decision_engine.evaluate_verdict(bundle)
     assert verdict.status == VerdictStatus.VULNERABLE
 
@@ -441,15 +533,21 @@ def test_25_shell_sink_unrelated_sanitizer(decision_engine: SecurityDecisionEngi
 
 def test_26_matrix_authority_preservation(decision_engine: SecurityDecisionEngine) -> None:
     # Ensure decision_engine delegates authority to matrix result
-    eval_res = EvaluationResult(CompatibilityDecision.NOT_PROVEN, reason="Denied by matrix", sink_context=SinkContext.SQL_VALUE)
-    bundle = SemanticEvidenceBundle(sink_node_id="s1", sink_category="SQL_INJECTION", proof_status=ProofStatus.PROVEN, evaluation_result=eval_res)
+    eval_res = EvaluationResult(
+        CompatibilityDecision.NOT_PROVEN, reason="Denied by matrix", sink_context=SinkContext.SQL_VALUE
+    )
+    bundle = SemanticEvidenceBundle(
+        sink_node_id="s1", sink_category="SQL_INJECTION", proof_status=ProofStatus.PROVEN, evaluation_result=eval_res
+    )
     verdict = decision_engine.evaluate_verdict(bundle)
     assert verdict.status == VerdictStatus.VULNERABLE
     assert verdict.compatibility_decision == "NOT_PROVEN"
 
 
 def test_27_deterministic_reason_codes(decision_engine: SecurityDecisionEngine) -> None:
-    bundle = SemanticEvidenceBundle(sink_node_id="s1", sink_category="SQL_INJECTION", proof_status=ProofStatus.NOT_PROVEN)
+    bundle = SemanticEvidenceBundle(
+        sink_node_id="s1", sink_category="SQL_INJECTION", proof_status=ProofStatus.NOT_PROVEN
+    )
     v1 = decision_engine.evaluate_verdict(bundle)
     v2 = decision_engine.evaluate_verdict(bundle)
     assert v1.reason_codes == v2.reason_codes
@@ -465,22 +563,56 @@ def test_28_deterministic_evidence_ordering(decision_engine: SecurityDecisionEng
 
 
 def test_29_deterministic_fingerprint() -> None:
-    fp1 = compute_evidence_fingerprint("R1", "SQL", "f.php", "foo", 10, "v1", "ctx", "TRUE", ("s1",), ("p1",), (DecisionReason.TAINT_REACHES_SINK,), ())
-    fp2 = compute_evidence_fingerprint("R1", "SQL", "f.php", "foo", 10, "v1", "ctx", "TRUE", ("s1",), ("p1",), (DecisionReason.TAINT_REACHES_SINK,), ())
+    fp1 = compute_evidence_fingerprint(
+        "R1", "SQL", "f.php", "foo", 10, "v1", "ctx", "TRUE", ("s1",), ("p1",), (DecisionReason.TAINT_REACHES_SINK,), ()
+    )
+    fp2 = compute_evidence_fingerprint(
+        "R1", "SQL", "f.php", "foo", 10, "v1", "ctx", "TRUE", ("s1",), ("p1",), (DecisionReason.TAINT_REACHES_SINK,), ()
+    )
     assert fp1 == fp2
     assert len(fp1) == 32
 
 
 def test_30_fingerprint_changes_when_evidence_changes() -> None:
-    fp1 = compute_evidence_fingerprint("R1", "SQL", "f.php", "foo", 10, "v1", "ctx", "TRUE", ("s1",), ("p1",), (DecisionReason.TAINT_REACHES_SINK,), ())
-    fp2 = compute_evidence_fingerprint("R1", "SQL", "f.php", "foo", 10, "v2", "ctx", "TRUE", ("s1",), ("p1",), (DecisionReason.TAINT_REACHES_SINK,), ())
+    fp1 = compute_evidence_fingerprint(
+        "R1", "SQL", "f.php", "foo", 10, "v1", "ctx", "TRUE", ("s1",), ("p1",), (DecisionReason.TAINT_REACHES_SINK,), ()
+    )
+    fp2 = compute_evidence_fingerprint(
+        "R1", "SQL", "f.php", "foo", 10, "v2", "ctx", "TRUE", ("s1",), ("p1",), (DecisionReason.TAINT_REACHES_SINK,), ()
+    )
     assert fp1 != fp2
 
 
 def test_31_equivalent_evidence_gives_same_fingerprint() -> None:
     # Different order of source IDs should produce same canonical fingerprint
-    fp1 = compute_evidence_fingerprint("R1", "SQL", "f.php", "foo", 10, "v1", "ctx", "TRUE", ("s1", "s2"), ("p1",), (DecisionReason.TAINT_REACHES_SINK,), ())
-    fp2 = compute_evidence_fingerprint("R1", "SQL", "f.php", "foo", 10, "v1", "ctx", "TRUE", ("s2", "s1"), ("p1",), (DecisionReason.TAINT_REACHES_SINK,), ())
+    fp1 = compute_evidence_fingerprint(
+        "R1",
+        "SQL",
+        "f.php",
+        "foo",
+        10,
+        "v1",
+        "ctx",
+        "TRUE",
+        ("s1", "s2"),
+        ("p1",),
+        (DecisionReason.TAINT_REACHES_SINK,),
+        (),
+    )
+    fp2 = compute_evidence_fingerprint(
+        "R1",
+        "SQL",
+        "f.php",
+        "foo",
+        10,
+        "v1",
+        "ctx",
+        "TRUE",
+        ("s2", "s1"),
+        ("p1",),
+        (DecisionReason.TAINT_REACHES_SINK,),
+        (),
+    )
     assert fp1 == fp2
 
 
@@ -490,44 +622,92 @@ def test_31_equivalent_evidence_gives_same_fingerprint() -> None:
 
 
 def test_32_finding_correlation(correlator: SemanticFindingCorrelator) -> None:
-    v1 = SecurityVerdict.create(VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10)
-    v2 = SecurityVerdict.create(VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10)
+    v1 = SecurityVerdict.create(
+        VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10
+    )
+    v2 = SecurityVerdict.create(
+        VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10
+    )
     groups = correlator.correlate_verdicts([v1, v2])
     assert len(groups) == 1
     assert groups[0].verdict_count == 2
 
 
 def test_33_source_distinct_findings_not_merged(correlator: SemanticFindingCorrelator) -> None:
-    v1 = SecurityVerdict.create(VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, source_ids=("srcA",))
-    v2 = SecurityVerdict.create(VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, source_ids=("srcB",))
+    v1 = SecurityVerdict.create(
+        VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, source_ids=("srcA",)
+    )
+    v2 = SecurityVerdict.create(
+        VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, source_ids=("srcB",)
+    )
     groups = correlator.correlate_verdicts([v1, v2])
     assert len(groups) == 2
 
 
 def test_34_context_distinct_findings_not_merged(correlator: SemanticFindingCorrelator) -> None:
-    v1 = SecurityVerdict.create(VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, call_context="ctx1")
-    v2 = SecurityVerdict.create(VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, call_context="ctx2")
+    v1 = SecurityVerdict.create(
+        VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, call_context="ctx1"
+    )
+    v2 = SecurityVerdict.create(
+        VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, call_context="ctx2"
+    )
     groups = correlator.correlate_verdicts([v1, v2])
     assert len(groups) == 2
 
 
 def test_35_ssa_distinct_findings_not_merged(correlator: SemanticFindingCorrelator) -> None:
-    v1 = SecurityVerdict.create(VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, variable_version="$x#1")
-    v2 = SecurityVerdict.create(VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, variable_version="$x#2")
+    v1 = SecurityVerdict.create(
+        VerdictStatus.VULNERABLE,
+        VerdictConfidence.HIGH,
+        "R1",
+        "s1",
+        "SQL",
+        "f.php",
+        "func",
+        10,
+        variable_version="$x#1",
+    )
+    v2 = SecurityVerdict.create(
+        VerdictStatus.VULNERABLE,
+        VerdictConfidence.HIGH,
+        "R1",
+        "s1",
+        "SQL",
+        "f.php",
+        "func",
+        10,
+        variable_version="$x#2",
+    )
     groups = correlator.correlate_verdicts([v1, v2])
     assert len(groups) == 2
 
 
 def test_36_branch_distinct_findings_not_merged(correlator: SemanticFindingCorrelator) -> None:
-    v1 = SecurityVerdict.create(VerdictStatus.SAFE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, branch_polarity="TRUE")
-    v2 = SecurityVerdict.create(VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, branch_polarity="FALSE")
+    v1 = SecurityVerdict.create(
+        VerdictStatus.SAFE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, branch_polarity="TRUE"
+    )
+    v2 = SecurityVerdict.create(
+        VerdictStatus.VULNERABLE,
+        VerdictConfidence.HIGH,
+        "R1",
+        "s1",
+        "SQL",
+        "f.php",
+        "func",
+        10,
+        branch_polarity="FALSE",
+    )
     groups = correlator.correlate_verdicts([v1, v2])
     assert len(groups) == 2
 
 
 def test_37_equivalent_findings_merged(correlator: SemanticFindingCorrelator) -> None:
-    v1 = SecurityVerdict.create(VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, source_ids=("src1",))
-    v2 = SecurityVerdict.create(VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, source_ids=("src1",))
+    v1 = SecurityVerdict.create(
+        VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, source_ids=("src1",)
+    )
+    v2 = SecurityVerdict.create(
+        VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "R1", "s1", "SQL", "f.php", "func", 10, source_ids=("src1",)
+    )
     groups = correlator.correlate_verdicts([v1, v2])
     assert len(groups) == 1
 
@@ -538,9 +718,25 @@ def test_37_equivalent_findings_merged(correlator: SemanticFindingCorrelator) ->
 
 
 def test_38_sarif_verdict_property(tmp_path: Path) -> None:
-    v = SecurityVerdict.create(VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "KS-SQL-01", "s1", "SQL", "index.php", "main", 10)
+    v = SecurityVerdict.create(
+        VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "KS-SQL-01", "s1", "SQL", "index.php", "main", 10
+    )
     ev = Evidence(snippet="query($id)", line=10, column=1)
-    f = Finding("f1", "KS-SQL-01", "fp1", "SQLi", Severity.HIGH, Confidence.CONFIDENT, "CWE-89", "A1", Path("index.php"), ev, "desc", "rem", verdict=v)
+    f = Finding(
+        "f1",
+        "KS-SQL-01",
+        "fp1",
+        "SQLi",
+        Severity.HIGH,
+        Confidence.CONFIDENT,
+        "CWE-89",
+        "A1",
+        Path("index.php"),
+        ev,
+        "desc",
+        "rem",
+        verdict=v,
+    )
 
     sarif_file = tmp_path / "report.sarif"
     reporter = SARIFReporter()
@@ -554,9 +750,25 @@ def test_38_sarif_verdict_property(tmp_path: Path) -> None:
 
 
 def test_39_sarif_evidence_fingerprint(tmp_path: Path) -> None:
-    v = SecurityVerdict.create(VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "KS-SQL-01", "s1", "SQL", "index.php", "main", 10)
+    v = SecurityVerdict.create(
+        VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "KS-SQL-01", "s1", "SQL", "index.php", "main", 10
+    )
     ev = Evidence(snippet="query($id)", line=10, column=1)
-    f = Finding("f1", "KS-SQL-01", "fp1", "SQLi", Severity.HIGH, Confidence.CONFIDENT, "CWE-89", "A1", Path("index.php"), ev, "desc", "rem", verdict=v)
+    f = Finding(
+        "f1",
+        "KS-SQL-01",
+        "fp1",
+        "SQLi",
+        Severity.HIGH,
+        Confidence.CONFIDENT,
+        "CWE-89",
+        "A1",
+        Path("index.php"),
+        ev,
+        "desc",
+        "rem",
+        verdict=v,
+    )
 
     sarif_file = tmp_path / "report.sarif"
     reporter = SARIFReporter()
@@ -570,11 +782,32 @@ def test_39_sarif_evidence_fingerprint(tmp_path: Path) -> None:
 
 def test_40_sarif_reason_codes(tmp_path: Path) -> None:
     v = SecurityVerdict.create(
-        VerdictStatus.VULNERABLE, VerdictConfidence.HIGH, "KS-SQL-01", "s1", "SQL", "index.php", "main", 10,
+        VerdictStatus.VULNERABLE,
+        VerdictConfidence.HIGH,
+        "KS-SQL-01",
+        "s1",
+        "SQL",
+        "index.php",
+        "main",
+        10,
         reason_codes=(DecisionReason.TAINT_REACHES_SINK, DecisionReason.SANITIZER_INCOMPATIBLE),
     )
     ev = Evidence(snippet="query($id)", line=10, column=1)
-    f = Finding("f1", "KS-SQL-01", "fp1", "SQLi", Severity.HIGH, Confidence.CONFIDENT, "CWE-89", "A1", Path("index.php"), ev, "desc", "rem", verdict=v)
+    f = Finding(
+        "f1",
+        "KS-SQL-01",
+        "fp1",
+        "SQLi",
+        Severity.HIGH,
+        Confidence.CONFIDENT,
+        "CWE-89",
+        "A1",
+        Path("index.php"),
+        ev,
+        "desc",
+        "rem",
+        verdict=v,
+    )
 
     sarif_file = tmp_path / "report.sarif"
     reporter = SARIFReporter()
@@ -588,7 +821,20 @@ def test_40_sarif_reason_codes(tmp_path: Path) -> None:
 
 def test_41_legacy_finding_compatibility() -> None:
     ev = Evidence(snippet="eval($x)", line=5, column=1)
-    f = Finding("f_leg", "KS-EVAL-01", "fp_leg", "Eval Injection", Severity.HIGH, Confidence.CONFIDENT, "CWE-95", "A3", Path("legacy.php"), ev, "desc", "rem")
+    f = Finding(
+        "f_leg",
+        "KS-EVAL-01",
+        "fp_leg",
+        "Eval Injection",
+        Severity.HIGH,
+        Confidence.CONFIDENT,
+        "CWE-95",
+        "A3",
+        Path("legacy.php"),
+        ev,
+        "desc",
+        "rem",
+    )
     assert f.verdict is None
     d = f.to_dict()
     assert "verdict" not in d
@@ -596,7 +842,20 @@ def test_41_legacy_finding_compatibility() -> None:
 
 def test_42_verdict_none_compatibility(tmp_path: Path) -> None:
     ev = Evidence(snippet="eval($x)", line=5, column=1)
-    f = Finding("f_leg", "KS-EVAL-01", "fp_leg", "Eval Injection", Severity.HIGH, Confidence.CONFIDENT, "CWE-95", "A3", Path("legacy.php"), ev, "desc", "rem")
+    f = Finding(
+        "f_leg",
+        "KS-EVAL-01",
+        "fp_leg",
+        "Eval Injection",
+        Severity.HIGH,
+        Confidence.CONFIDENT,
+        "CWE-95",
+        "A3",
+        Path("legacy.php"),
+        ev,
+        "desc",
+        "rem",
+    )
 
     sarif_file = tmp_path / "legacy.sarif"
     reporter = SARIFReporter()
@@ -620,7 +879,9 @@ def test_43_unknown_evidence_preserved(decision_engine: SecurityDecisionEngine) 
 
 
 def test_44_non_converged_state_preserved(decision_engine: SecurityDecisionEngine) -> None:
-    bundle = SemanticEvidenceBundle(sink_node_id="s1", sink_category="RECURSIVE_SINK", proof_status=ProofStatus.NOT_PROVEN)
+    bundle = SemanticEvidenceBundle(
+        sink_node_id="s1", sink_category="RECURSIVE_SINK", proof_status=ProofStatus.NOT_PROVEN
+    )
     verdict = decision_engine.evaluate_verdict(bundle)
     assert verdict.status != VerdictStatus.SAFE
 

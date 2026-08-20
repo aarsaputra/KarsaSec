@@ -25,7 +25,8 @@ if TYPE_CHECKING:
 @dataclass
 class ContractFixtureFailure:
     """Records a single fixture validation failure."""
-    fixture_kind: str       # "positive" or "negative"
+
+    fixture_kind: str  # "positive" or "negative"
     snippet: str
     expected_matched: bool  # True for positive, False for negative
     actual_matched: bool
@@ -35,6 +36,7 @@ class ContractFixtureFailure:
 @dataclass
 class ContractValidationResult:
     """Result of validating a single rule's contract fixtures."""
+
     rule_id: str
     has_contract: bool
     positive_total: int = 0
@@ -65,6 +67,7 @@ class ContractValidationResult:
 @dataclass
 class ContractSuiteResult:
     """Aggregate result across all validated rules."""
+
     results: list[ContractValidationResult] = field(default_factory=list)
 
     @property
@@ -119,13 +122,15 @@ class RuleContractValidator:
             if matched:
                 result.positive_passed += 1
             else:
-                result.failures.append(ContractFixtureFailure(
-                    fixture_kind="positive",
-                    snippet=snippet,
-                    expected_matched=True,
-                    actual_matched=False,
-                    rule_id=rule.id,
-                ))
+                result.failures.append(
+                    ContractFixtureFailure(
+                        fixture_kind="positive",
+                        snippet=snippet,
+                        expected_matched=True,
+                        actual_matched=False,
+                        rule_id=rule.id,
+                    )
+                )
 
         for snippet in fixtures.negative:
             result.negative_total += 1
@@ -133,13 +138,15 @@ class RuleContractValidator:
             if not matched:
                 result.negative_passed += 1
             else:
-                result.failures.append(ContractFixtureFailure(
-                    fixture_kind="negative",
-                    snippet=snippet,
-                    expected_matched=False,
-                    actual_matched=True,
-                    rule_id=rule.id,
-                ))
+                result.failures.append(
+                    ContractFixtureFailure(
+                        fixture_kind="negative",
+                        snippet=snippet,
+                        expected_matched=False,
+                        actual_matched=True,
+                        rule_id=rule.id,
+                    )
+                )
 
         return result
 

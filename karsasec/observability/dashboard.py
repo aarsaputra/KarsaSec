@@ -8,7 +8,7 @@ Invariants:
 
 from __future__ import annotations
 
-from typing import Dict, Any
+from typing import Any
 from karsasec.observability.metrics import MetricsCollector
 from karsasec.observability.health import ClusterHealthMonitor
 
@@ -24,14 +24,10 @@ class TelemetryDashboard:
         self._metrics = metrics
         self._health = health_monitor
 
-    def render_summary(self) -> Dict[str, Any]:
+    def render_summary(self) -> dict[str, Any]:
         """Render aggregated telemetry summary dictionary."""
         snapshot = self._metrics.snapshot()
-        health_report = (
-            self._health.get_health_report()
-            if self._health
-            else {"status": "UNKNOWN"}
-        )
+        health_report = self._health.get_health_report() if self._health else {"status": "UNKNOWN"}
 
         return {
             "cluster_health": health_report.get("status"),

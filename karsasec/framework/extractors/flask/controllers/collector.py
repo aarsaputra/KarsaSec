@@ -36,6 +36,7 @@ class FlaskControllerCollector:
 
         # Pass 1: Discover Blueprints, MethodViews, and as_view() bindings
         for root in valid_roots:
+
             def pass1(node: ASTNodeWrapper) -> None:
                 self.blueprint_visitor.visit(node)
                 self.method_view_visitor.visit(node)
@@ -45,6 +46,7 @@ class FlaskControllerCollector:
 
         # Pass 2: Discover function controllers and resolve bindings
         for root in valid_roots:
+
             def pass2(node: ASTNodeWrapper) -> None:
                 self.function_visitor.visit(node)
 

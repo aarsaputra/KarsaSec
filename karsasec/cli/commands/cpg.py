@@ -109,7 +109,9 @@ def build_cpg(
 @cpg_app.command("export")
 def export_cpg(
     target_path: Path = typer.Argument(..., help="Source code path to export CPG for."),
-    output_path: Path = typer.Option(Path("cpg_export.json"), "--output", "-o", help="Output CPG artifact file path (.json or .cpg.gz)."),
+    output_path: Path = typer.Option(
+        Path("cpg_export.json"), "--output", "-o", help="Output CPG artifact file path (.json or .cpg.gz)."
+    ),
 ) -> None:
     """Exports Code Property Graph artifact as JSON or compressed .cpg.gz."""
     cpg = _build_cpg_from_path(target_path)
@@ -144,7 +146,9 @@ def validate_cpg(
 
     issues = validator.validate(cpg)
     if not issues:
-        console.print("[bold green][VALIDATED] CPG Graph structural integrity verified (0 errors, 0 broken edges).[/bold green]")
+        console.print(
+            "[bold green][VALIDATED] CPG Graph structural integrity verified (0 errors, 0 broken edges).[/bold green]"
+        )
     else:
         console.print(f"[yellow]Validation Findings: {len(issues)} issues detected.[/yellow]")
         for iss in issues:

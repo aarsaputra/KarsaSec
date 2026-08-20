@@ -165,7 +165,9 @@ def apply_command(
 def status_command(
     finding_id: str = typer.Argument(..., help="ID of the finding to inspect status for."),
     ledger_file: Path = typer.Option(Path("remediation_ledger.json"), "--ledger", help="Path to ledger JSON file."),
-    result_file: Path = typer.Option(Path("remediation_result.json"), "--result", help="Path to lifecycle result JSON file."),
+    result_file: Path = typer.Option(
+        Path("remediation_result.json"), "--result", help="Path to lifecycle result JSON file."
+    ),
 ) -> None:
     """Read-only inspection of current remediation lifecycle state for a finding."""
     if result_file.exists():
@@ -257,7 +259,9 @@ def history_command(
 @remediation_app.command("provenance")
 def provenance_command(
     finding_id: str = typer.Argument(..., help="ID of the finding to inspect provenance graph for."),
-    provenance_file: Path = typer.Option(Path("remediation_provenance.json"), "--provenance", help="Path to provenance graph JSON file."),
+    provenance_file: Path = typer.Option(
+        Path("remediation_provenance.json"), "--provenance", help="Path to provenance graph JSON file."
+    ),
 ) -> None:
     """Read-only inspection of provenance evidence graph for a finding."""
     if not provenance_file.exists():

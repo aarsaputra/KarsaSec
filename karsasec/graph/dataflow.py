@@ -10,14 +10,17 @@ from karsasec.graph.graph import ProjectGraph
 
 class DataflowEdgeType(Enum):
     """Types of data flow transfers between program expressions."""
+
     ASSIGNMENT = "ASSIGNMENT"
     PARAMETER_PASS = "PARAMETER_PASS"
     RETURN_VALUE = "RETURN_VALUE"
     OPERATION = "OPERATION"
 
+
 @dataclass(slots=True)
 class DataflowNode:
     """Represents a dataflow tracking point (variable, expression, parameter, sink/source)."""
+
     node_id: str
     name: str
     qualified_name: str = ""
@@ -27,19 +30,24 @@ class DataflowNode:
     is_source: bool = False
     is_sink: bool = False
 
+
 @dataclass(slots=True)
 class DataflowEdge:
     """Represents a directional flow of data between two DataflowNodes."""
+
     source_id: str
     target_id: str
     edge_type: DataflowEdgeType = DataflowEdgeType.ASSIGNMENT
     label: str = ""
 
+
 @dataclass(slots=True)
 class DataflowPath:
     """Complete sequence of DataflowNodes and DataflowEdges connecting a source to a sink."""
+
     nodes: list[DataflowNode] = field(default_factory=list)
     edges: list[DataflowEdge] = field(default_factory=list)
+
 
 class DataflowEngine:
     """Tracks variable, parameter, and return flows across AST nodes and ProjectGraph."""
@@ -79,9 +87,9 @@ class DataflowEngine:
 
         paths: list[DataflowPath] = []
         # Queue stores tuples of (current_node_id, visited_set, node_path, edge_path)
-        queue: deque[tuple[str, set[str], list[str], list[DataflowEdge]]] = deque([
-            (source_id, {source_id}, [source_id], [])
-        ])
+        queue: deque[tuple[str, set[str], list[str], list[DataflowEdge]]] = deque(
+            [(source_id, {source_id}, [source_id], [])]
+        )
 
         while queue:
             curr_id, visited, node_path, edge_path = queue.popleft()
@@ -94,12 +102,14 @@ class DataflowEngine:
             for edge in self.outgoing_edges.get(curr_id, []):
                 nxt_id = edge.target_id
                 if nxt_id not in visited:
-                    queue.append((
-                        nxt_id,
-                        visited | {nxt_id},
-                        node_path + [nxt_id],
-                        edge_path + [edge],
-                    ))
+                    queue.append(
+                        (
+                            nxt_id,
+                            visited | {nxt_id},
+                            node_path + [nxt_id],
+                            edge_path + [edge],
+                        )
+                    )
 
         return paths
 

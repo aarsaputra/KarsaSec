@@ -8,6 +8,7 @@ Validates all E10-3K exit criteria:
   - DVWA_WEB_PAGE_TO_ROOT regression
   - No DVWA-specific hardcode in TaintVerifier
 """
+
 from __future__ import annotations
 
 import pytest
@@ -23,6 +24,7 @@ from karsasec.rules.enums import Confidence, Severity
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def resolver() -> ConstantResolver:
@@ -42,6 +44,7 @@ def _node() -> ASTNode:
 # Scenario 1: define() with static string literal
 # ---------------------------------------------------------------------------
 
+
 class TestScenario1_DefineStaticString:
     """S1: define('BASE_PATH', '../') -> STATIC_CONSTANT"""
 
@@ -54,8 +57,15 @@ class TestScenario1_DefineStaticString:
     def test_no_taint_finding(self, verifier: TaintVerifier) -> None:
         src = "<?php define('BASE_PATH', '../');\nrequire_once BASE_PATH . 'foo.php';"
         snippet = "require_once BASE_PATH . 'foo.php';"
-        res = verifier.verify_sink(_node(), snippet, snippet, src, language="php",
-                                   base_severity=Severity.HIGH, base_confidence=Confidence.CONFIDENT)
+        res = verifier.verify_sink(
+            _node(),
+            snippet,
+            snippet,
+            src,
+            language="php",
+            base_severity=Severity.HIGH,
+            base_confidence=Confidence.CONFIDENT,
+        )
         assert res.is_hardcoded_static, "Static constant path should suppress finding"
         assert res.adjusted_severity == Severity.LOW
 
@@ -63,6 +73,7 @@ class TestScenario1_DefineStaticString:
 # ---------------------------------------------------------------------------
 # Scenario 2: const keyword with static value
 # ---------------------------------------------------------------------------
+
 
 class TestScenario2_ConstKeywordStatic:
     """S2: const BASE_PATH = '../'; -> STATIC_CONSTANT"""
@@ -77,6 +88,7 @@ class TestScenario2_ConstKeywordStatic:
 # ---------------------------------------------------------------------------
 # Scenario 3: Constant + string literal concatenation -> DERIVED_STATIC
 # ---------------------------------------------------------------------------
+
 
 class TestScenario3_ConcatDerivedStatic:
     """S3: BASE_PATH . 'foo.php' -> DERIVED_STATIC (both parts static)"""
@@ -95,6 +107,7 @@ class TestScenario3_ConcatDerivedStatic:
 # Scenario 4: Nested static constants (A -> B -> literal)
 # ---------------------------------------------------------------------------
 
+
 class TestScenario4_NestedStaticConstants:
     """S4: define('A', B) where define('B', '../') -> resolve A = STATIC_CONSTANT"""
 
@@ -109,6 +122,7 @@ class TestScenario4_NestedStaticConstants:
 # Scenario 5: Constant from $_GET -> TAINTED
 # ---------------------------------------------------------------------------
 
+
 class TestScenario5_ConstantFromGet:
     """S5: define('BASE_PATH', $_GET['path']) -> TAINTED"""
 
@@ -120,14 +134,22 @@ class TestScenario5_ConstantFromGet:
     def test_taint_finding(self, verifier: TaintVerifier) -> None:
         src = "<?php define('BASE_PATH', $_GET['path']);\nrequire_once BASE_PATH . 'foo.php';"
         snippet = "require_once BASE_PATH . 'foo.php';"
-        res = verifier.verify_sink(_node(), snippet, snippet, src, language="php",
-                                   base_severity=Severity.HIGH, base_confidence=Confidence.CONFIDENT)
+        res = verifier.verify_sink(
+            _node(),
+            snippet,
+            snippet,
+            src,
+            language="php",
+            base_severity=Severity.HIGH,
+            base_confidence=Confidence.CONFIDENT,
+        )
         assert res.constant_resolution == ConstantResolution.TAINTED
 
 
 # ---------------------------------------------------------------------------
 # Scenario 6: Constant from $_POST -> TAINTED
 # ---------------------------------------------------------------------------
+
 
 class TestScenario6_ConstantFromPost:
     """S6: define('BASE_PATH', $_POST['p']) -> TAINTED"""
@@ -141,6 +163,7 @@ class TestScenario6_ConstantFromPost:
 # ---------------------------------------------------------------------------
 # Scenario 7: Constant from getenv() -> UNKNOWN (ENV_REFERENCE)
 # ---------------------------------------------------------------------------
+
 
 class TestScenario7_ConstantFromGetenv:
     """S7: define('BASE_PATH', getenv('BASE_PATH')) -> UNKNOWN"""
@@ -156,6 +179,7 @@ class TestScenario7_ConstantFromGetenv:
 # Scenario 8: Undefined constant -> UNKNOWN
 # ---------------------------------------------------------------------------
 
+
 class TestScenario8_UndefinedConstant:
     """S8: No define() found for UNDEFINED_CONST -> UNKNOWN"""
 
@@ -168,16 +192,22 @@ class TestScenario8_UndefinedConstant:
         """UNKNOWN constant -> must NOT suppress as static."""
         src = "<?php echo 'hello';\nrequire_once UNDEFINED_CONST . 'foo.php';"
         snippet = "require_once UNDEFINED_CONST . 'foo.php';"
-        res = verifier.verify_sink(_node(), snippet, snippet, src, language="php",
-                                   base_severity=Severity.HIGH, base_confidence=Confidence.CONFIDENT)
-        assert not res.is_hardcoded_static, (
-            "UNKNOWN constant must NOT be treated as static — insufficient evidence"
+        res = verifier.verify_sink(
+            _node(),
+            snippet,
+            snippet,
+            src,
+            language="php",
+            base_severity=Severity.HIGH,
+            base_confidence=Confidence.CONFIDENT,
         )
+        assert not res.is_hardcoded_static, "UNKNOWN constant must NOT be treated as static — insufficient evidence"
 
 
 # ---------------------------------------------------------------------------
 # Scenario 9: Recursive constant cycle A -> B -> A -> UNKNOWN
 # ---------------------------------------------------------------------------
+
 
 class TestScenario9_CycleProtection:
     """S9: define('A', B) + define('B', A) -> cycle -> UNKNOWN (not infinite loop)"""
@@ -187,7 +217,9 @@ class TestScenario9_CycleProtection:
         ev = resolver.resolve("A", src)
         # Must terminate (no RecursionError) and must resolve to UNKNOWN
         assert ev.resolution == ConstantResolution.UNKNOWN
-        assert "cycle" in ev.provenance.lower() or "depth" in ev.provenance.lower() or "unknown" in ev.provenance.lower()
+        assert (
+            "cycle" in ev.provenance.lower() or "depth" in ev.provenance.lower() or "unknown" in ev.provenance.lower()
+        )
 
     def test_cycle_terminates_from_b(self, resolver: ConstantResolver) -> None:
         src = "<?php define('A', B);\ndefine('B', A);"
@@ -198,6 +230,7 @@ class TestScenario9_CycleProtection:
 # ---------------------------------------------------------------------------
 # Scenario 10: Same constant name, multiple declarations -> UNKNOWN (scope ambiguity)
 # ---------------------------------------------------------------------------
+
 
 class TestScenario10_MultipleDeclarations:
     """S10: Two define('SAME', ...) -> UNKNOWN (ambiguous scope, conservative)"""
@@ -213,18 +246,22 @@ class TestScenario10_MultipleDeclarations:
 # Scenario 11: Static constant used in require/include -> no finding
 # ---------------------------------------------------------------------------
 
+
 class TestScenario11_StaticConstantInRequire:
     """S11: require_once STATIC_CONST . 'file.php' with no PHP vars -> suppress"""
 
     def test_no_finding(self, verifier: TaintVerifier) -> None:
-        src = (
-            "<?php\n"
-            "define('INCLUDES_DIR', '/var/www/includes/');\n"
-            "require_once INCLUDES_DIR . 'config.php';\n"
-        )
+        src = "<?php\ndefine('INCLUDES_DIR', '/var/www/includes/');\nrequire_once INCLUDES_DIR . 'config.php';\n"
         snippet = "require_once INCLUDES_DIR . 'config.php';"
-        res = verifier.verify_sink(_node(), snippet, snippet, src, language="php",
-                                   base_severity=Severity.HIGH, base_confidence=Confidence.CONFIDENT)
+        res = verifier.verify_sink(
+            _node(),
+            snippet,
+            snippet,
+            src,
+            language="php",
+            base_severity=Severity.HIGH,
+            base_confidence=Confidence.CONFIDENT,
+        )
         assert res.is_hardcoded_static
         assert res.adjusted_severity == Severity.LOW
 
@@ -237,8 +274,15 @@ class TestScenario11_StaticConstantInRequire:
             "$source = file_get_contents(BASE . 'vuln/' . $file);\n"
         )
         snippet = "file_get_contents(BASE . 'vuln/' . $file)"
-        res = verifier.verify_sink(_node(), snippet, snippet, src, language="php",
-                                   base_severity=Severity.HIGH, base_confidence=Confidence.CONFIDENT)
+        res = verifier.verify_sink(
+            _node(),
+            snippet,
+            snippet,
+            src,
+            language="php",
+            base_severity=Severity.HIGH,
+            base_confidence=Confidence.CONFIDENT,
+        )
         # $file is from $_GET -> has_taint_source must be True
         assert res.has_taint_source or not res.is_hardcoded_static, (
             "Expression with PHP variable should NOT be suppressed as static"
@@ -248,6 +292,7 @@ class TestScenario11_StaticConstantInRequire:
 # ---------------------------------------------------------------------------
 # Scenario 12: DVWA_WEB_PAGE_TO_ROOT regression
 # ---------------------------------------------------------------------------
+
 
 class TestScenario12_DVWARegression:
     """S12: DVWA_WEB_PAGE_TO_ROOT regression — must be resolved generically, not hardcoded."""
@@ -266,11 +311,16 @@ class TestScenario12_DVWARegression:
     def test_dvwa_require_no_finding(self, verifier: TaintVerifier) -> None:
         """DVWA FP regression: require_once DVWA_WEB_PAGE_TO_ROOT . '...' must NOT be HIGH."""
         snippet = "require_once DVWA_WEB_PAGE_TO_ROOT . 'dvwa/includes/dvwaPage.inc.php';"
-        res = verifier.verify_sink(_node(), snippet, snippet, self.DVWA_SOURCE, language="php",
-                                   base_severity=Severity.HIGH, base_confidence=Confidence.CONFIDENT)
-        assert res.is_hardcoded_static, (
-            "DVWA_WEB_PAGE_TO_ROOT resolved generically to static constant — must suppress"
+        res = verifier.verify_sink(
+            _node(),
+            snippet,
+            snippet,
+            self.DVWA_SOURCE,
+            language="php",
+            base_severity=Severity.HIGH,
+            base_confidence=Confidence.CONFIDENT,
         )
+        assert res.is_hardcoded_static, "DVWA_WEB_PAGE_TO_ROOT resolved generically to static constant — must suppress"
         assert res.adjusted_severity == Severity.LOW
         assert res.constant_resolution in (
             ConstantResolution.DERIVED_STATIC,
@@ -282,6 +332,7 @@ class TestScenario12_DVWARegression:
         import inspect
 
         from karsasec.graph import taint_verifier as tv_module
+
         src = inspect.getsource(tv_module)
         assert "DVWA_WEB_PAGE_TO_ROOT" not in src, (
             "TaintVerifier must not contain project-specific constant 'DVWA_WEB_PAGE_TO_ROOT'. "
@@ -297,9 +348,18 @@ class TestScenario12_DVWARegression:
             "$security = $_GET[ 'security' ];\n"
             '$source = @file_get_contents( DVWA_WEB_PAGE_TO_ROOT . "vulnerabilities/{$id}/source/{$security}.php" );\n'
         )
-        snippet = '$source = @file_get_contents( DVWA_WEB_PAGE_TO_ROOT . "vulnerabilities/{$id}/source/{$security}.php" );'
-        res = verifier.verify_sink(_node(), snippet, snippet, src, language="php",
-                                   base_severity=Severity.HIGH, base_confidence=Confidence.CONFIDENT)
+        snippet = (
+            '$source = @file_get_contents( DVWA_WEB_PAGE_TO_ROOT . "vulnerabilities/{$id}/source/{$security}.php" );'
+        )
+        res = verifier.verify_sink(
+            _node(),
+            snippet,
+            snippet,
+            src,
+            language="php",
+            base_severity=Severity.HIGH,
+            base_confidence=Confidence.CONFIDENT,
+        )
         # $id and $security come from $_GET -> this MUST NOT be suppressed
         assert not res.is_hardcoded_static, (
             "Expression contains $id/$security from $_GET — must NOT be suppressed as static"
@@ -309,6 +369,7 @@ class TestScenario12_DVWARegression:
 # ---------------------------------------------------------------------------
 # Extra: ConstantResolution determinism
 # ---------------------------------------------------------------------------
+
 
 class TestDeterminism:
     """ConstantResolver must produce identical results regardless of input order."""

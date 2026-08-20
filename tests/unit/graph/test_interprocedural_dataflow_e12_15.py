@@ -42,13 +42,7 @@ def test_01_basic_parameter_taint_propagation(interproc_analyzer):
 # 02. Guarded Function Parameter (TRUE vs FALSE Branch)
 # ---------------------------------------------------------------------------
 def test_02_guarded_function_parameter():
-    code = [
-        "if (is_numeric($id)) {",
-        "  $sink = $id;",
-        "} else {",
-        "  $sink = $id;",
-        "}"
-    ]
+    code = ["if (is_numeric($id)) {", "  $sink = $id;", "} else {", "  $sink = $id;", "}"]
     cfg = CFGBuilder().build_cfg("test", code)
     env = AbstractEnvironment()
     env.assignment_kill("$id", new_taint=TaintState.TAINTED)
@@ -79,19 +73,17 @@ def test_03_unguarded_parameter(interproc_analyzer):
 # 04. Guarded Return Preserved
 # ---------------------------------------------------------------------------
 def test_04_guarded_return(interproc_analyzer):
-    code = [
-        "if (is_numeric($id)) {",
-        "  return $id;",
-        "}",
-        "return null;"
-    ]
+    code = ["if (is_numeric($id)) {", "  return $id;", "}", "return null;"]
     summary = interproc_analyzer.analyze_function("normalize", "fileA.php", code, ["id"])
     ctx = CallContext("main.php", "main", 15, "normalize", "cs_4")
     caller_env = AbstractEnvironment()
     caller_env.assignment_kill("$val", new_taint=TaintState.TAINTED)
 
     interproc_analyzer.propagate_return(ctx, summary, "$res", caller_env)
-    assert caller_env.get_value("$res").taint in (TaintState.UNKNOWN, TaintState.TAINTED)  # conservative join across paths
+    assert caller_env.get_value("$res").taint in (
+        TaintState.UNKNOWN,
+        TaintState.TAINTED,
+    )  # conservative join across paths
 
 
 # ---------------------------------------------------------------------------
@@ -107,12 +99,7 @@ def test_05_unguarded_return(interproc_analyzer):
 # 06. Reassignment After Guard Kills Fact
 # ---------------------------------------------------------------------------
 def test_06_reassignment_after_guard():
-    code = [
-        "if (is_numeric($x)) {",
-        "  $x = $_GET['other'];",
-        "  $sink = $x;",
-        "}"
-    ]
+    code = ["if (is_numeric($x)) {", "  $x = $_GET['other'];", "  $sink = $x;", "}"]
     analyzer = WorklistFixpointAnalyzer()
     cfg = CFGBuilder().build_cfg("reassign", code)
     env = AbstractEnvironment()
@@ -230,9 +217,7 @@ def test_11_guard_in_nested_function(interproc_analyzer):
 # 12. FALSE Branch Remained Not Proven
 # ---------------------------------------------------------------------------
 def test_12_false_branch():
-    code = [
-        "if (is_numeric($x)) { $sink = $x; } else { $sink = $x; }"
-    ]
+    code = ["if (is_numeric($x)) { $sink = $x; } else { $sink = $x; }"]
     cfg = CFGBuilder().build_cfg("branch", code)
     env = AbstractEnvironment()
     env.assignment_kill("$x", new_taint=TaintState.TAINTED)
@@ -280,10 +265,7 @@ def test_14_transformation_before_call(interproc_analyzer):
 # 15. Sanitizer Followed by Reassignment
 # ---------------------------------------------------------------------------
 def test_15_sanitizer_followed_by_reassignment():
-    code = [
-        "$x = intval($x);",
-        "$x = $_GET['new'];"
-    ]
+    code = ["$x = intval($x);", "$x = $_GET['new'];"]
     cfg = CFGBuilder().build_cfg("reassign_san", code)
     env = AbstractEnvironment()
     env.assignment_kill("$x", new_taint=TaintState.TAINTED)
@@ -310,7 +292,9 @@ def test_16_recursive_function(interproc_analyzer):
 # 17. Mutual Recursion Fallback
 # ---------------------------------------------------------------------------
 def test_17_mutual_recursion(interproc_analyzer):
-    summary_A = interproc_analyzer.analyze_function("A", "a.php", ["return B($x);"], ["x"], call_stack=("a.php::A", "a.php::B", "a.php::A"))
+    summary_A = interproc_analyzer.analyze_function(
+        "A", "a.php", ["return B($x);"], ["x"], call_stack=("a.php::A", "a.php::B", "a.php::A")
+    )
     assert summary_A.is_recursive is True
     assert summary_A.path_summaries[0].taint_state == TaintState.UNKNOWN
 
@@ -319,10 +303,7 @@ def test_17_mutual_recursion(interproc_analyzer):
 # 18. Multiple Return Paths Conservative Join
 # ---------------------------------------------------------------------------
 def test_18_multiple_return_paths(interproc_analyzer):
-    code = [
-        "if (is_numeric($x)) { return $x; }",
-        "return $_GET['tainted'];"
-    ]
+    code = ["if (is_numeric($x)) { return $x; }", "return $_GET['tainted'];"]
     summary = interproc_analyzer.analyze_function("multi_ret", "a.php", code, ["x"])
     joined_taint, joined_constraints = summary.joined_return_state()
 
@@ -424,12 +405,7 @@ def test_26_function_returning_one_of_two_parameters(interproc_analyzer):
 
 
 def test_27_guard_applied_to_param_a_not_affect_b():
-    code = [
-        "if (is_numeric($a)) {",
-        "  $sink_a = $a;",
-        "  $sink_b = $b;",
-        "}"
-    ]
+    code = ["if (is_numeric($a)) {", "  $sink_a = $a;", "  $sink_b = $b;", "}"]
     cfg = CFGBuilder().build_cfg("guard_a", code)
     env = AbstractEnvironment()
     env.assignment_kill("$a", new_taint=TaintState.TAINTED)
@@ -486,29 +462,27 @@ def test_31_missing_cross_file_relationship_not_inferred(interproc_analyzer):
 
 
 def test_32_recursive_function_base_path(interproc_analyzer):
-    code = [
-        "if ($n <= 0) { return 0; }",
-        "return rec($n - 1);"
-    ]
+    code = ["if ($n <= 0) { return 0; }", "return rec($n - 1);"]
     summary = interproc_analyzer.analyze_function("rec", "a.php", code, ["n"])
     assert len(summary.path_summaries) >= 1
 
 
 def test_33_recursive_function_without_stable_summary(interproc_analyzer):
-    summary = interproc_analyzer.analyze_function("loop", "a.php", ["return loop($n);"], ["n"], call_stack=("a.php::loop",))
+    summary = interproc_analyzer.analyze_function(
+        "loop", "a.php", ["return loop($n);"], ["n"], call_stack=("a.php::loop",)
+    )
     assert summary.is_recursive is True
 
 
 def test_34_mutual_recursion_without_stable_summary(interproc_analyzer):
-    summary = interproc_analyzer.analyze_function("foo", "a.php", ["return bar($x);"], ["x"], call_stack=("a.php::foo", "a.php::bar", "a.php::foo"))
+    summary = interproc_analyzer.analyze_function(
+        "foo", "a.php", ["return bar($x);"], ["x"], call_stack=("a.php::foo", "a.php::bar", "a.php::foo")
+    )
     assert summary.is_recursive is True
 
 
 def test_35_multiple_return_paths_one_tainted(interproc_analyzer):
-    code = [
-        "if ($cond) { return 'SAFE'; }",
-        "return $_GET['taint'];"
-    ]
+    code = ["if ($cond) { return 'SAFE'; }", "return $_GET['taint'];"]
     summary = interproc_analyzer.analyze_function("cond_ret", "a.php", code, ["cond"])
     t, _ = summary.joined_return_state()
     assert t == TaintState.TAINTED
@@ -521,17 +495,14 @@ def test_36_multiple_return_paths_one_unknown(interproc_analyzer):
         path_summaries=(
             PathSummary(path_id="p1", taint_state=TaintState.UNTAINTED),
             PathSummary(path_id="p2", taint_state=TaintState.UNKNOWN),
-        )
+        ),
     )
     t, _ = summary.joined_return_state()
     assert t == TaintState.UNKNOWN
 
 
 def test_37_nested_transformation_chain():
-    code = [
-        "$a = htmlspecialchars($x);",
-        "$b = (int)$a;"
-    ]
+    code = ["$a = htmlspecialchars($x);", "$b = (int)$a;"]
     cfg = CFGBuilder().build_cfg("chain", code)
     env = AbstractEnvironment()
     env.assignment_kill("$x", new_taint=TaintState.TAINTED)
@@ -543,10 +514,7 @@ def test_37_nested_transformation_chain():
 
 
 def test_38_transformation_followed_by_reassignment():
-    code = [
-        "$x = (int)$x;",
-        "$x = $_POST['raw'];"
-    ]
+    code = ["$x = (int)$x;", "$x = $_POST['raw'];"]
     cfg = CFGBuilder().build_cfg("reassign_trans", code)
     env = AbstractEnvironment()
     env.assignment_kill("$x", new_taint=TaintState.TAINTED)
@@ -556,10 +524,7 @@ def test_38_transformation_followed_by_reassignment():
 
 
 def test_39_assignment_chain_across_three_variables():
-    code = [
-        "$b = $a;",
-        "$c = $b;"
-    ]
+    code = ["$b = $a;", "$c = $b;"]
     cfg = CFGBuilder().build_cfg("chain3", code)
     env = AbstractEnvironment()
     env.assignment_kill("$a", new_taint=TaintState.TAINTED)

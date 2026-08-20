@@ -7,7 +7,9 @@ from karsasec.rules.registry import RuleRegistry
 from karsasec.rules.schema import Rule, RuleCondition, RuleMatch, RuleMetadata, RuleOutput
 
 
-def create_sample_rule(rule_id: str, language: LanguageEnum = LanguageEnum.PYTHON, node_types: list = None, enabled: bool = True) -> Rule:
+def create_sample_rule(
+    rule_id: str, language: LanguageEnum = LanguageEnum.PYTHON, node_types: list = None, enabled: bool = True
+) -> Rule:
     return Rule(
         id=rule_id,
         metadata=RuleMetadata(name="Test Rule", author="KarsaSec", version="1.0", enabled=enabled),
@@ -15,6 +17,7 @@ def create_sample_rule(rule_id: str, language: LanguageEnum = LanguageEnum.PYTHO
         condition=RuleCondition(symbol_triggers=["eval"]),
         output=RuleOutput(severity=Severity.HIGH, confidence="CONFIDENT", message="Test", remediation="Fix"),
     )
+
 
 def test_registry_registration_and_lookup() -> None:
     registry = RuleRegistry()
@@ -31,6 +34,7 @@ def test_registry_registration_and_lookup() -> None:
     assert len(call_rules) == 1
     assert call_rules[0].id == "KS-PY-0001"
 
+
 def test_registry_duplicate_rule_id_prevention() -> None:
     registry = RuleRegistry()
     rule1 = create_sample_rule("KS-PY-0001")
@@ -39,6 +43,7 @@ def test_registry_duplicate_rule_id_prevention() -> None:
     registry.register(rule1)
     with pytest.raises(ValueError, match="Duplicate Rule ID"):
         registry.register(rule2)
+
 
 def test_registry_disabled_rule_filtering() -> None:
     registry = RuleRegistry()

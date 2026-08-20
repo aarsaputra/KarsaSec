@@ -5,9 +5,10 @@ from pathlib import Path
 
 
 class CallType(Enum):
-    STATIC = "static"      # Direct function or class method call
-    DYNAMIC = "dynamic"    # Method call resolved dynamically
+    STATIC = "static"  # Direct function or class method call
+    DYNAMIC = "dynamic"  # Method call resolved dynamically
     INDIRECT = "indirect"  # Callback or function pointer execution
+
 
 class CallNode:
     """Represents a function, method, or global entry point in the Call Graph."""
@@ -45,9 +46,9 @@ class CallNode:
 
     def __repr__(self) -> str:
         return (
-            f"CallNode(name={self.name}, qname={self.qualified_name}, "
-            f"file={self.file_path.name}, lang={self.language})"
+            f"CallNode(name={self.name}, qname={self.qualified_name}, file={self.file_path.name}, lang={self.language})"
         )
+
 
 class CallEdge:
     """Represents an execution control flow transition from caller to callee."""

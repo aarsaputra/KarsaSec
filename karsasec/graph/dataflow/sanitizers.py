@@ -1,4 +1,5 @@
 """Sink-aware sanitizer capability registry (E11)."""
+
 from __future__ import annotations
 
 import re
@@ -9,6 +10,7 @@ from karsasec.graph.dataflow.sinks import SinkCategory
 
 class SanitizerCapability(StrEnum):
     """Specific neutralizing capabilities offered by sanitizers."""
+
     HTML_ESCAPE = "HTML_ESCAPE"
     SHELL_ESCAPE = "SHELL_ESCAPE"
     SQL_ESCAPE = "SQL_ESCAPE"
@@ -20,39 +22,53 @@ class SanitizerCapability(StrEnum):
 
 # Mapping from SanitizerCapability to SinkCategories that it safely neutralizes
 _CAPABILITY_COMPATIBILITY: dict[SanitizerCapability, frozenset[SinkCategory]] = {
-    SanitizerCapability.HTML_ESCAPE: frozenset({
-        SinkCategory.HTML_OUTPUT,
-    }),
-    SanitizerCapability.SHELL_ESCAPE: frozenset({
-        SinkCategory.COMMAND_EXECUTION,
-    }),
-    SanitizerCapability.SQL_ESCAPE: frozenset({
-        SinkCategory.SQL_EXECUTION,
-    }),
-    SanitizerCapability.INTEGER_COERCION: frozenset({
-        SinkCategory.SQL_EXECUTION,
-        SinkCategory.COMMAND_EXECUTION,
-        SinkCategory.FILE_INCLUSION,
-        SinkCategory.FILE_READ,
-        SinkCategory.HTML_OUTPUT,
-        SinkCategory.CODE_EVALUATION,
-    }),
-    SanitizerCapability.HASH_OUTPUT: frozenset({
-        SinkCategory.SQL_EXECUTION,
-        SinkCategory.COMMAND_EXECUTION,
-        SinkCategory.FILE_INCLUSION,
-        SinkCategory.FILE_READ,
-        SinkCategory.HTML_OUTPUT,
-        SinkCategory.CODE_EVALUATION,
-    }),
-    SanitizerCapability.PATH_COMPONENT_NORMALIZATION: frozenset({
-        SinkCategory.FILE_INCLUSION,
-        SinkCategory.FILE_READ,
-    }),
-    SanitizerCapability.PATH_CANONICALIZATION: frozenset({
-        SinkCategory.FILE_INCLUSION,
-        SinkCategory.FILE_READ,
-    }),
+    SanitizerCapability.HTML_ESCAPE: frozenset(
+        {
+            SinkCategory.HTML_OUTPUT,
+        }
+    ),
+    SanitizerCapability.SHELL_ESCAPE: frozenset(
+        {
+            SinkCategory.COMMAND_EXECUTION,
+        }
+    ),
+    SanitizerCapability.SQL_ESCAPE: frozenset(
+        {
+            SinkCategory.SQL_EXECUTION,
+        }
+    ),
+    SanitizerCapability.INTEGER_COERCION: frozenset(
+        {
+            SinkCategory.SQL_EXECUTION,
+            SinkCategory.COMMAND_EXECUTION,
+            SinkCategory.FILE_INCLUSION,
+            SinkCategory.FILE_READ,
+            SinkCategory.HTML_OUTPUT,
+            SinkCategory.CODE_EVALUATION,
+        }
+    ),
+    SanitizerCapability.HASH_OUTPUT: frozenset(
+        {
+            SinkCategory.SQL_EXECUTION,
+            SinkCategory.COMMAND_EXECUTION,
+            SinkCategory.FILE_INCLUSION,
+            SinkCategory.FILE_READ,
+            SinkCategory.HTML_OUTPUT,
+            SinkCategory.CODE_EVALUATION,
+        }
+    ),
+    SanitizerCapability.PATH_COMPONENT_NORMALIZATION: frozenset(
+        {
+            SinkCategory.FILE_INCLUSION,
+            SinkCategory.FILE_READ,
+        }
+    ),
+    SanitizerCapability.PATH_CANONICALIZATION: frozenset(
+        {
+            SinkCategory.FILE_INCLUSION,
+            SinkCategory.FILE_READ,
+        }
+    ),
 }
 
 
@@ -101,10 +117,10 @@ class SanitizerRegistry:
 
             # Check explicit type casts like (int) or (float) in expression/snippet
             if snippet:
-                if re.search(r'\(\s*(?:int|integer|float|double)\s*\)', snippet, re.IGNORECASE):
+                if re.search(r"\(\s*(?:int|integer|float|double)\s*\)", snippet, re.IGNORECASE):
                     return SanitizerCapability.INTEGER_COERCION
                 for func, cap in self._php_sanitizers.items():
-                    if re.search(rf'\b{re.escape(func)}\s*\(', snippet, re.IGNORECASE):
+                    if re.search(rf"\b{re.escape(func)}\s*\(", snippet, re.IGNORECASE):
                         return cap
 
         return None

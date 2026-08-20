@@ -4,6 +4,7 @@ from typing import Any, Generic, TypeVar
 
 T = TypeVar("T")
 
+
 class ComponentRegistry(Generic[T]):
     """Registry pattern for dynamically loaded extension plugins."""
 
@@ -26,6 +27,7 @@ class ComponentRegistry(Generic[T]):
     def clear(self) -> None:
         """Clears registered components."""
         self._components.clear()
+
 
 # Global registry for pluggable components such as hybrid RAG services.
 rag_registry: ComponentRegistry[Any] = ComponentRegistry("RAGComponents")

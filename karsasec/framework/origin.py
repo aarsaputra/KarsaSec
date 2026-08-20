@@ -9,6 +9,7 @@ from typing import Any
 
 class Confidence(StrEnum):
     """Confidence levels for semantic extraction and framework detection."""
+
     CONFIDENT = "CONFIDENT"
     LIKELY = "LIKELY"
     POSSIBLE = "POSSIBLE"
@@ -17,6 +18,7 @@ class Confidence(StrEnum):
 @dataclass(frozen=True)
 class SourceLocation:
     """Source code position tracking."""
+
     file_path: str = ""
     line: int = 1
     column: int = 0
@@ -46,6 +48,7 @@ class SourceLocation:
 @dataclass(frozen=True)
 class Evidence:
     """Evidence snippet supporting semantic extraction."""
+
     snippet: str = ""
     rule_or_marker: str = ""
     file_path: str = ""
@@ -81,9 +84,10 @@ SOURCE_KIND_CONFIDENCE_MAP: dict[str, str] = {
 @dataclass(frozen=True)
 class EvidenceProvenance:
     """Deterministic provenance record tracking the source, classification, and location of semantic evidence."""
+
     value: Any
     source_kind: str = "unknown"  # explicit_decorator, explicit_assignment, explicit_env, derived_relation, unknown
-    confidence: str = "UNKNOWN"   # HIGH, MEDIUM, UNKNOWN
+    confidence: str = "UNKNOWN"  # HIGH, MEDIUM, UNKNOWN
     file_path: str = ""
     line: int = 1
     origin_id: str = ""
@@ -117,6 +121,7 @@ class EvidenceProvenance:
 @dataclass(frozen=True)
 class ExtractorInfo:
     """Information regarding the semantic extractor that produced an artifact."""
+
     extractor_name: str = "GenericExtractor"
     version: str = "1.0.0"
     framework: str = "GENERIC"
@@ -140,6 +145,7 @@ class ExtractorInfo:
 @dataclass(frozen=True)
 class OriginMetadata:
     """Provenance metadata attached to semantic nodes and definitions."""
+
     extractor_info: ExtractorInfo = field(default_factory=ExtractorInfo)
     location_info: SourceLocation = field(default_factory=SourceLocation)
     confidence: Confidence = Confidence.CONFIDENT
@@ -154,7 +160,11 @@ class OriginMetadata:
 
     def explain(self) -> str:
         """Returns human-readable explanation of origin."""
-        loc = f"{self.location_info.file_path}:{self.location_info.line}" if self.location_info.file_path else "unknown location"
+        loc = (
+            f"{self.location_info.file_path}:{self.location_info.line}"
+            if self.location_info.file_path
+            else "unknown location"
+        )
         return (
             f"Extracted by {self.extractor_info.extractor_name} (v{self.extractor_info.version}) "
             f"for {self.framework_name} framework at {loc} with {self.confidence.value} confidence. "

@@ -77,7 +77,9 @@ class FrameworkPass(AnalysisPass):
                         attributes={"file_path": ep},
                     )
                     graph.add_node(ep_node)
-                    graph.add_edge(FrameworkEdge(source_id=fw_node.id, target_id=ep_node_id, edge_type="HAS_ENTRYPOINT"))
+                    graph.add_edge(
+                        FrameworkEdge(source_id=fw_node.id, target_id=ep_node_id, edge_type="HAS_ENTRYPOINT")
+                    )
                     entrypoints.append(ep)
 
                 # 3. CONFIG nodes
@@ -110,7 +112,9 @@ class FrameworkPass(AnalysisPass):
                                 version="1.0.0",
                             )
                             graph.add_node(mod_node)
-                            graph.add_edge(FrameworkEdge(source_id=fw_node.id, target_id=mod_node_id, edge_type="CONTAINS"))
+                            graph.add_edge(
+                                FrameworkEdge(source_id=fw_node.id, target_id=mod_node_id, edge_type="CONTAINS")
+                            )
 
             metadata = FrameworkMetadata(
                 detected_frameworks=tuple(det_results),

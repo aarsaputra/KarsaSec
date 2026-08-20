@@ -42,6 +42,7 @@ class FlaskConfigCollector:
 
         # Pass 1: Discover imports, config classes, and environment variables
         for root in valid_roots:
+
             def pass1(node: ASTNodeWrapper) -> None:
                 self.import_visitor.visit(node)
                 self.config_class_visitor.visit(node)
@@ -51,6 +52,7 @@ class FlaskConfigCollector:
 
         # Pass 2: Discover direct assignments, updates, loaders, and factory patterns
         for root in valid_roots:
+
             def pass2(node: ASTNodeWrapper) -> None:
                 self.direct_assign_visitor.visit(node)
                 self.update_visitor.visit(node)

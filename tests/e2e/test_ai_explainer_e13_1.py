@@ -190,7 +190,9 @@ def test_e13_1_05_cross_file_finding() -> None:
 
 
 def test_e13_1_06_multiple_call_contexts() -> None:
-    verdict = _make_verdict("V-06", VerdictStatus.VULNERABLE, "RULE-XSS", "XSS_SINK", "app.py", "$p#1", call_ctx="call_ctx_admin")
+    verdict = _make_verdict(
+        "V-06", VerdictStatus.VULNERABLE, "RULE-XSS", "XSS_SINK", "app.py", "$p#1", call_ctx="call_ctx_admin"
+    )
     finding = Finding(
         finding_id="F-E2E-06",
         rule_id="RULE-XSS",

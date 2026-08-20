@@ -62,8 +62,12 @@ class TestRouteControllerHandlerCorrelation:
     def test_single_route_handler_correlation(self):
         """ROUTE -> HANDLER (HANDLES edge)."""
         loc = SourceLocation(file_path="app.py", line=10)
-        route = RouteDefinition(path="/index", method="GET", handler="index", framework="FLASK", origin=OriginMetadata(location_info=loc))
-        handler = HandlerDefinition(name="index", function_name="index", framework="FLASK", origin=OriginMetadata(location_info=loc))
+        route = RouteDefinition(
+            path="/index", method="GET", handler="index", framework="FLASK", origin=OriginMetadata(location_info=loc)
+        )
+        handler = HandlerDefinition(
+            name="index", function_name="index", framework="FLASK", origin=OriginMetadata(location_info=loc)
+        )
         isr = IntermediateSemanticRepresentation(routes=(route,), handlers=(handler,))
 
         correlator = FlaskSemanticCorrelator()
@@ -81,8 +85,16 @@ class TestRouteControllerHandlerCorrelation:
     def test_controller_declares_handler_correlation(self):
         """CONTROLLER -> HANDLER (DECLARES edge)."""
         loc = SourceLocation(file_path="views.py", line=15)
-        ctrl = ControllerDefinition(name="UserView", class_name="UserView", handlers=("get_user",), framework="FLASK", origin=OriginMetadata(location_info=loc))
-        handler = HandlerDefinition(name="get_user", function_name="get_user", framework="FLASK", origin=OriginMetadata(location_info=loc))
+        ctrl = ControllerDefinition(
+            name="UserView",
+            class_name="UserView",
+            handlers=("get_user",),
+            framework="FLASK",
+            origin=OriginMetadata(location_info=loc),
+        )
+        handler = HandlerDefinition(
+            name="get_user", function_name="get_user", framework="FLASK", origin=OriginMetadata(location_info=loc)
+        )
         isr = IntermediateSemanticRepresentation(controllers=(ctrl,), handlers=(handler,))
 
         correlator = FlaskSemanticCorrelator()
@@ -96,7 +108,13 @@ class TestRouteControllerHandlerCorrelation:
     def test_missing_handler_emits_unresolved_diagnostic(self):
         """Missing handler target emits UNRESOLVED warning diagnostic."""
         loc = SourceLocation(file_path="app.py", line=10)
-        route = RouteDefinition(path="/missing", method="GET", handler="non_existent", framework="FLASK", origin=OriginMetadata(location_info=loc))
+        route = RouteDefinition(
+            path="/missing",
+            method="GET",
+            handler="non_existent",
+            framework="FLASK",
+            origin=OriginMetadata(location_info=loc),
+        )
         isr = IntermediateSemanticRepresentation(routes=(route,))
 
         correlator = FlaskSemanticCorrelator()
@@ -112,9 +130,19 @@ class TestRouteControllerHandlerCorrelation:
         """Ambiguous handler matches emit AMBIGUOUS diagnostic and zero edges."""
         loc1 = SourceLocation(file_path="app1.py", line=10)
         loc2 = SourceLocation(file_path="app2.py", line=20)
-        route = RouteDefinition(path="/ambiguous", method="GET", handler="login", framework="FLASK", origin=OriginMetadata(location_info=loc1))
-        h1 = HandlerDefinition(name="login", function_name="login", framework="FLASK", origin=OriginMetadata(location_info=loc1))
-        h2 = HandlerDefinition(name="login", function_name="login", framework="FLASK", origin=OriginMetadata(location_info=loc2))
+        route = RouteDefinition(
+            path="/ambiguous",
+            method="GET",
+            handler="login",
+            framework="FLASK",
+            origin=OriginMetadata(location_info=loc1),
+        )
+        h1 = HandlerDefinition(
+            name="login", function_name="login", framework="FLASK", origin=OriginMetadata(location_info=loc1)
+        )
+        h2 = HandlerDefinition(
+            name="login", function_name="login", framework="FLASK", origin=OriginMetadata(location_info=loc2)
+        )
         isr = IntermediateSemanticRepresentation(routes=(route,), handlers=(h1, h2))
 
         correlator = FlaskSemanticCorrelator()
@@ -132,9 +160,15 @@ class TestMiddlewareCorrelation:
     def test_global_middleware_propagation(self):
         """Global middleware propagates to all routes with inherited propagation."""
         loc = SourceLocation(file_path="mw.py", line=5)
-        mw = MiddlewareDefinition(name="logger", scope="global", confidence=0.9, framework="FLASK", origin=OriginMetadata(location_info=loc))
-        r1 = RouteDefinition(path="/r1", method="GET", handler="h1", framework="FLASK", origin=OriginMetadata(location_info=loc))
-        r2 = RouteDefinition(path="/r2", method="POST", handler="h2", framework="FLASK", origin=OriginMetadata(location_info=loc))
+        mw = MiddlewareDefinition(
+            name="logger", scope="global", confidence=0.9, framework="FLASK", origin=OriginMetadata(location_info=loc)
+        )
+        r1 = RouteDefinition(
+            path="/r1", method="GET", handler="h1", framework="FLASK", origin=OriginMetadata(location_info=loc)
+        )
+        r2 = RouteDefinition(
+            path="/r2", method="POST", handler="h2", framework="FLASK", origin=OriginMetadata(location_info=loc)
+        )
         isr = IntermediateSemanticRepresentation(middlewares=(mw,), routes=(r1, r2))
 
         correlator = FlaskSemanticCorrelator()
@@ -150,9 +184,23 @@ class TestMiddlewareCorrelation:
     def test_route_specific_middleware_propagation(self):
         """Route-specific middleware matches targeted route path."""
         loc = SourceLocation(file_path="mw.py", line=5)
-        mw = MiddlewareDefinition(name="auth_mw", scope="route", target_routes=("/admin",), framework="FLASK", origin=OriginMetadata(location_info=loc))
-        r1 = RouteDefinition(path="/admin", method="GET", handler="admin_h", framework="FLASK", origin=OriginMetadata(location_info=loc))
-        r2 = RouteDefinition(path="/public", method="GET", handler="public_h", framework="FLASK", origin=OriginMetadata(location_info=loc))
+        mw = MiddlewareDefinition(
+            name="auth_mw",
+            scope="route",
+            target_routes=("/admin",),
+            framework="FLASK",
+            origin=OriginMetadata(location_info=loc),
+        )
+        r1 = RouteDefinition(
+            path="/admin", method="GET", handler="admin_h", framework="FLASK", origin=OriginMetadata(location_info=loc)
+        )
+        r2 = RouteDefinition(
+            path="/public",
+            method="GET",
+            handler="public_h",
+            framework="FLASK",
+            origin=OriginMetadata(location_info=loc),
+        )
         isr = IntermediateSemanticRepresentation(middlewares=(mw,), routes=(r1, r2))
 
         correlator = FlaskSemanticCorrelator()
@@ -170,9 +218,25 @@ class TestAuthAndConfigCorrelation:
     def test_auth_handler_and_route_protection(self):
         """AUTH -> HANDLER and AUTH -> ROUTE (PROTECTS edge)."""
         loc = SourceLocation(file_path="auth.py", line=10)
-        auth = AuthDefinition(auth_type="JWT", provider="jwt_manager", handler="login_fn", protected_routes=("/api/*",), roles=("admin",), framework="FLASK", origin=OriginMetadata(location_info=loc))
-        handler = HandlerDefinition(name="login_fn", function_name="login_fn", framework="FLASK", origin=OriginMetadata(location_info=loc))
-        route = RouteDefinition(path="/api/data", method="GET", handler="data_fn", framework="FLASK", origin=OriginMetadata(location_info=loc))
+        auth = AuthDefinition(
+            auth_type="JWT",
+            provider="jwt_manager",
+            handler="login_fn",
+            protected_routes=("/api/*",),
+            roles=("admin",),
+            framework="FLASK",
+            origin=OriginMetadata(location_info=loc),
+        )
+        handler = HandlerDefinition(
+            name="login_fn", function_name="login_fn", framework="FLASK", origin=OriginMetadata(location_info=loc)
+        )
+        route = RouteDefinition(
+            path="/api/data",
+            method="GET",
+            handler="data_fn",
+            framework="FLASK",
+            origin=OriginMetadata(location_info=loc),
+        )
         isr = IntermediateSemanticRepresentation(auths=(auth,), handlers=(handler,), routes=(route,))
 
         correlator = FlaskSemanticCorrelator()
@@ -184,7 +248,9 @@ class TestAuthAndConfigCorrelation:
     def test_standalone_config_nodes_without_synthetic_application_node(self):
         """Config nodes emitted as standalone CONFIG nodes (zero synthetic nodes)."""
         loc = SourceLocation(file_path="config.py", line=1)
-        cfg = ConfigDefinition(key="SECRET_KEY", value="super-secret", framework="FLASK", origin=OriginMetadata(location_info=loc))
+        cfg = ConfigDefinition(
+            key="SECRET_KEY", value="super-secret", framework="FLASK", origin=OriginMetadata(location_info=loc)
+        )
         isr = IntermediateSemanticRepresentation(configs=(cfg,))
 
         correlator = FlaskSemanticCorrelator()
@@ -202,7 +268,12 @@ class TestOrphansAndInvariants:
     def test_orphan_handler_emits_info_diagnostic_and_valid_graph(self):
         """Unlinked handler emits ORPHAN_HANDLER diagnostic with Severity.INFO; is_valid remains True."""
         loc = SourceLocation(file_path="app.py", line=10)
-        handler = HandlerDefinition(name="standalone_fn", function_name="standalone_fn", framework="FLASK", origin=OriginMetadata(location_info=loc))
+        handler = HandlerDefinition(
+            name="standalone_fn",
+            function_name="standalone_fn",
+            framework="FLASK",
+            origin=OriginMetadata(location_info=loc),
+        )
         isr = IntermediateSemanticRepresentation(handlers=(handler,))
 
         correlator = FlaskSemanticCorrelator()
@@ -220,13 +291,27 @@ class TestDeterminismAndIdempotency:
     def test_10x_repeated_execution_byte_for_byte_determinism(self):
         """Same ISR input executed 10x sequentially produces 100% byte-for-byte identical serialized graph JSON."""
         loc = SourceLocation(file_path="app.py", line=10)
-        route = RouteDefinition(path="/user", method="GET", handler="get_user", framework="FLASK", origin=OriginMetadata(location_info=loc))
-        handler = HandlerDefinition(name="get_user", function_name="get_user", framework="FLASK", origin=OriginMetadata(location_info=loc))
-        mw = MiddlewareDefinition(name="auth_mw", scope="global", framework="FLASK", origin=OriginMetadata(location_info=loc))
-        auth = AuthDefinition(auth_type="Session", provider="flask_login", handler="get_user", framework="FLASK", origin=OriginMetadata(location_info=loc))
+        route = RouteDefinition(
+            path="/user", method="GET", handler="get_user", framework="FLASK", origin=OriginMetadata(location_info=loc)
+        )
+        handler = HandlerDefinition(
+            name="get_user", function_name="get_user", framework="FLASK", origin=OriginMetadata(location_info=loc)
+        )
+        mw = MiddlewareDefinition(
+            name="auth_mw", scope="global", framework="FLASK", origin=OriginMetadata(location_info=loc)
+        )
+        auth = AuthDefinition(
+            auth_type="Session",
+            provider="flask_login",
+            handler="get_user",
+            framework="FLASK",
+            origin=OriginMetadata(location_info=loc),
+        )
         cfg = ConfigDefinition(key="DEBUG", value=True, framework="FLASK", origin=OriginMetadata(location_info=loc))
 
-        isr = IntermediateSemanticRepresentation(routes=(route,), handlers=(handler,), middlewares=(mw,), auths=(auth,), configs=(cfg,))
+        isr = IntermediateSemanticRepresentation(
+            routes=(route,), handlers=(handler,), middlewares=(mw,), auths=(auth,), configs=(cfg,)
+        )
 
         correlator = FlaskSemanticCorrelator()
 
@@ -244,13 +329,25 @@ class TestDeterminismAndIdempotency:
         loc2 = SourceLocation(file_path="b.py", line=2)
         loc3 = SourceLocation(file_path="c.py", line=3)
 
-        r1 = RouteDefinition(path="/a", method="GET", handler="ha", framework="FLASK", origin=OriginMetadata(location_info=loc1))
-        r2 = RouteDefinition(path="/b", method="GET", handler="hb", framework="FLASK", origin=OriginMetadata(location_info=loc2))
-        r3 = RouteDefinition(path="/c", method="GET", handler="hc", framework="FLASK", origin=OriginMetadata(location_info=loc3))
+        r1 = RouteDefinition(
+            path="/a", method="GET", handler="ha", framework="FLASK", origin=OriginMetadata(location_info=loc1)
+        )
+        r2 = RouteDefinition(
+            path="/b", method="GET", handler="hb", framework="FLASK", origin=OriginMetadata(location_info=loc2)
+        )
+        r3 = RouteDefinition(
+            path="/c", method="GET", handler="hc", framework="FLASK", origin=OriginMetadata(location_info=loc3)
+        )
 
-        h1 = HandlerDefinition(name="ha", function_name="ha", framework="FLASK", origin=OriginMetadata(location_info=loc1))
-        h2 = HandlerDefinition(name="hb", function_name="hb", framework="FLASK", origin=OriginMetadata(location_info=loc2))
-        h3 = HandlerDefinition(name="hc", function_name="hc", framework="FLASK", origin=OriginMetadata(location_info=loc3))
+        h1 = HandlerDefinition(
+            name="ha", function_name="ha", framework="FLASK", origin=OriginMetadata(location_info=loc1)
+        )
+        h2 = HandlerDefinition(
+            name="hb", function_name="hb", framework="FLASK", origin=OriginMetadata(location_info=loc2)
+        )
+        h3 = HandlerDefinition(
+            name="hc", function_name="hc", framework="FLASK", origin=OriginMetadata(location_info=loc3)
+        )
 
         isr_original = IntermediateSemanticRepresentation(routes=(r1, r2, r3), handlers=(h1, h2, h3))
 

@@ -33,7 +33,9 @@ class RCAEvidenceValidator:
 
         # 1. Validate Verdict Status consistency (G16)
         if rca.verdict_status != ctx.verdict_status:
-            violations.append(f"Verdict mismatch: LLM claim '{rca.verdict_status}' != SAST verdict '{ctx.verdict_status}'.")
+            violations.append(
+                f"Verdict mismatch: LLM claim '{rca.verdict_status}' != SAST verdict '{ctx.verdict_status}'."
+            )
 
         # 2. Validate Evidence Chain steps against EvidenceGraph (G17)
         known_node_ids = {n.node_id for n in graph.nodes}
@@ -48,15 +50,21 @@ class RCAEvidenceValidator:
 
             # Validate Call Context matching (G21)
             if step.call_context and ctx.call_context and step.call_context != ctx.call_context:
-                violations.append(f"CallContext mismatch on step '{step.step_id}': '{step.call_context}' != '{ctx.call_context}'.")
+                violations.append(
+                    f"CallContext mismatch on step '{step.step_id}': '{step.call_context}' != '{ctx.call_context}'."
+                )
 
             # Validate Branch Polarity matching (G22)
             if step.branch_polarity and ctx.branch_polarity and step.branch_polarity != ctx.branch_polarity:
-                violations.append(f"Branch polarity mismatch on step '{step.step_id}': '{step.branch_polarity}' != '{ctx.branch_polarity}'.")
+                violations.append(
+                    f"Branch polarity mismatch on step '{step.step_id}': '{step.branch_polarity}' != '{ctx.branch_polarity}'."
+                )
 
         # 3. Validate Primary Cause Step
         if rca.primary_cause_step and rca.primary_cause_step.node_id not in known_node_ids:
-            violations.append(f"Primary cause step node ID '{rca.primary_cause_step.node_id}' not in SAST evidence graph.")
+            violations.append(
+                f"Primary cause step node ID '{rca.primary_cause_step.node_id}' not in SAST evidence graph."
+            )
 
         # 4. Check for prohibited finding suppression / SAFE claims on VULNERABLE verdict (G16/G18)
         if ctx.verdict_status == "VULNERABLE":

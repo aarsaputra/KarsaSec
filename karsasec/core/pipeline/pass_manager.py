@@ -8,6 +8,7 @@ from karsasec.core.pipeline.context import PassContext
 
 class PassDependencyError(Exception):
     """Raised when pass dependencies cannot be resolved or missing required artifacts."""
+
     pass
 
 

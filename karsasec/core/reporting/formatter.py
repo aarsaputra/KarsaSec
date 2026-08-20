@@ -1,6 +1,5 @@
 """SeverityFormatter for ANSI terminal coloring and --no-color mode support."""
 
-
 from karsasec.rules.enums import Severity
 
 # ANSI Color Codes
@@ -18,6 +17,7 @@ SEVERITY_COLORS: dict[Severity, str] = {
     Severity.LOW: COLOR_BLUE,
     Severity.INFO: COLOR_GRAY,
 }
+
 
 class SeverityFormatter:
     """Formats text and severity labels for terminal output with optional ANSI coloring."""

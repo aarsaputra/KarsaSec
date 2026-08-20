@@ -11,7 +11,6 @@ Verifies:
 
 from __future__ import annotations
 
-import time
 import pytest
 from fastapi.testclient import TestClient
 
@@ -21,7 +20,6 @@ from karsasec.workers.task import RemediationTask, TaskState
 from karsasec.workers.repository import InMemoryTaskRepository
 from karsasec.workers.queue import InMemoryTaskQueue
 from karsasec.workers.worker import CustomWorkerRuntime
-from karsasec.server.services.remediation_service import RemediationService
 
 _VALID_KEY = "karsasec-dev-secret-key-change-in-production-32bytes"
 
@@ -171,7 +169,10 @@ class TestRetryPolicy:
         import unittest.mock
 
         # Simulate worker processing and failing 3 times
-        with unittest.mock.patch("karsasec.workers.worker.RemediationLifecycleEngine.execute", side_effect=Exception("Simulated execution failure")):
+        with unittest.mock.patch(
+            "karsasec.workers.worker.RemediationLifecycleEngine.execute",
+            side_effect=Exception("Simulated execution failure"),
+        ):
             for i in range(3):
                 task_id = queue.dequeue()
                 assert task_id == "tsk_retry_1"
@@ -219,10 +220,7 @@ class TestSecurityAndPrivacyInvariants:
         """Verify malformed payload or command injections are rejected or ignored without shell execution."""
         payload = {
             "finding_id": "; rm -rf /",
-            "approval": {
-                "approval_token_id": "tok_poison",
-                "token": "secret_token_val"
-            }
+            "approval": {"approval_token_id": "tok_poison", "token": "secret_token_val"},
         }
         resp = test_client.post("/api/v1/remediations", json=payload, headers=auth_headers)
         assert resp.status_code == 202

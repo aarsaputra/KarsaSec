@@ -66,13 +66,16 @@ def explain_command(
 ) -> None:
     """Run deterministic SAST scan and explain a specific finding using evidence-grounded AI Explainer."""
     if not json_output:
-        console.print(f"[bold cyan]KarsaSec AI Agent[/bold cyan] analyzing finding '[bold yellow]{finding_id}[/bold yellow]'...")
+        console.print(
+            f"[bold cyan]KarsaSec AI Agent[/bold cyan] analyzing finding '[bold yellow]{finding_id}[/bold yellow]'..."
+        )
 
     # Run SAST scan pipeline to collect deterministic findings & verdicts
     findings, artifact_store, duration = _run_scan_pipeline(path)
     if not findings:
         if json_output:
             import json
+
             print(json.dumps({"error": "No findings detected in target scan."}))
         else:
             console.print("[bold red]No findings detected in target scan.[/bold red]")
@@ -91,6 +94,7 @@ def explain_command(
     if matched_finding is None:
         if json_output:
             import json
+
             print(json.dumps({"error": f"Finding '{finding_id}' not found in scan results."}))
         else:
             console.print(f"[bold red]Error:[/bold red] Finding '{finding_id}' not found in scan results.")
@@ -121,6 +125,7 @@ def explain_command(
 
         if json_output:
             import json
+
             out = {
                 "verdict_status": verdict.status.value if verdict else "UNKNOWN",
                 "remediation_strategy": strategy.to_dict(),
@@ -133,46 +138,54 @@ def explain_command(
         verdict_status = verdict.status.value if verdict and hasattr(verdict.status, "value") else "UNKNOWN"
         verdict_color = "red" if verdict_status == "VULNERABLE" else ("green" if verdict_status == "SAFE" else "yellow")
 
-        console.print(Panel(
-            f"[bold]Finding ID:[/bold] {matched_finding.finding_id}\n"
-            f"[bold]Security Verdict:[/bold] [{verdict_color}]{verdict_status}[/{verdict_color}]\n"
-            f"[bold]Root Cause Category:[/bold] [bold magenta]{rca_res.root_cause_category.value}[/bold magenta]\n"
-            f"[bold]Remediation Strategy Type:[/bold] [bold green]{strategy.strategy_type.value}[/bold green]\n"
-            f"[bold]Strategy Fingerprint:[/bold] {strategy.strategy_fingerprint}",
-            title="[bold white on blue] DETERMINISTIC SECURITY VERDICT & REMEDIATION PLAN [/bold white on blue]",
-            border_style="blue"
-        ))
+        console.print(
+            Panel(
+                f"[bold]Finding ID:[/bold] {matched_finding.finding_id}\n"
+                f"[bold]Security Verdict:[/bold] [{verdict_color}]{verdict_status}[/{verdict_color}]\n"
+                f"[bold]Root Cause Category:[/bold] [bold magenta]{rca_res.root_cause_category.value}[/bold magenta]\n"
+                f"[bold]Remediation Strategy Type:[/bold] [bold green]{strategy.strategy_type.value}[/bold green]\n"
+                f"[bold]Strategy Fingerprint:[/bold] {strategy.strategy_fingerprint}",
+                title="[bold white on blue] DETERMINISTIC SECURITY VERDICT & REMEDIATION PLAN [/bold white on blue]",
+                border_style="blue",
+            )
+        )
 
-        console.print(Panel(
-            f"[bold]Rationale:[/bold] {strategy.rationale}\n"
-            f"[bold]Target File:[/bold] {strategy.target_file}\n"
-            f"[bold]Confidence:[/bold] {strategy.confidence}\n"
-            f"[bold]Assumptions:[/bold] {', '.join(strategy.assumptions)}",
-            title="[bold green]REMEDIATION STRATEGY[/bold green]",
-            border_style="green"
-        ))
+        console.print(
+            Panel(
+                f"[bold]Rationale:[/bold] {strategy.rationale}\n"
+                f"[bold]Target File:[/bold] {strategy.target_file}\n"
+                f"[bold]Confidence:[/bold] {strategy.confidence}\n"
+                f"[bold]Assumptions:[/bold] {', '.join(strategy.assumptions)}",
+                title="[bold green]REMEDIATION STRATEGY[/bold green]",
+                border_style="green",
+            )
+        )
 
         if patch:
             status_color = "green" if proposal.validation_status == "VALID" else "yellow"
-            console.print(Panel(
-                f"[bold]Proposal ID:[/bold] {proposal.proposal_id}\n"
-                f"[bold]Validation Status:[/bold] [{status_color}]{proposal.validation_status.value}[/{status_color}]\n"
-                f"[bold]Proposal Fingerprint:[/bold] {proposal.proposal_fingerprint}\n\n"
-                f"[bold yellow]UNIFIED DIFF (DATA ONLY):[/bold yellow]\n\n"
-                f"{proposal.unified_diff if proposal.unified_diff else '[No unified diff generated]'}",
-                title="[bold white on yellow] PATCH PROPOSAL — NOT APPLIED (HUMAN REVIEW REQUIRED) [/bold white on yellow]",
-                border_style="yellow"
-            ))
+            console.print(
+                Panel(
+                    f"[bold]Proposal ID:[/bold] {proposal.proposal_id}\n"
+                    f"[bold]Validation Status:[/bold] [{status_color}]{proposal.validation_status.value}[/{status_color}]\n"
+                    f"[bold]Proposal Fingerprint:[/bold] {proposal.proposal_fingerprint}\n\n"
+                    f"[bold yellow]UNIFIED DIFF (DATA ONLY):[/bold yellow]\n\n"
+                    f"{proposal.unified_diff if proposal.unified_diff else '[No unified diff generated]'}",
+                    title="[bold white on yellow] PATCH PROPOSAL — NOT APPLIED (HUMAN REVIEW REQUIRED) [/bold white on yellow]",
+                    border_style="yellow",
+                )
+            )
 
         return
 
     if root_cause:
         from karsasec.ai.rca.agent import RCAAgent
+
         rca_agent = RCAAgent()
         rca_res = rca_agent.analyze(finding=matched_finding, verdict=verdict, knowledge_chunks=knowledge_chunks)
 
         if json_output:
             import json
+
             print(json.dumps(rca_res.to_dict(), indent=2))
             return
 
@@ -180,15 +193,17 @@ def explain_command(
         verdict_status = verdict.status.value if verdict and hasattr(verdict.status, "value") else "UNKNOWN"
         verdict_color = "red" if verdict_status == "VULNERABLE" else ("green" if verdict_status == "SAFE" else "yellow")
 
-        console.print(Panel(
-            f"[bold]Finding ID:[/bold] {matched_finding.finding_id}\n"
-            f"[bold]Security Verdict:[/bold] [{verdict_color}]{verdict_status}[/{verdict_color}]\n"
-            f"[bold]Root Cause Category:[/bold] [bold magenta]{rca_res.root_cause_category.value}[/bold magenta]\n"
-            f"[bold]False Positive Risk Rating:[/bold] [bold cyan]{rca_res.false_positive_risk.value}[/bold cyan]\n"
-            f"[bold]RCA Fingerprint:[/bold] {rca_res.rca_fingerprint}",
-            title="[bold white on blue] DETERMINISTIC SECURITY VERDICT & RCA SUMMARY [/bold white on blue]",
-            border_style="blue"
-        ))
+        console.print(
+            Panel(
+                f"[bold]Finding ID:[/bold] {matched_finding.finding_id}\n"
+                f"[bold]Security Verdict:[/bold] [{verdict_color}]{verdict_status}[/{verdict_color}]\n"
+                f"[bold]Root Cause Category:[/bold] [bold magenta]{rca_res.root_cause_category.value}[/bold magenta]\n"
+                f"[bold]False Positive Risk Rating:[/bold] [bold cyan]{rca_res.false_positive_risk.value}[/bold cyan]\n"
+                f"[bold]RCA Fingerprint:[/bold] {rca_res.rca_fingerprint}",
+                title="[bold white on blue] DETERMINISTIC SECURITY VERDICT & RCA SUMMARY [/bold white on blue]",
+                border_style="blue",
+            )
+        )
 
         # Evidence Chain
         chain_table = Table(title="[bold cyan]EVIDENCE CHAIN[/bold cyan]", show_header=True, header_style="bold cyan")
@@ -198,16 +213,36 @@ def explain_command(
         chain_table.add_column("Variable")
         chain_table.add_column("Context")
         for s in rca_res.evidence_chain:
-            chain_table.add_row(s.step_id, s.evidence_kind, f"{s.file_path}:{s.line_number}", s.variable_version, s.call_context)
+            chain_table.add_row(
+                s.step_id, s.evidence_kind, f"{s.file_path}:{s.line_number}", s.variable_version, s.call_context
+            )
         console.print(chain_table)
 
         if rca_res.evidence_gaps:
-            console.print(Panel("\n".join(f"- [{g.missing_type}] {g.description}" for g in rca_res.evidence_gaps), title="[bold yellow]EVIDENCE GAPS[/bold yellow]", border_style="yellow"))
+            console.print(
+                Panel(
+                    "\n".join(f"- [{g.missing_type}] {g.description}" for g in rca_res.evidence_gaps),
+                    title="[bold yellow]EVIDENCE GAPS[/bold yellow]",
+                    border_style="yellow",
+                )
+            )
 
         if rca_res.contradictions:
-            console.print(Panel("\n".join(f"- {c.description}" for c in rca_res.contradictions), title="[bold red]CONTRADICTORY EVIDENCE[/bold red]", border_style="red"))
+            console.print(
+                Panel(
+                    "\n".join(f"- {c.description}" for c in rca_res.contradictions),
+                    title="[bold red]CONTRADICTORY EVIDENCE[/bold red]",
+                    border_style="red",
+                )
+            )
 
-        console.print(Panel(rca_res.explanation_summary, title="[bold magenta]ROOT CAUSE ANALYSIS[/bold magenta]", border_style="magenta"))
+        console.print(
+            Panel(
+                rca_res.explanation_summary,
+                title="[bold magenta]ROOT CAUSE ANALYSIS[/bold magenta]",
+                border_style="magenta",
+            )
+        )
         return
 
     # Standard Explainer Mode
@@ -216,6 +251,7 @@ def explain_command(
 
     if json_output:
         import json
+
         print(json.dumps(explanation.model_dump(), indent=2))
         return
 
@@ -235,7 +271,13 @@ def explain_command(
         f"[bold]Canonical Fingerprint:[/bold] {verdict_fp}\n"
         f"[bold]Evidence Fingerprint:[/bold] {ev_fp}"
     )
-    console.print(Panel(v_panel_text, title="[bold white on blue] DETERMINISTIC SECURITY VERDICT (SAST ENGINE) [/bold white on blue]", border_style="blue"))
+    console.print(
+        Panel(
+            v_panel_text,
+            title="[bold white on blue] DETERMINISTIC SECURITY VERDICT (SAST ENGINE) [/bold white on blue]",
+            border_style="blue",
+        )
+    )
 
     # Render Visual Separation: Section 2 — AI GENERATED EXPLANATION
     ai_panel_text = (
@@ -248,7 +290,13 @@ def explain_command(
         f"[bold cyan]Limitations:[/bold cyan] {explanation.limitations}\n\n"
         f"[bold dim]Explanation Fingerprint:[/bold dim] {explanation.explanation_fingerprint}"
     )
-    console.print(Panel(ai_panel_text, title="[bold white on magenta] AI-GENERATED EXPLANATION (READ-ONLY CONSUMER) [/bold white on magenta]", border_style="magenta"))
+    console.print(
+        Panel(
+            ai_panel_text,
+            title="[bold white on magenta] AI-GENERATED EXPLANATION (READ-ONLY CONSUMER) [/bold white on magenta]",
+            border_style="magenta",
+        )
+    )
 
     if explanation.knowledge_references:
         k_table = Table(title="Retrieved RAG Knowledge References", show_header=True, header_style="bold green")

@@ -21,13 +21,13 @@ from __future__ import annotations
 import time
 import uuid
 import threading
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING
 
 from karsasec.workers.task import TaskState, StaleLeaseVersionError, InvalidTaskStateError
 from karsasec.persistence.audit_repository import AuditEvent, AuditEventType, AuditRepository
 
 if TYPE_CHECKING:
-    from karsasec.workers.worker_registry import WorkerRegistry, WorkerStatus
+    from karsasec.workers.worker_registry import WorkerRegistry
     from karsasec.workers.repository import TaskRepository
     from karsasec.workers.queue import TaskQueue
     from karsasec.observability.metrics import MetricsCollector
@@ -35,6 +35,7 @@ if TYPE_CHECKING:
 
 class FencedLeaderError(Exception):
     """Raised when a recovery leader node attempts mutation after its lease expired or was superseded."""
+
     pass
 
 
@@ -76,10 +77,10 @@ class DistributedRecoveryLock:
 
     def __init__(self) -> None:
         self._lock = threading.Lock()
-        self._current_lease: Optional[RecoveryLease] = None
+        self._current_lease: RecoveryLease | None = None
         self._fencing_counter: int = 0
 
-    def acquire(self, owner_id: str, ttl_seconds: float = 30.0) -> Optional[RecoveryLease]:
+    def acquire(self, owner_id: str, ttl_seconds: float = 30.0) -> RecoveryLease | None:
         """Attempt to acquire or re-acquire recovery lock for owner_id with strict monotonic fencing token."""
         with self._lock:
             now = time.time()
@@ -150,7 +151,7 @@ class DistributedRecoveryLock:
             return True
 
     @property
-    def current_lease(self) -> Optional[RecoveryLease]:
+    def current_lease(self) -> RecoveryLease | None:
         with self._lock:
             return self._current_lease
 
@@ -160,10 +161,10 @@ class ClusterRecoveryEngine:
 
     def __init__(
         self,
-        registry: "WorkerRegistry",
-        task_repository: "TaskRepository",
-        queue: "TaskQueue",
-        metrics_collector: "MetricsCollector" | None = None,
+        registry: WorkerRegistry,
+        task_repository: TaskRepository,
+        queue: TaskQueue,
+        metrics_collector: MetricsCollector | None = None,
         audit_repository: AuditRepository | None = None,
         recovery_lock: DistributedRecoveryLock | None = None,
     ) -> None:
@@ -198,11 +199,7 @@ class ClusterRecoveryEngine:
         try:
             from karsasec.workers.worker_registry import WorkerStatus
 
-            offline_workers = {
-                w.worker_id
-                for w in self._registry.list_all()
-                if w.status == WorkerStatus.OFFLINE
-            }
+            offline_workers = {w.worker_id for w in self._registry.list_all() if w.status == WorkerStatus.OFFLINE}
 
             if not offline_workers:
                 return 0

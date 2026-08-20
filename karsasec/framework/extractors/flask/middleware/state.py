@@ -10,6 +10,7 @@ from karsasec.framework.origin import Evidence
 @dataclass(frozen=True)
 class MiddlewareCandidate:
     """Raw record for a Flask request hook or class-based middleware candidate."""
+
     name: str
     middleware_type: str  # BEFORE_REQUEST, AFTER_REQUEST, TEARDOWN, CLASS_MIDDLEWARE
     handler: str
@@ -25,6 +26,7 @@ class MiddlewareCandidate:
 @dataclass(frozen=True)
 class ErrorHandlerCandidate:
     """Raw record for a Flask error handler candidate."""
+
     exception_type: str = "Exception"
     status_code: int | None = None
     handler: str = ""
@@ -37,6 +39,7 @@ class ErrorHandlerCandidate:
 @dataclass(frozen=True)
 class ExtensionCandidate:
     """Raw record for a Flask extension middleware initialization (CORS, Limiter, etc.)."""
+
     extension_name: str
     constructor: str = ""
     application: str = "app"
@@ -50,7 +53,7 @@ class FlaskMiddlewareState:
 
     def __init__(self) -> None:
         self.applications: dict[str, str] = {}  # var_name -> class_name
-        self.blueprints: dict[str, str] = {}    # var_name -> bp_name
+        self.blueprints: dict[str, str] = {}  # var_name -> bp_name
         self.middleware_candidates: list[MiddlewareCandidate] = []
         self.error_handlers: list[ErrorHandlerCandidate] = []
         self.extensions: list[ExtensionCandidate] = []

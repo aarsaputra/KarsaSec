@@ -219,6 +219,7 @@ class PythonParserPlugin(ParserPlugin):
 
         return file_node
 
+
 # Register default Python parser instance
 python_parser_plugin = PythonParserPlugin()
 parser_registry.register(python_parser_plugin, [".py", ".pyi"])

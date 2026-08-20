@@ -9,6 +9,7 @@ from karsasec.core.registry import rag_registry
 
 T = TypeVar("T")
 
+
 class Container:
     """Simple lightweight Dependency Injection (IoC) Container with thread safety."""
 
@@ -51,6 +52,7 @@ class Container:
         with self._lock:
             self._services.clear()
             self._factories.clear()
+
 
 # Global default container instance
 container = Container()

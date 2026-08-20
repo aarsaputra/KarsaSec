@@ -36,7 +36,11 @@ class FindingFactory:
         from karsasec.core.finding.qualifier import SemanticFindingQualifier
 
         candidate_id = f"cand-{uuid.uuid4().hex[:8]}"
-        matched_text = match_result.matched_text if hasattr(match_result, "matched_text") and match_result.matched_text else evidence.snippet
+        matched_text = (
+            match_result.matched_text
+            if hasattr(match_result, "matched_text") and match_result.matched_text
+            else evidence.snippet
+        )
 
         ast_node = ASTNode(node_id=match_result.node_id, node_type="sink", start=None, end=None)
 
@@ -57,6 +61,7 @@ class FindingFactory:
 
         qualifier = SemanticFindingQualifier()
         return qualifier.qualify_candidate(candidate)
+
 
 # Global default factory instance
 finding_factory = FindingFactory()

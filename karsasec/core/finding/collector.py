@@ -1,6 +1,5 @@
 """EvidenceCollector extracting source snippet and context window lines from ASTNode and source_bytes."""
 
-
 from karsasec.core.finding.errors import EvidenceUnavailableError
 from karsasec.core.finding.evidence import Evidence
 from karsasec.parser.ast_nodes import ASTNode
@@ -28,7 +27,7 @@ class EvidenceCollector:
                 f"Invalid node byte range [{node.byte_start}:{node.byte_end}] for source length {len(source_bytes)}"
             )
 
-        snippet_raw = source_bytes[node.byte_start:node.byte_end]
+        snippet_raw = source_bytes[node.byte_start : node.byte_end]
         snippet = snippet_raw.decode("utf-8", errors="ignore").strip()
 
         source_text = source_bytes.decode("utf-8", errors="ignore")
@@ -48,6 +47,7 @@ class EvidenceCollector:
             column=col_num,
             context_lines=context_lines,
         )
+
 
 # Global default instance
 evidence_collector = EvidenceCollector()

@@ -13,11 +13,25 @@ from typing import Any
 
 class StaleLeaseVersionError(Exception):
     """Raised when task mutation is attempted with a stale fencing lease version."""
+
     pass
 
 
 class InvalidTaskStateError(Exception):
     """Raised when task state transition is attempted from an unexpected or invalid state."""
+
+    pass
+
+
+class WorkerFencedError(Exception):
+    """Raised when task mutation is attempted by a worker whose fencing token is stale or status is FENCED/OFFLINE."""
+
+    pass
+
+
+class InvalidWorkerStateError(Exception):
+    """Raised when task operation is attempted for a worker in an invalid status (e.g. DRAINING/DRAINED)."""
+
     pass
 
 
@@ -86,9 +100,7 @@ class RemediationTask:
         """Validates and executes task state transition."""
         allowed = self._get_allowed_transitions(self._state)
         if new_state not in allowed:
-            raise ValueError(
-                f"Invalid transition from {self._state} to {new_state}"
-            )
+            raise ValueError(f"Invalid transition from {self._state} to {new_state}")
 
         self._state = new_state
         if new_state == TaskState.RUNNING:

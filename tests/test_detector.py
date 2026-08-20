@@ -20,6 +20,7 @@ def test_detect_current_project(tmp_path: Path) -> None:
     assert profile.capabilities.supports_ast is True
     assert profile.capabilities.supports_cpg is True
 
+
 def test_detect_js_project(tmp_path: Path) -> None:
     """Test detector on JS/Express project."""
     (tmp_path / "server.js").write_text("console.log('test');", encoding="utf-8")

@@ -19,6 +19,7 @@ class ReportTarget(ABC):
         """Flushes and closes target if applicable."""
         pass
 
+
 class StringTarget(ReportTarget):
     """Buffers report content in memory for direct string retrieval."""
 
@@ -35,6 +36,7 @@ class StringTarget(ReportTarget):
         """No-op for string buffer target so get_content() remains accessible."""
         pass
 
+
 class FileTarget(ReportTarget):
     """Streams report content directly into a filesystem file."""
 
@@ -50,6 +52,7 @@ class FileTarget(ReportTarget):
         if not self._file.closed:
             self._file.flush()
             self._file.close()
+
 
 class StreamTarget(ReportTarget):
     """Streams report content directly to a TextIO stream (e.g. sys.stdout)."""

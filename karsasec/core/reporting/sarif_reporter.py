@@ -25,19 +25,21 @@ class SARIFReporter(Reporter):
                 rule_registry[finding.rule_id] = rule_idx
 
                 score = SARIF_SCORE_MAP.get(finding.severity, 5.0)
-                sarif_rules.append({
-                    "id": finding.rule_id,
-                    "name": finding.title,
-                    "shortDescription": {"text": finding.title},
-                    "fullDescription": {"text": finding.description},
-                    "help": {"text": f"{finding.description}\n\nRemediation:\n{finding.remediation}"},
-                    "properties": {
-                        "cwe": [finding.cwe_id],
-                        "owasp": [finding.owasp],
-                        "precision": finding.confidence.name.lower(),
-                        "security-severity": f"{score:.1f}",
-                    },
-                })
+                sarif_rules.append(
+                    {
+                        "id": finding.rule_id,
+                        "name": finding.title,
+                        "shortDescription": {"text": finding.title},
+                        "fullDescription": {"text": finding.description},
+                        "help": {"text": f"{finding.description}\n\nRemediation:\n{finding.remediation}"},
+                        "properties": {
+                            "cwe": [finding.cwe_id],
+                            "owasp": [finding.owasp],
+                            "precision": finding.confidence.name.lower(),
+                            "security-severity": f"{score:.1f}",
+                        },
+                    }
+                )
 
         # 2. Build SARIF Results
         sarif_results: list[dict] = []
@@ -53,7 +55,9 @@ class SARIFReporter(Reporter):
             if getattr(finding, "verdict", None) is not None:
                 v = finding.verdict
                 props["karsasec.verdict"] = v.status.value if hasattr(v.status, "value") else str(v.status)
-                props["karsasec.verdict_confidence"] = v.confidence.value if hasattr(v.confidence, "value") else str(v.confidence)
+                props["karsasec.verdict_confidence"] = (
+                    v.confidence.value if hasattr(v.confidence, "value") else str(v.confidence)
+                )
                 props["karsasec.evidence_fingerprint"] = v.evidence_fingerprint
                 props["karsasec.reason_codes"] = [r.value if hasattr(r, "value") else str(r) for r in v.reason_codes]
                 props["karsasec.provenance"] = list(v.provenance_path)
@@ -61,12 +65,16 @@ class SARIFReporter(Reporter):
             if isinstance(finding.metadata, dict) and "explanation_fingerprint" in finding.metadata:
                 props["karsasec.ai.explanation_available"] = True
                 props["karsasec.ai.explanation_fingerprint"] = finding.metadata["explanation_fingerprint"]
-                props["karsasec.ai.explanation_schema_version"] = finding.metadata.get("explanation_schema_version", "v1.0")
+                props["karsasec.ai.explanation_schema_version"] = finding.metadata.get(
+                    "explanation_schema_version", "v1.0"
+                )
 
             if isinstance(finding.metadata, dict) and "rca_fingerprint" in finding.metadata:
                 props["karsasec.ai.rca_available"] = True
                 props["karsasec.ai.rca_fingerprint"] = finding.metadata["rca_fingerprint"]
-                props["karsasec.ai.root_cause_category"] = finding.metadata.get("root_cause_category", "UNKNOWN_ROOT_CAUSE")
+                props["karsasec.ai.root_cause_category"] = finding.metadata.get(
+                    "root_cause_category", "UNKNOWN_ROOT_CAUSE"
+                )
                 props["karsasec.ai.evidence_completeness"] = finding.metadata.get("evidence_completeness", "PROVEN")
                 props["karsasec.ai.fp_risk"] = finding.metadata.get("fp_risk", "HIGH_RISK")
 
@@ -77,15 +85,21 @@ class SARIFReporter(Reporter):
 
             if isinstance(finding.metadata, dict) and "patch_fingerprint" in finding.metadata:
                 props["karsasec.ai.patch_proposal_available"] = True
-                props["karsasec.ai.patch_validation_status"] = finding.metadata.get("patch_validation_status", "REQUIRES_HUMAN_REVIEW")
+                props["karsasec.ai.patch_validation_status"] = finding.metadata.get(
+                    "patch_validation_status", "REQUIRES_HUMAN_REVIEW"
+                )
                 props["karsasec.ai.patch_fingerprint"] = finding.metadata["patch_fingerprint"]
 
             if isinstance(finding.metadata, dict) and "patch_application_status" in finding.metadata:
                 props["karsasec.ai.patch_application_available"] = True
                 props["karsasec.ai.patch_application_status"] = finding.metadata["patch_application_status"]
                 props["karsasec.ai.approval_token_id"] = finding.metadata.get("approval_token_id", "N/A")
-                props["karsasec.ai.application_transaction_id"] = finding.metadata.get("application_transaction_id", "N/A")
-                props["karsasec.ai.post_apply_verification_status"] = finding.metadata.get("post_apply_verification_status", "UNVERIFIED")
+                props["karsasec.ai.application_transaction_id"] = finding.metadata.get(
+                    "application_transaction_id", "N/A"
+                )
+                props["karsasec.ai.post_apply_verification_status"] = finding.metadata.get(
+                    "post_apply_verification_status", "UNVERIFIED"
+                )
                 props["karsasec.ai.rollback_status"] = finding.metadata.get("rollback_status", "NOT_NEEDED")
 
             if isinstance(finding.metadata, dict):
@@ -100,26 +114,30 @@ class SARIFReporter(Reporter):
                 if "verification_status" in finding.metadata:
                     props["karsasec.ai.verification_status"] = str(finding.metadata["verification_status"])
 
-            sarif_results.append({
-                "ruleId": finding.rule_id,
-                "ruleIndex": rule_idx,
-                "level": level,
-                "message": {"text": finding.description},
-                "locations": [{
-                    "physicalLocation": {
-                        "artifactLocation": {"uri": uri},
-                        "region": {
-                            "startLine": finding.evidence.line,
-                            "startColumn": finding.evidence.column,
-                            "snippet": {"text": finding.evidence.snippet},
-                        },
+            sarif_results.append(
+                {
+                    "ruleId": finding.rule_id,
+                    "ruleIndex": rule_idx,
+                    "level": level,
+                    "message": {"text": finding.description},
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {"uri": uri},
+                                "region": {
+                                    "startLine": finding.evidence.line,
+                                    "startColumn": finding.evidence.column,
+                                    "snippet": {"text": finding.evidence.snippet},
+                                },
+                            },
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "primaryLocationLineHash": finding.fingerprint,
                     },
-                }],
-                "partialFingerprints": {
-                    "primaryLocationLineHash": finding.fingerprint,
-                },
-                "properties": props,
-            })
+                    "properties": props,
+                }
+            )
 
         # 3. Assemble SARIF 2.1.0 Object
         tool_driver = {
@@ -134,12 +152,14 @@ class SARIFReporter(Reporter):
         sarif_payload = {
             "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
             "version": "2.1.0",
-            "runs": [{
-                "tool": {
-                    "driver": tool_driver,
-                },
-                "results": sarif_results,
-            }],
+            "runs": [
+                {
+                    "tool": {
+                        "driver": tool_driver,
+                    },
+                    "results": sarif_results,
+                }
+            ],
         }
 
         content = json.dumps(sarif_payload, indent=2)

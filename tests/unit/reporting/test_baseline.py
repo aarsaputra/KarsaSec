@@ -23,6 +23,7 @@ def create_sample_finding(fp: str, rule_id: str = "R1", severity: Severity = Sev
         remediation="Fix",
     )
 
+
 def test_baseline_save_and_load(tmp_path: Path) -> None:
     f1 = create_sample_finding("fp1")
     target_file = tmp_path / "baseline.json"
@@ -33,6 +34,7 @@ def test_baseline_save_and_load(tmp_path: Path) -> None:
     loaded = baseline_manager.load_baseline(target_file)
     assert "fp1" in loaded.findings
     assert loaded.findings["fp1"].rule_id == "R1"
+
 
 def test_baseline_comparison_new_existing_fixed_regressed() -> None:
     f_existing = create_sample_finding("fp1", severity=Severity.MEDIUM)

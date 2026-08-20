@@ -147,7 +147,7 @@ class InterproceduralDataflowAnalyzer:
 
                     if "return" in stmt_text.lower():
                         path_idx += 1
-                        ret_match = re.search(r'return\s+(.+?);?$', stmt_text, re.IGNORECASE)
+                        ret_match = re.search(r"return\s+(.+?);?$", stmt_text, re.IGNORECASE)
                         raw_ret = ret_match.group(1) if ret_match else ""
                         ret_expr = raw_ret.rstrip(";").rstrip("}").strip()
 
@@ -159,7 +159,10 @@ class InterproceduralDataflowAnalyzer:
                         ret_constraints = set(ret_val.all_constraints) if ret_val else set()
 
                         # Check for direct sources in return expression (e.g. return $_GET['x'];)
-                        if any(sg in stmt_text for sg in ("$_GET", "$_POST", "$_REQUEST", "$_COOKIE", "$_FILES", "$_SERVER")):
+                        if any(
+                            sg in stmt_text
+                            for sg in ("$_GET", "$_POST", "$_REQUEST", "$_COOKIE", "$_FILES", "$_SERVER")
+                        ):
                             ret_taint = TaintState.TAINTED
 
                         # Check for transformations in return expression (e.g. return intval($x);)
@@ -178,7 +181,8 @@ class InterproceduralDataflowAnalyzer:
 
                         # Determine parameter dependencies
                         param_deps = tuple(
-                            p.lstrip("$") for p in parameters
+                            p.lstrip("$")
+                            for p in parameters
                             if f"${p.lstrip('$')}" in stmt_text or (ret_var and f"${p.lstrip('$')}" in ret_var)
                         )
 
@@ -191,7 +195,9 @@ class InterproceduralDataflowAnalyzer:
                                 constraints=frozenset(ret_constraints),
                                 parameter_dependencies=param_deps,
                                 is_guarded=bool(ret_constraints),
-                                guard_description=f"Constraints: {[c.value for c in ret_constraints]}" if ret_constraints else "",
+                                guard_description=f"Constraints: {[c.value for c in ret_constraints]}"
+                                if ret_constraints
+                                else "",
                             )
                         )
 

@@ -21,20 +21,42 @@ class TestValueEvidenceClassifier:
 
     def test_env_reference_classification(self) -> None:
         assert ValueEvidenceClassifier.classify("'password' => env('DB_PASSWORD')") == ValueEvidenceKind.ENV_REFERENCE
-        assert ValueEvidenceClassifier.classify("'password' => env('DB_PASSWORD', '')") == ValueEvidenceKind.ENV_REFERENCE
-        assert ValueEvidenceClassifier.classify("'password' => getenv('MAIL_PASSWORD')") == ValueEvidenceKind.ENV_REFERENCE
+        assert (
+            ValueEvidenceClassifier.classify("'password' => env('DB_PASSWORD', '')") == ValueEvidenceKind.ENV_REFERENCE
+        )
+        assert (
+            ValueEvidenceClassifier.classify("'password' => getenv('MAIL_PASSWORD')") == ValueEvidenceKind.ENV_REFERENCE
+        )
         assert ValueEvidenceClassifier.classify("password = os.getenv('DB_PASS')") == ValueEvidenceKind.ENV_REFERENCE
         assert ValueEvidenceClassifier.classify("password = process.env.DB_PASS") == ValueEvidenceKind.ENV_REFERENCE
-        assert ValueEvidenceClassifier.classify("'default' => env('MAIL_MAILER', 'log')") == ValueEvidenceKind.ENV_REFERENCE
+        assert (
+            ValueEvidenceClassifier.classify("'default' => env('MAIL_MAILER', 'log')")
+            == ValueEvidenceKind.ENV_REFERENCE
+        )
 
     def test_secret_provider_classification(self) -> None:
-        assert ValueEvidenceClassifier.classify("'password' => config('secrets.db')") == ValueEvidenceKind.SECRET_PROVIDER_REFERENCE
-        assert ValueEvidenceClassifier.classify("'password' => Secret::get('db')") == ValueEvidenceKind.SECRET_PROVIDER_REFERENCE
-        assert ValueEvidenceClassifier.classify("pass = Vault::fetch('db_key')") == ValueEvidenceKind.SECRET_PROVIDER_REFERENCE
+        assert (
+            ValueEvidenceClassifier.classify("'password' => config('secrets.db')")
+            == ValueEvidenceKind.SECRET_PROVIDER_REFERENCE
+        )
+        assert (
+            ValueEvidenceClassifier.classify("'password' => Secret::get('db')")
+            == ValueEvidenceKind.SECRET_PROVIDER_REFERENCE
+        )
+        assert (
+            ValueEvidenceClassifier.classify("pass = Vault::fetch('db_key')")
+            == ValueEvidenceKind.SECRET_PROVIDER_REFERENCE
+        )
 
     def test_static_constant_classification(self) -> None:
-        assert ValueEvidenceClassifier.classify("'path' => storage_path('logs/laravel.log')") == ValueEvidenceKind.STATIC_CONSTANT
-        assert ValueEvidenceClassifier.classify("'path' => database_path('database.sqlite')") == ValueEvidenceKind.STATIC_CONSTANT
+        assert (
+            ValueEvidenceClassifier.classify("'path' => storage_path('logs/laravel.log')")
+            == ValueEvidenceKind.STATIC_CONSTANT
+        )
+        assert (
+            ValueEvidenceClassifier.classify("'path' => database_path('database.sqlite')")
+            == ValueEvidenceKind.STATIC_CONSTANT
+        )
 
     def test_empty_and_null_classification(self) -> None:
         assert ValueEvidenceClassifier.classify("'password' => ''") == ValueEvidenceKind.EMPTY_LITERAL

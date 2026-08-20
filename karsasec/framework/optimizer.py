@@ -122,7 +122,6 @@ class FrameworkGraphOptimizer:
             if n.node_type.value.upper() in ("ROUTE", "CONTROLLER", "AUTH") or n.id in active_node_ids:
                 filtered_nodes[n.id] = n
 
-
         return FrameworkSemanticGraph(
             schema_version=graph.schema_version,
             generator_version=graph.generator_version,

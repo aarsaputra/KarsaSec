@@ -45,14 +45,17 @@ class RemediationPlanner:
         ev_refs = tuple(ctx.provenance_path) if ctx.provenance_path else (f"{ctx.file_path}:{ctx.line_number}",)
 
         # 2. Invariant G1: Check for UNKNOWN / NOT_PROVEN / CONTRADICTORY states
-        is_unknown_verdict = ctx.verdict_status in (VerdictStatus.UNKNOWN.value, VerdictStatus.NOT_PROVEN.value, VerdictStatus.UNKNOWN, VerdictStatus.NOT_PROVEN) or (verdict is not None and verdict.status in (VerdictStatus.UNKNOWN, VerdictStatus.NOT_PROVEN))
-        is_unproven_rca = (
-            rca is not None
-            and (
-                rca.reflection_status in (ReflectionStatus.NOT_PROVEN, ReflectionStatus.UNKNOWN, ReflectionStatus.CONTRADICTORY)
-                or rca.false_positive_risk == FalsePositiveAssessment.NOT_PROVEN
-                or rca.root_cause_category == RootCauseCategory.CONTRADICTORY_EVIDENCE
-            )
+        is_unknown_verdict = ctx.verdict_status in (
+            VerdictStatus.UNKNOWN.value,
+            VerdictStatus.NOT_PROVEN.value,
+            VerdictStatus.UNKNOWN,
+            VerdictStatus.NOT_PROVEN,
+        ) or (verdict is not None and verdict.status in (VerdictStatus.UNKNOWN, VerdictStatus.NOT_PROVEN))
+        is_unproven_rca = rca is not None and (
+            rca.reflection_status
+            in (ReflectionStatus.NOT_PROVEN, ReflectionStatus.UNKNOWN, ReflectionStatus.CONTRADICTORY)
+            or rca.false_positive_risk == FalsePositiveAssessment.NOT_PROVEN
+            or rca.root_cause_category == RootCauseCategory.CONTRADICTORY_EVIDENCE
         )
 
         if is_unknown_verdict or is_unproven_rca:

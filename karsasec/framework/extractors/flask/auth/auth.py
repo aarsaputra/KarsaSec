@@ -71,7 +71,9 @@ class FlaskAuthExtractor(SemanticExtractor):
         collector = FlaskAuthCollector()
         return collector.collect_from_asts(ast_trees)
 
-    def validate(self, raw_state: FlaskAuthState, ctx: ExtractorContext | None = None) -> tuple[list[AuthDefinition], list[SemanticDiagnostic]]:
+    def validate(
+        self, raw_state: FlaskAuthState, ctx: ExtractorContext | None = None
+    ) -> tuple[list[AuthDefinition], list[SemanticDiagnostic]]:
         """Phase 2: Normalize candidate records and run diagnostic validation checks."""
         normalizer = FlaskAuthNormalizer()
         auth_defs = list(normalizer.normalize(raw_state))

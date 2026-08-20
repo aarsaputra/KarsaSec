@@ -8,6 +8,7 @@ Design decisions:
   - TRUE_POSITIVE means: at this location a finding MUST be emitted.
   - UNKNOWN findings are tracked separately and never collapsed into TP/FP.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -25,6 +26,7 @@ class GroundTruthExpectation(StrEnum):
     TRUE_POSITIVE  — a real vulnerability; KarsaSec MUST detect it.
     TRUE_NEGATIVE  — not a vulnerability; KarsaSec MUST NOT produce a finding.
     """
+
     TRUE_POSITIVE = "TRUE_POSITIVE"
     TRUE_NEGATIVE = "TRUE_NEGATIVE"
 
@@ -45,6 +47,7 @@ class GroundTruthCase:
         language:    Source language (e.g. 'PHP').
         severity:    Expected severity, if applicable.
     """
+
     case_id: str
     benchmark: str
     file: str
@@ -76,6 +79,7 @@ class GroundTruthBenchmark:
       - No duplicate case_id values.
       - All cases belong to this benchmark.
     """
+
     benchmark_id: str
     version: str
     description: str

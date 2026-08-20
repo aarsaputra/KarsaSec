@@ -1,4 +1,5 @@
 """Unit tests for qualification metrics calculation and category aggregation (E12-2)."""
+
 from __future__ import annotations
 
 import pytest
@@ -16,7 +17,6 @@ from karsasec.qualification.metrics import (
 
 
 class TestMetricsCalculation:
-
     def test_precision_standard(self) -> None:
         assert calculate_precision(8, 2) == 0.8
         assert calculate_precision(10, 0) == 1.0
@@ -60,7 +60,12 @@ class TestMetricsCalculation:
     def test_build_category_result(self) -> None:
         res = build_category_result(
             category="SQL_INJECTION",
-            tp=6, fp=2, fn=0, tn=2, unknown=0, cases=10,
+            tp=6,
+            fp=2,
+            fn=0,
+            tn=2,
+            unknown=0,
+            cases=10,
         )
         assert isinstance(res, CategoryQualificationResult)
         assert res.category == "SQL_INJECTION"

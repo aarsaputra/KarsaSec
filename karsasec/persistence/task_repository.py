@@ -12,12 +12,11 @@ Invariants:
 
 from __future__ import annotations
 
-import json
 from contextlib import contextmanager
 from datetime import datetime, UTC
-from typing import Generator, List, Optional
+from collections.abc import Generator
 
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from karsasec.persistence.db import DatabaseSessionFactory, get_session_factory
@@ -47,6 +46,7 @@ def _model_to_domain(model: TaskModel) -> RemediationTask:
     # Reconstruct lease wall-clock time as monotonic approximation
     if model.lease_started_at is not None:
         import time
+
         # Approximation: offset from now
         elapsed = (datetime.now(UTC) - model.lease_started_at).total_seconds()
         task.started_at = time.monotonic() - elapsed
@@ -73,9 +73,7 @@ class PostgresTaskRepository(TaskRepository):
     def create_task(self, task: RemediationTask) -> None:
         """Persist a new task. Raises ValueError on duplicate task_id."""
         with self._session() as session:
-            existing = session.scalar(
-                select(TaskModel).where(TaskModel.task_id == task.task_id)
-            )
+            existing = session.scalar(select(TaskModel).where(TaskModel.task_id == task.task_id))
             if existing:
                 raise ValueError(f"Task '{task.task_id}' already exists.")
             model = TaskModel(
@@ -98,9 +96,7 @@ class PostgresTaskRepository(TaskRepository):
     def update_task(self, task_id: str, **kwargs) -> RemediationTask:
         """Atomically update task fields. Handles state transitions via domain model."""
         with self._session() as session:
-            model = session.scalar(
-                select(TaskModel).where(TaskModel.task_id == task_id)
-            )
+            model = session.scalar(select(TaskModel).where(TaskModel.task_id == task_id))
             if not model:
                 raise ValueError(f"Task '{task_id}' not found.")
 
@@ -115,6 +111,7 @@ class PostgresTaskRepository(TaskRepository):
                     # persist lease start time in wall-clock UTC
                     if domain_task.started_at is not None:
                         import time
+
                         elapsed = time.monotonic() - domain_task.started_at
                         model.lease_started_at = datetime(
                             *datetime.now(UTC).timetuple()[:6],
@@ -136,18 +133,16 @@ class PostgresTaskRepository(TaskRepository):
     # Read operations
     # ------------------------------------------------------------------
 
-    def get_task(self, task_id: str) -> Optional[RemediationTask]:
+    def get_task(self, task_id: str) -> RemediationTask | None:
         with self._session() as session:
-            model = session.scalar(
-                select(TaskModel).where(TaskModel.task_id == task_id)
-            )
+            model = session.scalar(select(TaskModel).where(TaskModel.task_id == task_id))
             return _model_to_domain(model) if model else None
 
     def list_tasks(
         self,
         states: list[str] | None = None,
         limit: int = 100,
-    ) -> List[RemediationTask]:
+    ) -> list[RemediationTask]:
         """Deterministic listing of tasks, ordered by created_at, task_id."""
         with self._session() as session:
             stmt = select(TaskModel)
@@ -157,7 +152,7 @@ class PostgresTaskRepository(TaskRepository):
             rows = session.scalars(stmt).all()
             return [_model_to_domain(r) for r in rows]
 
-    def get_active_task_by_fingerprint(self, fingerprint: str) -> Optional[RemediationTask]:
+    def get_active_task_by_fingerprint(self, fingerprint: str) -> RemediationTask | None:
         """Find any non-terminal task matching a given request fingerprint (idempotency)."""
         terminal = {str(s) for s in (TaskState.COMPLETED, TaskState.FAILED, TaskState.CANCELLED)}
         with self._session() as session:
@@ -172,19 +167,18 @@ class PostgresTaskRepository(TaskRepository):
             )
             return _model_to_domain(model) if model else None
 
-    def find_expired_running_tasks(self, lease_timeout_seconds: int = 300) -> List[RemediationTask]:
+    def find_expired_running_tasks(self, lease_timeout_seconds: int = 300) -> list[RemediationTask]:
         """Return all RUNNING tasks whose wall-clock lease has expired.
 
         Used by StartupRecoveryEngine on service boot.
         """
         from sqlalchemy import text
+
         with self._session() as session:
             stmt = select(TaskModel).where(
                 TaskModel.state == "RUNNING",
                 TaskModel.lease_started_at.is_not(None),
-                text(
-                    f"EXTRACT(EPOCH FROM (NOW() - lease_started_at)) > {int(lease_timeout_seconds)}"
-                ),
+                text(f"EXTRACT(EPOCH FROM (NOW() - lease_started_at)) > {int(lease_timeout_seconds)}"),
             )
             rows = session.scalars(stmt).all()
             return [_model_to_domain(r) for r in rows]

@@ -34,6 +34,7 @@ def extractor() -> FlaskConfigExtractor:
 # Category 1: Direct Subscript Assignments (15 Tests)
 # ============================================================================
 
+
 def test_direct_assign_basic():
     code = "app.config['DEBUG'] = True"
     tree = PythonASTAdapter.parse_code(code)
@@ -57,11 +58,21 @@ def test_direct_assign_secret_key():
     assert state.configs[0].is_sensitive is True
 
 
-@pytest.mark.parametrize("key", [
-    "SESSION_COOKIE_SECURE", "SESSION_COOKIE_HTTPONLY", "SESSION_COOKIE_SAMESITE",
-    "PERMANENT_SESSION_LIFETIME", "REMEMBER_COOKIE_SECURE", "WTF_CSRF_ENABLED",
-    "MAX_CONTENT_LENGTH", "TEMPLATES_AUTO_RELOAD", "PREFERRED_URL_SCHEME", "PROPAGATE_EXCEPTIONS"
-])
+@pytest.mark.parametrize(
+    "key",
+    [
+        "SESSION_COOKIE_SECURE",
+        "SESSION_COOKIE_HTTPONLY",
+        "SESSION_COOKIE_SAMESITE",
+        "PERMANENT_SESSION_LIFETIME",
+        "REMEMBER_COOKIE_SECURE",
+        "WTF_CSRF_ENABLED",
+        "MAX_CONTENT_LENGTH",
+        "TEMPLATES_AUTO_RELOAD",
+        "PREFERRED_URL_SCHEME",
+        "PROPAGATE_EXCEPTIONS",
+    ],
+)
 def test_direct_assign_security_keys(key: str):
     code = f"app.config['{key}'] = True"
     tree = PythonASTAdapter.parse_code(code)
@@ -86,6 +97,7 @@ def test_direct_assign_fixture(extractor: FlaskConfigExtractor):
 # Category 2: Attribute Assignments (10 Tests)
 # ============================================================================
 
+
 def test_attribute_assign_basic():
     code = "app.config.DEBUG = True"
     tree = PythonASTAdapter.parse_code(code)
@@ -99,11 +111,20 @@ def test_attribute_assign_basic():
     assert state.configs[0].confidence == 0.98
 
 
-@pytest.mark.parametrize("attr_name", [
-    "DEBUG", "TESTING", "SECRET_KEY", "PRESERVE_CONTEXT_ON_EXCEPTION",
-    "TRAP_HTTP_EXCEPTIONS", "TRAP_BAD_REQUEST_ERRORS", "JSON_AS_ASCII",
-    "JSON_SORT_KEYS", "JSONIFY_MIMETYPE"
-])
+@pytest.mark.parametrize(
+    "attr_name",
+    [
+        "DEBUG",
+        "TESTING",
+        "SECRET_KEY",
+        "PRESERVE_CONTEXT_ON_EXCEPTION",
+        "TRAP_HTTP_EXCEPTIONS",
+        "TRAP_BAD_REQUEST_ERRORS",
+        "JSON_AS_ASCII",
+        "JSON_SORT_KEYS",
+        "JSONIFY_MIMETYPE",
+    ],
+)
 def test_attribute_assign_names(attr_name: str):
     code = f"app.config.{attr_name} = 'val'"
     tree = PythonASTAdapter.parse_code(code)
@@ -117,6 +138,7 @@ def test_attribute_assign_names(attr_name: str):
 # ============================================================================
 # Category 3: update() & from_mapping() (15 Tests)
 # ============================================================================
+
 
 def test_config_update_kwargs():
     code = "app.config.update(DEBUG=False, SECRET_KEY='update-secret')"
@@ -153,9 +175,9 @@ def test_config_from_mapping():
     assert state.configs[0].confidence == 0.95
 
 
-@pytest.mark.parametrize("key_name", [
-    "KEY1", "KEY2", "KEY3", "KEY4", "KEY5", "KEY6", "KEY7", "KEY8", "KEY9", "KEY10", "KEY11", "KEY12"
-])
+@pytest.mark.parametrize(
+    "key_name", ["KEY1", "KEY2", "KEY3", "KEY4", "KEY5", "KEY6", "KEY7", "KEY8", "KEY9", "KEY10", "KEY11", "KEY12"]
+)
 def test_config_update_multiple(key_name: str):
     code = f"app.config.update({key_name}='val')"
     tree = PythonASTAdapter.parse_code(code)
@@ -178,6 +200,7 @@ def test_update_fixture(extractor: FlaskConfigExtractor):
 # ============================================================================
 # Category 4: Loader Methods (15 Tests)
 # ============================================================================
+
 
 def test_loader_from_object_str():
     code = "app.config.from_object('config.Config')"
@@ -233,13 +256,16 @@ def test_loader_from_prefixed_env():
     assert state.configs[0].loader == "from_prefixed_env"
 
 
-@pytest.mark.parametrize("loader_name,arg", [
-    ("from_object", "config.Config"),
-    ("from_pyfile", "config.py"),
-    ("from_envvar", "ENV_VAR"),
-    ("from_file", "config.json"),
-    ("from_prefixed_env", "MYAPP"),
-])
+@pytest.mark.parametrize(
+    "loader_name,arg",
+    [
+        ("from_object", "config.Config"),
+        ("from_pyfile", "config.py"),
+        ("from_envvar", "ENV_VAR"),
+        ("from_file", "config.json"),
+        ("from_prefixed_env", "MYAPP"),
+    ],
+)
 def test_all_loader_methods(loader_name: str, arg: str):
     code = f"app.config.{loader_name}('{arg}')"
     tree = PythonASTAdapter.parse_code(code)
@@ -253,6 +279,7 @@ def test_all_loader_methods(loader_name: str, arg: str):
 # ============================================================================
 # Category 5: Environment Variable Lookups (15 Tests)
 # ============================================================================
+
 
 def test_env_os_getenv():
     code = "app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default')"
@@ -295,10 +322,21 @@ def test_env_dotenv_load():
     assert state.configs[0].key == "__DOTENV__:LOADED"
 
 
-@pytest.mark.parametrize("env_var", [
-    "DATABASE_URL", "REDIS_URL", "SECRET_KEY", "FLASK_ENV", "FLASK_DEBUG",
-    "JWT_SECRET_KEY", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "SENTRY_DSN", "API_KEY"
-])
+@pytest.mark.parametrize(
+    "env_var",
+    [
+        "DATABASE_URL",
+        "REDIS_URL",
+        "SECRET_KEY",
+        "FLASK_ENV",
+        "FLASK_DEBUG",
+        "JWT_SECRET_KEY",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "SENTRY_DSN",
+        "API_KEY",
+    ],
+)
 def test_env_var_names(env_var: str):
     code = f"val = os.getenv('{env_var}')"
     tree = PythonASTAdapter.parse_code(code)
@@ -322,6 +360,7 @@ def test_env_fixture(extractor: FlaskConfigExtractor):
 # Category 6: Config Classes & Inheritance (15 Tests)
 # ============================================================================
 
+
 def test_config_class_basic():
     code = "class Config:\n    DEBUG = False\n    SECRET_KEY = 'base'"
     tree = PythonASTAdapter.parse_code(code)
@@ -343,10 +382,21 @@ def test_config_class_inheritance():
     assert state.class_inheritance.get("ProductionConfig") == "Config"
 
 
-@pytest.mark.parametrize("cls_name", [
-    "Config", "BaseConfig", "DevelopmentConfig", "ProductionConfig", "TestingConfig",
-    "StagingConfig", "LocalConfig", "DockerConfig", "CIConfig", "CloudConfig"
-])
+@pytest.mark.parametrize(
+    "cls_name",
+    [
+        "Config",
+        "BaseConfig",
+        "DevelopmentConfig",
+        "ProductionConfig",
+        "TestingConfig",
+        "StagingConfig",
+        "LocalConfig",
+        "DockerConfig",
+        "CIConfig",
+        "CloudConfig",
+    ],
+)
 def test_config_class_names(cls_name: str):
     code = f"class {cls_name}:\n    SECRET_KEY = 'secret'"
     tree = PythonASTAdapter.parse_code(code)
@@ -369,23 +419,27 @@ def test_config_class_fixture(extractor: FlaskConfigExtractor):
 # Category 7: Category & Sensitivity Classification (15 Tests)
 # ============================================================================
 
-@pytest.mark.parametrize("key,expected_cat,expected_sens", [
-    ("SECRET_KEY", "security", True),
-    ("PASSWORD_SALT", "security", True),
-    ("SESSION_COOKIE_SECURE", "session", True),
-    ("WTF_CSRF_ENABLED", "csrf", True),
-    ("REMEMBER_COOKIE_SECURE", "cookie", True),
-    ("MAX_CONTENT_LENGTH", "upload", False),
-    ("TEMPLATES_AUTO_RELOAD", "template", False),
-    ("LOGGER_HANDLER_POLICY", "logging", False),
-    ("SQLALCHEMY_DATABASE_URI", "database", True),
-    ("CACHE_TYPE", "cache", True),
-    ("DEBUG", "app", False),
-    ("TESTING", "app", False),
-    ("JWT_SECRET_KEY", "security", True),
-    ("API_KEY", "security", True),
-    ("REDIS_URL", "cache", True),
-])
+
+@pytest.mark.parametrize(
+    "key,expected_cat,expected_sens",
+    [
+        ("SECRET_KEY", "security", True),
+        ("PASSWORD_SALT", "security", True),
+        ("SESSION_COOKIE_SECURE", "session", True),
+        ("WTF_CSRF_ENABLED", "csrf", True),
+        ("REMEMBER_COOKIE_SECURE", "cookie", True),
+        ("MAX_CONTENT_LENGTH", "upload", False),
+        ("TEMPLATES_AUTO_RELOAD", "template", False),
+        ("LOGGER_HANDLER_POLICY", "logging", False),
+        ("SQLALCHEMY_DATABASE_URI", "database", True),
+        ("CACHE_TYPE", "cache", True),
+        ("DEBUG", "app", False),
+        ("TESTING", "app", False),
+        ("JWT_SECRET_KEY", "security", True),
+        ("API_KEY", "security", True),
+        ("REDIS_URL", "cache", True),
+    ],
+)
 def test_sensitive_classifier(key: str, expected_cat: str, expected_sens: bool):
     cat, sens = SensitiveConfigClassifier.classify(key)
     assert cat == expected_cat
@@ -395,6 +449,7 @@ def test_sensitive_classifier(key: str, expected_cat: str, expected_sens: bool):
 # ============================================================================
 # Category 8: Diagnostics & Semantic Validation (10 Tests)
 # ============================================================================
+
 
 def test_duplicate_config_key_diagnostic():
     state = FlaskConfigState()
@@ -441,6 +496,7 @@ def test_missing_secret_key_diagnostic():
 # Category 9: ISR Schema Compliance & Versioning (5 Tests)
 # ============================================================================
 
+
 def test_isr_schema_version():
     state = FlaskConfigState()
     state.add_config(ConfigCandidate(key="KEY", value="val"))
@@ -454,6 +510,7 @@ def test_isr_schema_version():
 # ============================================================================
 # Category 10: Deterministic ID & Capabilities (5 Tests)
 # ============================================================================
+
 
 def test_config_semantic_id_length():
     state = FlaskConfigState()

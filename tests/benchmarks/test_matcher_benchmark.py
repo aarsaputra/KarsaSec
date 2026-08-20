@@ -20,6 +20,7 @@ def create_compiled_rule(index: int) -> Rule:
     )
     return rule_compiler.compile(r)
 
+
 def test_benchmark_matcher_scalability() -> None:
     node = ASTNode(node_id="n1", node_type="call_expression")
     context = VisitorContext(file_node=FileNode(node_id="f1", node_type="file", language="python"), language="python")
@@ -41,5 +42,7 @@ def test_benchmark_matcher_scalability() -> None:
         elapsed = time.perf_counter() - start_time
         eval_rate = rule_count / elapsed if elapsed > 0 else 0
 
-        print(f"\n[Matcher Benchmark] {rule_count:4d} rules: {elapsed:.6f}s ({eval_rate:,.0f} matches/sec), matches={matches_found}")
+        print(
+            f"\n[Matcher Benchmark] {rule_count:4d} rules: {elapsed:.6f}s ({eval_rate:,.0f} matches/sec), matches={matches_found}"
+        )
         assert elapsed >= 0

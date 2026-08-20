@@ -9,9 +9,11 @@ from karsasec.parser.ast_nodes import ASTNode, FileNode, Position, generate_node
 try:
     import tree_sitter  # noqa: F401
     from tree_sitter import Language, Parser
+
     HAS_TREE_SITTER = True
 except ImportError:
     HAS_TREE_SITTER = False
+
 
 class TreeSitterEngine:
     """Stateless wrapper over tree-sitter library for parsing source code into ASTNode trees."""
@@ -35,21 +37,27 @@ class TreeSitterEngine:
                 lang_obj = None
                 if lang_key == "python":
                     import tree_sitter_python as tspython
+
                     lang_obj = Language(tspython.language())
                 elif lang_key in ("javascript", "typescript", "js", "ts"):
                     import tree_sitter_javascript as tsjs
+
                     lang_obj = Language(tsjs.language())
                 elif lang_key == "php":
                     import tree_sitter_php as tsphp
+
                     lang_obj = Language(tsphp.language_php())
                 elif lang_key == "go":
                     import tree_sitter_go as tsgo
+
                     lang_obj = Language(tsgo.language())
                 elif lang_key == "rust":
                     import tree_sitter_rust as tsrust
+
                     lang_obj = Language(tsrust.language())
                 elif lang_key == "java":
                     import tree_sitter_java as tsjava
+
                     lang_obj = Language(tsjava.language())
 
                 if lang_obj:
@@ -159,6 +167,7 @@ class TreeSitterEngine:
 
         node_lookup[node_id] = ast_node
         return ast_node
+
 
 # Global default stateless engine instance
 ts_engine = TreeSitterEngine()

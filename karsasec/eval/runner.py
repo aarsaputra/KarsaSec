@@ -70,9 +70,7 @@ class BenchmarkEvaluator:
                 if sub_dir.exists():
                     for v_file in sub_dir.rglob("*"):
                         if v_file.is_file() and not v_file.name.startswith("."):
-                            findings, _, _, _ = scan_file_task(
-                                v_file, self.target_detector, rule_executor, rules, []
-                            )
+                            findings, _, _, _ = scan_file_task(v_file, self.target_detector, rule_executor, rules, [])
                             if file_has_target_finding(findings, target_rule_ids):
                                 tp += 1
                             else:
@@ -83,9 +81,7 @@ class BenchmarkEvaluator:
             if safe_dir.exists():
                 for s_file in safe_dir.rglob("*"):
                     if s_file.is_file() and not s_file.name.startswith("."):
-                        findings, _, _, _ = scan_file_task(
-                            s_file, self.target_detector, rule_executor, rules, []
-                        )
+                        findings, _, _, _ = scan_file_task(s_file, self.target_detector, rule_executor, rules, [])
                         if file_has_target_finding(findings, target_rule_ids):
                             fp += 1
                         else:

@@ -10,6 +10,7 @@ from karsasec.rules.matcher.statistics import MatcherStatistics
 @dataclass(frozen=True)
 class ExecutionResult:
     """Immutable result structure containing scan metrics, deduplicated findings, and error telemetry."""
+
     scan_id: str
     timestamp: str
     files_scanned: int

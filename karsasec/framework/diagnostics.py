@@ -11,6 +11,7 @@ from karsasec.framework.origin import SourceLocation
 
 class Severity(StrEnum):
     """Diagnostic severity levels."""
+
     ERROR = "ERROR"
     WARNING = "WARNING"
     INFO = "INFO"
@@ -18,6 +19,7 @@ class Severity(StrEnum):
 
 class ErrorCode(StrEnum):
     """Compiler-style error codes for semantic validation diagnostics."""
+
     DUP_ROUTE = "ERR_SEM_DUP_ROUTE"
     DUP_HANDLER = "ERR_SEM_DUP_HANDLER"
     MISSING_HANDLER = "ERR_SEM_MISSING_HANDLER"
@@ -64,10 +66,10 @@ class ErrorCode(StrEnum):
     INVALID_GRAPH_INVARIANT = "ERR_SEM_INVALID_GRAPH_INVARIANT"
 
 
-
 @dataclass(frozen=True)
 class SemanticDiagnostic:
     """Compiler-style diagnostic emitted during ISR validation or semantic processing."""
+
     code: ErrorCode
     severity: Severity
     message: str

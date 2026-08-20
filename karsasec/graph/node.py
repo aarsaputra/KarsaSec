@@ -7,6 +7,7 @@ from pathlib import Path
 
 class NodeKind(Enum):
     """Types of program elements represented as graph nodes."""
+
     MODULE = "MODULE"
     CLASS = "CLASS"
     FUNCTION = "FUNCTION"
@@ -14,11 +15,14 @@ class NodeKind(Enum):
     EXPRESSION = "EXPRESSION"
     UNKNOWN = "UNKNOWN"
 
+
 class Visibility(Enum):
     """Access visibility of functions and fields."""
+
     PUBLIC = "PUBLIC"
     PROTECTED = "PROTECTED"
     PRIVATE = "PRIVATE"
+
 
 @dataclass(slots=True)
 class GraphNode:
@@ -37,6 +41,7 @@ class GraphNode:
         column: 0-indexed starting column.
         attributes: Additional metadata dict for extensions.
     """
+
     uuid: str
     kind: NodeKind = NodeKind.UNKNOWN
     language: str = ""

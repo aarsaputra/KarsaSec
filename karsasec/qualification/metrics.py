@@ -15,6 +15,7 @@ Zero-division policy (documented invariant):
     P + R   == 0  → f1        = 0.0  (both undefined)
     raw == 0      → dup_rate  = 0.0
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -23,6 +24,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True, slots=True)
 class RuleQualificationResult:
     """Per-rule qualification metrics."""
+
     rule_id: str
     tp: int
     fp: int
@@ -37,6 +39,7 @@ class RuleQualificationResult:
 @dataclass(frozen=True, slots=True)
 class CategoryQualificationResult:
     """Per-category qualification metrics."""
+
     category: str
     tp: int
     fp: int
@@ -115,20 +118,33 @@ def build_rule_result(rule_id: str, tp: int, fp: int, fn: int, unknown: int, cas
     f = calculate_f1(p, r)
     return RuleQualificationResult(
         rule_id=rule_id,
-        tp=tp, fp=fp, fn=fn, unknown=unknown,
-        precision=p, recall=r, f1=f,
+        tp=tp,
+        fp=fp,
+        fn=fn,
+        unknown=unknown,
+        precision=p,
+        recall=r,
+        f1=f,
         cases_evaluated=cases,
     )
 
 
-def build_category_result(category: str, tp: int, fp: int, fn: int, tn: int, unknown: int, cases: int) -> CategoryQualificationResult:
+def build_category_result(
+    category: str, tp: int, fp: int, fn: int, tn: int, unknown: int, cases: int
+) -> CategoryQualificationResult:
     """Compute a complete CategoryQualificationResult from raw counts."""
     p = calculate_precision(tp, fp)
     r = calculate_recall(tp, fn)
     f = calculate_f1(p, r)
     return CategoryQualificationResult(
         category=category,
-        tp=tp, fp=fp, fn=fn, tn=tn, unknown=unknown,
-        precision=p, recall=r, f1=f,
+        tp=tp,
+        fp=fp,
+        fn=fn,
+        tn=tn,
+        unknown=unknown,
+        precision=p,
+        recall=r,
+        f1=f,
         cases_evaluated=cases,
     )

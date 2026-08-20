@@ -40,6 +40,7 @@ def my_func():
         if f_path.exists():
             f_path.unlink()
 
+
 def test_js_semantic_resolution():
     code = """
 const os = require('child_process');
@@ -64,6 +65,7 @@ exec("whoami");
     finally:
         if f_path.exists():
             f_path.unlink()
+
 
 def test_go_semantic_resolution():
     code = """
@@ -93,6 +95,7 @@ func main() {
         if f_path.exists():
             f_path.unlink()
 
+
 def test_php_semantic_resolution():
     code = r"""
 <?php
@@ -120,6 +123,7 @@ $proc("ls");
         if f_path.exists():
             f_path.unlink()
 
+
 def test_python_multi_import_resolution():
     code = """
 import os, sys as system_module
@@ -140,6 +144,7 @@ runner(1)
     finally:
         if f_path.exists():
             f_path.unlink()
+
 
 def test_python_parenthesized_import_resolution():
     code = """
@@ -163,6 +168,7 @@ run_cmd('ls')
         if f_path.exists():
             f_path.unlink()
 
+
 def test_js_curly_brace_import_resolution():
     code = """
 import { exec as run, spawn } from 'child_process';
@@ -183,6 +189,7 @@ run("whoami");
         if f_path.exists():
             f_path.unlink()
 
+
 def test_get_node_text_fallback_with_zero_offsets():
     from karsasec.parser.ast_nodes import ASTNode, Position
     from karsasec.semantic.resolver import get_node_text
@@ -193,7 +200,7 @@ def test_get_node_text_fallback_with_zero_offsets():
         byte_start=0,
         byte_end=0,
         start=Position(line=2, column=5),
-        end=Position(line=2, column=15)
+        end=Position(line=2, column=15),
     )
     source = b"hello\nworldtargetcode\nfoo"
     text = get_node_text(node, source)

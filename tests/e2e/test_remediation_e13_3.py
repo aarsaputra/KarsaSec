@@ -99,7 +99,9 @@ def test_e2e_01_full_remediation_pipeline() -> None:
 
 # E13-3-02: XSS remediation strategy & patch proposal
 def test_e2e_02_xss_proposal_generation() -> None:
-    finding, verdict = _create_e2e_finding("E2E-REM-02", "CWE-79-XSS", VerdictStatus.VULNERABLE, sink_category="HTML_OUTPUT")
+    finding, verdict = _create_e2e_finding(
+        "E2E-REM-02", "CWE-79-XSS", VerdictStatus.VULNERABLE, sink_category="HTML_OUTPUT"
+    )
     rca = RCAAgent().analyze(finding, verdict=verdict)
 
     agent = RemediationAgent()
@@ -177,7 +179,9 @@ def test_e2e_06_read_only_zero_mutation(tmp_path: Path) -> None:
     original_code = "import sqlite3\n\ndef run_query(user_input):\n    conn = sqlite3.connect('db.sqlite')\n    cursor = conn.cursor()\n    cursor.execute('SELECT * FROM users WHERE name=' + user_input)\n"
     src_file.write_text(original_code, encoding="utf-8")
 
-    finding, verdict = _create_e2e_finding("E2E-REM-06", "CWE-89-SQLI", VerdictStatus.VULNERABLE, file_path=str(src_file))
+    finding, verdict = _create_e2e_finding(
+        "E2E-REM-06", "CWE-89-SQLI", VerdictStatus.VULNERABLE, file_path=str(src_file)
+    )
     rca = RCAAgent().analyze(finding, verdict=verdict)
 
     strategy, proposal = RemediationAgent().plan_and_propose(finding, verdict, rca=rca, source_code=original_code)

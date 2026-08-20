@@ -139,7 +139,11 @@ class ProvenanceNode:
     def create_evidence_node(cls, finding: Finding, predecessor_id: str, node_id: str | None = None) -> ProvenanceNode:
         nid = node_id or f"prov_ev_{finding.finding_id}"
         line = str(finding.evidence.line) if finding.evidence else "0"
-        sym = getattr(finding.evidence, "variable_name", getattr(finding.evidence, "snippet", "UNKNOWN")) if finding.evidence else "UNKNOWN"
+        sym = (
+            getattr(finding.evidence, "variable_name", getattr(finding.evidence, "snippet", "UNKNOWN"))
+            if finding.evidence
+            else "UNKNOWN"
+        )
         meta = (
             ("finding_id", finding.finding_id),
             ("evidence_fingerprint", finding.verdict.evidence_fingerprint if finding.verdict else finding.fingerprint),
@@ -179,7 +183,9 @@ class ProvenanceNode:
         )
 
     @classmethod
-    def create_strategy_node(cls, strategy: RemediationStrategy, predecessor_id: str, node_id: str | None = None) -> ProvenanceNode:
+    def create_strategy_node(
+        cls, strategy: RemediationStrategy, predecessor_id: str, node_id: str | None = None
+    ) -> ProvenanceNode:
         nid = node_id or f"prov_strat_{strategy.finding_id}"
         meta = (
             ("finding_id", strategy.finding_id),
@@ -199,7 +205,9 @@ class ProvenanceNode:
         )
 
     @classmethod
-    def create_proposal_node(cls, proposal: PatchProposal, predecessor_id: str, node_id: str | None = None) -> ProvenanceNode:
+    def create_proposal_node(
+        cls, proposal: PatchProposal, predecessor_id: str, node_id: str | None = None
+    ) -> ProvenanceNode:
         nid = node_id or f"prov_prop_{proposal.proposal_id}"
         files_str = "|".join(sorted(f.replace("\\", "/") for f in proposal.target_files))
         meta = (
@@ -221,7 +229,9 @@ class ProvenanceNode:
         )
 
     @classmethod
-    def create_approval_token_node(cls, token: PatchApprovalToken, predecessor_id: str, node_id: str | None = None) -> ProvenanceNode:
+    def create_approval_token_node(
+        cls, token: PatchApprovalToken, predecessor_id: str, node_id: str | None = None
+    ) -> ProvenanceNode:
         nid = node_id or f"prov_tok_{token.token_id}"
         meta = (
             ("token_id", token.token_id),
@@ -244,7 +254,9 @@ class ProvenanceNode:
         )
 
     @classmethod
-    def create_source_snapshot_node(cls, snapshot: SourceSnapshot, predecessor_id: str, node_id: str | None = None) -> ProvenanceNode:
+    def create_source_snapshot_node(
+        cls, snapshot: SourceSnapshot, predecessor_id: str, node_id: str | None = None
+    ) -> ProvenanceNode:
         nid = node_id or f"prov_snap_{snapshot.aggregate_hash[:12]}"
         meta = (
             ("aggregate_hash", snapshot.aggregate_hash),

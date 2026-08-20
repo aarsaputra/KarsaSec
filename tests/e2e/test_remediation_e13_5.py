@@ -308,7 +308,11 @@ def test_e2e_10_failed_application_lifecycle(tmp_path: Path) -> None:
         approval_provider=_approval_cb,
     )
 
-    assert res.current_state in (RemediationLifecycleState.ROLLED_BACK, RemediationLifecycleState.REJECTED, RemediationLifecycleState.APPLY_FAILED)
+    assert res.current_state in (
+        RemediationLifecycleState.ROLLED_BACK,
+        RemediationLifecycleState.REJECTED,
+        RemediationLifecycleState.APPLY_FAILED,
+    )
     assert res.application_result is not None
 
 

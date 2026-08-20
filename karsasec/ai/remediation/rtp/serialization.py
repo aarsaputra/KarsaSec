@@ -281,7 +281,15 @@ def generate_rtp_openapi_schema() -> dict[str, Any]:
                 },
                 "FindingCommitment": {
                     "type": "object",
-                    "required": ["finding_id", "rule_id", "severity", "cwe", "file_path", "line_number", "finding_fingerprint"],
+                    "required": [
+                        "finding_id",
+                        "rule_id",
+                        "severity",
+                        "cwe",
+                        "file_path",
+                        "line_number",
+                        "finding_fingerprint",
+                    ],
                     "properties": {
                         "finding_id": {"type": "string"},
                         "rule_id": {"type": "string"},
@@ -349,7 +357,12 @@ def generate_rtp_openapi_schema() -> dict[str, Any]:
                 },
                 "VerificationCommitment": {
                     "type": "object",
-                    "required": ["verification_run_id", "status", "matching_findings_count", "verification_fingerprint"],
+                    "required": [
+                        "verification_run_id",
+                        "status",
+                        "matching_findings_count",
+                        "verification_fingerprint",
+                    ],
                     "properties": {
                         "verification_run_id": {"type": "string"},
                         "status": {"type": "string"},

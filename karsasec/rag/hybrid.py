@@ -32,8 +32,7 @@ class HybridRAGIndex:
         self.encoder = Model2VecEncoder()
         self.similarity = Model2VecSimilarity(self.encoder)
         self.document_embeddings: dict[str, Mapping[int, float]] = {
-            doc.document_id: self.encoder.encode(doc.text)
-            for doc in self.documents
+            doc.document_id: self.encoder.encode(doc.text) for doc in self.documents
         }
 
     def retrieve(self, query: str, top_k: int = 5) -> list[RAGResult]:
@@ -47,7 +46,9 @@ class HybridRAGIndex:
                 continue
             similarity = self.similarity.encoder.cosine_similarity(query_embedding, vector)
             if similarity > 0.0:
-                embedding_results.append(RAGResult(document_id=doc.document_id, score=similarity, text=doc.text, metadata=doc.metadata))
+                embedding_results.append(
+                    RAGResult(document_id=doc.document_id, score=similarity, text=doc.text, metadata=doc.metadata)
+                )
 
         embedding_results.sort(key=lambda item: item.score, reverse=True)
         embedding_results = embedding_results[: top_k * 2]
@@ -59,7 +60,9 @@ class HybridRAGIndex:
         for doc in self.documents:
             score = fused.get(doc.document_id)
             if score is not None and score > 0.0:
-                combined.append(RAGResult(document_id=doc.document_id, score=score, text=doc.text, metadata=doc.metadata))
+                combined.append(
+                    RAGResult(document_id=doc.document_id, score=score, text=doc.text, metadata=doc.metadata)
+                )
 
         combined.sort(key=lambda item: item.score, reverse=True)
         return combined[:top_k]

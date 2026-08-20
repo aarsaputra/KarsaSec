@@ -155,7 +155,11 @@ class RemediationApplicationAgent:
         ver_res = self.verifier.verify(finding=finding, post_apply_findings=post_apply_findings)
 
         # 4. If Verification Fails (STILL_VULNERABLE or UNKNOWN), Execute Automatic Rollback (H5, H16)
-        if ver_res.status in (VerificationStatus.STILL_VULNERABLE, VerificationStatus.UNKNOWN, VerificationStatus.VERIFICATION_FAILED):
+        if ver_res.status in (
+            VerificationStatus.STILL_VULNERABLE,
+            VerificationStatus.UNKNOWN,
+            VerificationStatus.VERIFICATION_FAILED,
+        ):
             # Capture backup buffers from target files and restore original snapshots
             # Re-read files to capture current mutated state
             target_paths = {rel: (self.repository_root / rel).resolve() for rel in proposal.target_files}

@@ -43,7 +43,9 @@ class SecurityDecisionEngine:
         for ev in bundle.evidences:
             ref = EvidenceReference(
                 evidence_id=ev.node_id,
-                evidence_kind=ev.evidence_kind.value if isinstance(ev.evidence_kind, EvidenceKind) else str(ev.evidence_kind),
+                evidence_kind=ev.evidence_kind.value
+                if isinstance(ev.evidence_kind, EvidenceKind)
+                else str(ev.evidence_kind),
                 source_node=bundle.sink_node_id,
                 sink_node=bundle.sink_node_id,
                 file_path=ev.file_path or file_path,
@@ -51,7 +53,9 @@ class SecurityDecisionEngine:
                 var_version=ev.var_version or variable_version,
                 call_context_id=str(ev.call_context or call_context or ""),
                 branch_polarity=ev.branch_polarity or branch_polarity,
-                proof_status=ev.proof_status.value if isinstance(ev.proof_status, ProofStatus) else str(ev.proof_status),
+                proof_status=ev.proof_status.value
+                if isinstance(ev.proof_status, ProofStatus)
+                else str(ev.proof_status),
                 description=ev.description,
             )
             ev_refs.append(ref)
@@ -78,11 +82,17 @@ class SecurityDecisionEngine:
             )
 
         compat_decision_str = matrix_eval.decision.value if matrix_eval else None
-        matching_constraint_str = matrix_eval.matching_constraint.value if matrix_eval and matrix_eval.matching_constraint else None
+        matching_constraint_str = (
+            matrix_eval.matching_constraint.value if matrix_eval and matrix_eval.matching_constraint else None
+        )
 
         # 3. Apply Decision Logic under Security Invariants G1 & G2
         # Invariant G1 & G2: SAFE is only permitted when PROVEN and Matrix decision is COMPATIBLE
-        if bundle.proof_status == ProofStatus.PROVEN and matrix_eval and matrix_eval.decision == CompatibilityDecision.COMPATIBLE:
+        if (
+            bundle.proof_status == ProofStatus.PROVEN
+            and matrix_eval
+            and matrix_eval.decision == CompatibilityDecision.COMPATIBLE
+        ):
             status = VerdictStatus.SAFE
             confidence = VerdictConfidence.HIGH
             reasons.append(DecisionReason.SINK_COMPATIBILITY_PROVEN)
@@ -96,7 +106,14 @@ class SecurityDecisionEngine:
                 elif ev.evidence_kind == EvidenceKind.TRANSFORMATION:
                     reasons.append(DecisionReason.TRANSFORMATION_PROVEN)
 
-            if not any(r in reasons for r in (DecisionReason.GUARD_PROVEN, DecisionReason.SANITIZER_COMPATIBLE, DecisionReason.TRANSFORMATION_PROVEN)):
+            if not any(
+                r in reasons
+                for r in (
+                    DecisionReason.GUARD_PROVEN,
+                    DecisionReason.SANITIZER_COMPATIBLE,
+                    DecisionReason.TRANSFORMATION_PROVEN,
+                )
+            ):
                 reasons.append(DecisionReason.PATH_CONSTRAINT_PROVEN)
 
         elif matrix_eval and matrix_eval.decision in (CompatibilityDecision.NOT_PROVEN, CompatibilityDecision.CONFLICT):

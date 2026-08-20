@@ -153,6 +153,7 @@ class GenericParserPlugin(ParserPlugin):
             nodes_map=nodes_map,
         )
 
+
 # Register generic parser instances for JS, PHP, Go, Rust, Java, and common file formats
 js_parser = GenericParserPlugin("JavaScript", [".js", ".jsx", ".ts", ".tsx"])
 php_parser = GenericParserPlugin("PHP", [".php", ".phtml"])

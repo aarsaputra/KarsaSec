@@ -58,4 +58,6 @@ class AIPolicy:
     def assert_allowed(cls, capability: AICapability | str) -> None:
         """Asserts that a capability is allowed; raises AIPolicyViolationError if forbidden."""
         if not cls.is_allowed(capability):
-            raise AIPolicyViolationError(f"AIPolicy DENIED operation '{capability}'. AI Consumer layer is 100% READ-ONLY.")
+            raise AIPolicyViolationError(
+                f"AIPolicy DENIED operation '{capability}'. AI Consumer layer is 100% READ-ONLY."
+            )

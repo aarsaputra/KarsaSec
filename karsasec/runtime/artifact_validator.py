@@ -11,6 +11,7 @@ from karsasec.parser.ast_nodes import FileNode
 @dataclass
 class ValidationReport:
     """Immutable validation summary carrying pass decision and invariant error logs."""
+
     is_valid: bool
     artifact_type: str
     errors: list[str] = field(default_factory=list)
@@ -37,7 +38,9 @@ class ArtifactValidator:
             seen_ids.add(node_id)
 
             if node.start and node.end and node.start.line > node.end.line:
-                errors.append(f"Invalid position span in node {node_id}: start line {node.start.line} > end line {node.end.line}")
+                errors.append(
+                    f"Invalid position span in node {node_id}: start line {node.start.line} > end line {node.end.line}"
+                )
 
         return ValidationReport(is_valid=len(errors) == 0, artifact_type="AST", errors=errors, warnings=warnings)
 

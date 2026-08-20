@@ -17,7 +17,10 @@ class QueryPlanner:
         initial_steps = list(query_ast.steps)
         if initial_steps and initial_steps[0].step_type == StepType.WHERE and initial_steps[0].predicate:
             pred = initial_steps[0].predicate
-            if pred.target in ("id", "label", "node_type", "file_path", "function_name", "variable") and pred.operator == "EQUALS":
+            if (
+                pred.target in ("id", "label", "node_type", "file_path", "function_name", "variable")
+                and pred.operator == "EQUALS"
+            ):
                 root_op = "INDEX_LOOKUP"
                 params["index_field"] = pred.target
                 params["index_value"] = str(pred.value)

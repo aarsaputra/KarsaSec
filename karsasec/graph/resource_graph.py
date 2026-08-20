@@ -16,6 +16,7 @@ from enum import StrEnum
 
 class EvaluationOrder(StrEnum):
     """Program-point relative evaluation order of symbol definition vs usage."""
+
     DEFINED_BEFORE_USE = "DEFINED_BEFORE_USE"
     DEFINED_AFTER_USE = "DEFINED_AFTER_USE"
     CONDITIONAL_DEFINITION = "CONDITIONAL_DEFINITION"
@@ -24,6 +25,7 @@ class EvaluationOrder(StrEnum):
 
 class ResourceKind(StrEnum):
     """Categorization of nodes in the Resource Graph."""
+
     FILE = "FILE"
     MODULE = "MODULE"
     CONSTANT = "CONSTANT"
@@ -33,6 +35,7 @@ class ResourceKind(StrEnum):
 
 class ResourceEdgeKind(StrEnum):
     """Types of directional edges connecting resource nodes."""
+
     INCLUDES = "INCLUDES"
     DEFINES = "DEFINES"
     INVOKES = "INVOKES"
@@ -41,6 +44,7 @@ class ResourceEdgeKind(StrEnum):
 
 class ResourceResolutionKind(StrEnum):
     """Value/path provenance classification for resource targets."""
+
     UNKNOWN = "UNKNOWN"
     STATIC_RESOURCE = "STATIC_RESOURCE"
     TAINTED_RESOURCE = "TAINTED_RESOURCE"
@@ -50,6 +54,7 @@ class ResourceResolutionKind(StrEnum):
 @dataclass(frozen=True)
 class ResourceNode:
     """A node representing a file, constant, module, or sink in the project graph."""
+
     node_id: str
     kind: ResourceKind
     path: str = ""
@@ -60,6 +65,7 @@ class ResourceNode:
 @dataclass(frozen=True)
 class ResourceEdge:
     """A directed relationship between two resource nodes."""
+
     source_id: str
     target_id: str
     kind: ResourceEdgeKind
@@ -70,6 +76,7 @@ class ResourceEdge:
 @dataclass(frozen=True)
 class ResourceResolution:
     """Result of resolving a resource reference or inclusion target."""
+
     target: str
     resolution_kind: ResourceResolutionKind
     resolved_path: str = ""
@@ -108,7 +115,9 @@ class ResourceGraph:
         """Get incoming edges to target node."""
         return self._incoming.get(target_id, [])
 
-    def find_include_chain(self, start_file: str, target_file: str, _visited: set[str] | None = None) -> list[str] | None:
+    def find_include_chain(
+        self, start_file: str, target_file: str, _visited: set[str] | None = None
+    ) -> list[str] | None:
         """Find inclusion path between start_file and target_file with cycle protection."""
         visited = _visited or set()
         if start_file in visited:

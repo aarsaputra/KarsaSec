@@ -30,6 +30,7 @@ from karsasec.framework.validator import ISRValidator
 # Dummy Mock Extractors for Testing
 # ============================================================================
 
+
 class MockRouteExtractor(SemanticExtractor):
     @property
     def name(self) -> str:
@@ -96,6 +97,7 @@ class FailingMockExtractor(SemanticExtractor):
 # ============================================================================
 # 1. Extractor SDK & Context Tests (1-10)
 # ============================================================================
+
 
 def test_extractor_capability_enum():
     assert ExtractorCapability.ROUTING == "routing"
@@ -179,6 +181,7 @@ def test_semantic_extractor_execution():
 # 2. Diagnostics Engine Tests (11-18)
 # ============================================================================
 
+
 def test_severity_enum():
     assert Severity.ERROR == "ERROR"
     assert Severity.WARNING == "WARNING"
@@ -249,6 +252,7 @@ def test_diagnostic_remediation_field():
 # ============================================================================
 # 3. Manifest Loader & Capability Resolver Tests (19-28)
 # ============================================================================
+
 
 def test_framework_manifest_creation():
     manifest = FrameworkManifest(
@@ -348,6 +352,7 @@ def test_capability_resolver_multiple():
 # ============================================================================
 # 4. Extractor Registry Tests (29-38)
 # ============================================================================
+
 
 def test_registry_register_and_list():
     reg = ExtractorRegistry()
@@ -460,6 +465,7 @@ def test_registry_overwrite_warning(caplog):
 
 def test_global_extractor_registry_singleton():
     from karsasec.framework import extractor_registry
+
     assert isinstance(extractor_registry, ExtractorRegistry)
 
 
@@ -471,6 +477,7 @@ def test_registry_resolve_empty():
 # ============================================================================
 # 5. ISR Validator Tests (39-50)
 # ============================================================================
+
 
 def test_validator_clean_isr():
     validator = ISRValidator()
@@ -605,6 +612,7 @@ def test_validator_orphan_middleware_valid_target():
 # ============================================================================
 # 6. Framework Semantic Pipeline Tests (51-62)
 # ============================================================================
+
 
 def test_pipeline_execution_with_registered_extractors():
     reg = ExtractorRegistry()
@@ -769,9 +777,9 @@ def test_extraction_result_statistics_and_telemetry():
 
 def test_pipeline_logging(caplog):
     import logging
+
     caplog.set_level(logging.INFO)
     pipeline = FrameworkSemanticPipeline()
     ctx = ExtractorContext(framework="FLASK")
     pipeline.run(ctx)
     assert "Starting FrameworkSemanticPipeline" in caplog.text
-

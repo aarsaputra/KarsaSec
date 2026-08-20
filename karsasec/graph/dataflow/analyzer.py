@@ -1,4 +1,5 @@
 """Deterministic Bounded Data-Flow Analysis Engine (E11)."""
+
 from __future__ import annotations
 
 import re
@@ -58,7 +59,7 @@ class DataFlowAnalyzer:
 
         # Step 1: Determine sink category if not explicitly provided
         if sink_category is None:
-            sym_match = re.search(r'\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', clean_snippet)
+            sym_match = re.search(r"\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(", clean_snippet)
             symbol = sym_match.group(1) if sym_match else ""
             sink_category = sink_registry.classify_sink(symbol, clean_snippet, language=lang)
 
@@ -67,9 +68,9 @@ class DataFlowAnalyzer:
 
         # Step 3: Extract target variables in sink snippet
         if lang == "php":
-            sink_vars = list(dict.fromkeys(re.findall(r'\$[a-zA-Z_][a-zA-Z0-9_]*', clean_snippet)))
+            sink_vars = list(dict.fromkeys(re.findall(r"\$[a-zA-Z_][a-zA-Z0-9_]*", clean_snippet)))
         else:
-            sink_vars = list(dict.fromkeys(re.findall(r'\b[a-zA-Z_][a-zA-Z0-9_]*\b', clean_snippet)))
+            sink_vars = list(dict.fromkeys(re.findall(r"\b[a-zA-Z_][a-zA-Z0-9_]*\b", clean_snippet)))
 
         # Step 4: If direct untrusted source exists in snippet, immediately return TAINTED
         if source_registry.contains_source(clean_snippet, language=lang):
@@ -99,7 +100,7 @@ class DataFlowAnalyzer:
         # Step 5: Constant resolution check for static strings / constants
         if lang == "php":
             decls = graph_data["constant_declarations"]
-            const_ids = re.findall(r'\b[A-Z0-9_]{3,}\b', clean_snippet)
+            const_ids = re.findall(r"\b[A-Z0-9_]{3,}\b", clean_snippet)
             if const_ids:
                 all_static = True
                 any_tainted = False
@@ -164,14 +165,16 @@ class DataFlowAnalyzer:
         visited_nodes_count = 0
 
         sink_loc = FlowLocation(file_path=file_path, line=line_number)
-        hops.append(TaintPathHop(
-            step=1,
-            kind=FlowNodeKind.SINK,
-            symbol=", ".join(sink_vars),
-            snippet=clean_snippet,
-            location=sink_loc,
-            description="Sink invocation receiving variable argument(s)",
-        ))
+        hops.append(
+            TaintPathHop(
+                step=1,
+                kind=FlowNodeKind.SINK,
+                symbol=", ".join(sink_vars),
+                snippet=clean_snippet,
+                location=sink_loc,
+                description="Sink invocation receiving variable argument(s)",
+            )
+        )
 
         overall_state = TaintState.STATIC
         primary_source = ""
@@ -220,7 +223,7 @@ class DataFlowAnalyzer:
             adj_conf = Confidence.LOW
             adj_sev = Severity.LOW
             reason = "No untrusted source detected in variable propagation path"
-        else: # UNKNOWN
+        else:  # UNKNOWN
             adj_conf = Confidence.POSSIBLE
             adj_sev = base_severity
             reason = "Data-flow analysis truncated or inconclusive (UNKNOWN state)"
@@ -311,7 +314,9 @@ class DataFlowAnalyzer:
                 for ret_expr in fdef.return_expressions:
                     if source_registry.contains_source(ret_expr, language=graph_data.get("language", "php")):
                         has_tainted_helper = True
-                        matched = source_registry.find_matching_sources(ret_expr, language=graph_data.get("language", "php"))
+                        matched = source_registry.find_matching_sources(
+                            ret_expr, language=graph_data.get("language", "php")
+                        )
                         if matched:
                             src_sym = matched[0]
                         break
@@ -345,14 +350,18 @@ class DataFlowAnalyzer:
 
         # Case 2: Check if RHS calls a function defined in graph_data["functions"]
         func_map = graph_data.get("functions", {})
-        func_call_match = re.search(r'\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', latest_def.rhs_expression)
+        func_call_match = re.search(r"\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(", latest_def.rhs_expression)
         if func_call_match:
             fn_name = func_call_match.group(1).lower()
             if fn_name in func_map:
                 fdef = func_map[fn_name]
                 if fdef.return_expressions and all(
                     bool(
-                        (ret_san := sanitizer_registry.identify_sanitizer("", rexp, language=graph_data.get("language", "php")))
+                        (
+                            ret_san := sanitizer_registry.identify_sanitizer(
+                                "", rexp, language=graph_data.get("language", "php")
+                            )
+                        )
                         and sink_category
                         and sanitizer_registry.is_compatible(ret_san, sink_category)
                     )
@@ -370,7 +379,9 @@ class DataFlowAnalyzer:
 
                 for ret_expr in fdef.return_expressions:
                     if source_registry.contains_source(ret_expr, language=graph_data.get("language", "php")):
-                        matched_srcs = source_registry.find_matching_sources(ret_expr, language=graph_data.get("language", "php"))
+                        matched_srcs = source_registry.find_matching_sources(
+                            ret_expr, language=graph_data.get("language", "php")
+                        )
                         src_sym = matched_srcs[0] if matched_srcs else "UNTRUSTED_SOURCE"
                         hop = TaintPathHop(
                             step=flow_depth + 2,
@@ -385,10 +396,13 @@ class DataFlowAnalyzer:
                 summary = self.interproc_analyzer.analyze_function(
                     fdef.function_name,
                     str(graph_data.get("file_path", "")),
-                    getattr(fdef, "raw_statements", None) or (fdef.body_source.splitlines() if hasattr(fdef, "body_source") else []),
+                    getattr(fdef, "raw_statements", None)
+                    or (fdef.body_source.splitlines() if hasattr(fdef, "body_source") else []),
                     fdef.parameters,
                 )
-                call_args_match = re.search(rf'\b{re.escape(fdef.function_name)}\s*\((.*?)\)', latest_def.rhs_expression, re.IGNORECASE)
+                call_args_match = re.search(
+                    rf"\b{re.escape(fdef.function_name)}\s*\((.*?)\)", latest_def.rhs_expression, re.IGNORECASE
+                )
                 if call_args_match:
                     c_args = self._split_call_args(call_args_match.group(1))
                     ctx = CallContext(
@@ -412,8 +426,14 @@ class DataFlowAnalyzer:
                             assignment_hops=assignment_hops + 1,
                             nodes_visited=nodes_visited + 1,
                         )
-                        abs_st = AbstractTaintState.TAINTED if getattr(arg_st, "value", str(arg_st)) == "TAINTED" else (
-                            AbstractTaintState.CONSTRAINED if getattr(arg_st, "value", str(arg_st)) in ("SANITIZED", "CONSTRAINED") else AbstractTaintState.UNKNOWN
+                        abs_st = (
+                            AbstractTaintState.TAINTED
+                            if getattr(arg_st, "value", str(arg_st)) == "TAINTED"
+                            else (
+                                AbstractTaintState.CONSTRAINED
+                                if getattr(arg_st, "value", str(arg_st)) in ("SANITIZED", "CONSTRAINED")
+                                else AbstractTaintState.UNKNOWN
+                            )
                         )
                         caller_env.assignment_kill(c_arg, new_taint=abs_st)
 
@@ -432,7 +452,11 @@ class DataFlowAnalyzer:
                         )
                         return TaintState.TAINTED, [hop], "INTERPROCEDURAL_SOURCE", False
 
-                    ret_vars = set(re.findall(r'\$[a-zA-Z_][a-zA-Z0-9_]*', ret_expr)) if graph_data.get("language") == "php" else set(re.findall(r'\b[a-zA-Z_][a-zA-Z0-9_]*\b', ret_expr))
+                    ret_vars = (
+                        set(re.findall(r"\$[a-zA-Z_][a-zA-Z0-9_]*", ret_expr))
+                        if graph_data.get("language") == "php"
+                        else set(re.findall(r"\b[a-zA-Z_][a-zA-Z0-9_]*\b", ret_expr))
+                    )
                     for rvar in ret_vars:
                         st, r_hops, r_src, r_trunc = self._propagate_var(
                             var_name=rvar,
@@ -554,7 +578,7 @@ class DataFlowAnalyzer:
         clean_name = param_name.lstrip("$")
         param_idx = clean_params.index(clean_name) if clean_name in clean_params else 0
 
-        call_pattern = re.compile(rf'(?<!function\s)\b{re.escape(fname)}\s*\(([^)]*)\)', re.IGNORECASE)
+        call_pattern = re.compile(rf"(?<!function\s)\b{re.escape(fname)}\s*\(([^)]*)\)", re.IGNORECASE)
         call_matches = list(call_pattern.finditer(source_text))
 
         if not call_matches:
@@ -564,7 +588,7 @@ class DataFlowAnalyzer:
         call_match = None
         for cm in call_matches:
             # Simple line heuristic: check if call site is outside func_def start/end lines
-            line_no = source_text[:cm.start()].count("\n") + 1
+            line_no = source_text[: cm.start()].count("\n") + 1
             if line_no < func_def.start_line or line_no > func_def.end_line:
                 call_match = cm
                 break
@@ -578,7 +602,7 @@ class DataFlowAnalyzer:
             return TaintState.UNKNOWN, [], "", True
 
         passed_arg = raw_args[param_idx]
-        call_line = source_text[:call_match.start()].count("\n") + 1
+        call_line = source_text[: call_match.start()].count("\n") + 1
 
         # E12-15 Interprocedural Correlation Binding
         ctx = CallContext(
@@ -590,8 +614,14 @@ class DataFlowAnalyzer:
             callee_file=str(graph_data.get("file_path", "")),
         )
         from karsasec.graph.dataflow.abstract_state import AbstractEnvironment, TaintState as AbstTaintState
+
         caller_env = AbstractEnvironment()
-        caller_env.assignment_kill(passed_arg, new_taint=AbstTaintState.TAINTED if source_registry.contains_source(passed_arg, language=lang) else AbstTaintState.UNKNOWN)
+        caller_env.assignment_kill(
+            passed_arg,
+            new_taint=AbstTaintState.TAINTED
+            if source_registry.contains_source(passed_arg, language=lang)
+            else AbstTaintState.UNKNOWN,
+        )
         callee_env = AbstractEnvironment()
         self.interproc_analyzer.bind_parameter(ctx, caller_env, passed_arg, param_name, callee_env)
 
@@ -610,7 +640,11 @@ class DataFlowAnalyzer:
             return TaintState.TAINTED, [hop], src_sym, False
 
         # Recurse if passed argument is a variable
-        arg_vars = re.findall(r'\$[a-zA-Z_][a-zA-Z0-9_]*', passed_arg) if lang == "php" else re.findall(r'\b[a-zA-Z_][a-zA-Z0-9_]*\b', passed_arg)
+        arg_vars = (
+            re.findall(r"\$[a-zA-Z_][a-zA-Z0-9_]*", passed_arg)
+            if lang == "php"
+            else re.findall(r"\b[a-zA-Z_][a-zA-Z0-9_]*\b", passed_arg)
+        )
 
         if not arg_vars:
             return TaintState.STATIC, [], "", False

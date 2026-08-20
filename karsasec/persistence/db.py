@@ -8,9 +8,9 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 import os
-from typing import Generator
+from collections.abc import Generator
 
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from karsasec.persistence.models import Base
@@ -26,6 +26,7 @@ def _get_database_url() -> str:
 # ---------------------------------------------------------------------------
 # Engine & session factory
 # ---------------------------------------------------------------------------
+
 
 def build_engine(url: str | None = None):
     """Create and return a configured SQLAlchemy engine."""
@@ -74,6 +75,11 @@ class DatabaseSessionFactory:
     @property
     def engine(self):
         return self._engine
+
+    def close(self) -> None:
+        """Dispose underlying engine pool resources."""
+        if self._engine:
+            self._engine.dispose()
 
     def get_session(self) -> Session:
         """Return a new DB session. Caller is responsible for commit/close."""

@@ -1,4 +1,5 @@
 """Unit tests for exact duplicate findings and cross-rule overlap detection (E12-2)."""
+
 from __future__ import annotations
 
 import hashlib
@@ -14,7 +15,9 @@ from karsasec.qualification.model import GroundTruthBenchmark, GroundTruthCase, 
 from karsasec.rules.enums import Confidence, Severity
 
 
-def _make_finding(file_path: str, line: int, rule_id: str, confidence: str | Confidence = Confidence.CONFIDENT) -> Finding:
+def _make_finding(
+    file_path: str, line: int, rule_id: str, confidence: str | Confidence = Confidence.CONFIDENT
+) -> Finding:
     fp = hashlib.sha256(f"{rule_id}|{file_path}|{line}".encode()).hexdigest()[:32]
     ev = Evidence(
         snippet="test",
@@ -39,7 +42,6 @@ def _make_finding(file_path: str, line: int, rule_id: str, confidence: str | Con
 
 
 class TestDuplicatesAndOverlaps:
-
     def test_exact_duplicates(self) -> None:
         scan_root = Path("/tmp/scan")
         f1 = _make_finding("/tmp/scan/low.php", 10, "KS-PHP-0002")
@@ -52,8 +54,12 @@ class TestDuplicatesAndOverlaps:
             description="test",
             cases=(
                 GroundTruthCase(
-                    case_id="c1", benchmark="test", file="low.php", line=10,
-                    rule_id="KS-PHP-0002", expected=GroundTruthExpectation.TRUE_POSITIVE,
+                    case_id="c1",
+                    benchmark="test",
+                    file="low.php",
+                    line=10,
+                    rule_id="KS-PHP-0002",
+                    expected=GroundTruthExpectation.TRUE_POSITIVE,
                     description="test",
                 ),
             ),

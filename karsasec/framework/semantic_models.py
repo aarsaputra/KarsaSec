@@ -13,6 +13,7 @@ from karsasec.framework.origin import OriginMetadata
 
 class SemanticNodeType(StrEnum):
     """Supported semantic node types in FrameworkSemanticGraph."""
+
     FRAMEWORK = "FRAMEWORK"
     ROUTE = "ROUTE"
     ENDPOINT = "ENDPOINT"
@@ -32,6 +33,7 @@ class SemanticNodeType(StrEnum):
 
 class SemanticEdgeType(StrEnum):
     """Supported semantic edge types linking nodes in FrameworkSemanticGraph."""
+
     DECLARES = "DECLARES"
     CALLS = "CALLS"
     USES = "USES"
@@ -49,6 +51,7 @@ class SemanticEdgeType(StrEnum):
 @dataclass(frozen=True)
 class FrameworkSemanticNode:
     """Immutable Node representation in FrameworkSemanticGraph."""
+
     id: str
     node_type: SemanticNodeType
     name: str
@@ -87,6 +90,7 @@ class FrameworkSemanticNode:
 @dataclass(frozen=True)
 class FrameworkSemanticEdge:
     """Immutable Edge representation linking semantic nodes."""
+
     source_id: str
     target_id: str
     edge_type: SemanticEdgeType
@@ -149,9 +153,13 @@ class FrameworkSemanticGraph:
                 self._incoming_edges[e.target_id].append(e)
 
         for nid, e_list in self._outgoing_edges.items():
-            self._outgoing_index[nid] = tuple(sorted(e_list, key=lambda x: (x.source_id, x.target_id, x.edge_type.value)))
+            self._outgoing_index[nid] = tuple(
+                sorted(e_list, key=lambda x: (x.source_id, x.target_id, x.edge_type.value))
+            )
         for nid, e_list in self._incoming_edges.items():
-            self._incoming_index[nid] = tuple(sorted(e_list, key=lambda x: (x.source_id, x.target_id, x.edge_type.value)))
+            self._incoming_index[nid] = tuple(
+                sorted(e_list, key=lambda x: (x.source_id, x.target_id, x.edge_type.value))
+            )
 
     def add_node(self, node: FrameworkSemanticNode) -> FrameworkSemanticGraph:
         """Returns a new FrameworkSemanticGraph instance containing the added node."""
@@ -191,11 +199,18 @@ class FrameworkSemanticGraph:
             edges=tuple(new_edges),
         )
 
-    def remove_edge(self, source_id: str, target_id: str, edge_type: SemanticEdgeType | None = None) -> FrameworkSemanticGraph:
+    def remove_edge(
+        self, source_id: str, target_id: str, edge_type: SemanticEdgeType | None = None
+    ) -> FrameworkSemanticGraph:
         """Returns a new FrameworkSemanticGraph instance with matching edge(s) removed."""
         new_edges = [
-            e for e in self._edges
-            if not (e.source_id == source_id and e.target_id == target_id and (edge_type is None or e.edge_type == edge_type))
+            e
+            for e in self._edges
+            if not (
+                e.source_id == source_id
+                and e.target_id == target_id
+                and (edge_type is None or e.edge_type == edge_type)
+            )
         ]
         return FrameworkSemanticGraph(
             schema_version=self.schema_version,

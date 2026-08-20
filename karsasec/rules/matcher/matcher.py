@@ -78,5 +78,6 @@ class ASTMatcher:
             evaluation_time_ns=eval_time_ns,
         )
 
+
 # Global default ASTMatcher instance
 ast_matcher = ASTMatcher()

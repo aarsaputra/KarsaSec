@@ -7,9 +7,29 @@ class SensitiveConfigClassifier:
     """Classifies Flask configuration keys by category and security sensitivity."""
 
     SENSITIVE_PATTERNS = (
-        "SECRET", "PASSWORD", "PASS", "TOKEN", "JWT", "PRIVATE_KEY", "CERT", "KEY",
-        "COOKIE", "SESSION", "DATABASE", "DB", "REDIS", "CACHE", "SMTP", "MAIL",
-        "CSRF", "CORS", "SSL", "TLS", "AUTH", "API_KEY", "CREDENTIAL"
+        "SECRET",
+        "PASSWORD",
+        "PASS",
+        "TOKEN",
+        "JWT",
+        "PRIVATE_KEY",
+        "CERT",
+        "KEY",
+        "COOKIE",
+        "SESSION",
+        "DATABASE",
+        "DB",
+        "REDIS",
+        "CACHE",
+        "SMTP",
+        "MAIL",
+        "CSRF",
+        "CORS",
+        "SSL",
+        "TLS",
+        "AUTH",
+        "API_KEY",
+        "CREDENTIAL",
     )
 
     CATEGORY_MAP = {
@@ -61,7 +81,9 @@ class SensitiveConfigClassifier:
                 category = "database"
             elif "CACHE" in upper_key or "REDIS" in upper_key:
                 category = "cache"
-            elif any(sec_word in upper_key for sec_word in ("SECRET", "PASS", "TOKEN", "JWT", "KEY", "AUTH", "CREDENTIAL")):
+            elif any(
+                sec_word in upper_key for sec_word in ("SECRET", "PASS", "TOKEN", "JWT", "KEY", "AUTH", "CREDENTIAL")
+            ):
                 category = "security"
             else:
                 category = "app"

@@ -6,7 +6,13 @@ import re
 from typing import TYPE_CHECKING, Any
 
 from karsasec.core.finding.candidate import CandidateFinding
-from karsasec.core.finding.evidence import Evidence, FindingEvidence, OperationSemantics, QualificationEvidence, SourceCategory
+from karsasec.core.finding.evidence import (
+    Evidence,
+    FindingEvidence,
+    OperationSemantics,
+    QualificationEvidence,
+    SourceCategory,
+)
 from karsasec.core.finding.model import QualificationState, QualifiedFinding, compute_stable_finding_fingerprint
 from karsasec.graph.dataflow.compatibility import CompatibilityRegistry
 from karsasec.graph.dataflow.model import TaintState
@@ -37,6 +43,7 @@ class SemanticFindingQualifier:
         if not isinstance(candidate, CandidateFinding):
             from karsasec.rules.enums import LanguageEnum
             from karsasec.rules.schema import Rule, RuleCondition, RuleMatch, RuleMetadataV2, RuleOutput
+
             snip = candidate.evidence.snippet if candidate.evidence else ""
             ln = candidate.evidence.line if candidate.evidence else 1
             col = candidate.evidence.column if candidate.evidence else 0
@@ -52,7 +59,9 @@ class SemanticFindingQualifier:
                 metadata=dummy_meta,
                 match=RuleMatch(language=LanguageEnum.PHP),
                 condition=RuleCondition(),
-                output=RuleOutput(severity=candidate.severity, confidence=candidate.confidence, message="", remediation=""),
+                output=RuleOutput(
+                    severity=candidate.severity, confidence=candidate.confidence, message="", remediation=""
+                ),
             )
             candidate = CandidateFinding(
                 candidate_id=candidate.finding_id,
@@ -151,7 +160,11 @@ class SemanticFindingQualifier:
             )
 
         # Rule C: Input Validation Guards, Key Checks, Comparisons, Property Declarations
-        if op_semantics in (OperationSemantics.VALIDATION_GUARD, OperationSemantics.COMPARISON, OperationSemantics.VARIABLE_ASSIGNMENT):
+        if op_semantics in (
+            OperationSemantics.VALIDATION_GUARD,
+            OperationSemantics.COMPARISON,
+            OperationSemantics.VARIABLE_ASSIGNMENT,
+        ):
             is_exec_sink = sink_category in (
                 SinkCategory.COMMAND_EXECUTION,
                 SinkCategory.SQL_EXECUTION,
@@ -184,7 +197,7 @@ class SemanticFindingQualifier:
         # Rule D: Local Stream Descriptor Reads (php://input, php://stdin) for File Reads / SSRF
         if op_semantics == OperationSemantics.LOCAL_READ:
             if sink_category in (SinkCategory.FILE_READ, SinkCategory.FILE_INCLUSION, "SSRF", "GENERIC_SINK"):
-                has_user_var = bool(re.search(r'\$_(?:GET|POST|REQUEST|COOKIE|SERVER|FILES)\b', snippet))
+                has_user_var = bool(re.search(r"\$_(?:GET|POST|REQUEST|COOKIE|SERVER|FILES)\b", snippet))
                 if not has_user_var:
                     ev = QualificationEvidence(
                         decision=str(QualificationState.REJECTED),
@@ -204,7 +217,11 @@ class SemanticFindingQualifier:
                     )
 
         # Rule E: Static Hardcoded Input Filtering
-        if source_category == SourceCategory.STATIC or verifier_res.is_hardcoded_static or taint_state == TaintState.STATIC:
+        if (
+            source_category == SourceCategory.STATIC
+            or verifier_res.is_hardcoded_static
+            or taint_state == TaintState.STATIC
+        ):
             ev = QualificationEvidence(
                 decision=str(QualificationState.REJECTED),
                 source_category=SourceCategory.STATIC,
@@ -242,7 +259,11 @@ class SemanticFindingQualifier:
             )
 
         # Rule E2: Local Resource Include Dispatch
-        if sink_category in (SinkCategory.FILE_INCLUSION, SinkCategory.FILE_READ) and source_category == SourceCategory.LOCAL_RESOURCE and taint_state != TaintState.TAINTED:
+        if (
+            sink_category in (SinkCategory.FILE_INCLUSION, SinkCategory.FILE_READ)
+            and source_category == SourceCategory.LOCAL_RESOURCE
+            and taint_state != TaintState.TAINTED
+        ):
             ev = QualificationEvidence(
                 decision=str(QualificationState.REJECTED),
                 source_category=SourceCategory.LOCAL_RESOURCE,
@@ -261,7 +282,10 @@ class SemanticFindingQualifier:
             )
 
         # Rule E3: Sink Category Disambiguation (echo / print mismatch for File Inclusion)
-        if re.match(r'^\s*(?:echo|print|print_r)\b', snippet.strip(), re.IGNORECASE) and sink_category == SinkCategory.FILE_INCLUSION:
+        if (
+            re.match(r"^\s*(?:echo|print|print_r)\b", snippet.strip(), re.IGNORECASE)
+            and sink_category == SinkCategory.FILE_INCLUSION
+        ):
             ev = QualificationEvidence(
                 decision=str(QualificationState.REJECTED),
                 source_category=source_category,
@@ -371,7 +395,12 @@ class SemanticFindingQualifier:
         lines = source_text.splitlines()
         if 1 <= line_number <= len(lines):
             line_str = lines[line_number - 1].strip()
-            if line_str.startswith("//") or line_str.startswith("#") or line_str.startswith("/*") or line_str.startswith("*"):
+            if (
+                line_str.startswith("//")
+                or line_str.startswith("#")
+                or line_str.startswith("/*")
+                or line_str.startswith("*")
+            ):
                 return True, FPTaxonomyReason.COMMENT_OR_STRING_MATCH
 
         # HTML form / tag detection (non-executable snippet)
@@ -409,54 +438,74 @@ class SemanticFindingQualifier:
         return "GENERIC_SINK"
 
     @staticmethod
-    def _classify_operation_semantics(candidate: CandidateFinding, sink_category: str, snippet: str) -> OperationSemantics:
+    def _classify_operation_semantics(
+        candidate: CandidateFinding, sink_category: str, snippet: str
+    ) -> OperationSemantics:
         """Classifies AST operation semantics deterministically."""
         snip_clean = snippet.strip()
 
-        if sink_category == SinkCategory.PARAMETER_BINDING or re.search(r'->(?:bindParam|bindValue|bind_param)\s*\(|\bmysqli_stmt_bind_param\s*\(', snip_clean, re.IGNORECASE):
+        if sink_category == SinkCategory.PARAMETER_BINDING or re.search(
+            r"->(?:bindParam|bindValue|bind_param)\s*\(|\bmysqli_stmt_bind_param\s*\(", snip_clean, re.IGNORECASE
+        ):
             return OperationSemantics.PARAMETER_BINDING
 
-        if sink_category == SinkCategory.SQL_PREPARATION or re.search(r'->prepare\s*\(|\bmysqli_prepare\s*\(', snip_clean, re.IGNORECASE):
+        if sink_category == SinkCategory.SQL_PREPARATION or re.search(
+            r"->prepare\s*\(|\bmysqli_prepare\s*\(", snip_clean, re.IGNORECASE
+        ):
             return OperationSemantics.SAFE_PREPARATION
 
         # Prepared statement execution without inline SQL string payload
-        if re.search(r'->execute\s*\(\s*\)', snip_clean, re.IGNORECASE):
+        if re.search(r"->execute\s*\(\s*\)", snip_clean, re.IGNORECASE):
             return OperationSemantics.SAFE_PREPARATION
 
         # Strip string literals ('...' and "...") when checking for include/require keywords so string comparison literals like 'require-all-validate' are NOT treated as include/require statements!
-        snip_no_strings = re.sub(r'\'[^\']*\'|"[^"]*"', '', snip_clean)
+        snip_no_strings = re.sub(r'\'[^\']*\'|"[^"]*"', "", snip_clean)
 
         # Hash comparison / password verification guard functions
-        if re.search(r'\b(hash_equals|password_verify|password_hash|check_password|verify_password)\b', snip_clean, re.IGNORECASE):
+        if re.search(
+            r"\b(hash_equals|password_verify|password_hash|check_password|verify_password)\b", snip_clean, re.IGNORECASE
+        ):
             return OperationSemantics.VALIDATION_GUARD
 
         # Secure cookie configuration check
-        if re.search(r'\b(setcookie|session_set_cookie_params)\s*\(', snip_clean, re.IGNORECASE):
-            if re.search(r'setcookie\s*\(.*,\s*true\s*,\s*true\s*\)', snip_clean, re.IGNORECASE) or \
-               (re.search(r'setcookie\s*\(.*,\s*true\s*\)', snip_clean, re.IGNORECASE) and "httponly" in snip_clean.lower()):
+        if re.search(r"\b(setcookie|session_set_cookie_params)\s*\(", snip_clean, re.IGNORECASE):
+            if re.search(r"setcookie\s*\(.*,\s*true\s*,\s*true\s*\)", snip_clean, re.IGNORECASE) or (
+                re.search(r"setcookie\s*\(.*,\s*true\s*\)", snip_clean, re.IGNORECASE)
+                and "httponly" in snip_clean.lower()
+            ):
                 return OperationSemantics.SECURE_CONFIGURATION
 
         # Dynamic file inclusion or require statement with variable interpolation
-        if re.search(r'\b(include|require)(?:_once)?\b', snip_no_strings, re.IGNORECASE) and re.search(r'\$\w+|\{\$\w+\}', snip_clean):
+        if re.search(r"\b(include|require)(?:_once)?\b", snip_no_strings, re.IGNORECASE) and re.search(
+            r"\$\w+|\{\$\w+\}", snip_clean
+        ):
             return OperationSemantics.STATEMENT_EXECUTION
 
         # Local stream read (php://input, php://stdin) - evaluated BEFORE generic statement execution
-        if re.search(r'\b(php://input|php://stdin)\b', snip_clean, re.IGNORECASE):
+        if re.search(r"\b(php://input|php://stdin)\b", snip_clean, re.IGNORECASE):
             return OperationSemantics.LOCAL_READ
 
         # Validation guard check or type coercion
-        if re.search(r'\b(?:isset|empty|preg_match|intval|\(int\)|array_key_exists|is_numeric|ctype_digit)\s*\(', snip_clean, re.IGNORECASE):
-            if not re.search(r'\b(shell_exec|exec|system|passthru|popen|proc_open|mysqli_query|mysql_query|pg_query|eval|unserialize|include|require)\s*\(', snip_clean, re.IGNORECASE):
+        if re.search(
+            r"\b(?:isset|empty|preg_match|intval|\(int\)|array_key_exists|is_numeric|ctype_digit)\s*\(",
+            snip_clean,
+            re.IGNORECASE,
+        ):
+            if not re.search(
+                r"\b(shell_exec|exec|system|passthru|popen|proc_open|mysqli_query|mysql_query|pg_query|eval|unserialize|include|require)\s*\(",
+                snip_clean,
+                re.IGNORECASE,
+            ):
                 return OperationSemantics.VALIDATION_GUARD
 
         # Comparison statement
-        if re.search(r'\bif\s*\(.*==', snip_clean) or re.search(r'==|===', snip_clean):
-            if not re.search(r'\b(shell_exec|exec|system|mysqli_query|eval)\s*\(', snip_clean):
+        if re.search(r"\bif\s*\(.*==", snip_clean) or re.search(r"==|===", snip_clean):
+            if not re.search(r"\b(shell_exec|exec|system|mysqli_query|eval)\s*\(", snip_clean):
                 return OperationSemantics.COMPARISON
 
         # Variable assignment or property declaration
-        if re.match(r'^\s*(?:public|private|protected)?\s*(?:\$\w+|\bstring|\bint)\s*[\$=]', snip_clean):
-            if not re.search(r'\b(shell_exec|exec|system|mysqli_query|eval)\s*\(', snip_clean):
+        if re.match(r"^\s*(?:public|private|protected)?\s*(?:\$\w+|\bstring|\bint)\s*[\$=]", snip_clean):
+            if not re.search(r"\b(shell_exec|exec|system|mysqli_query|eval)\s*\(", snip_clean):
                 return OperationSemantics.VARIABLE_ASSIGNMENT
 
         if sink_category in (
@@ -480,16 +529,18 @@ class SemanticFindingQualifier:
         if verifier_res.is_hardcoded_static:
             return SourceCategory.STATIC
 
-        if re.search(r'\b(php://input|php://stdin)\b', snip_clean, re.IGNORECASE):
+        if re.search(r"\b(php://input|php://stdin)\b", snip_clean, re.IGNORECASE):
             return SourceCategory.LOCAL_RESOURCE
 
         # Local path root constant without dynamic variables
-        if re.search(r'\b(include|require)(?:_once)?\b', snip_clean, re.IGNORECASE):
-            if re.search(r'\b(?:[A-Z0-9_]{3,}_ROOT|[A-Z0-9_]{3,}_PATH|__DIR__|__FILE__)\b', snip_clean):
-                if not re.search(r'\$_(?:GET|POST|REQUEST|COOKIE|FILES)\b', snip_clean) and not re.search(r'\$\w+|\{\$\w+\}', snip_clean):
+        if re.search(r"\b(include|require)(?:_once)?\b", snip_clean, re.IGNORECASE):
+            if re.search(r"\b(?:[A-Z0-9_]{3,}_ROOT|[A-Z0-9_]{3,}_PATH|__DIR__|__FILE__)\b", snip_clean):
+                if not re.search(r"\$_(?:GET|POST|REQUEST|COOKIE|FILES)\b", snip_clean) and not re.search(
+                    r"\$\w+|\{\$\w+\}", snip_clean
+                ):
                     return SourceCategory.LOCAL_RESOURCE
 
-        if verifier_res.has_taint_source or re.search(r'\$_(?:GET|POST|REQUEST|COOKIE|SERVER|FILES)\b', snip_clean):
+        if verifier_res.has_taint_source or re.search(r"\$_(?:GET|POST|REQUEST|COOKIE|SERVER|FILES)\b", snip_clean):
             return SourceCategory.USER_CONTROLLED
 
         return SourceCategory.UNKNOWN

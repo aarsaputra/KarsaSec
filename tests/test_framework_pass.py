@@ -47,7 +47,9 @@ def test_cli_framework_stats():
 
 
 def test_cli_framework_export():
-    result = runner.invoke(app, ["framework", "export", "security_corpus/python/flask_django/vulnerable", "--format", "json"])
+    result = runner.invoke(
+        app, ["framework", "export", "security_corpus/python/flask_django/vulnerable", "--format", "json"]
+    )
     assert result.exit_code == 0
     assert '"graph"' in result.output
 

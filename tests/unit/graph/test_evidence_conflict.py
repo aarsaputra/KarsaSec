@@ -11,8 +11,12 @@ from karsasec.rules.enums import Confidence, Severity
 
 
 def test_detect_evidence_conflict_taint_state() -> None:
-    ev_a = FindingEvidence(snippet="exec($x)", line=5, column=1, taint_state=TaintState.TAINTED, qualification_state="CONFIRMED")
-    ev_b = FindingEvidence(snippet="exec($x)", line=5, column=1, taint_state=TaintState.SANITIZED, qualification_state="CONFIRMED")
+    ev_a = FindingEvidence(
+        snippet="exec($x)", line=5, column=1, taint_state=TaintState.TAINTED, qualification_state="CONFIRMED"
+    )
+    ev_b = FindingEvidence(
+        snippet="exec($x)", line=5, column=1, taint_state=TaintState.SANITIZED, qualification_state="CONFIRMED"
+    )
 
     conflict = detect_evidence_conflict(ev_a, ev_b, "RULE-A", "RULE-B")
     assert conflict is not None
@@ -48,7 +52,13 @@ def test_correlator_case_d_conflict_to_unresolved() -> None:
         remediation="",
         qualification_state=QualificationState.CONFIRMED,
         enriched_evidence=FindingEvidence(
-            snippet="system($x)", line=10, column=1, rule_id="RULE-A", sink_category="COMMAND_EXECUTION", taint_state=TaintState.TAINTED, qualification_state="CONFIRMED"
+            snippet="system($x)",
+            line=10,
+            column=1,
+            rule_id="RULE-A",
+            sink_category="COMMAND_EXECUTION",
+            taint_state=TaintState.TAINTED,
+            qualification_state="CONFIRMED",
         ),
     )
 
@@ -67,7 +77,13 @@ def test_correlator_case_d_conflict_to_unresolved() -> None:
         remediation="",
         qualification_state=QualificationState.REJECTED,
         enriched_evidence=FindingEvidence(
-            snippet="system($x)", line=10, column=1, rule_id="RULE-B", sink_category="COMMAND_EXECUTION", taint_state=TaintState.SANITIZED, qualification_state="REJECTED"
+            snippet="system($x)",
+            line=10,
+            column=1,
+            rule_id="RULE-B",
+            sink_category="COMMAND_EXECUTION",
+            taint_state=TaintState.SANITIZED,
+            qualification_state="REJECTED",
         ),
     )
 

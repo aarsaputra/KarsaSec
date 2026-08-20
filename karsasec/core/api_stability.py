@@ -97,7 +97,9 @@ class APIStabilityVerifier:
                 else:
                     actual_info = actual_symbols[sym_name]
                     if expected_info.get("type") != actual_info.get("type"):
-                        breaking_changes.append(f"Type mismatch for '{mod_name}.{sym_name}': expected {expected_info.get('type')}, got {actual_info.get('type')}.")
+                        breaking_changes.append(
+                            f"Type mismatch for '{mod_name}.{sym_name}': expected {expected_info.get('type')}, got {actual_info.get('type')}."
+                        )
 
         return breaking_changes
 

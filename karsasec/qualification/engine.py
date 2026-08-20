@@ -12,6 +12,7 @@ Pipeline:
 Performance target: qualification overhead < 10% of scan runtime.
 The engine is pure: it receives pre-scanned findings, does not re-run the parser.
 """
+
 from __future__ import annotations
 
 from collections import defaultdict
@@ -65,6 +66,7 @@ class QualificationResult:
         per_category:            Per-category breakdown keyed by category.
         classification_report:   Full case-by-case classification detail.
     """
+
     benchmark_id: str
     version: str
     total_cases: int
@@ -172,7 +174,11 @@ class QualificationEngine:
             elif q_str == "UNRESOLVED":
                 unresolved_cnt += 1
 
-            if getattr(f, "rejection_reason", "") in ("CONFLICTING_EVIDENCE", "QUALIFICATION_CONFLICT", "TAINT_STATE_CONFLICT") or "evidence_conflict" in getattr(f, "metadata", {}):
+            if getattr(f, "rejection_reason", "") in (
+                "CONFLICTING_EVIDENCE",
+                "QUALIFICATION_CONFLICT",
+                "TAINT_STATE_CONFLICT",
+            ) or "evidence_conflict" in getattr(f, "metadata", {}):
                 conflict_cnt += 1
 
             enriched_ev = getattr(f, "enriched_evidence", None)

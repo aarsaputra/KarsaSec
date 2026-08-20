@@ -43,6 +43,7 @@ from karsasec.graph.resource_graph import ResourceEdge, ResourceEdgeKind, Resour
 # CATEGORY 1: CALL GRAPH & TARJAN SCC (Tests 1-8)
 # ==============================================================================
 
+
 def test_01_basic_call_graph_construction():
     cg = CallGraph()
     n1 = CallGraphNode("fileA.php::main", "fileA.php", "main")
@@ -153,6 +154,7 @@ def test_08_deterministic_call_graph_ordering():
 # CATEGORY 2: SUMMARY & FINGERPRINTING (Tests 9-17)
 # ==============================================================================
 
+
 def test_09_parameter_dependency_summary():
     ps = PathSummary(path_id="p1", return_expr="$x", parameter_dependencies=("x",))
     fs = FunctionSummary("foo", "f.php", parameters=("x",), path_summaries=(ps,))
@@ -195,7 +197,9 @@ def test_15_sink_dependency_summary():
 
 
 def test_16_multiple_return_paths_summary():
-    p1 = PathSummary(path_id="p1", taint_state=TaintState.UNTAINTED, constraints=frozenset([SemanticConstraint.NUMERIC]))
+    p1 = PathSummary(
+        path_id="p1", taint_state=TaintState.UNTAINTED, constraints=frozenset([SemanticConstraint.NUMERIC])
+    )
     p2 = PathSummary(path_id="p2", taint_state=TaintState.TAINTED, constraints=frozenset())
     fs = FunctionSummary("foo", "f.php", path_summaries=(p1, p2))
 
@@ -216,6 +220,7 @@ def test_17_canonical_semantic_fingerprint():
 # ==============================================================================
 # CATEGORY 3: CONTEXT ISOLATION (Tests 18-21)
 # ==============================================================================
+
 
 def test_18_two_call_sites_independent_context():
     ctx1 = CallContext("fileA.php", "main", 10, "foo", "cs_10")
@@ -260,6 +265,7 @@ def test_21_context_depth_isolation():
 # CATEGORY 4: SSA & ALIAS CHAINS (Tests 22-26)
 # ==============================================================================
 
+
 def test_22_reassignment_kills_prior_constraints():
     env = AbstractEnvironment()
     val1 = env.assignment_kill("x", new_taint=TaintState.TAINTED)
@@ -290,7 +296,7 @@ def test_25_alias_10_hop():
     env = AbstractEnvironment()
     env.assignment_kill("v0", new_taint=TaintState.TAINTED)
     for i in range(1, 11):
-        prev = f"v{i-1}"
+        prev = f"v{i - 1}"
         curr = f"v{i}"
         env.assignment_kill(curr, new_taint=env.get_value(prev).taint)
     assert env.get_value("v10").taint == TaintState.TAINTED
@@ -314,6 +320,7 @@ def test_26_parameter_version_isolation():
 # ==============================================================================
 # CATEGORY 5: FIXPOINT & TARJAN SCC (Tests 27-32)
 # ==============================================================================
+
 
 def test_27_acyclic_convergence():
     solver = InterproceduralSolver()
@@ -378,6 +385,7 @@ def test_32_iteration_bound():
 # CATEGORY 6: UNKNOWN & DYNAMIC DISPATCH (Tests 33-37)
 # ==============================================================================
 
+
 def test_33_unresolved_function():
     analyzer = InterproceduralDataflowAnalyzer()
     target = analyzer.resolve_call_target("f.php", "non_existent_func")
@@ -411,6 +419,7 @@ def test_37_ambiguous_definition():
 # ==============================================================================
 # CATEGORY 7: CROSS-FILE & RESOURCEGRAPH (Tests 38-42)
 # ==============================================================================
+
 
 def test_38_valid_include_call():
     rg = ResourceGraph()
@@ -471,6 +480,7 @@ def test_42_cross_file_recursion():
 # CATEGORY 8: SECURITY INVARIANTS & MONOTONICITY (Tests 43-50)
 # ==============================================================================
 
+
 def test_43_taint_retained_after_unknown():
     res = join_taint_state(TaintState.TAINTED, TaintState.UNKNOWN)
     assert res == TaintState.TAINTED
@@ -500,7 +510,9 @@ def test_46_reassignment_invalidates_guard():
 
 
 def test_47_guarded_path_remains_path_specific():
-    p1 = PathSummary(path_id="true_br", taint_state=TaintState.CONSTRAINED, constraints=frozenset([SemanticConstraint.NUMERIC]))
+    p1 = PathSummary(
+        path_id="true_br", taint_state=TaintState.CONSTRAINED, constraints=frozenset([SemanticConstraint.NUMERIC])
+    )
     p2 = PathSummary(path_id="false_br", taint_state=TaintState.TAINTED, constraints=frozenset())
     fs = FunctionSummary("foo", "f.php", path_summaries=(p1, p2))
 

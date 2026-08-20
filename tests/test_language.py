@@ -23,6 +23,7 @@ def test_language_detector_by_extension() -> None:
     assert "Rust" in languages
     assert "PHP" in languages
 
+
 def test_language_detector_by_manifest() -> None:
     detector = LanguageDetector()
     files = [Path("pyproject.toml"), Path("composer.json"), Path("go.mod")]

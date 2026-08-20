@@ -14,6 +14,7 @@ from karsasec.framework.serializer import FrameworkGraphSerializer
 @dataclass(frozen=True)
 class GraphDiffResult:
     """Dataclass holding comparison results between two FrameworkSemanticGraph snapshots."""
+
     added_nodes: tuple[str, ...]
     removed_nodes: tuple[str, ...]
     modified_nodes: tuple[str, ...]

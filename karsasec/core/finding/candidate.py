@@ -15,6 +15,7 @@ class CandidateFinding:
     A CandidateFinding retains full AST context, source text, and rule metadata,
     allowing the SemanticFindingQualifier to perform deep verification without dropping evidence.
     """
+
     candidate_id: str
     rule: Rule
     rule_id: str

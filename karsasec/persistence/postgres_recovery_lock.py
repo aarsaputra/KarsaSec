@@ -7,13 +7,12 @@ and durable recovery lease persistence (INV-F5-04, INV-F5-05).
 from __future__ import annotations
 
 from datetime import datetime, UTC, timedelta
-from typing import Optional
 
 from sqlalchemy import select, update, text, func
 from sqlalchemy.orm import Session
 
 from karsasec.persistence.db import DatabaseSessionFactory, get_session_factory
-from karsasec.persistence.models import RecoveryLeaseModel, recovery_fencing_token_seq
+from karsasec.persistence.models import RecoveryLeaseModel
 from karsasec.workers.cluster_recovery import RecoveryLease
 
 
@@ -44,9 +43,7 @@ class PostgresRecoveryLock:
             # Deactivate all active leases prior to acquiring new lease
             now = datetime.now(UTC)
             session.execute(
-                update(RecoveryLeaseModel)
-                .where(RecoveryLeaseModel.status == "ACTIVE")
-                .values(status="EXPIRED")
+                update(RecoveryLeaseModel).where(RecoveryLeaseModel.status == "ACTIVE").values(status="EXPIRED")
             )
 
             token = self._get_next_fencing_token(session)

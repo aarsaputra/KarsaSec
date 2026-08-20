@@ -25,7 +25,9 @@ class CapabilityNegotiator:
         rejections: list[str] = []
 
         if manifest.api_version not in self.supported_versions:
-            rejections.append(f"Incompatible API Version '{manifest.api_version}'. Supported: {self.supported_versions}")
+            rejections.append(
+                f"Incompatible API Version '{manifest.api_version}'. Supported: {self.supported_versions}"
+            )
 
         if not manifest.name or not manifest.version:
             rejections.append("Plugin manifest missing name or version descriptor.")

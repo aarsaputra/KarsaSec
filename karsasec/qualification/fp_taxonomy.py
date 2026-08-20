@@ -9,6 +9,7 @@ class FPTaxonomyReason(StrEnum):
     Every candidate finding that fails qualification must have an explicit reason.
     Silently dropping candidate findings is prohibited.
     """
+
     LEXICAL_ONLY = "LEXICAL_ONLY"
     COMMENT_OR_STRING_MATCH = "COMMENT_OR_STRING_MATCH"
     UNCONSTRAINED_SINK = "UNCONSTRAINED_SINK"

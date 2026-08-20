@@ -48,7 +48,6 @@ def sample_origin(sample_location):
     return OriginMetadata(location_info=sample_location, evidence_list=(Evidence(snippet="def login(): pass"),))
 
 
-
 @pytest.fixture
 def sample_route(sample_origin):
     return RouteDefinition(
@@ -170,6 +169,7 @@ def sample_isr(
 # 1. Deterministic ID Generator Tests (1-8)
 # ============================================================================
 
+
 def test_id_generator_determinism():
     id1 = generate_semantic_node_id("FLASK", "route", "POST /login", "app.py", 10)
     id2 = generate_semantic_node_id("FLASK", "route", "POST /login", "app.py", 10)
@@ -222,6 +222,7 @@ def test_id_generator_repeatability_across_instances():
 # ============================================================================
 # 2. Node & Edge Factory Tests (9-20)
 # ============================================================================
+
 
 def test_node_factory_create_route_node(sample_route):
     node = FrameworkNodeFactory.create_route_node(sample_route)
@@ -308,6 +309,7 @@ def test_edge_factory_all_edge_types():
 # 3. Builder Context Tests (21-25)
 # ============================================================================
 
+
 def test_builder_options_defaults():
     opts = BuilderOptions()
     assert opts.auto_freeze is True
@@ -341,6 +343,7 @@ def test_builder_context_registry_and_symbol_table():
 # ============================================================================
 # 4. FrameworkGraphBuilder Tests (26-40)
 # ============================================================================
+
 
 def test_builder_build_from_isr(sample_isr):
     opts = BuilderOptions(auto_freeze=False)
@@ -508,6 +511,7 @@ def test_builder_symbol_table_populating(sample_route, sample_handler):
 # 5. FrameworkGraphOptimizer Tests (41-52)
 # ============================================================================
 
+
 def test_optimizer_deduplicate_nodes():
     optimizer = FrameworkGraphOptimizer()
     n1 = FrameworkSemanticNode(id="dup", node_type=SemanticNodeType.ROUTE, name="r1")
@@ -634,6 +638,7 @@ def test_optimizer_normalize_labels_duplicates():
 # 6. FrameworkGraphIntegrityChecker Tests (53-64)
 # ============================================================================
 
+
 def test_integrity_clean_graph(sample_isr):
     builder = FrameworkGraphBuilder(context=BuilderContext(isr=sample_isr, options=BuilderOptions(auto_freeze=False)))
     graph = builder.build()
@@ -738,7 +743,6 @@ def test_integrity_returns_semantic_diagnostic_objects():
     assert isinstance(diags[0], SemanticDiagnostic)
 
 
-
 def test_integrity_checker_multiple_dangling_edges():
     checker = FrameworkGraphIntegrityChecker()
     e1 = FrameworkSemanticEdge(source_id="x", target_id="y", edge_type=SemanticEdgeType.HANDLES)
@@ -763,6 +767,7 @@ def test_integrity_valid_single_component():
 # ============================================================================
 # 7. FrameworkGraphSerializer Tests (65-73)
 # ============================================================================
+
 
 def test_serializer_json_roundtrip(sample_isr):
     builder = FrameworkGraphBuilder(context=BuilderContext(isr=sample_isr, options=BuilderOptions(auto_freeze=False)))
@@ -841,6 +846,7 @@ def test_serializer_dict_roundtrip(sample_isr):
 # 8. GraphStatistics Tests (74-78)
 # ============================================================================
 
+
 def test_graph_statistics_compute(sample_isr):
     builder = FrameworkGraphBuilder(context=BuilderContext(isr=sample_isr, options=BuilderOptions(auto_freeze=False)))
     graph = builder.build()
@@ -908,6 +914,7 @@ def test_graph_statistics_to_dict():
 # ============================================================================
 # 9. FrameworkGraphSnapshot Tests (79-83)
 # ============================================================================
+
 
 def test_snapshot_fingerprint_determinism(sample_isr):
     builder = FrameworkGraphBuilder(context=BuilderContext(isr=sample_isr, options=BuilderOptions(auto_freeze=False)))

@@ -9,11 +9,13 @@ def test_scope_creation_and_type():
     assert scope.parent is None
     assert len(scope.bindings) == 0
 
+
 def test_scope_define_and_local_lookup():
     scope = Scope(ScopeType.FUNCTION)
     scope.define("my_var", "my_module.my_var")
     assert scope.lookup("my_var") == "my_module.my_var"
     assert scope.lookup("non_existent") is None
+
 
 def test_scope_parent_hierarchy_lookup():
     parent_scope = Scope(ScopeType.GLOBAL)

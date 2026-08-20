@@ -7,6 +7,7 @@ Verifies:
 4. Semantic deduplication across rules targeting identical sinks.
 5. 100% Recall retention lock on the benchmark ground-truth set.
 """
+
 from __future__ import annotations
 
 from pathlib import Path

@@ -17,7 +17,9 @@ from karsasec.parser.python_parser import PythonParserPlugin
 from karsasec.parser.registry import parser_registry
 from karsasec.utils.logging import console
 
-interprocedural_app = typer.Typer(help="Manage and visualize Interprocedural (cross-function) Taint analysis artifacts.")
+interprocedural_app = typer.Typer(
+    help="Manage and visualize Interprocedural (cross-function) Taint analysis artifacts."
+)
 reporter = InterproceduralReporter()
 
 
@@ -72,7 +74,9 @@ def _build_itg_from_path(target_path: Path):
 
 @interprocedural_app.command("build")
 def build_interprocedural(
-    target_path: Path = typer.Argument(Path("."), help="Source file or directory to build InterproceduralTaintGraph for."),
+    target_path: Path = typer.Argument(
+        Path("."), help="Source file or directory to build InterproceduralTaintGraph for."
+    ),
 ) -> None:
     """Builds Interprocedural (cross-function) TaintGraphs across target source code files."""
     console.print(f"[bold magenta]Building Interprocedural Taint Analysis for:[/bold magenta] {target_path}")
@@ -91,7 +95,9 @@ def build_interprocedural(
 @interprocedural_app.command("export")
 def export_interprocedural(
     target_path: Path = typer.Argument(..., help="Source code path to export InterproceduralTaintGraph JSON for."),
-    output_path: Path = typer.Option(Path("interprocedural_export.json"), "--output", "-o", help="Output JSON artifact file path."),
+    output_path: Path = typer.Option(
+        Path("interprocedural_export.json"), "--output", "-o", help="Output JSON artifact file path."
+    ),
 ) -> None:
     """Exports InterproceduralTaintGraph artifact as JSON."""
     itg = _build_itg_from_path(target_path)
@@ -106,7 +112,9 @@ def export_interprocedural(
 @interprocedural_app.command("visualize")
 def visualize_interprocedural(
     target_path: Path = typer.Argument(..., help="Source code path to generate cross-function HTML visualizer for."),
-    output_html: Path = typer.Option(Path("interprocedural_visualizer.html"), "--output", "-o", help="Output HTML file path."),
+    output_html: Path = typer.Option(
+        Path("interprocedural_visualizer.html"), "--output", "-o", help="Output HTML file path."
+    ),
 ) -> None:
     """Generates an interactive HTML page rendering cross-function call chains."""
     itg = _build_itg_from_path(target_path)
@@ -131,12 +139,16 @@ def summary_interprocedural(
 
     console.print("\n[bold cyan]Compiled Function Summaries:[/bold cyan]")
     for fn_name, s in itg.function_summaries.items():
-        console.print(f"- [bold white]{fn_name}[/bold white]: Source={s.contains_source}, Sink={s.contains_sink}, Sanitizer={s.contains_sanitizer}")
+        console.print(
+            f"- [bold white]{fn_name}[/bold white]: Source={s.contains_source}, Sink={s.contains_sink}, Sanitizer={s.contains_sanitizer}"
+        )
 
 
 @interprocedural_app.command("stats")
 def stats_interprocedural(
-    target_path: Path = typer.Argument(Path("."), help="Source code path to print interprocedural analysis statistics for."),
+    target_path: Path = typer.Argument(
+        Path("."), help="Source code path to print interprocedural analysis statistics for."
+    ),
 ) -> None:
     """Displays interprocedural taint statistics."""
     itg = _build_itg_from_path(target_path)

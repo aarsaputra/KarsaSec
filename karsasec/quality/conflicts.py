@@ -30,22 +30,26 @@ class ConflictDetector:
             if r.condition and r.condition.pattern:
                 pat = r.condition.pattern.strip()
                 if pat in seen_patterns:
-                    pattern_overlaps.append({
-                        "rule_a": seen_patterns[pat],
-                        "rule_b": r.id,
-                        "pattern": pat,
-                    })
+                    pattern_overlaps.append(
+                        {
+                            "rule_a": seen_patterns[pat],
+                            "rule_b": r.id,
+                            "pattern": pat,
+                        }
+                    )
                 else:
                     seen_patterns[pat] = r.id
 
             # Check duplicate rule names
             name = r.metadata.name.strip().lower()
             if name in seen_names:
-                duplicates.append({
-                    "rule_a": seen_names[name],
-                    "rule_b": r.id,
-                    "name": r.metadata.name,
-                })
+                duplicates.append(
+                    {
+                        "rule_a": seen_names[name],
+                        "rule_b": r.id,
+                        "name": r.metadata.name,
+                    }
+                )
             else:
                 seen_names[name] = r.id
 

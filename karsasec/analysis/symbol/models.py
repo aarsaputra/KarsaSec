@@ -37,7 +37,7 @@ class SymbolGraph:
     def __init__(self) -> None:
         self._symbols: dict[str, Symbol] = {}
         self._identifier_map: dict[str, str] = {}  # node_id or location -> symbol_id
-        self._imports: dict[str, str] = {}         # alias/name -> full import path
+        self._imports: dict[str, str] = {}  # alias/name -> full import path
 
     def add_symbol(self, symbol: Symbol) -> None:
         """Registers a symbol in the graph."""

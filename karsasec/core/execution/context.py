@@ -12,6 +12,7 @@ from karsasec.parser.ast_nodes import FileNode
 if TYPE_CHECKING:
     pass
 
+
 @dataclass(slots=True)
 class ScanContext:
     """Encapsulates scan parameters for file-level and repository-wide static analysis execution.
@@ -26,6 +27,7 @@ class ScanContext:
         call_graph:   Optional pre-built cross-file CallGraph for inter-procedural rule matching.
                       When provided, SymbolPredicate gains cross-file callee resolution.
     """
+
     file_node: FileNode
     source_bytes: bytes
     project_root: Path | None = None

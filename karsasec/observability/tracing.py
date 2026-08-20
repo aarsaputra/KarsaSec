@@ -12,7 +12,6 @@ from __future__ import annotations
 import hmac
 import hashlib
 import uuid
-from typing import Dict, Optional
 
 
 def canonicalize_trace_fields(
@@ -104,7 +103,7 @@ class TraceContext:
             parent_hash=self.trace_hash,
         )
 
-    def to_headers(self, secret_key: bytes | None = None) -> Dict[str, str]:
+    def to_headers(self, secret_key: bytes | None = None) -> dict[str, str]:
         """Format as HTTP propagation headers including trace hash and optional HMAC signature."""
         headers = {
             "X-Trace-ID": self.trace_id,
@@ -117,7 +116,7 @@ class TraceContext:
         return headers
 
     @classmethod
-    def from_headers(cls, headers: Dict[str, str]) -> TraceContext:
+    def from_headers(cls, headers: dict[str, str]) -> TraceContext:
         """Extract trace context from HTTP headers."""
         trace_id = headers.get("X-Trace-ID") or headers.get("x-trace-id")
         span_id = headers.get("X-Span-ID") or headers.get("x-span-id")
@@ -135,7 +134,7 @@ class TraceManager:
     """Manager for managing current trace context per thread or task scope."""
 
     def __init__(self) -> None:
-        self._current: Optional[TraceContext] = None
+        self._current: TraceContext | None = None
 
     def start_trace(self, correlation_id: str | None = None) -> TraceContext:
         self._current = TraceContext(correlation_id=correlation_id)

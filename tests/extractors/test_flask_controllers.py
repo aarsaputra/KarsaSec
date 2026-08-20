@@ -32,6 +32,7 @@ def extractor() -> FlaskControllerExtractor:
 # Category 1: Function Controllers (20 Tests)
 # ============================================================================
 
+
 def test_function_controller_basic():
     code = "@app.route('/users')\ndef users(): pass"
     tree = PythonASTAdapter.parse_code(code)
@@ -66,10 +67,24 @@ def test_function_controller_http_methods(method: str):
     assert method.upper() in state.handlers[0].http_methods
 
 
-@pytest.mark.parametrize("fn_name", [
-    "index", "login", "logout", "register", "profile", "settings", "dashboard",
-    "health", "metrics", "webhook", "callback", "download", "upload"
-])
+@pytest.mark.parametrize(
+    "fn_name",
+    [
+        "index",
+        "login",
+        "logout",
+        "register",
+        "profile",
+        "settings",
+        "dashboard",
+        "health",
+        "metrics",
+        "webhook",
+        "callback",
+        "download",
+        "upload",
+    ],
+)
 def test_function_controller_names(fn_name: str):
     code = f"@app.route('/{fn_name}')\ndef {fn_name}(): pass"
     tree = PythonASTAdapter.parse_code(code)
@@ -92,6 +107,7 @@ def test_function_controller_fixture(extractor: FlaskControllerExtractor):
 # ============================================================================
 # Category 2: Parameter Extraction (10 Tests)
 # ============================================================================
+
 
 def test_param_single():
     code = "@app.route('/users/<id>')\ndef get_user(id): pass"
@@ -148,6 +164,7 @@ def test_param_self_omitted():
 # Category 3: Return Annotation Extraction (10 Tests)
 # ============================================================================
 
+
 def test_return_annotation_none():
     code = "@app.route('/')\ndef index(): pass"
     tree = PythonASTAdapter.parse_code(code)
@@ -168,7 +185,9 @@ def test_return_annotation_str():
     assert state.handlers[0].return_type == "str"
 
 
-@pytest.mark.parametrize("ret_type", ["Response", "jsonify", "tuple", "dict", "HTMLResponse", "JSONResponse", "Any", "str"])
+@pytest.mark.parametrize(
+    "ret_type", ["Response", "jsonify", "tuple", "dict", "HTMLResponse", "JSONResponse", "Any", "str"]
+)
 def test_return_annotation_types(ret_type: str):
     code = f"@app.route('/')\ndef fn() -> {ret_type}: pass"
     tree = PythonASTAdapter.parse_code(code)
@@ -182,6 +201,7 @@ def test_return_annotation_types(ret_type: str):
 # ============================================================================
 # Category 4: MethodView Controllers (20 Tests)
 # ============================================================================
+
 
 def test_method_view_basic():
     code = "class UserAPI(MethodView):\n    def get(self): pass\n    def post(self): pass"
@@ -208,11 +228,25 @@ def test_method_view_verbs(http_verb: str):
     assert state.handlers[0].http_methods == (http_verb.upper(),)
 
 
-@pytest.mark.parametrize("cls_name", [
-    "UserAPI", "AuthAPI", "OrderAPI", "ProductAPI", "BillingAPI",
-    "InvoiceAPI", "ReportAPI", "MetricAPI", "LogAPI", "NotificationAPI",
-    "SettingsAPI", "AdminAPI", "PublicAPI", "InternalAPI"
-])
+@pytest.mark.parametrize(
+    "cls_name",
+    [
+        "UserAPI",
+        "AuthAPI",
+        "OrderAPI",
+        "ProductAPI",
+        "BillingAPI",
+        "InvoiceAPI",
+        "ReportAPI",
+        "MetricAPI",
+        "LogAPI",
+        "NotificationAPI",
+        "SettingsAPI",
+        "AdminAPI",
+        "PublicAPI",
+        "InternalAPI",
+    ],
+)
 def test_method_view_names(cls_name: str):
     code = f"class {cls_name}(MethodView):\n    def get(self): pass"
     tree = PythonASTAdapter.parse_code(code)
@@ -235,6 +269,7 @@ def test_method_view_fixture(extractor: FlaskControllerExtractor):
 # Category 5: Class View Controllers (10 Tests)
 # ============================================================================
 
+
 def test_class_view_basic():
     code = "class ListView(View):\n    def dispatch_request(self): pass"
     tree = PythonASTAdapter.parse_code(code)
@@ -247,10 +282,20 @@ def test_class_view_basic():
     assert state.controllers[0].controller_type == "class_view"
 
 
-@pytest.mark.parametrize("view_cls", [
-    "BaseView", "RenderView", "TemplateView", "DetailView", "CreateView",
-    "UpdateView", "DeleteView", "FormView", "RedirectView"
-])
+@pytest.mark.parametrize(
+    "view_cls",
+    [
+        "BaseView",
+        "RenderView",
+        "TemplateView",
+        "DetailView",
+        "CreateView",
+        "UpdateView",
+        "DeleteView",
+        "FormView",
+        "RedirectView",
+    ],
+)
 def test_class_view_subclasses(view_cls: str):
     code = f"class {view_cls}(View):\n    def dispatch_request(self): pass"
     tree = PythonASTAdapter.parse_code(code)
@@ -264,6 +309,7 @@ def test_class_view_subclasses(view_cls: str):
 # ============================================================================
 # Category 6: as_view() Resolution (10 Tests)
 # ============================================================================
+
 
 def test_as_view_assignment():
     code = "user_view = UserAPI.as_view('users')"
@@ -285,10 +331,19 @@ def test_as_view_add_url_rule():
     assert state.as_view_map.get("users") == "UserAPI"
 
 
-@pytest.mark.parametrize("endpoint", [
-    "user_list", "user_detail", "auth_login", "auth_logout", "order_create",
-    "order_cancel", "billing_invoice", "report_generate"
-])
+@pytest.mark.parametrize(
+    "endpoint",
+    [
+        "user_list",
+        "user_detail",
+        "auth_login",
+        "auth_logout",
+        "order_create",
+        "order_cancel",
+        "billing_invoice",
+        "report_generate",
+    ],
+)
 def test_as_view_endpoints(endpoint: str):
     code = f"v = CustomAPI.as_view('{endpoint}')"
     tree = PythonASTAdapter.parse_code(code)
@@ -303,6 +358,7 @@ def test_as_view_endpoints(endpoint: str):
 # Category 7: Blueprint Ownership (10 Tests)
 # ============================================================================
 
+
 def test_blueprint_controller_owner():
     code = "api = Blueprint('api', __name__)\n@api.route('/users')\ndef users(): pass"
     tree = PythonASTAdapter.parse_code(code)
@@ -313,9 +369,9 @@ def test_blueprint_controller_owner():
     assert state.controllers[0].blueprint == "api"
 
 
-@pytest.mark.parametrize("bp_var", [
-    "auth_bp", "admin_bp", "v1_bp", "v2_bp", "health_bp", "billing_bp", "internal_bp", "public_bp"
-])
+@pytest.mark.parametrize(
+    "bp_var", ["auth_bp", "admin_bp", "v1_bp", "v2_bp", "health_bp", "billing_bp", "internal_bp", "public_bp"]
+)
 def test_blueprint_naming(bp_var: str):
     code = f"{bp_var} = Blueprint('{bp_var}', __name__)\n@{bp_var}.route('/test')\ndef test_fn(): pass"
     tree = PythonASTAdapter.parse_code(code)
@@ -336,6 +392,7 @@ def test_blueprint_fixture(extractor: FlaskControllerExtractor):
 # ============================================================================
 # Category 8: ISR Validation & Diagnostics (5 Tests)
 # ============================================================================
+
 
 def test_duplicate_controller_diagnostic():
     state = FlaskControllerState()
@@ -387,6 +444,7 @@ def test_as_view_confidence_adjustment():
 # ============================================================================
 # Category 9: Deterministic ID & Capabilities (5 Tests)
 # ============================================================================
+
 
 def test_controller_semantic_id_length():
     state = FlaskControllerState()

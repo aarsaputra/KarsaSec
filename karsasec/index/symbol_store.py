@@ -7,6 +7,7 @@ from pathlib import Path
 @dataclass(frozen=True)
 class SymbolEntry:
     """Indexed symbol entry storing qualified names, visibility, and source location."""
+
     name: str
     qualified_name: str
     kind: str  # function, class, method, variable, import

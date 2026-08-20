@@ -74,17 +74,25 @@ def build_taint(
         total_safe += safe_count
 
         if vuln_count > 0:
-            console.print(f"[bold red][VULNERABLE][/bold red] Function '{name}': {vuln_count} unsanitized flow(s) detected!")
+            console.print(
+                f"[bold red][VULNERABLE][/bold red] Function '{name}': {vuln_count} unsanitized flow(s) detected!"
+            )
         else:
-            console.print(f"[bold green][SAFE][/bold green] Function '{name}': 0 vulnerable flows, {safe_count} safe/sanitized path(s).")
+            console.print(
+                f"[bold green][SAFE][/bold green] Function '{name}': 0 vulnerable flows, {safe_count} safe/sanitized path(s)."
+            )
 
-    console.print(f"\n[bold white]Taint Analysis Summary:[/bold white] {total_vuln} vulnerable flow(s), {total_safe} safe flow(s).")
+    console.print(
+        f"\n[bold white]Taint Analysis Summary:[/bold white] {total_vuln} vulnerable flow(s), {total_safe} safe flow(s)."
+    )
 
 
 @taint_app.command("export")
 def export_taint(
     file_path: Path = typer.Argument(..., help="Source code file path to export TaintGraph JSON for."),
-    output_path: Path = typer.Option(Path("taint_export.json"), "--output", "-o", help="Output JSON artifact file path."),
+    output_path: Path = typer.Option(
+        Path("taint_export.json"), "--output", "-o", help="Output JSON artifact file path."
+    ),
 ) -> None:
     """Exports TaintGraph artifact as JSON."""
     fn = _parse_file(file_path)

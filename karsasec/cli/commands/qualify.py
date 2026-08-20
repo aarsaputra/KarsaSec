@@ -13,6 +13,7 @@ The command:
   5. Outputs human-readable (text) or machine-readable (json) report
   6. Optionally saves latest snapshot to benchmarks/results/<benchmark>/latest.json
 """
+
 from __future__ import annotations
 
 import json
@@ -38,10 +39,16 @@ _RESULTS_DIR = Path(__file__).parents[3] / "benchmarks" / "results"
 @qualify_app.callback(invoke_without_command=True)
 def run_qualify(
     benchmark: str = typer.Option(..., "--benchmark", "-b", help="Benchmark ID (e.g. 'dvwa')"),
-    target: Path | None = typer.Option(None, "--target", "-t", help="Directory to scan (e.g. /path/to/dvwa/vulnerabilities)"),
+    target: Path | None = typer.Option(
+        None, "--target", "-t", help="Directory to scan (e.g. /path/to/dvwa/vulnerabilities)"
+    ),
     format: str = typer.Option("text", "--format", "-f", help="Output format: 'text' or 'json'"),
-    save_snapshot: bool = typer.Option(False, "--save-snapshot", help="Save snapshot to benchmarks/results/<benchmark>/latest.json"),
-    benchmarks_dir: Path | None = typer.Option(None, "--benchmarks-dir", hidden=True, help="Override benchmarks directory"),
+    save_snapshot: bool = typer.Option(
+        False, "--save-snapshot", help="Save snapshot to benchmarks/results/<benchmark>/latest.json"
+    ),
+    benchmarks_dir: Path | None = typer.Option(
+        None, "--benchmarks-dir", hidden=True, help="Override benchmarks directory"
+    ),
 ) -> None:
     """Run qualification benchmark and report TP/FP/FN/TN/precision/recall/F1."""
     from karsasec.qualification.engine import QualificationEngine
@@ -52,7 +59,9 @@ def run_qualify(
 
     if not manifest_path.exists():
         console.print(f"[red]Manifest not found:[/red] {manifest_path}")
-        console.print(f"[dim]Available benchmarks: {', '.join(d.name for d in bm_root.iterdir() if d.is_dir()) if bm_root.exists() else 'none'}[/dim]")
+        console.print(
+            f"[dim]Available benchmarks: {', '.join(d.name for d in bm_root.iterdir() if d.is_dir()) if bm_root.exists() else 'none'}[/dim]"
+        )
         raise typer.Exit(code=1)
 
     # Load ground truth
@@ -137,6 +146,7 @@ def _scan_target(scan_root: Path) -> tuple[list, list]:
             pass
 
     from karsasec.graph.taint_verifier import taint_verifier
+
     taint_verifier.project_files = project_files
 
     from unittest.mock import patch
@@ -165,6 +175,7 @@ def _scan_target(scan_root: Path) -> tuple[list, list]:
     canonical = correlator.correlate(all_raw)
     final = list(correlator.to_findings(canonical))
     from karsasec.core.finding.model import QualificationState
+
     active_final = [f for f in final if getattr(f, "qualification_state", None) != QualificationState.REJECTED]
     return all_raw, active_final
 
@@ -172,17 +183,20 @@ def _scan_target(scan_root: Path) -> tuple[list, list]:
 def _output_text(result: QualificationResult) -> None:
     """Render human-readable qualification report."""
     console.print()
-    console.print(Panel(
-        f"[bold cyan]KarsaSec Qualification — {result.benchmark_id.upper()}[/bold cyan]\n"
-        f"Benchmark : [bold]{result.benchmark_id}[/bold] (v{result.version})\n"
-        f"Cases     : {result.total_cases}  "
-        f"[green]TP={result.true_positives}[/green]  "
-        f"[red]FP={result.false_positives}[/red]  "
-        f"[yellow]FN={result.false_negatives}[/yellow]  "
-        f"[blue]TN={result.true_negatives}[/blue]  "
-        f"[dim]UNKNOWN={result.unknown_findings}[/dim]",
-        title="Qualification", border_style="cyan",
-    ))
+    console.print(
+        Panel(
+            f"[bold cyan]KarsaSec Qualification — {result.benchmark_id.upper()}[/bold cyan]\n"
+            f"Benchmark : [bold]{result.benchmark_id}[/bold] (v{result.version})\n"
+            f"Cases     : {result.total_cases}  "
+            f"[green]TP={result.true_positives}[/green]  "
+            f"[red]FP={result.false_positives}[/red]  "
+            f"[yellow]FN={result.false_negatives}[/yellow]  "
+            f"[blue]TN={result.true_negatives}[/blue]  "
+            f"[dim]UNKNOWN={result.unknown_findings}[/dim]",
+            title="Qualification",
+            border_style="cyan",
+        )
+    )
 
     console.print("\n[bold]Accuracy Metrics[/bold]")
     console.print(f"  Precision : [cyan]{result.precision:.2%}[/cyan]")
@@ -216,8 +230,13 @@ def _output_text(result: QualificationResult) -> None:
         for cat, cr in sorted(result.per_category.items()):
             tbl_cat.add_row(
                 cat,
-                str(cr.tp), str(cr.fp), str(cr.fn), str(cr.tn),
-                f"{cr.precision:.0%}", f"{cr.recall:.0%}", f"{cr.f1:.0%}",
+                str(cr.tp),
+                str(cr.fp),
+                str(cr.fn),
+                str(cr.tn),
+                f"{cr.precision:.0%}",
+                f"{cr.recall:.0%}",
+                f"{cr.f1:.0%}",
             )
         console.print(tbl_cat)
 
@@ -236,13 +255,20 @@ def _output_text(result: QualificationResult) -> None:
         for rid, rr in sorted(result.per_rule.items()):
             tbl.add_row(
                 rid,
-                str(rr.tp), str(rr.fp), str(rr.fn), str(rr.unknown),
-                f"{rr.precision:.0%}", f"{rr.recall:.0%}", f"{rr.f1:.0%}",
+                str(rr.tp),
+                str(rr.fp),
+                str(rr.fn),
+                str(rr.unknown),
+                f"{rr.precision:.0%}",
+                f"{rr.recall:.0%}",
+                f"{rr.f1:.0%}",
             )
         console.print(tbl)
 
-    console.print("\n[bold dim]STATUS: QUALIFICATION BASELINE[/bold dim]  "
-                  "[dim](E12-4 — evidence quality & correlation active)[/dim]\n")
+    console.print(
+        "\n[bold dim]STATUS: QUALIFICATION BASELINE[/bold dim]  "
+        "[dim](E12-4 — evidence quality & correlation active)[/dim]\n"
+    )
 
 
 def _output_json(result: QualificationResult) -> str:
@@ -286,7 +312,11 @@ def _output_json(result: QualificationResult) -> str:
         },
         "per_category": {
             cat: {
-                "tp": cr.tp, "fp": cr.fp, "fn": cr.fn, "tn": cr.tn, "unknown": cr.unknown,
+                "tp": cr.tp,
+                "fp": cr.fp,
+                "fn": cr.fn,
+                "tn": cr.tn,
+                "unknown": cr.unknown,
                 "precision": round(cr.precision, 4),
                 "recall": round(cr.recall, 4),
                 "f1": round(cr.f1, 4),
@@ -295,7 +325,10 @@ def _output_json(result: QualificationResult) -> str:
         },
         "per_rule": {
             rid: {
-                "tp": rr.tp, "fp": rr.fp, "fn": rr.fn, "unknown": rr.unknown,
+                "tp": rr.tp,
+                "fp": rr.fp,
+                "fn": rr.fn,
+                "unknown": rr.unknown,
                 "precision": round(rr.precision, 4),
                 "recall": round(rr.recall, 4),
                 "f1": round(rr.f1, 4),

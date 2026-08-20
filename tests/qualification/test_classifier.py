@@ -1,4 +1,5 @@
 """Tests for karsasec.qualification.classifier (E12-1)."""
+
 from __future__ import annotations
 
 import hashlib
@@ -50,8 +51,13 @@ def _case(
     expected: GroundTruthExpectation = GroundTruthExpectation.TRUE_POSITIVE,
 ) -> GroundTruthCase:
     return GroundTruthCase(
-        case_id=case_id, benchmark="test", file=file, line=line,
-        rule_id=rule_id, expected=expected, description="Test",
+        case_id=case_id,
+        benchmark="test",
+        file=file,
+        line=line,
+        rule_id=rule_id,
+        expected=expected,
+        description="Test",
     )
 
 
@@ -99,8 +105,7 @@ class TestClassifierFP:
         assert report.fp == 1
 
     def test_fp_total_is_sum(self) -> None:
-        c = _case(case_id="tn", file="vulnerabilities/fi.php", line=5,
-                  expected=GroundTruthExpectation.TRUE_NEGATIVE)
+        c = _case(case_id="tn", file="vulnerabilities/fi.php", line=5, expected=GroundTruthExpectation.TRUE_NEGATIVE)
         bm = _benchmark(c)
         # Finding at TN location (fp_from_tn) + unrelated finding (fp_unmatched)
         f_tn = _finding(file="vulnerabilities/fi.php", line=5)

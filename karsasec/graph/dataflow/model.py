@@ -1,4 +1,5 @@
 """Data-Flow IR data structures, representations, and evidence models (E11)."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -11,6 +12,7 @@ from karsasec.rules.enums import Confidence, Severity
 
 class FlowNodeKind(StrEnum):
     """Classification of data-flow graph nodes."""
+
     SOURCE = "SOURCE"
     ASSIGNMENT = "ASSIGNMENT"
     USE = "USE"
@@ -26,6 +28,7 @@ class FlowNodeKind(StrEnum):
 
 class TaintState(StrEnum):
     """Taint evaluation status of expressions and symbols."""
+
     STATIC = "STATIC"
     TAINTED = "TAINTED"
     SANITIZED = "SANITIZED"
@@ -36,6 +39,7 @@ class TaintState(StrEnum):
 @dataclass(frozen=True, slots=True)
 class FlowLocation:
     """Source location descriptor for a FlowNode."""
+
     file_path: Path | None = None
     line: int | None = None
     column: int | None = None
@@ -50,6 +54,7 @@ class FlowLocation:
 @dataclass(frozen=True, slots=True)
 class FlowNode:
     """Node in the incremental data-flow graph."""
+
     node_id: str
     kind: FlowNodeKind
     symbol: str
@@ -62,6 +67,7 @@ class FlowNode:
 @dataclass(frozen=True, slots=True)
 class TaintPathHop:
     """Individual propagation step in a data-flow taint trace."""
+
     step: int
     kind: FlowNodeKind
     symbol: str
@@ -73,6 +79,7 @@ class TaintPathHop:
 @dataclass(frozen=True, slots=True)
 class DataFlowEvidence:
     """Comprehensive diagnostic evidence produced by data-flow analysis."""
+
     state: TaintState
     path: tuple[TaintPathHop, ...] = ()
     source_symbol: str = ""

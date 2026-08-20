@@ -20,12 +20,13 @@ class ProjectDetector:
         self.root_path = root_path
         self.profiler = ProjectProfiler(
             language_detector=language_detector or LanguageDetector(),
-            framework_detector=framework_detector or FrameworkDetector()
+            framework_detector=framework_detector or FrameworkDetector(),
         )
 
     def detect(self) -> ProjectProfile:
         """Executes project profiling pipeline and returns structured ProjectProfile."""
         return self.profiler.profile(self.root_path)
+
 
 def detect_project(target_path: Path) -> ProjectProfile:
     """Helper function to run detection pipeline on a given path."""

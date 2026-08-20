@@ -36,6 +36,7 @@ class TestContextualQualificationE1211:
 
     def test_static_sql_argument_detection(self) -> None:
         from karsasec.parser.ast_nodes import ASTNode
+
         verifier = TaintVerifier()
         node = ASTNode(node_id="n1", node_type="call", start=None, end=None)
         source = '<?php mysqli_query($db, "SHOW COLUMNS FROM users"); ?>'
@@ -50,6 +51,7 @@ class TestContextualQualificationE1211:
 
     def test_escapeshellarg_sanitizer_guard(self) -> None:
         from karsasec.parser.ast_nodes import ASTNode
+
         verifier = TaintVerifier()
         node = ASTNode(node_id="n1", node_type="call", start=None, end=None)
         source = '<?php $cmd = escapeshellarg($_GET["cmd"]); exec($cmd); ?>'
@@ -65,6 +67,7 @@ class TestContextualQualificationE1211:
 
     def test_numeric_guard_sanitizer(self) -> None:
         from karsasec.parser.ast_nodes import ASTNode
+
         verifier = TaintVerifier()
         node = ASTNode(node_id="n1", node_type="call", start=None, end=None)
         source = '<?php $id = intval($_GET["id"]); mysqli_query($db, "SELECT * FROM users WHERE id = $id"); ?>'

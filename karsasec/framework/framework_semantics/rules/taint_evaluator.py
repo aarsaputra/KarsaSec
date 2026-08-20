@@ -13,6 +13,7 @@ from karsasec.framework.semantic_models import (
 
 class SinkCompatibility(StrEnum):
     """Tri-state compatibility representation between a transformation/sanitizer and a sink kind."""
+
     COMPATIBLE = "COMPATIBLE"
     INCOMPATIBLE = "INCOMPATIBLE"
     UNKNOWN = "UNKNOWN"

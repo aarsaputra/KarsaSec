@@ -39,7 +39,9 @@ class PatchProposalValidator:
 
         # 1. Proposal & Strategy finding ID match check
         if proposal.finding_id != strategy.finding_id:
-            violations.append(f"Finding ID mismatch: proposal '{proposal.finding_id}' vs strategy '{strategy.finding_id}'.")
+            violations.append(
+                f"Finding ID mismatch: proposal '{proposal.finding_id}' vs strategy '{strategy.finding_id}'."
+            )
 
         # 2. Require evidence references
         if not proposal.evidence_references and not strategy.evidence_references:
@@ -84,7 +86,11 @@ class PatchProposalValidator:
         # 7. Semantic root cause alignment check
         if rca is not None:
             rca_cat = str(rca.root_cause_category)
-            if "SQL" in rca_cat and "parameterization" not in proposal.unified_diff.lower() and "add_parameterization" not in str(strategy.strategy_type).lower():
+            if (
+                "SQL" in rca_cat
+                and "parameterization" not in proposal.unified_diff.lower()
+                and "add_parameterization" not in str(strategy.strategy_type).lower()
+            ):
                 # Warning: strategy might be valid, but check consistency
                 pass
 

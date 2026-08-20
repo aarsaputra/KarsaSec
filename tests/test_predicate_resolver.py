@@ -55,10 +55,7 @@ def test_predicate_not_found() -> None:
 
 def test_benchmark_loading_time() -> None:
     resolver = PredicateResolver()
-    dummy_rules = [
-        {"rule": {"id": f"KS-BENCH-{i}"}, "uses": {"predicate": "sql_injection"}}
-        for i in range(100)
-    ]
+    dummy_rules = [{"rule": {"id": f"KS-BENCH-{i}"}, "uses": {"predicate": "sql_injection"}} for i in range(100)]
     res = resolver.benchmark_loading_time(dummy_rules)
     assert res["total_rules"] == 100
     assert res["resolved_predicates"] == 100

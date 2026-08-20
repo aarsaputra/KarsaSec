@@ -84,7 +84,9 @@ class CPGBuilder:
             for fn_name, cfg in cfgs.items():
                 node_id_map = {}
                 for cfg_n in cfg.nodes.values():
-                    nid = generate_stable_node_id(cfg.file_path, f"{fn_name}::{cfg_n.id}", cfg_n.line_number, 0, NodeType.CFG)
+                    nid = generate_stable_node_id(
+                        cfg.file_path, f"{fn_name}::{cfg_n.id}", cfg_n.line_number, 0, NodeType.CFG
+                    )
                     cpg_n = CPGNode(
                         id=nid,
                         node_type=NodeType.CFG,
@@ -102,13 +104,17 @@ class CPGBuilder:
                     src_id = getattr(edge, "source_id", getattr(edge, "source", None))
                     tgt_id = getattr(edge, "target_id", getattr(edge, "target", None))
                     if src_id in node_id_map and tgt_id in node_id_map:
-                        graph.add_edge(CPGEdge(node_id_map[src_id], node_id_map[tgt_id], EdgeType.CFG_FLOW, {"origin": "CFG"}))
+                        graph.add_edge(
+                            CPGEdge(node_id_map[src_id], node_id_map[tgt_id], EdgeType.CFG_FLOW, {"origin": "CFG"})
+                        )
 
         # 4. Add SSA Nodes
         if ssa_functions:
             for fn_name, ssa in ssa_functions.items():
                 for ssa_n in ssa.nodes:
-                    var_name = ssa_n.target_var.base_name if hasattr(ssa_n, "target_var") and ssa_n.target_var else "ssa_var"
+                    var_name = (
+                        ssa_n.target_var.base_name if hasattr(ssa_n, "target_var") and ssa_n.target_var else "ssa_var"
+                    )
                     version = ssa_n.target_var.version if hasattr(ssa_n, "target_var") and ssa_n.target_var else 0
                     nid = generate_stable_node_id("ssa", f"{fn_name}::{ssa_n.id}", ssa_n.line_number, 0, NodeType.SSA)
                     cpg_n = CPGNode(
@@ -127,7 +133,9 @@ class CPGBuilder:
                 dfg_id_map = {}
                 for df_n in dfg.nodes.values():
                     vname = getattr(df_n, "variable_name", getattr(df_n, "var_name", df_n.label))
-                    nid = generate_stable_node_id("dfg", f"{fn_name}::{df_n.id}", df_n.line_number, 0, NodeType.DATAFLOW)
+                    nid = generate_stable_node_id(
+                        "dfg", f"{fn_name}::{df_n.id}", df_n.line_number, 0, NodeType.DATAFLOW
+                    )
                     cpg_n = CPGNode(
                         id=nid,
                         node_type=NodeType.DATAFLOW,
@@ -141,7 +149,14 @@ class CPGBuilder:
 
                 for edge in dfg.edges:
                     if edge.source_id in dfg_id_map and edge.target_id in dfg_id_map:
-                        graph.add_edge(CPGEdge(dfg_id_map[edge.source_id], dfg_id_map[edge.target_id], EdgeType.DATAFLOW, {"origin": "DFG"}))
+                        graph.add_edge(
+                            CPGEdge(
+                                dfg_id_map[edge.source_id],
+                                dfg_id_map[edge.target_id],
+                                EdgeType.DATAFLOW,
+                                {"origin": "DFG"},
+                            )
+                        )
 
         # 6. Add Taint Nodes & TAINT Edges
         if taint_graphs:
@@ -162,13 +177,22 @@ class CPGBuilder:
 
                 for edge in tg.edges:
                     if edge.source_id in tg_id_map and edge.target_id in tg_id_map:
-                        graph.add_edge(CPGEdge(tg_id_map[edge.source_id], tg_id_map[edge.target_id], EdgeType.TAINT, {"confidence": edge.confidence, "origin": "TaintEngine"}))
+                        graph.add_edge(
+                            CPGEdge(
+                                tg_id_map[edge.source_id],
+                                tg_id_map[edge.target_id],
+                                EdgeType.TAINT,
+                                {"confidence": edge.confidence, "origin": "TaintEngine"},
+                            )
+                        )
 
         # 7. Add Interprocedural Call Chains
         if itg:
             for path in itg.vulnerable_paths:
                 for cs in path.call_chain:
-                    src_id = generate_stable_node_id("call", f"{cs.caller_id}->{cs.callee_name}", cs.line_number, 0, NodeType.CALLSITE)
+                    src_id = generate_stable_node_id(
+                        "call", f"{cs.caller_id}->{cs.callee_name}", cs.line_number, 0, NodeType.CALLSITE
+                    )
                     cpg_n = CPGNode(
                         id=src_id,
                         node_type=NodeType.CALLSITE,

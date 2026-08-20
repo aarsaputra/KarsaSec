@@ -1,6 +1,5 @@
 """RuleIndexer module indexing compiled rules by AST node_type for O(1) candidate lookup."""
 
-
 from karsasec.rules.matcher.compiler import CompiledRule, rule_compiler
 from karsasec.rules.schema import Rule
 

@@ -23,6 +23,7 @@ from karsasec.graph.resource_graph import ResourceGraph
 
 class InterproceduralRelationKind(StrEnum):
     """Explicit semantic relations supporting guard fact propagation."""
+
     INCLUDE_REQUIRE = "INCLUDE_REQUIRE"
     FUNCTION_CALL = "FUNCTION_CALL"
     PARAMETER_PASSING = "PARAMETER_PASSING"
@@ -33,6 +34,7 @@ class InterproceduralRelationKind(StrEnum):
 @dataclass(frozen=True)
 class GuardFact:
     """An interprocedural guard fact tied to explicit provenance and lifetime boundaries."""
+
     var_name: str
     var_version: str
     constraint: SemanticConstraint

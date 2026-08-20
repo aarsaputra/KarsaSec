@@ -22,6 +22,7 @@ from karsasec.graph.dataflow.sink_matrix import EvaluationResult, SinkContext
 
 class EvidenceKind(StrEnum):
     """Categorical classification of semantic evidence steps."""
+
     SOURCE = "SOURCE"
     ASSIGNMENT = "ASSIGNMENT"
     GUARD = "GUARD"
@@ -35,6 +36,7 @@ class EvidenceKind(StrEnum):
 
 class ProofStatus(StrEnum):
     """Four-valued security proof status."""
+
     PROVEN = "PROVEN"
     NOT_PROVEN = "NOT_PROVEN"
     UNKNOWN = "UNKNOWN"
@@ -44,6 +46,7 @@ class ProofStatus(StrEnum):
 @dataclass(frozen=True, slots=True)
 class SemanticEvidence:
     """Immutable single step of semantic evidence in a dataflow provenance chain."""
+
     node_id: str
     evidence_kind: EvidenceKind
     file_path: str = ""
@@ -69,7 +72,11 @@ class SemanticEvidence:
 
     def semantic_fingerprint(self) -> str:
         """Compute a canonical SHA256 fingerprint for this evidence item."""
-        call_ctx_str = f"{self.call_context.call_site_id}::{self.call_context.caller_function}->{self.call_context.callee_function}" if self.call_context else ""
+        call_ctx_str = (
+            f"{self.call_context.call_site_id}::{self.call_context.caller_function}->{self.call_context.callee_function}"
+            if self.call_context
+            else ""
+        )
         canonical_dict = {
             "node_id": self.node_id,
             "evidence_kind": str(self.evidence_kind),
@@ -94,6 +101,7 @@ class SemanticEvidence:
 @dataclass(frozen=True, slots=True)
 class SemanticEvidenceBundle:
     """Canonical aggregated collection of semantic evidence for a sink evaluation."""
+
     sink_node_id: str
     sink_category: str
     sink_context: SinkContext = SinkContext.UNKNOWN
@@ -105,7 +113,9 @@ class SemanticEvidenceBundle:
     def semantic_fingerprint(self) -> str:
         """Compute a canonical SHA256 fingerprint for this entire evidence bundle."""
         ev_fps = [ev.semantic_fingerprint() for ev in self.evidences]
-        eval_res_str = f"{self.evaluation_result.decision}:{self.evaluation_result.reason}" if self.evaluation_result else ""
+        eval_res_str = (
+            f"{self.evaluation_result.decision}:{self.evaluation_result.reason}" if self.evaluation_result else ""
+        )
         canonical_dict = {
             "sink_node_id": self.sink_node_id,
             "sink_category": self.sink_category,

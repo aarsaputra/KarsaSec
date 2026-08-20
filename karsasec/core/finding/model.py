@@ -15,6 +15,7 @@ from karsasec.rules.enums import Confidence, Severity
 
 class QualificationState(StrEnum):
     """Deterministic state of a finding after qualification."""
+
     CONFIRMED = "CONFIRMED"
     SUPPORTED = "SUPPORTED"
     UNRESOLVED = "UNRESOLVED"
@@ -200,9 +201,17 @@ class QualifiedFinding(Finding):
 
     def to_dict(self) -> dict[str, Any]:
         base = super().to_dict()
-        base.update({
-            "qualification_state": self.qualification_state.value if isinstance(self.qualification_state, QualificationState) else str(self.qualification_state),
-            "rejection_reason": self.rejection_reason.value if hasattr(self.rejection_reason, "value") else (str(self.rejection_reason) if self.rejection_reason else None),
-            "enriched_evidence": self.enriched_evidence.to_dict() if self.enriched_evidence and hasattr(self.enriched_evidence, "to_dict") else None,
-        })
+        base.update(
+            {
+                "qualification_state": self.qualification_state.value
+                if isinstance(self.qualification_state, QualificationState)
+                else str(self.qualification_state),
+                "rejection_reason": self.rejection_reason.value
+                if hasattr(self.rejection_reason, "value")
+                else (str(self.rejection_reason) if self.rejection_reason else None),
+                "enriched_evidence": self.enriched_evidence.to_dict()
+                if self.enriched_evidence and hasattr(self.enriched_evidence, "to_dict")
+                else None,
+            }
+        )
         return base

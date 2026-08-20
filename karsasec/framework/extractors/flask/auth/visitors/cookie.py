@@ -17,8 +17,15 @@ class FlaskCookieVisitor:
     """Visits Call AST nodes to classify set_cookie and delete_cookie operations."""
 
     AUTH_COOKIE_NAMES = {
-        "session_token", "auth_token", "access_token", "jwt",
-        "remember_token", "auth", "token", "remember_me", "session"
+        "session_token",
+        "auth_token",
+        "access_token",
+        "jwt",
+        "remember_token",
+        "auth",
+        "token",
+        "remember_me",
+        "session",
     }
 
     def __init__(self, state: FlaskAuthState) -> None:

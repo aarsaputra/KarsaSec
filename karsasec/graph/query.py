@@ -43,7 +43,10 @@ class GraphQueryAPI:
                     results.append(edge)
                 else:
                     callee_node = self.graph.get_node(edge.callee_id)
-                    if callee_node and (callee_node.qualified_name == target_qname or callee_node.qualified_name.endswith("." + target_qname)):
+                    if callee_node and (
+                        callee_node.qualified_name == target_qname
+                        or callee_node.qualified_name.endswith("." + target_qname)
+                    ):
                         results.append(edge)
         return results
 

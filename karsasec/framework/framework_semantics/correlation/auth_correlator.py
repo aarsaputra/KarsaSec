@@ -46,12 +46,15 @@ class AuthCorrelator:
             # Auth ↔ Protected Routes matching
             for path_pattern in auth.protected_routes:
                 for route_id, route in state.routes_by_id.items():
-                    if route.path == path_pattern or (path_pattern.endswith("*") and route.path.startswith(path_pattern[:-1])):
+                    if route.path == path_pattern or (
+                        path_pattern.endswith("*") and route.path.startswith(path_pattern[:-1])
+                    ):
                         from karsasec.framework.framework_semantics.correlation.contracts import (
                             RelationshipCandidate,
                             ResolutionMethod,
                             ResolutionStatus,
                         )
+
                         candidate = RelationshipCandidate(
                             source_id=auth_id,
                             target_id=route_id,

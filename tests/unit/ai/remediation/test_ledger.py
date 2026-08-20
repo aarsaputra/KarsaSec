@@ -189,7 +189,9 @@ def test_32_repository_identity_tamper_detection() -> None:
 
 def test_33_finding_filtering() -> None:
     e1 = _make_event("E-01", finding_id="F-101")
-    e2 = _make_event("E-02", finding_id="F-102", predecessor_event_id=e1.event_id, predecessor_event_fingerprint=e1.event_fingerprint)
+    e2 = _make_event(
+        "E-02", finding_id="F-102", predecessor_event_id=e1.event_id, predecessor_event_fingerprint=e1.event_fingerprint
+    )
     ledger = RemediationLedger().append(e1).append(e2)
 
     res = ledger.get_events_for_finding("F-101")
@@ -199,7 +201,12 @@ def test_33_finding_filtering() -> None:
 
 def test_34_state_filtering() -> None:
     e1 = _make_event("E-01", lifecycle_state="DETECTED")
-    e2 = _make_event("E-02", lifecycle_state="APPLIED", predecessor_event_id=e1.event_id, predecessor_event_fingerprint=e1.event_fingerprint)
+    e2 = _make_event(
+        "E-02",
+        lifecycle_state="APPLIED",
+        predecessor_event_id=e1.event_id,
+        predecessor_event_fingerprint=e1.event_fingerprint,
+    )
     ledger = RemediationLedger().append(e1).append(e2)
 
     res = ledger.get_events_by_state("APPLIED")
@@ -237,10 +244,20 @@ def test_37_ledger_fingerprint_determinism() -> None:
 def test_38_ledger_order_sensitivity() -> None:
     # Ledger is order-sensitive
     e1_a = _make_event("E-01", event_type="FINDING_DETECTED")
-    e2_a = _make_event("E-02", event_type="EVIDENCE_VERIFIED", predecessor_event_id=e1_a.event_id, predecessor_event_fingerprint=e1_a.event_fingerprint)
+    e2_a = _make_event(
+        "E-02",
+        event_type="EVIDENCE_VERIFIED",
+        predecessor_event_id=e1_a.event_id,
+        predecessor_event_fingerprint=e1_a.event_fingerprint,
+    )
 
     e1_b = _make_event("E-01", event_type="EVIDENCE_VERIFIED")
-    e2_b = _make_event("E-02", event_type="FINDING_DETECTED", predecessor_event_id=e1_b.event_id, predecessor_event_fingerprint=e1_b.event_fingerprint)
+    e2_b = _make_event(
+        "E-02",
+        event_type="FINDING_DETECTED",
+        predecessor_event_id=e1_b.event_id,
+        predecessor_event_fingerprint=e1_b.event_fingerprint,
+    )
 
     l1 = RemediationLedger().append(e1_a).append(e2_a)
     l2 = RemediationLedger().append(e1_b).append(e2_b)

@@ -5,14 +5,17 @@ from enum import StrEnum
 
 class Severity(StrEnum):
     """Vulnerability severity levels."""
+
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
     LOW = "LOW"
     INFO = "INFO"
 
+
 class Confidence(StrEnum):
     """Rule matching confidence levels."""
+
     CONFIDENT = "CONFIDENT"
     LIKELY = "LIKELY"
     POSSIBLE = "POSSIBLE"
@@ -20,8 +23,10 @@ class Confidence(StrEnum):
     MEDIUM = "LIKELY"
     LOW = "POSSIBLE"
 
+
 class LanguageEnum(StrEnum):
     """Supported target programming languages."""
+
     PYTHON = "Python"
     JAVASCRIPT = "JavaScript"
     TYPESCRIPT = "TypeScript"
@@ -34,16 +39,20 @@ class LanguageEnum(StrEnum):
     HTML = "HTML"
     GENERIC = "Generic"
 
+
 class TargetKindEnum(StrEnum):
     """Broad category classification of analysis targets."""
+
     SOURCE_CODE = "SOURCE_CODE"
     CONFIG = "CONFIG"
     PIPELINE = "PIPELINE"
     IAC = "IAC"
     MANIFEST = "MANIFEST"
 
+
 class TargetFormatEnum(StrEnum):
     """File format/specification identifier."""
+
     PYTHON = "Python"
     JAVASCRIPT = "JavaScript"
     TYPESCRIPT = "TypeScript"
@@ -57,8 +66,10 @@ class TargetFormatEnum(StrEnum):
     TERRAFORM = "Terraform"
     HELM = "Helm"
 
+
 class IaCTaxonomyEnum(StrEnum):
     """Taxonomy categories for Infrastructure as Code security risks."""
+
     MISCONFIGURATION = "misconfiguration"
     PRIVILEGE = "privilege"
     SECRETS = "secrets"
@@ -67,8 +78,10 @@ class IaCTaxonomyEnum(StrEnum):
     RUNTIME = "runtime"
     POLICY = "policy"
 
+
 class AnalysisCapability(StrEnum):
     """Strongly-typed capabilities exported by parsers and required by security rules."""
+
     AST = "ast"
     POSITION = "position"
     COMMENTS = "comments"
@@ -79,8 +92,10 @@ class AnalysisCapability(StrEnum):
     DATAFLOW = "dataflow"
     CALLGRAPH = "callgraph"
 
+
 class OWASPCategory(StrEnum):
     """OWASP Top 10 (2025/2026 & 2021) and OWASP API Category Mappings."""
+
     # OWASP Top 10 (Latest 2025/2026 Standard)
     A01_2025_BROKEN_ACCESS_CONTROL = "A01:2025-Broken Access Control"
     A02_2025_CRYPTOGRAPHIC_FAILURES = "A02:2025-Cryptographic Failures"
@@ -115,6 +130,7 @@ class OWASPCategory(StrEnum):
 
 class ValueEvidenceKind(StrEnum):
     """Classification of AST values and expressions for semantic security rule evaluation."""
+
     LITERAL_SECRET = "LITERAL_SECRET"
     ENV_REFERENCE = "ENV_REFERENCE"
     SECRET_PROVIDER_REFERENCE = "SECRET_PROVIDER_REFERENCE"
@@ -137,10 +153,11 @@ class EvidenceState(StrEnum):
         CONFLICT -> NO FINDING (suppress)
     Only PROVEN_VULNERABLE may produce a security Finding.
     """
-    PROVEN_SAFE       = "PROVEN_SAFE"        # evidence proves code is safe -> NO FINDING
+
+    PROVEN_SAFE = "PROVEN_SAFE"  # evidence proves code is safe -> NO FINDING
     PROVEN_VULNERABLE = "PROVEN_VULNERABLE"  # evidence proves vulnerability -> FINDING
-    UNKNOWN           = "UNKNOWN"            # insufficient evidence -> NO FINDING
-    CONFLICT          = "CONFLICT"           # contradicting evidence -> NO FINDING
+    UNKNOWN = "UNKNOWN"  # insufficient evidence -> NO FINDING
+    CONFLICT = "CONFLICT"  # contradicting evidence -> NO FINDING
 
 
 class UnknownResolution(StrEnum):
@@ -150,5 +167,6 @@ class UnknownResolution(StrEnum):
     REVIEW is reserved for a future ReviewCandidate subsystem that is
     explicitly separate from the Finding model.
     """
+
     SUPPRESS = "SUPPRESS"  # UNKNOWN -> NO FINDING (default, E10-3J policy)
-    REVIEW   = "REVIEW"    # UNKNOWN -> ReviewCandidate (future subsystem, never a Finding)
+    REVIEW = "REVIEW"  # UNKNOWN -> ReviewCandidate (future subsystem, never a Finding)

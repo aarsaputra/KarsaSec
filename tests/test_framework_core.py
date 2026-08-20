@@ -37,6 +37,7 @@ from karsasec.framework.symbol_table import SemanticSymbolTable, SymbolBinding
 # 1. Semantic Models & FrameworkSemanticGraph Tests
 # ============================================================================
 
+
 def test_semantic_node_immutability():
     origin = OriginMetadata(reason_str="Test node")
     node = FrameworkSemanticNode(
@@ -160,6 +161,7 @@ def test_graph_deterministic_ordering():
 # 2. Provenance & OriginMetadata Tests
 # ============================================================================
 
+
 def test_source_location_dict_roundtrip():
     loc = SourceLocation(file_path="app.py", line=10, column=5, end_line=10, end_column=20)
     data = loc.to_dict()
@@ -219,6 +221,7 @@ def test_origin_metadata_json_serialization():
 # ============================================================================
 # 3. Intermediate Semantic Representation (ISR) Tests
 # ============================================================================
+
 
 def test_route_definition_immutability_and_serialization():
     r = RouteDefinition(path="/items", method="GET", handler="list_items", framework="FLASK")
@@ -346,6 +349,7 @@ def test_isr_container_full_roundtrip():
 # 4. SemanticRegistry Tests
 # ============================================================================
 
+
 def test_registry_add_and_lookup():
     reg = SemanticRegistry()
     route = RouteDefinition(path="/api/data", method="GET", handler="get_data", cpg_ref="cpg_999")
@@ -416,6 +420,7 @@ def test_registry_merge():
 # ============================================================================
 # 5. SemanticSymbolTable Tests
 # ============================================================================
+
 
 def test_symbol_table_forward_resolution():
     sym_table = SemanticSymbolTable()
@@ -566,6 +571,6 @@ def test_symbol_table_definition_lookup_none():
 
 def test_default_global_singletons():
     from karsasec.framework import semantic_registry, semantic_symbol_table
+
     assert isinstance(semantic_registry, SemanticRegistry)
     assert isinstance(semantic_symbol_table, SemanticSymbolTable)
-

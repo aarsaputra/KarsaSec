@@ -5,9 +5,12 @@ from karsasec.rules.schema import Rule
 CURRENT_MATCHER_VERSION = "1.0"
 SUPPORTED_MAJOR_VERSIONS = {"0", "1", "2"}
 
+
 class RuleIncompatibleError(Exception):
     """Exception raised when a Rule definition is incompatible with the current ASTMatcher version."""
+
     pass
+
 
 def check_rule_compatibility(rule: Rule) -> None:
     """Verifies rule compatibility with current matcher engine version.

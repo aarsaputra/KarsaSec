@@ -18,8 +18,7 @@ from karsasec.graph.dataflow.security_verdict import SecurityVerdict
 class LLMProviderProtocol(Protocol):
     """Protocol for pluggable AI provider adapters."""
 
-    def generate(self, system_prompt: str, user_prompt: str) -> str:
-        ...
+    def generate(self, system_prompt: str, user_prompt: str) -> str: ...
 
 
 class MockLLMProvider:

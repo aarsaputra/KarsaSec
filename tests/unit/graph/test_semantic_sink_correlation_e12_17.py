@@ -48,6 +48,7 @@ def correlator() -> SemanticSinkCorrelator:
 # 1. EVIDENCE MODEL & FINGERPRINTING TESTS (1–4)
 # ---------------------------------------------------------------------------
 
+
 def test_01_evidence_immutability():
     ev = SemanticEvidence(
         node_id="n1",
@@ -106,6 +107,7 @@ def test_04_evidence_bundle_ordering():
 # 2. GUARD TESTS (5–9)
 # ---------------------------------------------------------------------------
 
+
 def test_05_true_branch_guard(correlator: SemanticSinkCorrelator):
     code = """
     $id = $_GET['id'];
@@ -113,7 +115,7 @@ def test_05_true_branch_guard(correlator: SemanticSinkCorrelator):
         mysql_query("SELECT * FROM users WHERE id = " . $id);
     }
     """
-    snippet = "mysql_query(\"SELECT * FROM users WHERE id = \" . $id);"
+    snippet = 'mysql_query("SELECT * FROM users WHERE id = " . $id);'
     bundle = correlator.correlate_and_evaluate(
         sink_node_id="sink_1",
         snippet=snippet,
@@ -133,7 +135,7 @@ def test_06_false_branch_no_guard(correlator: SemanticSinkCorrelator):
         mysql_query("SELECT * FROM users WHERE id = " . $id);
     }
     """
-    snippet = "mysql_query(\"SELECT * FROM users WHERE id = \" . $id);"
+    snippet = 'mysql_query("SELECT * FROM users WHERE id = " . $id);'
     bundle = correlator.correlate_and_evaluate(
         sink_node_id="sink_1",
         snippet=snippet,
@@ -154,7 +156,7 @@ def test_07_nested_guard(correlator: SemanticSinkCorrelator):
         }
     }
     """
-    snippet = "mysql_query(\"SELECT * FROM users WHERE id = \" . $id);"
+    snippet = 'mysql_query("SELECT * FROM users WHERE id = " . $id);'
     bundle = correlator.correlate_and_evaluate(
         sink_node_id="sink_1",
         snippet=snippet,
@@ -173,7 +175,7 @@ def test_08_guard_invalidated_by_reassignment(correlator: SemanticSinkCorrelator
         mysql_query("SELECT * FROM users WHERE id = " . $id);
     }
     """
-    snippet = "mysql_query(\"SELECT * FROM users WHERE id = \" . $id);"
+    snippet = 'mysql_query("SELECT * FROM users WHERE id = " . $id);'
     bundle = correlator.correlate_and_evaluate(
         sink_node_id="sink_1",
         snippet=snippet,
@@ -207,6 +209,7 @@ def test_09_guard_propagation_through_return(correlator: SemanticSinkCorrelator)
 # 3. SANITIZER TESTS (10–14)
 # ---------------------------------------------------------------------------
 
+
 def test_10_compatible_sanitizer(correlator: SemanticSinkCorrelator):
     code = """
     $cmd = $_GET['cmd'];
@@ -231,7 +234,7 @@ def test_11_incompatible_sanitizer(correlator: SemanticSinkCorrelator):
     $id = htmlspecialchars($id);
     mysql_query("SELECT * FROM users WHERE id = " . $id);
     """
-    snippet = "mysql_query(\"SELECT * FROM users WHERE id = \" . $id);"
+    snippet = 'mysql_query("SELECT * FROM users WHERE id = " . $id);'
     bundle = correlator.correlate_and_evaluate(
         sink_node_id="sink_1",
         snippet=snippet,
@@ -298,13 +301,14 @@ def test_14_sanitizer_in_nested_function(correlator: SemanticSinkCorrelator):
 # 4. TRANSFORMATION TESTS (15–18)
 # ---------------------------------------------------------------------------
 
+
 def test_15_intval_transformation(correlator: SemanticSinkCorrelator):
     code = """
     $id = $_GET['id'];
     $id = intval($id);
     mysql_query("SELECT * FROM users WHERE id = " . $id);
     """
-    snippet = "mysql_query(\"SELECT * FROM users WHERE id = \" . $id);"
+    snippet = 'mysql_query("SELECT * FROM users WHERE id = " . $id);'
     bundle = correlator.correlate_and_evaluate(
         sink_node_id="sink_1",
         snippet=snippet,
@@ -323,7 +327,7 @@ def test_16_transformation_propagation(correlator: SemanticSinkCorrelator):
     $c = $b;
     mysql_query("SELECT * FROM users WHERE id = " . $c);
     """
-    snippet = "mysql_query(\"SELECT * FROM users WHERE id = \" . $c);"
+    snippet = 'mysql_query("SELECT * FROM users WHERE id = " . $c);'
     bundle = correlator.correlate_and_evaluate(
         sink_node_id="sink_1",
         snippet=snippet,
@@ -342,7 +346,7 @@ def test_17_transformation_plus_guard(correlator: SemanticSinkCorrelator):
         mysql_query("SELECT * FROM users WHERE id = " . $id);
     }
     """
-    snippet = "mysql_query(\"SELECT * FROM users WHERE id = \" . $id);"
+    snippet = 'mysql_query("SELECT * FROM users WHERE id = " . $id);'
     bundle = correlator.correlate_and_evaluate(
         sink_node_id="sink_1",
         snippet=snippet,
@@ -360,7 +364,7 @@ def test_18_transformation_reassignment_kill(correlator: SemanticSinkCorrelator)
     $id = $_GET['raw'];
     mysql_query("SELECT * FROM users WHERE id = " . $id);
     """
-    snippet = "mysql_query(\"SELECT * FROM users WHERE id = \" . $id);"
+    snippet = 'mysql_query("SELECT * FROM users WHERE id = " . $id);'
     bundle = correlator.correlate_and_evaluate(
         sink_node_id="sink_1",
         snippet=snippet,
@@ -374,6 +378,7 @@ def test_18_transformation_reassignment_kill(correlator: SemanticSinkCorrelator)
 # ---------------------------------------------------------------------------
 # 5. INTERPROCEDURAL & CONTEXT TESTS (19–28)
 # ---------------------------------------------------------------------------
+
 
 def test_19_parameter_evidence(correlator: SemanticSinkCorrelator):
     code = "function test($p1) { system($p1); }"
@@ -468,26 +473,39 @@ def test_25_mutual_recursion_summary(correlator: SemanticSinkCorrelator):
 
 
 def test_26_trusted_vs_tainted_call_site(correlator: SemanticSinkCorrelator):
-    ctx1 = CallContext(caller_file="a.php", caller_function="main", line_number=10, callee_function="run", call_site_id="cs_1")
-    ctx2 = CallContext(caller_file="a.php", caller_function="main", line_number=20, callee_function="run", call_site_id="cs_2")
+    ctx1 = CallContext(
+        caller_file="a.php", caller_function="main", line_number=10, callee_function="run", call_site_id="cs_1"
+    )
+    ctx2 = CallContext(
+        caller_file="a.php", caller_function="main", line_number=20, callee_function="run", call_site_id="cs_2"
+    )
     assert ctx1 != ctx2
 
 
 def test_27_multiple_call_sites(correlator: SemanticSinkCorrelator):
-    ctx1 = CallContext(caller_file="a.php", caller_function="f1", line_number=10, callee_function="g", call_site_id="c1")
-    ctx2 = CallContext(caller_file="a.php", caller_function="f2", line_number=15, callee_function="g", call_site_id="c2")
+    ctx1 = CallContext(
+        caller_file="a.php", caller_function="f1", line_number=10, callee_function="g", call_site_id="c1"
+    )
+    ctx2 = CallContext(
+        caller_file="a.php", caller_function="f2", line_number=15, callee_function="g", call_site_id="c2"
+    )
     assert ctx1.call_site_id != ctx2.call_site_id
 
 
 def test_28_context_isolation_invariant(correlator: SemanticSinkCorrelator):
-    ev1 = SemanticEvidence(node_id="e1", evidence_kind=EvidenceKind.CALL_SITE, call_context=CallContext("a.php", "f1", 10, "g", "c1"))
-    ev2 = SemanticEvidence(node_id="e2", evidence_kind=EvidenceKind.CALL_SITE, call_context=CallContext("a.php", "f2", 15, "g", "c2"))
+    ev1 = SemanticEvidence(
+        node_id="e1", evidence_kind=EvidenceKind.CALL_SITE, call_context=CallContext("a.php", "f1", 10, "g", "c1")
+    )
+    ev2 = SemanticEvidence(
+        node_id="e2", evidence_kind=EvidenceKind.CALL_SITE, call_context=CallContext("a.php", "f2", 15, "g", "c2")
+    )
     assert ev1.semantic_fingerprint() != ev2.semantic_fingerprint()
 
 
 # ---------------------------------------------------------------------------
 # 6. SSA & CROSS-FILE TESTS (29–34)
 # ---------------------------------------------------------------------------
+
 
 def test_29_ssa_version_isolation(correlator: SemanticSinkCorrelator):
     env = AbstractEnvironment()
@@ -507,7 +525,7 @@ def test_30_alias_propagation(correlator: SemanticSinkCorrelator):
     $b = $a;
     mysql_query("SELECT * FROM users WHERE id = " . $b);
     """
-    snippet = "mysql_query(\"SELECT * FROM users WHERE id = \" . $b);"
+    snippet = 'mysql_query("SELECT * FROM users WHERE id = " . $b);'
     bundle = correlator.correlate_and_evaluate(
         sink_node_id="sink_1",
         snippet=snippet,
@@ -526,7 +544,7 @@ def test_31_alias_reassignment(correlator: SemanticSinkCorrelator):
     $b = $_GET['b'];
     mysql_query("SELECT * FROM users WHERE id = " . $b);
     """
-    snippet = "mysql_query(\"SELECT * FROM users WHERE id = \" . $b);"
+    snippet = 'mysql_query("SELECT * FROM users WHERE id = " . $b);'
     bundle = correlator.correlate_and_evaluate(
         sink_node_id="sink_1",
         snippet=snippet,
@@ -566,6 +584,7 @@ def test_34_unresolved_cross_file_symbol(correlator: SemanticSinkCorrelator):
 # 7. CONSERVATIVE BEHAVIOR TESTS (35–41)
 # ---------------------------------------------------------------------------
 
+
 def test_35_unknown_state_non_suppression(correlator: SemanticSinkCorrelator):
     code = "$x = get_dynamic_data(); mysql_query($x);"
     snippet = "mysql_query($x);"
@@ -595,7 +614,9 @@ def test_37_mixed_return_paths(correlator: SemanticSinkCorrelator):
         file_path="a.php",
         parameters=("x",),
         path_summaries=(
-            PathSummary("p1", taint_state=AbstractTaintState.SANITIZED, constraints=frozenset({SemanticConstraint.NUMERIC})),
+            PathSummary(
+                "p1", taint_state=AbstractTaintState.SANITIZED, constraints=frozenset({SemanticConstraint.NUMERIC})
+            ),
             PathSummary("p2", taint_state=AbstractTaintState.TAINTED, constraints=frozenset()),
         ),
     )
@@ -621,7 +642,7 @@ def test_39_wrong_sink_sanitizer(correlator: SemanticSinkCorrelator):
     $id = htmlspecialchars($id);
     mysql_query("SELECT * FROM users WHERE id = " . $id);
     """
-    snippet = "mysql_query(\"SELECT * FROM users WHERE id = \" . $id);"
+    snippet = 'mysql_query("SELECT * FROM users WHERE id = " . $id);'
     bundle = correlator.correlate_and_evaluate(
         sink_node_id="sink_1",
         snippet=snippet,

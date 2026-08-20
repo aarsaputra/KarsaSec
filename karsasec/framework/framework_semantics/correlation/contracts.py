@@ -11,6 +11,7 @@ from karsasec.framework.semantic_models import SemanticEdgeType
 
 class ResolutionStatus(StrEnum):
     """Status resulting from relationship resolution."""
+
     RESOLVED = "RESOLVED"
     AMBIGUOUS = "AMBIGUOUS"
     UNRESOLVED = "UNRESOLVED"
@@ -18,6 +19,7 @@ class ResolutionStatus(StrEnum):
 
 class ResolutionMethod(StrEnum):
     """5-Tier deterministic resolution hierarchy method."""
+
     TIER1_EXPLICIT_REFERENCE = "TIER1_EXPLICIT_REFERENCE"
     TIER2_EXACT_SEMANTIC_ID = "TIER2_EXACT_SEMANTIC_ID"
     TIER3_EXACT_QUALIFIED_NAME = "TIER3_EXACT_QUALIFIED_NAME"
@@ -29,6 +31,7 @@ class ResolutionMethod(StrEnum):
 @dataclass(frozen=True)
 class RelationshipCandidate:
     """Candidate edge relationship generated during semantic correlation."""
+
     source_id: str
     target_id: str
     edge_type: SemanticEdgeType

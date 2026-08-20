@@ -42,11 +42,13 @@ app.add_typer(framework_app, name="framework")
 app.add_typer(explain_app, name="explain")
 app.add_typer(remediation_app, name="remediation")
 
+
 def version_callback(value: bool) -> None:
     """Callback for printing the CLI version."""
     if value:
         console.print(f"[bold green]KarsaSec SecOS[/bold green] version [bold cyan]{__version__}[/bold cyan]")
         raise typer.Exit()
+
 
 @app.callback()
 def main(
@@ -69,6 +71,7 @@ def main(
         settings.debug = True
         logger.setLevel("DEBUG")
         logger.debug("[yellow]Debug mode enabled.[/yellow]")
+
 
 @app.command("scan")
 def scan(
@@ -137,6 +140,7 @@ def scan(
     )
     raise typer.Exit(code=exit_code)
 
+
 @app.command("review")
 def review(
     path: Path = typer.Argument(
@@ -146,8 +150,16 @@ def review(
     ),
 ) -> None:
     """Run full AI-Agentic multi-agent security audit."""
-    console.print(Panel(f"[bold green]KarsaSec 4-Agent Security Review[/bold green]\nTarget: [bold]{path.resolve()}[/bold]", border_style="green"))
-    console.print("🚀 State Machine Pipeline: [cyan]INIT[/cyan] → [cyan]PLAN[/cyan] → [cyan]ANALYZE[/cyan] → [cyan]FIX[/cyan] → [cyan]REPORT[/cyan]")
+    console.print(
+        Panel(
+            f"[bold green]KarsaSec 4-Agent Security Review[/bold green]\nTarget: [bold]{path.resolve()}[/bold]",
+            border_style="green",
+        )
+    )
+    console.print(
+        "🚀 State Machine Pipeline: [cyan]INIT[/cyan] → [cyan]PLAN[/cyan] → [cyan]ANALYZE[/cyan] → [cyan]FIX[/cyan] → [cyan]REPORT[/cyan]"
+    )
+
 
 @app.command("doctor")
 def doctor() -> None:
@@ -160,7 +172,11 @@ def doctor() -> None:
     table.add_column("Details")
 
     table.add_row("CLI Version", "[green]OK[/green]", __version__)
-    table.add_row("Python Runtime", "[green]OK[/green]", f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")
+    table.add_row(
+        "Python Runtime",
+        "[green]OK[/green]",
+        f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
+    )
     table.add_row("Cache Directory", "[green]OK[/green]", str(settings.cache_dir))
     table.add_row("Default Provider", "[green]OK[/green]", settings.default_llm_provider)
     table.add_row("Default Model", "[green]OK[/green]", settings.default_llm_model)
@@ -217,6 +233,7 @@ runtime:
         encoding="utf-8",
     )
     console.print(f"Created configuration file at [bold green]{output_path.resolve()}[/bold green]")
+
 
 if __name__ == "__main__":
     app()

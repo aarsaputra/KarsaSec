@@ -26,11 +26,15 @@ class CFGValidator:
     def _validate_entry_exit(self, cfg: CFG) -> None:
         entry_nodes = [n for n in cfg.nodes.values() if n.node_type == CFGNodeType.ENTRY]
         if len(entry_nodes) != 1:
-            raise CFGValidationError(f"CFG for '{cfg.function_name}' must have exactly 1 ENTRY node, found {len(entry_nodes)}")
+            raise CFGValidationError(
+                f"CFG for '{cfg.function_name}' must have exactly 1 ENTRY node, found {len(entry_nodes)}"
+            )
 
         exit_nodes = [n for n in cfg.nodes.values() if n.node_type == CFGNodeType.EXIT]
         if len(exit_nodes) != 1:
-            raise CFGValidationError(f"CFG for '{cfg.function_name}' must have exactly 1 EXIT node, found {len(exit_nodes)}")
+            raise CFGValidationError(
+                f"CFG for '{cfg.function_name}' must have exactly 1 EXIT node, found {len(exit_nodes)}"
+            )
 
     def _validate_edges(self, cfg: CFG) -> None:
         for edge in cfg.edges:

@@ -34,6 +34,7 @@ def create_mock_finding(
         remediation="Remove eval",
     )
 
+
 def test_finding_collection_methods() -> None:
     f1 = create_mock_finding("R1", Severity.HIGH)
     f2 = create_mock_finding("R2", Severity.CRITICAL)
@@ -52,6 +53,7 @@ def test_finding_collection_methods() -> None:
 
     grouped = collection.group_by_rule()
     assert len(grouped["R1"]) == 2
+
 
 def test_json_reporter_output() -> None:
     f1 = create_mock_finding()
@@ -73,6 +75,7 @@ def test_json_reporter_output() -> None:
     assert data["metadata"]["schema_version"] == "1.0"
     assert data["summary"]["total_findings"] == 1
     assert data["findings"][0]["rule_id"] == "KS-PY-001"
+
 
 def test_sarif_reporter_output() -> None:
     f1 = create_mock_finding("R1", Severity.CRITICAL)
@@ -96,6 +99,7 @@ def test_sarif_reporter_output() -> None:
     assert data["version"] == "2.1.0"
     assert len(data["runs"][0]["tool"]["driver"]["rules"]) == 1  # Deduplicated rules array
     assert len(data["runs"][0]["results"]) == 2
+
 
 def test_console_reporter_output() -> None:
     f1 = create_mock_finding()

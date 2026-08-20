@@ -26,7 +26,9 @@ from karsasec.parser.ast_nodes import (
 class IRBuilder:
     """Translates multi-language FileNode AST structures into Universal IR trees."""
 
-    def build_from_file_nodes(self, file_nodes: list[FileNode], source_bytes_map: dict[str, bytes] | None = None) -> list[IRFunction]:
+    def build_from_file_nodes(
+        self, file_nodes: list[FileNode], source_bytes_map: dict[str, bytes] | None = None
+    ) -> list[IRFunction]:
         """Translates FileNode trees into universal IRFunction list."""
         functions: list[IRFunction] = []
         source_bytes_map = source_bytes_map or {}
@@ -41,7 +43,12 @@ class IRBuilder:
         file_path_str = str(file_node.file_path) if file_node.file_path else "unknown"
 
         for node_id, node in file_node.nodes_map.items():
-            if isinstance(node, FunctionNode) or node.node_type in ["function_definition", "function_declaration", "def", "func_decl"]:
+            if isinstance(node, FunctionNode) or node.node_type in [
+                "function_definition",
+                "function_declaration",
+                "def",
+                "func_decl",
+            ]:
                 func_name = getattr(node, "name", "") or "anonymous"
                 params = getattr(node, "parameters", [])
 

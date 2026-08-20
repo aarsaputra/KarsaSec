@@ -1,4 +1,5 @@
 """Tests for DVWA manifest integrity (E12-1)."""
+
 from __future__ import annotations
 
 from pathlib import Path

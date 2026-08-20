@@ -43,8 +43,12 @@ class IntraproceduralTaintEngine:
 
         # Step 2: Connect TaintEdges from DataFlowGraph edges
         for edge in dfg.edges:
-            src_node = var_taints.get(edge.source_id) or next((n for n in var_taints.values() if edge.source_id in n.id), None)
-            tgt_node = var_taints.get(edge.target_id) or next((n for n in var_taints.values() if edge.target_id in n.id), None)
+            src_node = var_taints.get(edge.source_id) or next(
+                (n for n in var_taints.values() if edge.source_id in n.id), None
+            )
+            tgt_node = var_taints.get(edge.target_id) or next(
+                (n for n in var_taints.values() if edge.target_id in n.id), None
+            )
             if src_node and tgt_node:
                 taint_graph.add_edge(source_id=src_node.id, target_id=tgt_node.id, var_name=edge.var_name)
 

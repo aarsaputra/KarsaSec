@@ -45,7 +45,7 @@ class RAGPredicate(BasePredicate):
             wanted = t.split("rag_contains:", 1)[1]
             found = False
             for item in rag_ctx:
-                text = (item.get("text") or "")
+                text = item.get("text") or ""
                 if wanted.lower() in text.lower():
                     found = True
                     break

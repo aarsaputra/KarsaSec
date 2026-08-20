@@ -164,7 +164,9 @@ class RemediationLifecycleEngine:
         rca: RootCauseAnalysis | None = None,
         knowledge_chunks: list[KnowledgeChunk] | None = None,
         source_code: str | None = None,
-        approval_provider: PatchApprovalToken | Callable[[PatchProposal, SourceSnapshot], PatchApprovalToken | None] | None = None,
+        approval_provider: PatchApprovalToken
+        | Callable[[PatchProposal, SourceSnapshot], PatchApprovalToken | None]
+        | None = None,
         rescan_callback: Callable[[], tuple[Finding, ...]] | None = None,
         actor: str = "lifecycle_orchestrator",
     ) -> RemediationLifecycleResult:
@@ -201,7 +203,12 @@ class RemediationLifecycleEngine:
         )
 
         # Transition DETECTED -> EVIDENCE_VERIFIED
-        sm.transition(RemediationLifecycleState.EVIDENCE_VERIFIED, actor=actor, reason="Evidence verified for finding", timestamp=now_iso)
+        sm.transition(
+            RemediationLifecycleState.EVIDENCE_VERIFIED,
+            actor=actor,
+            reason="Evidence verified for finding",
+            timestamp=now_iso,
+        )
         ledger = self._append_audit(
             ledger=ledger,
             event_type=AuditEventType.EVIDENCE_VERIFIED,
@@ -221,7 +228,12 @@ class RemediationLifecycleEngine:
             graph = graph.add_node(rca_node)
             prev_node_id = rca_node.node_id
 
-            sm.transition(RemediationLifecycleState.RCA_ESTABLISHED, actor=actor, reason="Root cause analysis established", timestamp=now_iso)
+            sm.transition(
+                RemediationLifecycleState.RCA_ESTABLISHED,
+                actor=actor,
+                reason="Root cause analysis established",
+                timestamp=now_iso,
+            )
             ledger = self._append_audit(
                 ledger=ledger,
                 event_type=AuditEventType.RCA_ESTABLISHED,
@@ -233,7 +245,9 @@ class RemediationLifecycleEngine:
             )
         else:
             # Transition to RCA_ESTABLISHED implicitly if skipping explicit RCA model
-            sm.transition(RemediationLifecycleState.RCA_ESTABLISHED, actor=actor, reason="RCA step completed", timestamp=now_iso)
+            sm.transition(
+                RemediationLifecycleState.RCA_ESTABLISHED, actor=actor, reason="RCA step completed", timestamp=now_iso
+            )
             ledger = self._append_audit(
                 ledger=ledger,
                 event_type=AuditEventType.RCA_ESTABLISHED,
@@ -268,7 +282,12 @@ class RemediationLifecycleEngine:
         prop_node = ProvenanceNode.create_proposal_node(proposal, predecessor_id=strat_node.node_id)
         graph = graph.add_node(prop_node)
 
-        sm.transition(RemediationLifecycleState.REMEDIATION_PROPOSED, actor=actor, reason="Patch proposal generated and validated", timestamp=now_iso)
+        sm.transition(
+            RemediationLifecycleState.REMEDIATION_PROPOSED,
+            actor=actor,
+            reason="Patch proposal generated and validated",
+            timestamp=now_iso,
+        )
         ledger = self._append_audit(
             ledger=ledger,
             event_type=AuditEventType.REMEDIATION_PROPOSED,
@@ -283,7 +302,12 @@ class RemediationLifecycleEngine:
         # -------------------------------------------------------------
         # STAGE 3: AWAITING_APPROVAL & APPROVAL VALIDATION
         # -------------------------------------------------------------
-        sm.transition(RemediationLifecycleState.AWAITING_APPROVAL, actor=actor, reason="Patch proposal awaiting review and approval", timestamp=now_iso)
+        sm.transition(
+            RemediationLifecycleState.AWAITING_APPROVAL,
+            actor=actor,
+            reason="Patch proposal awaiting review and approval",
+            timestamp=now_iso,
+        )
         ledger = self._append_audit(
             ledger=ledger,
             event_type=AuditEventType.APPROVAL_GRANTED,
@@ -310,7 +334,12 @@ class RemediationLifecycleEngine:
 
         # Validate Approval Token (L5, L14, L15, L16)
         if token is None:
-            sm.transition(RemediationLifecycleState.REJECTED, actor=actor, reason="Approval rejected: No approval token provided", timestamp=now_iso)
+            sm.transition(
+                RemediationLifecycleState.REJECTED,
+                actor=actor,
+                reason="Approval rejected: No approval token provided",
+                timestamp=now_iso,
+            )
             ledger = self._append_audit(
                 ledger=ledger,
                 event_type=AuditEventType.APPROVAL_GRANTED,
@@ -349,7 +378,12 @@ class RemediationLifecycleEngine:
         )
 
         if not val_ok:
-            sm.transition(RemediationLifecycleState.REJECTED, actor=actor, reason=f"Approval token validation failed: {val_err}", timestamp=now_iso)
+            sm.transition(
+                RemediationLifecycleState.REJECTED,
+                actor=actor,
+                reason=f"Approval token validation failed: {val_err}",
+                timestamp=now_iso,
+            )
             ledger = self._append_audit(
                 ledger=ledger,
                 event_type=AuditEventType.APPROVAL_GRANTED,
@@ -383,7 +417,12 @@ class RemediationLifecycleEngine:
         tok_node = ProvenanceNode.create_approval_token_node(token, predecessor_id=snap_node.node_id)
         graph = graph.add_node(tok_node)
 
-        sm.transition(RemediationLifecycleState.APPROVED, actor=actor, reason=f"Patch proposal approved by {token.approved_by}", timestamp=now_iso)
+        sm.transition(
+            RemediationLifecycleState.APPROVED,
+            actor=actor,
+            reason=f"Patch proposal approved by {token.approved_by}",
+            timestamp=now_iso,
+        )
         ledger = self._append_audit(
             ledger=ledger,
             event_type=AuditEventType.APPROVAL_GRANTED,
@@ -400,7 +439,12 @@ class RemediationLifecycleEngine:
         # -------------------------------------------------------------
         # STAGE 4: SNAPSHOT_VERIFIED & APPLYING
         # -------------------------------------------------------------
-        sm.transition(RemediationLifecycleState.SNAPSHOT_VERIFIED, actor=actor, reason="Pre-apply snapshot verified", timestamp=now_iso)
+        sm.transition(
+            RemediationLifecycleState.SNAPSHOT_VERIFIED,
+            actor=actor,
+            reason="Pre-apply snapshot verified",
+            timestamp=now_iso,
+        )
         ledger = self._append_audit(
             ledger=ledger,
             event_type=AuditEventType.SNAPSHOT_CAPTURED,
@@ -413,7 +457,12 @@ class RemediationLifecycleEngine:
             provenance_fingerprint=graph.graph_fingerprint,
         )
 
-        sm.transition(RemediationLifecycleState.APPLYING, actor=actor, reason="Executing controlled patch application", timestamp=now_iso)
+        sm.transition(
+            RemediationLifecycleState.APPLYING,
+            actor=actor,
+            reason="Executing controlled patch application",
+            timestamp=now_iso,
+        )
         ledger = self._append_audit(
             ledger=ledger,
             event_type=AuditEventType.PATCH_APPLIED,
@@ -454,7 +503,12 @@ class RemediationLifecycleEngine:
                 )
                 graph = graph.add_node(ver_node)
 
-            sm.transition(RemediationLifecycleState.APPLY_FAILED, actor=actor, reason=f"Patch application failed: {app_res.failure_reason}", timestamp=now_iso)
+            sm.transition(
+                RemediationLifecycleState.APPLY_FAILED,
+                actor=actor,
+                reason=f"Patch application failed: {app_res.failure_reason}",
+                timestamp=now_iso,
+            )
             ledger = self._append_audit(
                 ledger=ledger,
                 event_type=AuditEventType.ROLLBACK_STARTED,
@@ -471,10 +525,14 @@ class RemediationLifecycleEngine:
             if app_res.rollback_status == "CRITICAL_FAILURE":
                 target_terminal = RemediationLifecycleState.CRITICAL_RECOVERY_FAILURE
 
-            sm.transition(target_terminal, actor=actor, reason=f"Rollback completed: {app_res.failure_reason}", timestamp=now_iso)
+            sm.transition(
+                target_terminal, actor=actor, reason=f"Rollback completed: {app_res.failure_reason}", timestamp=now_iso
+            )
             ledger = self._append_audit(
                 ledger=ledger,
-                event_type=AuditEventType.CRITICAL_RECOVERY_FAILURE if target_terminal == RemediationLifecycleState.CRITICAL_RECOVERY_FAILURE else AuditEventType.ROLLBACK_COMPLETED,
+                event_type=AuditEventType.CRITICAL_RECOVERY_FAILURE
+                if target_terminal == RemediationLifecycleState.CRITICAL_RECOVERY_FAILURE
+                else AuditEventType.ROLLBACK_COMPLETED,
                 finding_id=finding.finding_id,
                 lifecycle_state=sm.current_state.value,
                 actor=actor,
@@ -503,7 +561,12 @@ class RemediationLifecycleEngine:
             )
 
         # Apply succeeded -> APPLIED_UNVERIFIED
-        sm.transition(RemediationLifecycleState.APPLIED_UNVERIFIED, actor=actor, reason="Patch applied successfully; awaiting verification", timestamp=now_iso)
+        sm.transition(
+            RemediationLifecycleState.APPLIED_UNVERIFIED,
+            actor=actor,
+            reason="Patch applied successfully; awaiting verification",
+            timestamp=now_iso,
+        )
         ledger = self._append_audit(
             ledger=ledger,
             event_type=AuditEventType.PATCH_APPLIED,
@@ -521,7 +584,12 @@ class RemediationLifecycleEngine:
         # -------------------------------------------------------------
         # STAGE 6: SECURITY RESCAN & VERIFICATION
         # -------------------------------------------------------------
-        sm.transition(RemediationLifecycleState.SECURITY_RESCAN, actor=actor, reason="Executing post-apply security rescan", timestamp=now_iso)
+        sm.transition(
+            RemediationLifecycleState.SECURITY_RESCAN,
+            actor=actor,
+            reason="Executing post-apply security rescan",
+            timestamp=now_iso,
+        )
         ledger = self._append_audit(
             ledger=ledger,
             event_type=AuditEventType.VERIFICATION_STARTED,
@@ -558,7 +626,12 @@ class RemediationLifecycleEngine:
             )
 
             # Authoritative State Machine Transition to VERIFIED_FIXED (L4, L7)
-            sm.transition_verified_fixed(evidence=evidence_contract, actor=actor, reason="Deterministic SAST rescan confirmed vulnerability fix", timestamp=now_iso)
+            sm.transition_verified_fixed(
+                evidence=evidence_contract,
+                actor=actor,
+                reason="Deterministic SAST rescan confirmed vulnerability fix",
+                timestamp=now_iso,
+            )
             ledger = self._append_audit(
                 ledger=ledger,
                 event_type=AuditEventType.VERIFIED_FIXED,
@@ -598,7 +671,12 @@ class RemediationLifecycleEngine:
             failed_state = RemediationLifecycleState.UNKNOWN
             ev_type = AuditEventType.CRITICAL_RECOVERY_FAILURE
 
-        sm.transition(failed_state, actor=actor, reason=f"Security verification failed: {ver_res.details if ver_res else 'No verification result'}", timestamp=now_iso)
+        sm.transition(
+            failed_state,
+            actor=actor,
+            reason=f"Security verification failed: {ver_res.details if ver_res else 'No verification result'}",
+            timestamp=now_iso,
+        )
         ledger = self._append_audit(
             ledger=ledger,
             event_type=ev_type,
@@ -615,7 +693,12 @@ class RemediationLifecycleEngine:
         )
 
         # Complete Rollback transition (L8)
-        sm.transition(RemediationLifecycleState.ROLLED_BACK, actor=actor, reason="Atomic rollback executed following verification failure", timestamp=now_iso)
+        sm.transition(
+            RemediationLifecycleState.ROLLED_BACK,
+            actor=actor,
+            reason="Atomic rollback executed following verification failure",
+            timestamp=now_iso,
+        )
         ledger = self._append_audit(
             ledger=ledger,
             event_type=AuditEventType.ROLLBACK_COMPLETED,

@@ -7,6 +7,7 @@ Design Principles:
   - Declarative lookup without regex or hardcoded function branches in the solver engine.
   - Anti-hardcoding: Pure security capability specifications. Zero rule-ID or benchmark strings.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -18,6 +19,7 @@ from karsasec.graph.dataflow.abstract_state import SemanticConstraint
 @dataclass(frozen=True, slots=True)
 class PredicateCapability:
     """Capability specification for a boolean predicate guard (e.g. is_numeric($x))."""
+
     name: str
     target_arg_idx: int = 0
     true_branch_constraints: frozenset[SemanticConstraint] = field(default_factory=frozenset)
@@ -27,6 +29,7 @@ class PredicateCapability:
 @dataclass(frozen=True, slots=True)
 class ValueTransformation:
     """Capability specification for a value transformation/cast (e.g. intval($x), escapeshellarg($x))."""
+
     name: str
     target_arg_idx: int = 0
     produced_constraints: frozenset[SemanticConstraint] = field(default_factory=frozenset)
@@ -42,78 +45,106 @@ class GuardCapabilityRegistry:
 
     def _register_defaults(self) -> None:
         # Predicate Capabilities
-        self.register_predicate(PredicateCapability(
-            name="is_numeric",
-            target_arg_idx=0,
-            true_branch_constraints=frozenset({SemanticConstraint.NUMERIC}),
-        ))
-        self.register_predicate(PredicateCapability(
-            name="ctype_digit",
-            target_arg_idx=0,
-            true_branch_constraints=frozenset({SemanticConstraint.DIGITS_ONLY, SemanticConstraint.NUMERIC}),
-        ))
-        self.register_predicate(PredicateCapability(
-            name="is_int",
-            target_arg_idx=0,
-            true_branch_constraints=frozenset({SemanticConstraint.INTEGER, SemanticConstraint.NUMERIC}),
-        ))
-        self.register_predicate(PredicateCapability(
-            name="is_integer",
-            target_arg_idx=0,
-            true_branch_constraints=frozenset({SemanticConstraint.INTEGER, SemanticConstraint.NUMERIC}),
-        ))
-        self.register_predicate(PredicateCapability(
-            name="is_long",
-            target_arg_idx=0,
-            true_branch_constraints=frozenset({SemanticConstraint.INTEGER, SemanticConstraint.NUMERIC}),
-        ))
+        self.register_predicate(
+            PredicateCapability(
+                name="is_numeric",
+                target_arg_idx=0,
+                true_branch_constraints=frozenset({SemanticConstraint.NUMERIC}),
+            )
+        )
+        self.register_predicate(
+            PredicateCapability(
+                name="ctype_digit",
+                target_arg_idx=0,
+                true_branch_constraints=frozenset({SemanticConstraint.DIGITS_ONLY, SemanticConstraint.NUMERIC}),
+            )
+        )
+        self.register_predicate(
+            PredicateCapability(
+                name="is_int",
+                target_arg_idx=0,
+                true_branch_constraints=frozenset({SemanticConstraint.INTEGER, SemanticConstraint.NUMERIC}),
+            )
+        )
+        self.register_predicate(
+            PredicateCapability(
+                name="is_integer",
+                target_arg_idx=0,
+                true_branch_constraints=frozenset({SemanticConstraint.INTEGER, SemanticConstraint.NUMERIC}),
+            )
+        )
+        self.register_predicate(
+            PredicateCapability(
+                name="is_long",
+                target_arg_idx=0,
+                true_branch_constraints=frozenset({SemanticConstraint.INTEGER, SemanticConstraint.NUMERIC}),
+            )
+        )
 
         # Value Transformations
-        self.register_transformation(ValueTransformation(
-            name="intval",
-            target_arg_idx=0,
-            produced_constraints=frozenset({SemanticConstraint.INTEGER, SemanticConstraint.NUMERIC}),
-        ))
-        self.register_transformation(ValueTransformation(
-            name="(int)",
-            target_arg_idx=0,
-            produced_constraints=frozenset({SemanticConstraint.INTEGER, SemanticConstraint.NUMERIC}),
-        ))
-        self.register_transformation(ValueTransformation(
-            name="floatval",
-            target_arg_idx=0,
-            produced_constraints=frozenset({SemanticConstraint.NUMERIC}),
-        ))
-        self.register_transformation(ValueTransformation(
-            name="escapeshellarg",
-            target_arg_idx=0,
-            produced_constraints=frozenset({SemanticConstraint.SHELL_ESCAPED}),
-        ))
-        self.register_transformation(ValueTransformation(
-            name="escapeshellcmd",
-            target_arg_idx=0,
-            produced_constraints=frozenset({SemanticConstraint.SHELL_ESCAPED}),
-        ))
-        self.register_transformation(ValueTransformation(
-            name="htmlspecialchars",
-            target_arg_idx=0,
-            produced_constraints=frozenset({SemanticConstraint.HTML_ESCAPED}),
-        ))
-        self.register_transformation(ValueTransformation(
-            name="htmlentities",
-            target_arg_idx=0,
-            produced_constraints=frozenset({SemanticConstraint.HTML_ESCAPED}),
-        ))
-        self.register_transformation(ValueTransformation(
-            name="basename",
-            target_arg_idx=0,
-            produced_constraints=frozenset({SemanticConstraint.PATH_NORMALIZED}),
-        ))
-        self.register_transformation(ValueTransformation(
-            name="realpath",
-            target_arg_idx=0,
-            produced_constraints=frozenset({SemanticConstraint.PATH_NORMALIZED}),
-        ))
+        self.register_transformation(
+            ValueTransformation(
+                name="intval",
+                target_arg_idx=0,
+                produced_constraints=frozenset({SemanticConstraint.INTEGER, SemanticConstraint.NUMERIC}),
+            )
+        )
+        self.register_transformation(
+            ValueTransformation(
+                name="(int)",
+                target_arg_idx=0,
+                produced_constraints=frozenset({SemanticConstraint.INTEGER, SemanticConstraint.NUMERIC}),
+            )
+        )
+        self.register_transformation(
+            ValueTransformation(
+                name="floatval",
+                target_arg_idx=0,
+                produced_constraints=frozenset({SemanticConstraint.NUMERIC}),
+            )
+        )
+        self.register_transformation(
+            ValueTransformation(
+                name="escapeshellarg",
+                target_arg_idx=0,
+                produced_constraints=frozenset({SemanticConstraint.SHELL_ESCAPED}),
+            )
+        )
+        self.register_transformation(
+            ValueTransformation(
+                name="escapeshellcmd",
+                target_arg_idx=0,
+                produced_constraints=frozenset({SemanticConstraint.SHELL_ESCAPED}),
+            )
+        )
+        self.register_transformation(
+            ValueTransformation(
+                name="htmlspecialchars",
+                target_arg_idx=0,
+                produced_constraints=frozenset({SemanticConstraint.HTML_ESCAPED}),
+            )
+        )
+        self.register_transformation(
+            ValueTransformation(
+                name="htmlentities",
+                target_arg_idx=0,
+                produced_constraints=frozenset({SemanticConstraint.HTML_ESCAPED}),
+            )
+        )
+        self.register_transformation(
+            ValueTransformation(
+                name="basename",
+                target_arg_idx=0,
+                produced_constraints=frozenset({SemanticConstraint.PATH_NORMALIZED}),
+            )
+        )
+        self.register_transformation(
+            ValueTransformation(
+                name="realpath",
+                target_arg_idx=0,
+                produced_constraints=frozenset({SemanticConstraint.PATH_NORMALIZED}),
+            )
+        )
 
     def register_predicate(self, cap: PredicateCapability) -> None:
         self._predicates[cap.name.lower()] = cap
@@ -148,7 +179,8 @@ class GuardCapabilityRegistry:
 
         # Extract function call e.g. is_numeric($id)
         import re
-        match = re.search(r'\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(\s*(\$[a-zA-Z0-9_]+)\s*\)', text_clean)
+
+        match = re.search(r"\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(\s*(\$[a-zA-Z0-9_]+)\s*\)", text_clean)
         if match:
             fn_name = match.group(1)
             var_name = match.group(2)

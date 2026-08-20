@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import threading
 from abc import ABC, abstractmethod
-from typing import Dict, Optional, List
 
 from karsasec.workers.task import (
     RemediationTask,
@@ -26,7 +25,7 @@ class TaskRepository(ABC):
         pass
 
     @abstractmethod
-    def get_task(self, task_id: str) -> Optional[RemediationTask]:
+    def get_task(self, task_id: str) -> RemediationTask | None:
         """Retrieves a task by ID."""
         pass
 
@@ -40,7 +39,7 @@ class TaskRepository(ABC):
         self,
         task_id: str,
         expected_lease_version: int,
-        expected_states: List[TaskState],
+        expected_states: list[TaskState],
         new_state: TaskState,
         **kwargs,
     ) -> RemediationTask:
@@ -55,14 +54,12 @@ class TaskRepository(ABC):
         pass
 
     @abstractmethod
-    def get_active_task_by_fingerprint(self, fingerprint: str) -> Optional[RemediationTask]:
+    def get_active_task_by_fingerprint(self, fingerprint: str) -> RemediationTask | None:
         """Finds any non-terminal task matching the request fingerprint."""
         pass
 
     @abstractmethod
-    def list_tasks(
-        self, states: Optional[list[TaskState]] = None, limit: int = 100
-    ) -> list[RemediationTask]:
+    def list_tasks(self, states: list[TaskState] | None = None, limit: int = 100) -> list[RemediationTask]:
         """List tasks optionally filtered by state."""
         pass
 
@@ -76,7 +73,7 @@ class InMemoryTaskRepository(TaskRepository):
     """
 
     def __init__(self) -> None:
-        self._tasks: Dict[str, RemediationTask] = {}
+        self._tasks: dict[str, RemediationTask] = {}
         self._lock = threading.Lock()
 
     def create_task(self, task: RemediationTask) -> None:
@@ -85,7 +82,7 @@ class InMemoryTaskRepository(TaskRepository):
                 raise ValueError(f"Task with ID {task.task_id} already exists")
             self._tasks[task.task_id] = task
 
-    def get_task(self, task_id: str) -> Optional[RemediationTask]:
+    def get_task(self, task_id: str) -> RemediationTask | None:
         with self._lock:
             return self._tasks.get(task_id)
 
@@ -108,7 +105,7 @@ class InMemoryTaskRepository(TaskRepository):
         self,
         task_id: str,
         expected_lease_version: int,
-        expected_states: List[TaskState],
+        expected_states: list[TaskState],
         new_state: TaskState,
         **kwargs,
     ) -> RemediationTask:
@@ -143,7 +140,7 @@ class InMemoryTaskRepository(TaskRepository):
 
             return task
 
-    def get_active_task_by_fingerprint(self, fingerprint: str) -> Optional[RemediationTask]:
+    def get_active_task_by_fingerprint(self, fingerprint: str) -> RemediationTask | None:
         with self._lock:
             terminal_states = {TaskState.COMPLETED, TaskState.FAILED, TaskState.CANCELLED}
             for task in self._tasks.values():
@@ -151,9 +148,7 @@ class InMemoryTaskRepository(TaskRepository):
                     return task
             return None
 
-    def list_tasks(
-        self, states: Optional[list[TaskState]] = None, limit: int = 100
-    ) -> list[RemediationTask]:
+    def list_tasks(self, states: list[TaskState] | None = None, limit: int = 100) -> list[RemediationTask]:
         with self._lock:
             res = []
             for task in self._tasks.values():
@@ -162,4 +157,3 @@ class InMemoryTaskRepository(TaskRepository):
                 if len(res) >= limit:
                     break
             return res
-

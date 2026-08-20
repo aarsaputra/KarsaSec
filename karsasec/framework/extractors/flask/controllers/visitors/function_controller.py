@@ -76,7 +76,9 @@ class FlaskFunctionControllerVisitor:
         )
         self.state.add_controller(ctrl_cand)
 
-    def _inspect_decorators(self, func_node: ast.FunctionDef | ast.AsyncFunctionDef) -> tuple[bool, str, str, list[str]]:
+    def _inspect_decorators(
+        self, func_node: ast.FunctionDef | ast.AsyncFunctionDef
+    ) -> tuple[bool, str, str, list[str]]:
         is_route = False
         obj_name = ""
         route_path = ""
@@ -101,7 +103,11 @@ class FlaskFunctionControllerVisitor:
                         http_methods.append(attr_name.upper())
 
                     if call_node:
-                        if call_node.args and isinstance(call_node.args[0], ast.Constant) and isinstance(call_node.args[0].value, str):
+                        if (
+                            call_node.args
+                            and isinstance(call_node.args[0], ast.Constant)
+                            and isinstance(call_node.args[0].value, str)
+                        ):
                             route_path = call_node.args[0].value
 
                         for keyword in call_node.keywords:

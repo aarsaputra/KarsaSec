@@ -102,7 +102,6 @@ __all__ = [
     "ISRMigrator",
     "ISRSchemaValidationError",
     "SemanticNodeType",
-
     "SemanticEdgeType",
     "FrameworkSemanticNode",
     "FrameworkSemanticEdge",

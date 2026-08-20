@@ -59,7 +59,9 @@ class FrameworkNodeFactory:
         file_path = controller.origin.location_info.file_path
         line = controller.origin.location_info.line
         qual_name = controller.class_name or controller.name
-        node_id = generate_semantic_node_id(controller.framework, SemanticNodeType.CONTROLLER.value, qual_name, file_path, line)
+        node_id = generate_semantic_node_id(
+            controller.framework, SemanticNodeType.CONTROLLER.value, qual_name, file_path, line
+        )
 
         return FrameworkSemanticNode(
             id=node_id,
@@ -82,7 +84,9 @@ class FrameworkNodeFactory:
         file_path = handler.origin.location_info.file_path
         line = handler.origin.location_info.line
         qual_name = handler.function_name or handler.name
-        node_id = generate_semantic_node_id(handler.framework, SemanticNodeType.HANDLER.value, qual_name, file_path, line)
+        node_id = generate_semantic_node_id(
+            handler.framework, SemanticNodeType.HANDLER.value, qual_name, file_path, line
+        )
 
         return FrameworkSemanticNode(
             id=node_id,
@@ -153,7 +157,11 @@ class FrameworkNodeFactory:
         qual_name = config.key
         node_id = generate_semantic_node_id(config.framework, SemanticNodeType.CONFIG.value, qual_name, file_path, line)
 
-        val_attr = config.value if isinstance(config.value, bool) else (str(config.value) if config.value is not None else None)
+        val_attr = (
+            config.value
+            if isinstance(config.value, bool)
+            else (str(config.value) if config.value is not None else None)
+        )
 
         return FrameworkSemanticNode(
             id=node_id,
@@ -231,7 +239,12 @@ class FrameworkNodeFactory:
         qual_name = f"FLOW:{flow.flow_id}"
         node_id = generate_semantic_node_id(flow.framework, SemanticNodeType.FLOW.value, qual_name, file_path, line)
 
-        sorted_prov = tuple(sorted(flow.provenance_entries, key=lambda p: (p.attribute_name, p.source_kind, p.file_path, p.line, p.column, p.symbol)))
+        sorted_prov = tuple(
+            sorted(
+                flow.provenance_entries,
+                key=lambda p: (p.attribute_name, p.source_kind, p.file_path, p.line, p.column, p.symbol),
+            )
+        )
 
         return FrameworkSemanticNode(
             id=node_id,

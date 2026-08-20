@@ -9,6 +9,7 @@ from typing import Any
 @dataclass
 class RawRouteRecord:
     """Raw route candidate record captured by visitors."""
+
     path: str
     methods: tuple[str, ...] = ("GET",)
     endpoint: str = ""
@@ -27,6 +28,7 @@ class RawRouteRecord:
 @dataclass
 class BlueprintRecord:
     """Blueprint definition record."""
+
     name: str
     variable_name: str
     import_name: str = ""
@@ -38,6 +40,7 @@ class BlueprintRecord:
 @dataclass
 class BlueprintRegistrationRecord:
     """Blueprint registration record (e.g. app.register_blueprint(bp, url_prefix='/api'))."""
+
     blueprint_var: str
     target_var: str = "app"
     url_prefix: str = ""
@@ -48,6 +51,7 @@ class BlueprintRegistrationRecord:
 @dataclass
 class MethodViewRecord:
     """MethodView class record."""
+
     class_name: str
     url_rule: str | None = None
     methods_map: dict[str, str] = field(default_factory=dict)  # HTTP method -> handler method name
@@ -58,6 +62,7 @@ class MethodViewRecord:
 @dataclass
 class FlaskSemanticState:
     """Shared semantic state repository maintained across Flask visitors."""
+
     applications: dict[str, str] = field(default_factory=dict)  # var_name -> file_path
     blueprints: dict[str, BlueprintRecord] = field(default_factory=dict)  # var_name or name -> BlueprintRecord
     blueprint_registrations: list[BlueprintRegistrationRecord] = field(default_factory=list)

@@ -15,6 +15,7 @@ from karsasec.semantic.resolver import SemanticResolver
 def _make_rule(symbol_trigger: str) -> object:
     """Helper to construct a properly compiled CompiledRule."""
     from karsasec.rules.matcher.compiler import RuleCompiler
+
     rule_dict = {
         "rule": {"id": "KS-PY-9999"},
         "metadata": {"name": "Test XFile Rule", "enabled": True, "author": "test", "version": "1.0"},
@@ -62,10 +63,7 @@ def handle_request(user_input):
         )
 
         # Find a call node in file_a's AST (dangerous_exec call)
-        call_nodes = [
-            n for n in res_a.root.nodes_map.values()
-            if n.node_type == "call"
-        ]
+        call_nodes = [n for n in res_a.root.nodes_map.values() if n.node_type == "call"]
         assert call_nodes, "Expected at least one call node in file_a"
 
         # Set up VisitorContext with call_graph
@@ -155,6 +153,7 @@ os.listdir("/tmp")
 def test_visitor_context_call_graph_field_exists() -> None:
     """Verify VisitorContext correctly accepts and exposes call_graph field."""
     from karsasec.parser.ast_nodes import FileNode, Position
+
     dummy_file_node = FileNode(
         node_id="abc",
         node_type="file",
@@ -178,6 +177,7 @@ def test_scan_context_call_graph_field_exists() -> None:
     """Verify ScanContext correctly accepts and exposes call_graph field."""
     from karsasec.core.execution.context import ScanContext
     from karsasec.parser.ast_nodes import FileNode, Position
+
     dummy_file_node = FileNode(
         node_id="abc",
         node_type="file",

@@ -96,7 +96,9 @@ class BaselineManager:
                 new_findings.append(curr)
             else:
                 base_entry = baseline_map[fp]
-                base_sev_weight = SEVERITY_WEIGHTS.get(base_entry.severity, 0) if isinstance(base_entry.severity, str) else 0
+                base_sev_weight = (
+                    SEVERITY_WEIGHTS.get(base_entry.severity, 0) if isinstance(base_entry.severity, str) else 0
+                )
                 curr_sev_weight = SEVERITY_WEIGHTS.get(curr.severity, 0)
 
                 if curr_sev_weight > base_sev_weight:
@@ -114,6 +116,7 @@ class BaselineManager:
             fixed_findings=tuple(fixed_findings),
             regressed_findings=tuple(regressed_findings),
         )
+
 
 # Global default baseline manager instance
 baseline_manager = BaselineManager()

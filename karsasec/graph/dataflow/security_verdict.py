@@ -22,6 +22,7 @@ from typing import Any
 
 class VerdictStatus(StrEnum):
     """Deterministic status of a security verdict."""
+
     VULNERABLE = "VULNERABLE"
     SAFE = "SAFE"
     UNKNOWN = "UNKNOWN"
@@ -30,6 +31,7 @@ class VerdictStatus(StrEnum):
 
 class DecisionReason(StrEnum):
     """Machine-readable decision reason codes."""
+
     TAINT_REACHES_SINK = "TAINT_REACHES_SINK"
     SANITIZER_COMPATIBLE = "SANITIZER_COMPATIBLE"
     SANITIZER_INCOMPATIBLE = "SANITIZER_INCOMPATIBLE"
@@ -51,6 +53,7 @@ class DecisionReason(StrEnum):
 
 class VerdictConfidence(StrEnum):
     """Confidence rating for the security verdict."""
+
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
     LOW = "LOW"

@@ -114,15 +114,21 @@ def test_config_environment_conflict_and_normalization() -> None:
     """Phase 4 & 5: Test environment conflict resolution and canonical normalization."""
     # 1. Canonical Normalization ("prod" -> "PRODUCTION")
     cfg_state1 = FlaskConfigState()
-    cfg_state1.add_config(ConfigCandidate(key="ENV", value="prod", source_type="assignment", file_path="config.py", line=1))
+    cfg_state1.add_config(
+        ConfigCandidate(key="ENV", value="prod", source_type="assignment", file_path="config.py", line=1)
+    )
     normalizer1 = FlaskConfigNormalizer(cfg_state1)
     configs1 = normalizer1.normalize()
     assert configs1[0].environment == "PRODUCTION"
 
     # 2. Environment Conflict ("production" AND "development") -> UNKNOWN
     cfg_state2 = FlaskConfigState()
-    cfg_state2.add_config(ConfigCandidate(key="ENV", value="production", source_type="assignment", file_path="prod.py", line=1))
-    cfg_state2.add_config(ConfigCandidate(key="FLASK_ENV", value="development", source_type="assignment", file_path="dev.py", line=2))
+    cfg_state2.add_config(
+        ConfigCandidate(key="ENV", value="production", source_type="assignment", file_path="prod.py", line=1)
+    )
+    cfg_state2.add_config(
+        ConfigCandidate(key="FLASK_ENV", value="development", source_type="assignment", file_path="dev.py", line=2)
+    )
     normalizer2 = FlaskConfigNormalizer(cfg_state2)
     configs2 = normalizer2.normalize()
     assert configs2[0].environment == "UNKNOWN"
@@ -163,7 +169,9 @@ def test_tier_c_rule_auth_0004_positive_and_negative() -> None:
     r_node_id2 = [n for n in c_res_neg.graph.nodes() if n.node_type == SemanticNodeType.ROUTE][0].id
     a_node_id2 = [n for n in c_res_neg.graph.nodes() if n.node_type == SemanticNodeType.AUTH][0].id
     edge_strong = FrameworkEdgeFactory.create_edge(a_node_id2, r_node_id2, SemanticEdgeType.PROTECTS)
-    graph_neg = FrameworkSemanticGraph(nodes={n.id: n for n in c_res_neg.graph.nodes()}, edges=c_res_neg.graph.edges() + (edge_strong,))
+    graph_neg = FrameworkSemanticGraph(
+        nodes={n.id: n for n in c_res_neg.graph.nodes()}, edges=c_res_neg.graph.edges() + (edge_strong,)
+    )
 
     findings_neg = engine.evaluate(graph_neg, [rule_0004])
     assert len(findings_neg.findings) == 0
@@ -177,14 +185,18 @@ def test_tier_c_rule_conf_0004_positive_and_negative() -> None:
     engine = GraphSecurityRuleEngine()
 
     # Positive case: literal assignment
-    cfg_pos = ConfigDefinition(key="SECRET_KEY", value="supersecret", source_kind="literal", provenance_type="assignment")
+    cfg_pos = ConfigDefinition(
+        key="SECRET_KEY", value="supersecret", source_kind="literal", provenance_type="assignment"
+    )
     isr_pos = IntermediateSemanticRepresentation(configs=(cfg_pos,))
     g_pos = FlaskSemanticCorrelator().run(isr_pos).graph
     findings_pos = engine.evaluate(g_pos, [rule_conf])
     assert len(findings_pos.findings) == 1
 
     # Negative case: env_var source_kind
-    cfg_neg = ConfigDefinition(key="SECRET_KEY", value="MY_ENV_SECRET", source_kind="env_var", provenance_type="assignment")
+    cfg_neg = ConfigDefinition(
+        key="SECRET_KEY", value="MY_ENV_SECRET", source_kind="env_var", provenance_type="assignment"
+    )
     isr_neg = IntermediateSemanticRepresentation(configs=(cfg_neg,))
     g_neg = FlaskSemanticCorrelator().run(isr_neg).graph
     findings_neg = engine.evaluate(g_neg, [rule_conf])
@@ -309,7 +321,9 @@ def test_security_boundary_static_analysis() -> None:
         source = inspect.getsource(mod)
         for prohibited in prohibited_modules:
             assert f"import {prohibited}" not in source, f"Module {mod_name} imports prohibited module '{prohibited}'"
-            assert f"from {prohibited}" not in source, f"Module {mod_name} imports from prohibited module '{prohibited}'"
+            assert f"from {prohibited}" not in source, (
+                f"Module {mod_name} imports from prohibited module '{prohibited}'"
+            )
 
 
 def test_performance_scaling_benchmark() -> None:
@@ -322,7 +336,9 @@ def test_performance_scaling_benchmark() -> None:
         nodes_dict = {}
         for i in range(node_count):
             n = FrameworkNodeFactory.create_route_node(
-                RouteDefinition(path=f"/path/{i}", method="GET", handler=f"fn_{i}", sensitivity="HIGH" if i == 0 else "UNKNOWN")
+                RouteDefinition(
+                    path=f"/path/{i}", method="GET", handler=f"fn_{i}", sensitivity="HIGH" if i == 0 else "UNKNOWN"
+                )
             )
             nodes_dict[n.id] = n
 

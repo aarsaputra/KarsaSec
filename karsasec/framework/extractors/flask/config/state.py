@@ -11,6 +11,7 @@ from karsasec.framework.origin import Evidence
 @dataclass(frozen=True)
 class ConfigCandidate:
     """Candidate representation of a Flask configuration key-value setting."""
+
     key: str
     value: Any = None
     source_type: str = "direct_assign"  # direct_assign, attribute_assign, update, from_object, from_pyfile, from_envvar, from_mapping, env_var
@@ -27,6 +28,7 @@ class ConfigCandidate:
 @dataclass(frozen=True)
 class EnvironmentCandidate:
     """Candidate representation of an environment variable configuration lookup."""
+
     var_name: str
     default_value: Any = None
     source: str = "os.environ"  # os.environ, os.getenv, dotenv, decouple, django-environ
@@ -39,6 +41,7 @@ class EnvironmentCandidate:
 @dataclass(frozen=True)
 class ConfigClassCandidate:
     """Candidate representation of a configuration class definition (e.g. DevelopmentConfig)."""
+
     class_name: str
     parent_class: str | None = None
     settings: tuple[tuple[str, Any], ...] = ()

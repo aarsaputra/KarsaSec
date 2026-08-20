@@ -45,6 +45,7 @@ def _make_finding(rule_id: str, cwe: str, snippet: str, line: int = 10, sev: str
     """Helper: build a minimal Finding for correlation tests."""
     import hashlib
     import uuid
+
     fp = hashlib.sha256(f"{rule_id}|{line}|{snippet}".encode()).hexdigest()[:32]
     return Finding(
         finding_id=f"finding-{uuid.uuid4().hex[:8]}",
@@ -76,13 +77,13 @@ def _node(snippet: str, node_type: str = "call") -> tuple[ASTNode, bytes]:
 # Gate 1: EvidenceState is NOT FindingConfidence
 # ---------------------------------------------------------------------------
 
+
 class TestEvidenceStateIsNotFindingConfidence:
     """EvidenceState must never appear in FindingConfidence."""
 
     def test_finding_confidence_has_no_unknown_member(self) -> None:
         assert not hasattr(Confidence, "UNKNOWN"), (
-            "FindingConfidence must NOT have an UNKNOWN member. "
-            "UNKNOWN is an EvidenceState, not a confidence level."
+            "FindingConfidence must NOT have an UNKNOWN member. UNKNOWN is an EvidenceState, not a confidence level."
         )
 
     def test_evidence_state_unknown_exists(self) -> None:
@@ -112,6 +113,7 @@ class TestEvidenceStateIsNotFindingConfidence:
 # ---------------------------------------------------------------------------
 # Gate 2: RuleContract schema is correct
 # ---------------------------------------------------------------------------
+
 
 class TestRuleContractSchema:
     """Four-section RuleContract is correctly structured."""
@@ -151,6 +153,7 @@ class TestRuleContractSchema:
 # ---------------------------------------------------------------------------
 # Gate 3 & 4: FindingCorrelator — deduplication + zero SSRF overlap
 # ---------------------------------------------------------------------------
+
 
 class TestFindingCorrelator:
     """FindingCorrelator deduplicates overlapping rule findings."""
@@ -228,6 +231,7 @@ class TestFindingCorrelator:
 # Gate 4: KS-PHP-SSRF-0001 zero overlap with KS-OWASP-0010
 # ---------------------------------------------------------------------------
 
+
 class TestSSRFZeroOverlap:
     """KS-PHP-SSRF-0001 must not trigger on file_get_contents or curl_exec (owned by KS-OWASP-0010)."""
 
@@ -241,23 +245,19 @@ class TestSSRFZeroOverlap:
     def test_file_get_contents_not_in_php_ssrf_triggers(self) -> None:
         triggers = self.rule_php_ssrf.condition.symbol_triggers
         assert "file_get_contents" not in triggers, (
-            "file_get_contents must be removed from KS-PHP-SSRF-0001 triggers "
-            "to eliminate overlap with KS-OWASP-0010."
+            "file_get_contents must be removed from KS-PHP-SSRF-0001 triggers to eliminate overlap with KS-OWASP-0010."
         )
 
     def test_curl_exec_not_in_php_ssrf_triggers(self) -> None:
         triggers = self.rule_php_ssrf.condition.symbol_triggers
         assert "curl_exec" not in triggers, (
-            "curl_exec must be removed from KS-PHP-SSRF-0001 triggers "
-            "to eliminate overlap with KS-OWASP-0010."
+            "curl_exec must be removed from KS-PHP-SSRF-0001 triggers to eliminate overlap with KS-OWASP-0010."
         )
 
     def test_file_get_contents_does_not_match_php_ssrf(self) -> None:
         node, src = _node("$data = file_get_contents($url);")
         res = self.matcher.match(node, self.rule_php_ssrf, self.ctx, source_bytes=src)
-        assert not res.matched, (
-            "file_get_contents must NOT trigger KS-PHP-SSRF-0001 — owned by KS-OWASP-0010"
-        )
+        assert not res.matched, "file_get_contents must NOT trigger KS-PHP-SSRF-0001 — owned by KS-OWASP-0010"
 
     def test_curl_setopt_url_matches_php_ssrf(self) -> None:
         """curl_setopt(CURLOPT_URL) is the PHP-specific vector that KS-PHP-SSRF-0001 owns."""
@@ -269,6 +269,7 @@ class TestSSRFZeroOverlap:
 # ---------------------------------------------------------------------------
 # Gate 5: RuleContract fixture validation for 5 hardened rules
 # ---------------------------------------------------------------------------
+
 
 class TestRuleContractValidation:
     """RuleContractValidator passes all positive/negative fixtures for hardened rules."""
@@ -287,9 +288,7 @@ class TestRuleContractValidation:
             for f in result.failures
         ]
         assert result.total > 0, f"Rule {rule.id} contract has no fixtures"
-        assert result.all_passed, (
-            f"Rule {rule.id} contract fixture failures:\n" + "\n".join(failures)
-        )
+        assert result.all_passed, f"Rule {rule.id} contract fixture failures:\n" + "\n".join(failures)
 
     def test_ks_owasp_0002_crypto_contract(self) -> None:
         self._validate(RULES_DIR / "A02_cryptographic_failures.yaml")
@@ -318,6 +317,7 @@ class TestRuleContractValidation:
 # Gate 6: Contract coverage metric operational
 # ---------------------------------------------------------------------------
 
+
 class TestContractCoverageMetric:
     """Rule Contract Coverage metric tracks total rules vs rules with contracts."""
 
@@ -332,6 +332,4 @@ class TestContractCoverageMetric:
         assert isinstance(pct, float)
         assert 0.0 <= pct <= 100.0
         # Verify we have at least the 3 new contracts from this sprint
-        assert with_contract >= 3, (
-            f"Expected at least 3 rules with contracts after E10-3J, found {with_contract}"
-        )
+        assert with_contract >= 3, f"Expected at least 3 rules with contracts after E10-3J, found {with_contract}"

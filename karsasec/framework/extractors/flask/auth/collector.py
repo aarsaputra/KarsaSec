@@ -40,6 +40,7 @@ class FlaskAuthCollector:
 
         # Pass 1: Discover imports, auth managers, custom decorators, and blueprint definitions across all files
         for root in valid_roots:
+
             def pass1(node: ASTNodeWrapper) -> None:
                 self._discover_blueprints(node)
                 import_visitor.visit(node)
@@ -50,6 +51,7 @@ class FlaskAuthCollector:
 
         # Pass 2: Collect authentication, authorization, session, cookie, and role usage across all files
         for root in valid_roots:
+
             def pass2(node: ASTNodeWrapper) -> None:
                 login_visitor.visit(node)
                 jwt_visitor.visit(node)
@@ -74,7 +76,11 @@ class FlaskAuthCollector:
 
                 if func_name == "Blueprint":
                     bp_name = ""
-                    if raw.value.args and isinstance(raw.value.args[0], ast.Constant) and isinstance(raw.value.args[0].value, str):
+                    if (
+                        raw.value.args
+                        and isinstance(raw.value.args[0], ast.Constant)
+                        and isinstance(raw.value.args[0].value, str)
+                    ):
                         bp_name = raw.value.args[0].value
                     for target in raw.targets:
                         if isinstance(target, ast.Name):

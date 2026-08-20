@@ -16,6 +16,7 @@ from enum import StrEnum
 
 class CallResolutionStatus(StrEnum):
     """Classification of call site symbol resolution."""
+
     RESOLVED = "RESOLVED"
     MULTIPLE = "MULTIPLE"
     UNRESOLVED = "UNRESOLVED"
@@ -25,6 +26,7 @@ class CallResolutionStatus(StrEnum):
 @dataclass(frozen=True, slots=True)
 class CallGraphNode:
     """Immutable node representation of a function or method definition in the CallGraph."""
+
     node_id: str
     file_path: str
     function_name: str
@@ -45,6 +47,7 @@ class CallGraphNode:
 @dataclass(frozen=True, slots=True)
 class CallGraphEdge:
     """Directed invocation edge between a caller function and a callee function."""
+
     caller_id: str
     callee_id: str
     call_site_id: str
@@ -82,10 +85,7 @@ class CallGraph:
 
     def edges(self) -> list[CallGraphEdge]:
         """Return list of all call edges sorted deterministically."""
-        return sorted(
-            self._edges,
-            key=lambda e: (e.caller_id, e.callee_id, e.call_site_id, e.line_number)
-        )
+        return sorted(self._edges, key=lambda e: (e.caller_id, e.callee_id, e.call_site_id, e.line_number))
 
     def get_callees(self, caller_id: str) -> list[CallGraphNode]:
         """Return list of callee nodes for a caller_id."""
@@ -107,10 +107,7 @@ class CallGraph:
 
     def get_call_sites(self, caller_id: str) -> list[CallGraphEdge]:
         """Return list of outgoing call edges for a caller_id."""
-        return sorted(
-            self._outgoing.get(caller_id, []),
-            key=lambda e: (e.callee_id, e.call_site_id, e.line_number)
-        )
+        return sorted(self._outgoing.get(caller_id, []), key=lambda e: (e.callee_id, e.call_site_id, e.line_number))
 
     def strongly_connected_components(self) -> list[list[str]]:
         """Compute Strongly Connected Components (SCCs) using Tarjan's algorithm.

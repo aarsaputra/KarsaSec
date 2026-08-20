@@ -50,7 +50,9 @@ class MiddlewareCorrelator:
                             status=ResolutionStatus.RESOLVED,
                             resolution_method=ResolutionMethod.TIER5_EXPLICIT_METADATA,
                             confidence=mw.confidence,
-                            evidence=(f"Blueprint middleware '{mw.name}' applies to route '{route.method} {route.path}'",),
+                            evidence=(
+                                f"Blueprint middleware '{mw.name}' applies to route '{route.method} {route.path}'",
+                            ),
                             attributes={
                                 "scope": "blueprint",
                                 "propagation": "inherited",
@@ -72,7 +74,9 @@ class MiddlewareCorrelator:
                                 status=ResolutionStatus.RESOLVED,
                                 resolution_method=ResolutionMethod.TIER5_EXPLICIT_METADATA,
                                 confidence=mw.confidence,
-                                evidence=(f"Route middleware '{mw.name}' explicitly targets route '{route.method} {route.path}'",),
+                                evidence=(
+                                    f"Route middleware '{mw.name}' explicitly targets route '{route.method} {route.path}'",
+                                ),
                                 attributes={
                                     "scope": "route",
                                     "propagation": "direct",

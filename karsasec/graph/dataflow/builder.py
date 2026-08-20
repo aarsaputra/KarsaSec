@@ -1,4 +1,5 @@
 """Def/Use extraction and incremental Data-Flow Graph Builder (E11)."""
+
 from __future__ import annotations
 
 import re
@@ -14,6 +15,7 @@ from karsasec.graph.dataflow.sources import source_registry
 @dataclass(slots=True)
 class VariableAssignmentDef:
     """Record of a variable definition/assignment in source text."""
+
     variable_name: str
     rhs_expression: str
     line: int
@@ -28,6 +30,7 @@ class VariableAssignmentDef:
 @dataclass(slots=True)
 class FunctionDef:
     """Record of a local function or method definition."""
+
     function_name: str
     parameters: list[str]
     start_line: int
@@ -51,9 +54,11 @@ class DefUseExtractor:
         # Regular expressions for assignment parsing
         # Matches: $var = expr; or var = expr;
         if lang == "php":
-            var_pattern = re.compile(r'(\$[a-zA-Z_][a-zA-Z0-9_]*)\s*(?<![=!<>])(\.|\+|\-|\*|/)?=(?![=~])\s*([^;]+);?')
+            var_pattern = re.compile(r"(\$[a-zA-Z_][a-zA-Z0-9_]*)\s*(?<![=!<>])(\.|\+|\-|\*|/)?=(?![=~])\s*([^;]+);?")
         else:
-            var_pattern = re.compile(r'(?:let|const|var|\b)?\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*(?<![=!<>])(\.|\+|\-|\*|/)?=(?![=~])\s*([^;]+);?')
+            var_pattern = re.compile(
+                r"(?:let|const|var|\b)?\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*(?<![=!<>])(\.|\+|\-|\*|/)?=(?![=~])\s*([^;]+);?"
+            )
 
         for idx, line_content in enumerate(lines, start=1):
             line_str = line_content.strip()
@@ -69,9 +74,9 @@ class DefUseExtractor:
 
                 # Extract referenced variables in RHS
                 if lang == "php":
-                    ref_vars = set(re.findall(r'\$[a-zA-Z_][a-zA-Z0-9_]*', rhs_expr))
+                    ref_vars = set(re.findall(r"\$[a-zA-Z_][a-zA-Z0-9_]*", rhs_expr))
                 else:
-                    ref_vars = set(re.findall(r'\b[a-zA-Z_][a-zA-Z0-9_]*\b', rhs_expr))
+                    ref_vars = set(re.findall(r"\b[a-zA-Z_][a-zA-Z0-9_]*\b", rhs_expr))
 
                 # Check if RHS contains untrusted source
                 has_source = source_registry.contains_source(rhs_expr, language=lang)
@@ -81,17 +86,19 @@ class DefUseExtractor:
                 # Check if RHS contains sanitizer
                 sanitizer_cap = sanitizer_registry.identify_sanitizer("", rhs_expr, language=lang)
 
-                assignments.append(VariableAssignmentDef(
-                    variable_name=var_name,
-                    rhs_expression=rhs_expr,
-                    line=idx,
-                    referenced_variables=ref_vars,
-                    is_concatenation=is_concat,
-                    contains_sanitizer=sanitizer_cap is not None,
-                    sanitizer_capability=sanitizer_cap.value if sanitizer_cap else None,
-                    contains_source=has_source,
-                    source_symbol=source_sym,
-                ))
+                assignments.append(
+                    VariableAssignmentDef(
+                        variable_name=var_name,
+                        rhs_expression=rhs_expr,
+                        line=idx,
+                        referenced_variables=ref_vars,
+                        is_concatenation=is_concat,
+                        contains_sanitizer=sanitizer_cap is not None,
+                        sanitizer_capability=sanitizer_cap.value if sanitizer_cap else None,
+                        contains_source=has_source,
+                        source_symbol=source_sym,
+                    )
+                )
 
         return assignments
 
@@ -104,10 +111,7 @@ class DefUseExtractor:
         functions: list[FunctionDef] = []
 
         if lang == "php":
-            func_pattern = re.compile(
-                r'function\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)\s*\{',
-                re.IGNORECASE
-            )
+            func_pattern = re.compile(r"function\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)\s*\{", re.IGNORECASE)
             lines = source_text.splitlines()
             for idx, line_str in enumerate(lines, start=1):
                 m = func_pattern.search(line_str)
@@ -134,17 +138,19 @@ class DefUseExtractor:
                             break
 
                     body_str = "\n".join(body_lines)
-                    ret_matches = re.findall(r'return\s+([^;]+);', body_str, re.IGNORECASE)
+                    ret_matches = re.findall(r"return\s+([^;]+);", body_str, re.IGNORECASE)
                     ret_exprs = [r.strip() for r in ret_matches if r.strip()]
 
-                    functions.append(FunctionDef(
-                        function_name=fname,
-                        parameters=params,
-                        start_line=idx,
-                        end_line=end_idx,
-                        body_source=body_str,
-                        return_expressions=ret_exprs,
-                    ))
+                    functions.append(
+                        FunctionDef(
+                            function_name=fname,
+                            parameters=params,
+                            start_line=idx,
+                            end_line=end_idx,
+                            body_source=body_str,
+                            return_expressions=ret_exprs,
+                        )
+                    )
 
         return functions
 
@@ -172,7 +178,7 @@ class DataFlowGraphBuilder:
         # Check for include/require statements to pull definitions from static local files
         if file_path and isinstance(file_path, Path) and file_path.exists():
             inc_pattern = re.compile(
-                r'(?:include|include_once|require|require_once)\s*\(?\s*([^;]+)\)?;', re.IGNORECASE
+                r"(?:include|include_once|require|require_once)\s*\(?\s*([^;]+)\)?;", re.IGNORECASE
             )
             for m in inc_pattern.finditer(source_text):
                 raw_expr = m.group(1).strip()
@@ -180,7 +186,7 @@ class DataFlowGraphBuilder:
                 lit_match = re.search(r'["\']([^"\']+)["\']', raw_expr)
                 if lit_match:
                     path_tmpl = lit_match.group(1).strip()
-                    var_matches = re.findall(r'\{\$([a-zA-Z0-9_]+)\}|\$([a-zA-Z0-9_]+)', path_tmpl)
+                    var_matches = re.findall(r"\{\$([a-zA-Z0-9_]+)\}|\$([a-zA-Z0-9_]+)", path_tmpl)
                     var_names = [v[0] or v[1] for v in var_matches]
                     if not var_names:
                         candidate_paths.append(path_tmpl)

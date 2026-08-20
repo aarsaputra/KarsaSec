@@ -26,28 +26,30 @@ class JSONReporter(Reporter):
 
         findings_payload = []
         for f in collection.findings:
-            findings_payload.append({
-                "finding_id": f.finding_id,
-                "rule_id": f.rule_id,
-                "fingerprint": f.fingerprint,
-                "title": f.title,
-                "severity": f.severity.name,
-                "confidence": f.confidence.name,
-                "cwe_id": f.cwe_id,
-                "owasp": f.owasp,
-                "file_path": str(f.file_path).replace("\\", "/"),
-                "location": {
-                    "line": f.evidence.line,
-                    "column": f.evidence.column,
-                },
-                "evidence": {
-                    "snippet": f.evidence.snippet,
-                    "context_lines": list(f.evidence.context_lines),
-                },
-                "description": f.description,
-                "remediation": f.remediation,
-                "rule_version": f.rule_version,
-            })
+            findings_payload.append(
+                {
+                    "finding_id": f.finding_id,
+                    "rule_id": f.rule_id,
+                    "fingerprint": f.fingerprint,
+                    "title": f.title,
+                    "severity": f.severity.name,
+                    "confidence": f.confidence.name,
+                    "cwe_id": f.cwe_id,
+                    "owasp": f.owasp,
+                    "file_path": str(f.file_path).replace("\\", "/"),
+                    "location": {
+                        "line": f.evidence.line,
+                        "column": f.evidence.column,
+                    },
+                    "evidence": {
+                        "snippet": f.evidence.snippet,
+                        "context_lines": list(f.evidence.context_lines),
+                    },
+                    "description": f.description,
+                    "remediation": f.remediation,
+                    "rule_version": f.rule_version,
+                }
+            )
 
         report_dict = {
             "metadata": {

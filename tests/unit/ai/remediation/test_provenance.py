@@ -293,7 +293,9 @@ def test_06_token_snapshot_app_ver_factories() -> None:
     n_tok = ProvenanceNode.create_approval_token_node(tok, "pred_prop")
     n_snap = ProvenanceNode.create_source_snapshot_node(snap, "pred_tok")
     n_app = ProvenanceNode.create_application_node(app_res, ("pred_tok", "pred_snap"))
-    n_ver = ProvenanceNode.create_verification_node(ver_res, n_app.node_id, "prop_fp_101", "src_snap_101", "post_snap_101", "ver_fp_101")
+    n_ver = ProvenanceNode.create_verification_node(
+        ver_res, n_app.node_id, "prop_fp_101", "src_snap_101", "post_snap_101", "ver_fp_101"
+    )
 
     assert n_tok.node_type == ProvenanceNodeType.APPROVAL_TOKEN
     assert n_snap.node_type == ProvenanceNodeType.SOURCE_SNAPSHOT
@@ -425,7 +427,9 @@ def test_15_full_remediation_evidence_chain_building() -> None:
     n_tok = ProvenanceNode.create_approval_token_node(tok, n_prop.node_id)
     n_snap = ProvenanceNode.create_source_snapshot_node(snap, n_tok.node_id)
     n_app = ProvenanceNode.create_application_node(app, (n_tok.node_id, n_snap.node_id))
-    n_ver = ProvenanceNode.create_verification_node(ver, n_app.node_id, prop.proposal_fingerprint, snap.aggregate_hash, app.post_apply_snapshot_hash, "ver_fp_101")
+    n_ver = ProvenanceNode.create_verification_node(
+        ver, n_app.node_id, prop.proposal_fingerprint, snap.aggregate_hash, app.post_apply_snapshot_hash, "ver_fp_101"
+    )
 
     g = (
         RemediationProvenanceGraph()
@@ -666,7 +670,9 @@ def test_32_cryptographic_continuity_chain_integrity() -> None:
     n_tok = ProvenanceNode.create_approval_token_node(tok, n_prop.node_id)
     n_snap = ProvenanceNode.create_source_snapshot_node(snap, n_tok.node_id)
     n_app = ProvenanceNode.create_application_node(app, (n_tok.node_id, n_snap.node_id))
-    n_ver = ProvenanceNode.create_verification_node(ver, n_app.node_id, prop.proposal_fingerprint, snap.aggregate_hash, app.post_apply_snapshot_hash, "ver_fp_101")
+    n_ver = ProvenanceNode.create_verification_node(
+        ver, n_app.node_id, prop.proposal_fingerprint, snap.aggregate_hash, app.post_apply_snapshot_hash, "ver_fp_101"
+    )
 
     g = (
         RemediationProvenanceGraph()

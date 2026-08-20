@@ -42,11 +42,13 @@ output:
     cached_rule = cache.get(str(rule_file.resolve()))
     assert cached_rule is rule
 
+
 def test_loader_invalid_yaml_syntax() -> None:
     invalid_yaml = "rule:\n  id: KS-PY-0001\n metadata: [invalid syntax"
     loader = YAMLRuleLoader()
     with pytest.raises(ValueError, match="Invalid YAML syntax"):
         loader.load_string(invalid_yaml)
+
 
 def test_loader_directory_scan(tmp_path: Path) -> None:
     rule1 = tmp_path / "rule1.yaml"

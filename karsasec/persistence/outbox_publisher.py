@@ -9,9 +9,9 @@ from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, UTC
-from typing import Optional, List, Dict, Any
+from typing import Any
 
-from sqlalchemy import select, update, text
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from karsasec.persistence.db import DatabaseSessionFactory, get_session_factory
@@ -30,14 +30,12 @@ class OutboxRepository:
         session: Session,
         aggregate_id: str,
         event_type: str,
-        payload: Dict[str, Any],
-        event_id: Optional[str] = None,
+        payload: dict[str, Any],
+        event_id: str | None = None,
     ) -> OutboxEventModel:
         """Create an outbox event WITHIN an existing database transaction (INV-F5-09)."""
         evt_id = event_id or f"evt-{uuid.uuid4().hex[:12]}"
-        existing = session.scalar(
-            select(OutboxEventModel).where(OutboxEventModel.event_id == evt_id)
-        )
+        existing = session.scalar(select(OutboxEventModel).where(OutboxEventModel.event_id == evt_id))
         if existing:
             raise ValueError(f"Outbox event with ID '{evt_id}' already exists.")
 
@@ -53,7 +51,7 @@ class OutboxRepository:
         session.add(model)
         return model
 
-    def fetch_pending_events(self, session: Session, limit: int = 10) -> List[OutboxEventModel]:
+    def fetch_pending_events(self, session: Session, limit: int = 10) -> list[OutboxEventModel]:
         """Fetch pending outbox events using FOR UPDATE SKIP LOCKED for concurrent worker safety."""
         try:
             # PostgreSQL row-level skip-locked selection
@@ -77,18 +75,14 @@ class OutboxRepository:
 
     def mark_published(self, session: Session, event_id: str) -> None:
         """Mark outbox event as PUBLISHED."""
-        event = session.scalar(
-            select(OutboxEventModel).where(OutboxEventModel.event_id == event_id)
-        )
+        event = session.scalar(select(OutboxEventModel).where(OutboxEventModel.event_id == event_id))
         if event:
             event.status = "PUBLISHED"
             event.published_at = datetime.now(UTC)
 
     def record_failure(self, session: Session, event_id: str, error_msg: str) -> None:
         """Increment attempt count and mark FAILED if max retries exceeded."""
-        event = session.scalar(
-            select(OutboxEventModel).where(OutboxEventModel.event_id == event_id)
-        )
+        event = session.scalar(select(OutboxEventModel).where(OutboxEventModel.event_id == event_id))
         if event:
             event.attempt_count += 1
             if event.attempt_count >= 5:
@@ -136,5 +130,3 @@ class OutboxPublisher:
                     self._outbox_repo.record_failure(session, event.event_id, str(err))
 
         return published_count
-
-

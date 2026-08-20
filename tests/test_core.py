@@ -22,6 +22,7 @@ def test_container_singleton() -> None:
     resolved = c.resolve(DummyService)
     assert resolved is instance
 
+
 def test_container_unregistered_raises() -> None:
     """Test resolving unregistered service raises KeyError."""
     c = Container()
@@ -31,6 +32,7 @@ def test_container_unregistered_raises() -> None:
 
     with pytest.raises(KeyError):
         c.resolve(UnknownService)
+
 
 def test_component_registry() -> None:
     """Test registering and retrieving components."""
@@ -42,6 +44,7 @@ def test_component_registry() -> None:
     registry.register("dummy", DummyComponent)
     assert registry.get("dummy") is DummyComponent
     assert "dummy" in registry.list_keys()
+
 
 def test_analysis_context() -> None:
     """Test analysis context creation."""

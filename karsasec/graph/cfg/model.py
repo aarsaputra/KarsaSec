@@ -6,6 +6,7 @@ Design Principles:
   - ControlFlowGraph maintains entry/exit node identifiers, block mappings, edge lists, reachability sets, and dominator sets.
   - Anti-hardcoding: Language-agnostic, rule-agnostic, pure graph model.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -15,6 +16,7 @@ from typing import Any
 
 class CFGEdgeKind(StrEnum):
     """Polared control flow edge types."""
+
     FALLTHROUGH = "FALLTHROUGH"
     TRUE_BRANCH = "TRUE_BRANCH"
     FALSE_BRANCH = "FALSE_BRANCH"
@@ -24,6 +26,7 @@ class CFGEdgeKind(StrEnum):
 @dataclass(slots=True)
 class CFGEdge:
     """Directed edge between basic blocks in the CFG."""
+
     src_id: str
     target_id: str
     kind: CFGEdgeKind = CFGEdgeKind.FALLTHROUGH
@@ -33,6 +36,7 @@ class CFGEdge:
 @dataclass(slots=True)
 class BasicBlock:
     """A sequential basic block of statements within a control flow graph."""
+
     block_id: str
     label: str = ""
     statements: list[Any] = field(default_factory=list)
@@ -46,6 +50,7 @@ class BasicBlock:
 @dataclass(slots=True)
 class ControlFlowGraph:
     """Intraprocedural Control Flow Graph representation."""
+
     name: str
     entry_id: str
     exit_id: str

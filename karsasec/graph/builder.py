@@ -69,14 +69,16 @@ class ProjectGraphBuilder:
                     qname_to_node[qname] = class_node
 
                     # Add DEFINES edge from module to class
-                    project_graph.add_edge(GraphEdge(
-                        caller_id=file_node.node_id,
-                        callee_id=node_id,
-                        edge_type=EdgeType.DEFINES,
-                        confidence=1.0,
-                        resolved_symbol=qname,
-                        resolved_by=ResolutionMechanism.AST_NATIVE,
-                    ))
+                    project_graph.add_edge(
+                        GraphEdge(
+                            caller_id=file_node.node_id,
+                            callee_id=node_id,
+                            edge_type=EdgeType.DEFINES,
+                            confidence=1.0,
+                            resolved_symbol=qname,
+                            resolved_by=ResolutionMechanism.AST_NATIVE,
+                        )
+                    )
 
                 elif node.node_type in (
                     "function_definition",
@@ -114,15 +116,19 @@ class ProjectGraphBuilder:
                     qname_to_node[qname] = fn_node
 
                     # DEFINES edge from module/class to function
-                    parent_def_id = self._find_enclosing_def_id(node_id, file_node, node_id_to_graph_node) or file_node.node_id
-                    project_graph.add_edge(GraphEdge(
-                        caller_id=parent_def_id,
-                        callee_id=node_id,
-                        edge_type=EdgeType.DEFINES,
-                        confidence=1.0,
-                        resolved_symbol=qname,
-                        resolved_by=ResolutionMechanism.AST_NATIVE,
-                    ))
+                    parent_def_id = (
+                        self._find_enclosing_def_id(node_id, file_node, node_id_to_graph_node) or file_node.node_id
+                    )
+                    project_graph.add_edge(
+                        GraphEdge(
+                            caller_id=parent_def_id,
+                            callee_id=node_id,
+                            edge_type=EdgeType.DEFINES,
+                            confidence=1.0,
+                            resolved_symbol=qname,
+                            resolved_by=ResolutionMechanism.AST_NATIVE,
+                        )
+                    )
 
         # Step 2: Build CALLS and IMPORTS Edges
         for file_node in file_nodes:
@@ -140,19 +146,23 @@ class ProjectGraphBuilder:
                 for alias_name, orig_symbol in sem_graph.alias_tracker.aliases.items():
                     target_node = qname_to_node.get(orig_symbol)
                     callee_id = target_node.uuid if target_node else "external_module"
-                    project_graph.add_edge(GraphEdge(
-                        caller_id=file_node.node_id,
-                        callee_id=callee_id,
-                        edge_type=EdgeType.IMPORTS,
-                        confidence=1.0,
-                        resolved_symbol=orig_symbol,
-                        resolved_by=ResolutionMechanism.ALIAS_TRACKER,
-                    ))
+                    project_graph.add_edge(
+                        GraphEdge(
+                            caller_id=file_node.node_id,
+                            callee_id=callee_id,
+                            edge_type=EdgeType.IMPORTS,
+                            confidence=1.0,
+                            resolved_symbol=orig_symbol,
+                            resolved_by=ResolutionMechanism.ALIAS_TRACKER,
+                        )
+                    )
 
             # Process calls to create CALLS edges
             for node_id, node in file_node.nodes_map.items():
                 if node.node_type in ("call", "call_expression"):
-                    caller_id = self._find_enclosing_caller_id(node_id, file_node, node_id_to_graph_node) or file_node.node_id
+                    caller_id = (
+                        self._find_enclosing_caller_id(node_id, file_node, node_id_to_graph_node) or file_node.node_id
+                    )
                     text = node.get_text(source_bytes)
                     raw_target = self._extract_call_target(text)
                     resolved_target = raw_target
@@ -173,37 +183,39 @@ class ProjectGraphBuilder:
                     callee_node = self._match_callee(resolved_target, qname_to_node, file_node.file_path)
                     callee_id = callee_node.uuid if callee_node else "external"
 
-                    project_graph.add_edge(GraphEdge(
-                        caller_id=caller_id,
-                        callee_id=callee_id,
-                        edge_type=EdgeType.CALLS,
-                        confidence=0.9 if callee_node else 0.5,
-                        resolved_symbol=resolved_target,
-                        resolved_by=mech,
-                        call_site_id=node_id,
-                    ))
+                    project_graph.add_edge(
+                        GraphEdge(
+                            caller_id=caller_id,
+                            callee_id=callee_id,
+                            edge_type=EdgeType.CALLS,
+                            confidence=0.9 if callee_node else 0.5,
+                            resolved_symbol=resolved_target,
+                            resolved_by=mech,
+                            call_site_id=node_id,
+                        )
+                    )
 
         return project_graph
 
     def _extract_class_name(self, text: str) -> str:
-        match = re.search(r'\bclass\s+([a-zA-Z_][a-zA-Z0-9_]*)\b', text)
+        match = re.search(r"\bclass\s+([a-zA-Z_][a-zA-Z0-9_]*)\b", text)
         return match.group(1) if match else ""
 
     def _extract_function_name(self, text: str, node_type: str) -> str:
-        go_match = re.search(r'\bfunc\s+(?:\([^)]*\)\s*)?([a-zA-Z_][a-zA-Z0-9_]*)\b', text)
+        go_match = re.search(r"\bfunc\s+(?:\([^)]*\)\s*)?([a-zA-Z_][a-zA-Z0-9_]*)\b", text)
         if go_match:
             return go_match.group(1)
-        py_match = re.search(r'\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\b', text)
+        py_match = re.search(r"\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\b", text)
         if py_match:
             return py_match.group(1)
-        js_match = re.search(r'\bfunction\s+([a-zA-Z_][a-zA-Z0-9_]*)\b', text)
+        js_match = re.search(r"\bfunction\s+([a-zA-Z_][a-zA-Z0-9_]*)\b", text)
         if js_match:
             return js_match.group(1)
-        word_match = re.search(r'\b([a-zA-Z_][a-zA-Z0-9_]*)\b', text)
+        word_match = re.search(r"\b([a-zA-Z_][a-zA-Z0-9_]*)\b", text)
         return word_match.group(1) if word_match else "anonymous"
 
     def _extract_signature(self, text: str) -> str:
-        match = re.search(r'\(([^)]*)\)', text)
+        match = re.search(r"\(([^)]*)\)", text)
         return f"({match.group(1)})" if match else "()"
 
     def _get_enclosing_class_name(self, node_id: str, file_node: FileNode, source_bytes: bytes) -> str | None:
@@ -214,7 +226,7 @@ class ProjectGraphBuilder:
                 break
             if p_node.node_type in ("class_definition", "class_declaration"):
                 class_text = p_node.get_text(source_bytes)
-                match = re.search(r'\bclass\s+([a-zA-Z_][a-zA-Z0-9_]*)\b', class_text)
+                match = re.search(r"\bclass\s+([a-zA-Z_][a-zA-Z0-9_]*)\b", class_text)
                 if match:
                     return match.group(1)
             curr_id = p_node.parent_id
@@ -231,7 +243,9 @@ class ProjectGraphBuilder:
             curr_id = p_node.parent_id
         return None
 
-    def _find_enclosing_caller_id(self, node_id: str, file_node: FileNode, registered: dict[str, GraphNode]) -> str | None:
+    def _find_enclosing_caller_id(
+        self, node_id: str, file_node: FileNode, registered: dict[str, GraphNode]
+    ) -> str | None:
         curr_id = node_id
         while curr_id:
             p_node = file_node.nodes_map.get(curr_id)
@@ -243,7 +257,7 @@ class ProjectGraphBuilder:
         return None
 
     def _extract_call_target(self, text: str) -> str:
-        match = re.match(r'^([a-zA-Z0-9_\.\$]+)', text.strip())
+        match = re.match(r"^([a-zA-Z0-9_\.\$]+)", text.strip())
         return match.group(1) if match else text.strip()
 
     def _find_enclosing_scope(self, node_id: str, scopes: dict, file_node: FileNode) -> object | None:
@@ -255,7 +269,9 @@ class ProjectGraphBuilder:
             curr_id = p_node.parent_id if p_node else None
         return None
 
-    def _match_callee(self, target: str, qname_to_node: dict[str, GraphNode], current_file: Path | None) -> GraphNode | None:
+    def _match_callee(
+        self, target: str, qname_to_node: dict[str, GraphNode], current_file: Path | None
+    ) -> GraphNode | None:
         if target in qname_to_node:
             return qname_to_node[target]
         if current_file:
@@ -403,7 +419,7 @@ class CallGraphBuilder:
                     call_type = CallType.STATIC
                     if "." in raw_target:
                         call_type = CallType.DYNAMIC
-                    elif re.search(r'\b(?:callback|cb|handler|fn)\b', raw_target.lower()):
+                    elif re.search(r"\b(?:callback|cb|handler|fn)\b", raw_target.lower()):
                         call_type = CallType.INDIRECT
 
                     edge = CallEdge(
@@ -420,16 +436,16 @@ class CallGraphBuilder:
         return cg
 
     def _extract_function_name(self, text: str, node_type: str) -> str:
-        go_match = re.search(r'\bfunc\s+(?:\([^)]*\)\s*)?([a-zA-Z_][a-zA-Z0-9_]*)\b', text)
+        go_match = re.search(r"\bfunc\s+(?:\([^)]*\)\s*)?([a-zA-Z_][a-zA-Z0-9_]*)\b", text)
         if go_match:
             return go_match.group(1)
-        py_match = re.search(r'\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\b', text)
+        py_match = re.search(r"\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\b", text)
         if py_match:
             return py_match.group(1)
-        js_match = re.search(r'\bfunction\s+([a-zA-Z_][a-zA-Z0-9_]*)\b', text)
+        js_match = re.search(r"\bfunction\s+([a-zA-Z_][a-zA-Z0-9_]*)\b", text)
         if js_match:
             return js_match.group(1)
-        word_match = re.search(r'\b([a-zA-Z_][a-zA-Z0-9_]*)\b', text)
+        word_match = re.search(r"\b([a-zA-Z_][a-zA-Z0-9_]*)\b", text)
         return word_match.group(1) if word_match else "anonymous"
 
     def _get_enclosing_class_name(self, node_id: str, file_node: FileNode, source_bytes: bytes) -> str | None:
@@ -440,14 +456,14 @@ class CallGraphBuilder:
                 break
             if p_node.node_type in ("class_definition", "class_declaration"):
                 class_text = p_node.get_text(source_bytes)
-                match = re.search(r'\bclass\s+([a-zA-Z_][a-zA-Z0-9_]*)\b', class_text)
+                match = re.search(r"\bclass\s+([a-zA-Z_][a-zA-Z0-9_]*)\b", class_text)
                 if match:
                     return match.group(1)
             curr_id = p_node.parent_id
         return None
 
     def _extract_parameters(self, text: str) -> list[str]:
-        param_match = re.search(r'\(([^)]*)\)', text)
+        param_match = re.search(r"\(([^)]*)\)", text)
         params = []
         if param_match:
             param_str = param_match.group(1)
@@ -457,7 +473,9 @@ class CallGraphBuilder:
                     params.append(p_clean)
         return params
 
-    def _find_enclosing_caller_id(self, node_id: str, file_node: FileNode, id_to_node: dict[str, CallNode]) -> str | None:
+    def _find_enclosing_caller_id(
+        self, node_id: str, file_node: FileNode, id_to_node: dict[str, CallNode]
+    ) -> str | None:
         curr_id = node_id
         while curr_id:
             p_node = file_node.nodes_map.get(curr_id)
@@ -469,7 +487,7 @@ class CallGraphBuilder:
         return None
 
     def _extract_call_target(self, text: str) -> str:
-        match = re.match(r'^([a-zA-Z0-9_\.\$]+)', text.strip())
+        match = re.match(r"^([a-zA-Z0-9_\.\$]+)", text.strip())
         return match.group(1) if match else text.strip()
 
     def _find_enclosing_scope(self, node_id: str, scopes: dict, file_node: FileNode) -> object | None:
@@ -481,7 +499,9 @@ class CallGraphBuilder:
             curr_id = p_node.parent_id if p_node else None
         return None
 
-    def _match_callee(self, target: str, qualified_to_node: dict[str, CallNode], current_file: Path | None) -> CallNode | None:
+    def _match_callee(
+        self, target: str, qualified_to_node: dict[str, CallNode], current_file: Path | None
+    ) -> CallNode | None:
         if target in qualified_to_node:
             return qualified_to_node[target]
         if current_file:

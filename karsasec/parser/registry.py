@@ -48,5 +48,6 @@ class ParserRegistry:
         """Lists all registered ParserPlugin instances."""
         return list(self._language_map.values())
 
+
 # Global singleton parser registry
 parser_registry = ParserRegistry()

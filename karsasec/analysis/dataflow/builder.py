@@ -70,7 +70,11 @@ class DataFlowBuilder:
         # Step 5: Connect data dependence edges based on Def-Use chains
         for duc in def_use_chains:
             for use in duc.uses:
-                src_ids = [nid for nid, n in dfg.nodes.items() if any(d.ssa_name == duc.definition.ssa_name for d in n.definitions)]
+                src_ids = [
+                    nid
+                    for nid, n in dfg.nodes.items()
+                    if any(d.ssa_name == duc.definition.ssa_name for d in n.definitions)
+                ]
                 tgt_ids = [nid for nid, n in dfg.nodes.items() if any(u.ssa_name == use.ssa_name for u in n.uses)]
                 for src in src_ids:
                     for tgt in tgt_ids:

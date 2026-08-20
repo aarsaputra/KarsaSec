@@ -36,8 +36,22 @@ class CompatibilityRegistry:
 
     # Matrix mapping Source Category -> List[Compatible Sink Categories]
     _SOURCE_COMPATIBILITY_MATRIX: Final[dict[str, set[str]]] = {
-        "USER_INPUT": {COMMAND_EXECUTION, SQL_EXECUTION, FILE_INCLUSION, HTML_OUTPUT, CODE_EVALUATION, CRYPTOGRAPHIC_OPERATION},
-        "HTTP_REQUEST": {COMMAND_EXECUTION, SQL_EXECUTION, FILE_INCLUSION, HTML_OUTPUT, CODE_EVALUATION, CRYPTOGRAPHIC_OPERATION},
+        "USER_INPUT": {
+            COMMAND_EXECUTION,
+            SQL_EXECUTION,
+            FILE_INCLUSION,
+            HTML_OUTPUT,
+            CODE_EVALUATION,
+            CRYPTOGRAPHIC_OPERATION,
+        },
+        "HTTP_REQUEST": {
+            COMMAND_EXECUTION,
+            SQL_EXECUTION,
+            FILE_INCLUSION,
+            HTML_OUTPUT,
+            CODE_EVALUATION,
+            CRYPTOGRAPHIC_OPERATION,
+        },
         "ENVIRONMENT": {COMMAND_EXECUTION, SQL_EXECUTION, FILE_INCLUSION, HTML_OUTPUT, CODE_EVALUATION},
         "STATIC_CONSTANT": set(),
         "STATIC_LITERAL": set(),

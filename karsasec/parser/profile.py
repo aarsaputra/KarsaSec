@@ -8,8 +8,18 @@ from karsasec.parser.language import MANIFEST_LANGUAGE_MAP, LanguageDetector
 
 # Directory names to skip when profiling
 SKIP_DIRS: set[str] = {
-    ".git", ".hg", ".svn", ".venv", "venv", "node_modules",
-    "dist", "build", "__pycache__", ".pytest_cache", ".next", "vendor"
+    ".git",
+    ".hg",
+    ".svn",
+    ".venv",
+    "venv",
+    "node_modules",
+    "dist",
+    "build",
+    "__pycache__",
+    ".pytest_cache",
+    ".next",
+    "vendor",
 }
 
 # Package manager lockfile markers
@@ -25,13 +35,12 @@ PACKAGE_MANAGER_MARKERS = {
     "go.sum": "go",
 }
 
+
 class ProjectProfiler:
     """Aggregates workspace files, counts LOC, detects package managers, and builds ProjectProfile."""
 
     def __init__(
-        self,
-        language_detector: LanguageDetector | None = None,
-        framework_detector: FrameworkDetector | None = None
+        self, language_detector: LanguageDetector | None = None, framework_detector: FrameworkDetector | None = None
     ) -> None:
         self.language_detector = language_detector or LanguageDetector()
         self.framework_detector = framework_detector or FrameworkDetector()

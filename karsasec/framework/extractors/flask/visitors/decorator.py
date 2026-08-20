@@ -33,5 +33,7 @@ class FlaskDecoratorResolver:
         elif isinstance(target_expr, ast.Name):
             target_str = target_expr.id
 
-        if target_str and ("route" in target_str or "get" in target_str or "post" in target_str or target_str in self.state.aliases):
+        if target_str and (
+            "route" in target_str or "get" in target_str or "post" in target_str or target_str in self.state.aliases
+        ):
             self.state.add_alias(alias_name, target_str)

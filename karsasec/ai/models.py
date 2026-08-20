@@ -13,7 +13,9 @@ class EvidenceClaim(BaseModel):
 
     claim_type: str = Field(description="Kind of evidence claim: SANITIZER, GUARD, TAINT_PATH, TRANSFORMATION")
     described_entity: str = Field(description="Code symbol or function name referred to")
-    is_supported: bool = Field(default=False, description="Whether claim is verified against deterministic SAST evidence")
+    is_supported: bool = Field(
+        default=False, description="Whether claim is verified against deterministic SAST evidence"
+    )
     evidence_reference: str = Field(default="NONE", description="Reference ID or summary of supporting evidence")
 
 

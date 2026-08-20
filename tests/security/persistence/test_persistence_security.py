@@ -36,6 +36,7 @@ from karsasec.workers.task import RemediationTask, TaskState
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_task(
     task_id: str = "tsk_sec_001",
     fingerprint: str = "fp_sec_001",
@@ -134,9 +135,7 @@ class TestReceiptImmutability:
         r = _make_receipt()
         repo.save_receipt(r)
         fetched = repo.get_receipt("r_001")
-        d = fetched.__dict__ if hasattr(fetched, "__dict__") else {
-            k: getattr(fetched, k) for k in fetched.__slots__
-        }
+        d = fetched.__dict__ if hasattr(fetched, "__dict__") else {k: getattr(fetched, k) for k in fetched.__slots__}
         for forbidden in ("token", "source_code", "diff", "patch", "credential", "api_key"):
             assert forbidden not in d, f"Privacy violation: '{forbidden}' present in receipt record"
 
@@ -200,7 +199,6 @@ class TestAuditLogImmutability:
         """PostgresAuditRepository.append() strips privacy-violating detail keys.
         InMemory version tests the principle; real strip logic is in Postgres impl.
         """
-        from karsasec.persistence.audit_repository import PostgresAuditRepository
         # Use InMemory to test audit detail sanitization via the Postgres class's logic
         dangerous_details = {
             "source_code": "rm -rf /",
@@ -210,7 +208,8 @@ class TestAuditLogImmutability:
             "reason": "lease_expired",
         }
         safe_details = {
-            k: v for k, v in dangerous_details.items()
+            k: v
+            for k, v in dangerous_details.items()
             if k not in {"source_code", "unified_diff", "diff", "patch", "token", "credential", "api_key"}
         }
         assert "source_code" not in safe_details
@@ -273,8 +272,6 @@ class TestStateMachineCorruption:
 # ---------------------------------------------------------------------------
 class TestStartupRecovery:
     def test_recovery_engine_requeues_running_task_with_expired_lease(self):
-        from karsasec.persistence.task_repository import PostgresTaskRepository
-        from karsasec.persistence.recovery import StartupRecoveryEngine
 
         # Use InMemory repo via its common interface
         repo = InMemoryTaskRepository()
@@ -289,10 +286,10 @@ class TestStartupRecovery:
         repo.update_task("tsk_recover_1", state=TaskState.RUNNING)
 
         # Simulate lease expiry via in-process time
-        import time
         expired_time = task.started_at + 350.0
 
         from karsasec.workers.worker import CustomWorkerRuntime
+
         runtime = CustomWorkerRuntime(queue=queue, repository=repo)
         runtime.recover_stale_tasks(current_time=expired_time)
 
@@ -304,7 +301,6 @@ class TestStartupRecovery:
 
     def test_exhausted_task_marked_failed_not_requeued(self):
         from karsasec.workers.worker import CustomWorkerRuntime
-        import unittest.mock
 
         repo = InMemoryTaskRepository()
         queue = InMemoryTaskQueue()
@@ -313,6 +309,7 @@ class TestStartupRecovery:
         # Manually set state to RUNNING
         task._state = TaskState.RUNNING
         import time
+
         task.started_at = time.monotonic()
         repo._tasks[task.task_id] = task
         queue.processing_queue.append(task.task_id)
@@ -347,13 +344,12 @@ class TestPrivacyBoundaryPersistence:
         """Static check: models must not define Column(...) with forbidden names."""
         import re
         from pathlib import Path
+
         content = Path("karsasec/persistence/models.py").read_text()
         # Match actual Column() definitions with forbidden names — not docstring mentions
         for forbidden in ("source_code", "patch_content", "raw_source", "unified_diff"):
-            pattern = re.compile(rf'^\s+{re.escape(forbidden)}\s*=\s*Column', re.MULTILINE)
-            assert not pattern.search(content), (
-                f"Privacy violation: '{forbidden}' column defined in models.py"
-            )
+            pattern = re.compile(rf"^\s+{re.escape(forbidden)}\s*=\s*Column", re.MULTILINE)
+            assert not pattern.search(content), f"Privacy violation: '{forbidden}' column defined in models.py"
 
 
 # ---------------------------------------------------------------------------
@@ -378,10 +374,11 @@ class TestPhase8AdversarialScenarios:
     def test_2_audit_event_mutation(self):
         """Test 2: Audit event mutation — Audit ledger is append-only."""
         from karsasec.persistence.audit_repository import PostgresAuditRepository
+
         repo = InMemoryAuditRepository()
         event = AuditEvent(task_id="tsk_audit_mut", event_type=AuditEventType.TASK_CREATED)
         repo.append(event)
-        
+
         # Verify no update/delete methods exist on AuditRepository contract
         assert not hasattr(repo, "update")
         assert not hasattr(repo, "delete")
@@ -400,6 +397,7 @@ class TestPhase8AdversarialScenarios:
     def test_4_lease_recovery_replay(self):
         """Test 4: Lease recovery replay — Re-running recovery on already recovered task is idempotent."""
         from karsasec.workers.worker import CustomWorkerRuntime
+
         repo = InMemoryTaskRepository()
         queue = InMemoryTaskQueue()
 
@@ -411,7 +409,6 @@ class TestPhase8AdversarialScenarios:
         repo.update_task("tsk_replay_lease", state=TaskState.RUNNING)
 
         runtime = CustomWorkerRuntime(queue=queue, repository=repo)
-        import time
         expired_time = task.started_at + 400.0
 
         # First recovery run
@@ -424,7 +421,6 @@ class TestPhase8AdversarialScenarios:
 
     def test_5_persistence_privacy_leakage(self):
         """Test 5: Persistence privacy leakage — Details sanitization strips forbidden keys."""
-        from karsasec.persistence.audit_repository import PostgresAuditRepository
         polluted_details = {
             "source_code": "import os",
             "diff": "--- a/file.py",
@@ -434,7 +430,8 @@ class TestPhase8AdversarialScenarios:
             "task_id": "tsk_clean",
         }
         safe = {
-            k: v for k, v in polluted_details.items()
+            k: v
+            for k, v in polluted_details.items()
             if k not in {"source_code", "unified_diff", "diff", "patch", "token", "credential", "api_key"}
         }
         assert set(safe.keys()) == {"task_id"}
@@ -463,4 +460,3 @@ class TestPhase8AdversarialScenarios:
         # Attempt resurrection to RUNNING
         with pytest.raises(ValueError, match="Invalid transition"):
             task.transition_to(TaskState.RUNNING)
-

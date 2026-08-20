@@ -10,6 +10,7 @@ from typing import Any
 
 class FrameworkType(StrEnum):
     """Supported framework type identifiers."""
+
     FLASK = "FLASK"
     DJANGO = "DJANGO"
     FASTAPI = "FASTAPI"
@@ -22,6 +23,7 @@ class FrameworkType(StrEnum):
 
 class FrameworkCapability(StrEnum):
     """Capabilities provided by a framework semantic definition."""
+
     ROUTES = "ROUTES"
     MIDDLEWARE = "MIDDLEWARE"
     ORM = "ORM"
@@ -40,6 +42,7 @@ class FrameworkCapability(StrEnum):
 @dataclass(frozen=True)
 class FrameworkVersion:
     """Framework version representation."""
+
     major: int = 1
     minor: int = 0
     patch: int = 0
@@ -61,6 +64,7 @@ class FrameworkVersion:
 @dataclass(frozen=True)
 class FrameworkDefinition:
     """Static framework definition registered in FrameworkRegistry."""
+
     id: str
     name: str
     language: str
@@ -84,6 +88,7 @@ class FrameworkDefinition:
 @dataclass(frozen=True)
 class DetectorResult:
     """Result produced by FrameworkDetector containing confidence score and evidence."""
+
     framework: FrameworkType
     confidence: float
     reason: str
@@ -103,6 +108,7 @@ class DetectorResult:
 @dataclass(frozen=True)
 class FrameworkMetadata:
     """Analysis metadata capturing runtime detection statistics."""
+
     detected_frameworks: tuple[DetectorResult, ...] = ()
     entrypoints: tuple[str, ...] = ()
     config_files: tuple[str, ...] = ()
@@ -123,6 +129,7 @@ class FrameworkMetadata:
 
 class FrameworkNodeType(StrEnum):
     """Node types supported in Sprint E10-1 FrameworkGraph."""
+
     FRAMEWORK = "FRAMEWORK"
     ENTRYPOINT = "ENTRYPOINT"
     CONFIG = "CONFIG"
@@ -132,6 +139,7 @@ class FrameworkNodeType(StrEnum):
 @dataclass(frozen=True)
 class FrameworkNode:
     """Immutable node in FrameworkGraph."""
+
     id: str
     node_type: FrameworkNodeType
     name: str
@@ -155,6 +163,7 @@ class FrameworkNode:
 @dataclass(frozen=True)
 class FrameworkEdge:
     """Immutable edge in FrameworkGraph."""
+
     source_id: str
     target_id: str
     edge_type: str = "CONTAINS"

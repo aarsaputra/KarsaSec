@@ -127,7 +127,9 @@ class EvidenceGraph:
                 file_path=s_file,
                 line_number=int(s_line) if s_line.isdigit() else 1,
                 statement="User Taint Source",
-                variable_name=ctx.variable_version.split("#")[0] if "#" in ctx.variable_version else ctx.variable_version,
+                variable_name=ctx.variable_version.split("#")[0]
+                if "#" in ctx.variable_version
+                else ctx.variable_version,
                 variable_version=ctx.variable_version,
                 call_context=ctx.call_context,
                 branch_polarity=ctx.branch_polarity,
@@ -149,7 +151,7 @@ class EvidenceGraph:
                     node_type=n_type,
                     file_path=p_file,
                     line_number=int(p_line) if p_line.isdigit() else 0,
-                    statement=f"Dataflow step {idx+1}",
+                    statement=f"Dataflow step {idx + 1}",
                     variable_name=ctx.variable_version,
                     variable_version=ctx.variable_version,
                     call_context=ctx.call_context,
@@ -158,7 +160,9 @@ class EvidenceGraph:
                     description=f"Intermediate provenance step at {prov}",
                 )
             )
-            edges.append(EvidenceGraphEdge(source_node_id=prev_node_id, target_node_id=prov_node_id, relation="TAINT_FLOW"))
+            edges.append(
+                EvidenceGraphEdge(source_node_id=prev_node_id, target_node_id=prov_node_id, relation="TAINT_FLOW")
+            )
             prev_node_id = prov_node_id
 
         # 3. Add Sanitizer & Guard evidence nodes if present
@@ -179,7 +183,9 @@ class EvidenceGraph:
                     description=f"Sanitizer evidence: {san}",
                 )
             )
-            edges.append(EvidenceGraphEdge(source_node_id=prev_node_id, target_node_id=san_node_id, relation="SANITY_CHECK"))
+            edges.append(
+                EvidenceGraphEdge(source_node_id=prev_node_id, target_node_id=san_node_id, relation="SANITY_CHECK")
+            )
 
         for g_idx, g_ev in enumerate(ctx.guard_evidence):
             g_node_id = f"node_guard_{g_idx}_{ctx.finding_id}"
@@ -198,7 +204,9 @@ class EvidenceGraph:
                     description=f"Control-flow guard evidence: {g_ev}",
                 )
             )
-            edges.append(EvidenceGraphEdge(source_node_id=prev_node_id, target_node_id=g_node_id, relation="CONTROL_GUARD"))
+            edges.append(
+                EvidenceGraphEdge(source_node_id=prev_node_id, target_node_id=g_node_id, relation="CONTROL_GUARD")
+            )
 
         # 4. Add Bundle evidences if supplied
         if bundle and bundle.evidences:
@@ -207,7 +215,9 @@ class EvidenceGraph:
                 nodes.append(
                     EvidenceGraphNode(
                         node_id=b_node_id,
-                        node_type=GraphNodeType(ev.evidence_kind.value) if hasattr(ev.evidence_kind, "value") else GraphNodeType.ASSIGNMENT,
+                        node_type=GraphNodeType(ev.evidence_kind.value)
+                        if hasattr(ev.evidence_kind, "value")
+                        else GraphNodeType.ASSIGNMENT,
                         file_path=ev.file_path or ctx.file_path,
                         line_number=0,
                         statement=ev.statement,
@@ -219,7 +229,11 @@ class EvidenceGraph:
                         description=ev.description,
                     )
                 )
-                edges.append(EvidenceGraphEdge(source_node_id=prev_node_id, target_node_id=b_node_id, relation="SEMANTIC_EVIDENCE"))
+                edges.append(
+                    EvidenceGraphEdge(
+                        source_node_id=prev_node_id, target_node_id=b_node_id, relation="SEMANTIC_EVIDENCE"
+                    )
+                )
                 prev_node_id = b_node_id
 
         # 5. Add Sink node
@@ -239,6 +253,8 @@ class EvidenceGraph:
                 description=f"Security Sink ({ctx.sink_category})",
             )
         )
-        edges.append(EvidenceGraphEdge(source_node_id=prev_node_id, target_node_id=sink_node_id, relation="REACHES_SINK"))
+        edges.append(
+            EvidenceGraphEdge(source_node_id=prev_node_id, target_node_id=sink_node_id, relation="REACHES_SINK")
+        )
 
         return EvidenceGraph(nodes=tuple(nodes), edges=tuple(edges))

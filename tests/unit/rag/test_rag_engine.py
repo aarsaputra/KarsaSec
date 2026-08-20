@@ -1,4 +1,3 @@
-
 from karsasec.rag.bm25 import BM25Document, BM25Index
 from karsasec.rag.service import RAGDocument, RAGService
 

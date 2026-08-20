@@ -29,7 +29,7 @@ class HeartbeatEngine:
     DEGRADED_THRESHOLD_SECONDS = 45.0
     OFFLINE_THRESHOLD_SECONDS = 90.0
 
-    def __init__(self, registry: "WorkerRegistry") -> None:
+    def __init__(self, registry: WorkerRegistry) -> None:
         self._registry = registry
 
     def evaluate_workers(self, current_time: float | None = None) -> int:

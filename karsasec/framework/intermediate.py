@@ -14,12 +14,14 @@ CURRENT_ISR_SCHEMA_VERSION = "1.0"
 
 class ISRSchemaValidationError(Exception):
     """Exception raised when an ISR payload fails schema validation."""
+
     pass
 
 
 @dataclass(frozen=True)
 class RouteDefinition:
     """HTTP Route endpoint definition."""
+
     path: str
     method: str
     handler: str
@@ -38,7 +40,13 @@ class RouteDefinition:
 
     @property
     def semantic_id(self) -> str:
-        return generate_semantic_node_id(self.framework, "route", f"{self.method} {self.path}", self.origin.location_info.file_path, self.origin.location_info.line)
+        return generate_semantic_node_id(
+            self.framework,
+            "route",
+            f"{self.method} {self.path}",
+            self.origin.location_info.file_path,
+            self.origin.location_info.line,
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -86,6 +94,7 @@ class RouteDefinition:
 @dataclass(frozen=True)
 class MiddlewareDefinition:
     """Middleware component definition."""
+
     name: str
     scope: str = "global"
     order: int = 0
@@ -101,7 +110,9 @@ class MiddlewareDefinition:
 
     @property
     def semantic_id(self) -> str:
-        return generate_semantic_node_id(self.framework, "middleware", self.name, self.origin.location_info.file_path, self.origin.location_info.line)
+        return generate_semantic_node_id(
+            self.framework, "middleware", self.name, self.origin.location_info.file_path, self.origin.location_info.line
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -141,6 +152,7 @@ class MiddlewareDefinition:
 @dataclass(frozen=True)
 class ControllerDefinition:
     """Controller component definition."""
+
     name: str
     class_name: str = ""
     handlers: tuple[str, ...] = ()
@@ -156,7 +168,9 @@ class ControllerDefinition:
 
     @property
     def semantic_id(self) -> str:
-        return generate_semantic_node_id(self.framework, "controller", self.name, self.origin.location_info.file_path, self.origin.location_info.line)
+        return generate_semantic_node_id(
+            self.framework, "controller", self.name, self.origin.location_info.file_path, self.origin.location_info.line
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -196,6 +210,7 @@ class ControllerDefinition:
 @dataclass(frozen=True)
 class HandlerDefinition:
     """Request handler function/method definition."""
+
     name: str
     function_name: str
     parameters: tuple[str, ...] = ()
@@ -211,7 +226,9 @@ class HandlerDefinition:
 
     @property
     def semantic_id(self) -> str:
-        return generate_semantic_node_id(self.framework, "handler", self.name, self.origin.location_info.file_path, self.origin.location_info.line)
+        return generate_semantic_node_id(
+            self.framework, "handler", self.name, self.origin.location_info.file_path, self.origin.location_info.line
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -251,6 +268,7 @@ class HandlerDefinition:
 @dataclass(frozen=True)
 class ServiceDefinition:
     """Service or business logic component definition."""
+
     name: str
     service_type: str = "generic"
     methods: tuple[str, ...] = ()
@@ -265,7 +283,9 @@ class ServiceDefinition:
 
     @property
     def semantic_id(self) -> str:
-        return generate_semantic_node_id(self.framework, "service", self.name, self.origin.location_info.file_path, self.origin.location_info.line)
+        return generate_semantic_node_id(
+            self.framework, "service", self.name, self.origin.location_info.file_path, self.origin.location_info.line
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -303,6 +323,7 @@ class ServiceDefinition:
 @dataclass(frozen=True)
 class ModelDefinition:
     """Database model entity definition."""
+
     model_name: str
     table_name: str = ""
     fields: tuple[str, ...] = ()
@@ -318,7 +339,13 @@ class ModelDefinition:
 
     @property
     def semantic_id(self) -> str:
-        return generate_semantic_node_id(self.framework, "model", self.model_name, self.origin.location_info.file_path, self.origin.location_info.line)
+        return generate_semantic_node_id(
+            self.framework,
+            "model",
+            self.model_name,
+            self.origin.location_info.file_path,
+            self.origin.location_info.line,
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -358,6 +385,7 @@ class ModelDefinition:
 @dataclass(frozen=True)
 class ORMDefinition:
     """Object-Relational Mapping component definition."""
+
     orm_name: str
     models: tuple[ModelDefinition, ...] = ()
     query_methods: tuple[str, ...] = ()
@@ -372,7 +400,9 @@ class ORMDefinition:
 
     @property
     def semantic_id(self) -> str:
-        return generate_semantic_node_id(self.framework, "orm", self.orm_name, self.origin.location_info.file_path, self.origin.location_info.line)
+        return generate_semantic_node_id(
+            self.framework, "orm", self.orm_name, self.origin.location_info.file_path, self.origin.location_info.line
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -410,6 +440,7 @@ class ORMDefinition:
 @dataclass(frozen=True)
 class AuthDefinition:
     """Authentication/Authorization policy definition."""
+
     auth_type: str = "JWT"
     provider: str = "custom"
     scheme: str = "Custom"
@@ -439,7 +470,9 @@ class AuthDefinition:
     @property
     def semantic_id(self) -> str:
         identifier = f"{self.provider}:{self.handler or self.auth_type}"
-        return generate_semantic_node_id(self.framework, "auth", identifier, self.origin.location_info.file_path, self.origin.location_info.line)
+        return generate_semantic_node_id(
+            self.framework, "auth", identifier, self.origin.location_info.file_path, self.origin.location_info.line
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -509,6 +542,7 @@ class AuthDefinition:
 @dataclass(frozen=True)
 class ConfigDefinition:
     """Framework configuration setting definition."""
+
     key: str
     value: Any = None
     category: str = "app"
@@ -529,7 +563,9 @@ class ConfigDefinition:
 
     @property
     def semantic_id(self) -> str:
-        return generate_semantic_node_id(self.framework, "config", self.key, self.origin.location_info.file_path, self.origin.location_info.line)
+        return generate_semantic_node_id(
+            self.framework, "config", self.key, self.origin.location_info.file_path, self.origin.location_info.line
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -581,6 +617,7 @@ class ConfigDefinition:
 @dataclass(frozen=True)
 class TemplateDefinition:
     """Template view component definition."""
+
     template_name: str
     engine: str = "Jinja2"
     is_autoescape: bool = True
@@ -595,7 +632,13 @@ class TemplateDefinition:
 
     @property
     def semantic_id(self) -> str:
-        return generate_semantic_node_id(self.framework, "template", self.template_name, self.origin.location_info.file_path, self.origin.location_info.line)
+        return generate_semantic_node_id(
+            self.framework,
+            "template",
+            self.template_name,
+            self.origin.location_info.file_path,
+            self.origin.location_info.line,
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -633,6 +676,7 @@ class TemplateDefinition:
 @dataclass(frozen=True)
 class DependencyDefinition:
     """Dependency injection definition."""
+
     dependency_name: str
     target_class_or_fn: str
     provider: str = "Container"
@@ -647,7 +691,13 @@ class DependencyDefinition:
 
     @property
     def semantic_id(self) -> str:
-        return generate_semantic_node_id(self.framework, "dependency", self.dependency_name, self.origin.location_info.file_path, self.origin.location_info.line)
+        return generate_semantic_node_id(
+            self.framework,
+            "dependency",
+            self.dependency_name,
+            self.origin.location_info.file_path,
+            self.origin.location_info.line,
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -685,6 +735,7 @@ class DependencyDefinition:
 @dataclass(frozen=True)
 class ProvenanceEntry:
     """Canonical provenance item tracking attribute evidence origin."""
+
     attribute_name: str
     source_kind: str = "unknown"
     file_path: str = ""
@@ -717,6 +768,7 @@ class ProvenanceEntry:
 @dataclass(frozen=True)
 class FlowScope:
     """Interprocedural flow scope ownership boundary."""
+
     route_id: str
     handler_id: str
     scope_id: str
@@ -740,6 +792,7 @@ class FlowScope:
 @dataclass(frozen=True)
 class FlowDefinition:
     """Raw interprocedural declarative flow evidence representation."""
+
     flow_id: str
     scope: FlowScope
     source_kind: str
@@ -761,10 +814,17 @@ class FlowDefinition:
 
     @property
     def semantic_id(self) -> str:
-        return generate_semantic_node_id(self.framework, "flow", self.flow_id, self.origin.location_info.file_path, self.origin.location_info.line)
+        return generate_semantic_node_id(
+            self.framework, "flow", self.flow_id, self.origin.location_info.file_path, self.origin.location_info.line
+        )
 
     def to_dict(self) -> dict[str, Any]:
-        sorted_prov = tuple(sorted(self.provenance_entries, key=lambda p: (p.attribute_name, p.source_kind, p.file_path, p.line, p.column, p.symbol)))
+        sorted_prov = tuple(
+            sorted(
+                self.provenance_entries,
+                key=lambda p: (p.attribute_name, p.source_kind, p.file_path, p.line, p.column, p.symbol),
+            )
+        )
         return {
             "semantic_id": self.semantic_id,
             "flow_id": self.flow_id,
@@ -790,7 +850,9 @@ class FlowDefinition:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> FlowDefinition:
         prov_list = tuple(ProvenanceEntry.from_dict(p) for p in data.get("provenance_entries", []))
-        sorted_prov = tuple(sorted(prov_list, key=lambda p: (p.attribute_name, p.source_kind, p.file_path, p.line, p.column, p.symbol)))
+        sorted_prov = tuple(
+            sorted(prov_list, key=lambda p: (p.attribute_name, p.source_kind, p.file_path, p.line, p.column, p.symbol))
+        )
         return cls(
             flow_id=data["flow_id"],
             scope=FlowScope.from_dict(data.get("scope", {})),
@@ -816,6 +878,7 @@ class FlowDefinition:
 @dataclass(frozen=True)
 class IntermediateSemanticRepresentation:
     """Container holding all raw extracted framework semantic definitions before graph construction."""
+
     schema_version: str = CURRENT_ISR_SCHEMA_VERSION
     routes: tuple[RouteDefinition, ...] = ()
     middlewares: tuple[MiddlewareDefinition, ...] = ()

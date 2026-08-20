@@ -45,18 +45,19 @@ def get_node_text(node: ASTNode, source_bytes: bytes) -> str:
         end_line = node.end.line - 1
         if 0 <= start_line < len(lines):
             if start_line == end_line:
-                return lines[start_line][node.start.column:node.end.column]
+                return lines[start_line][node.start.column : node.end.column]
             else:
-                slice_lines = [lines[start_line][node.start.column:]]
+                slice_lines = [lines[start_line][node.start.column :]]
                 for l in range(start_line + 1, end_line):
                     if l < len(lines):
                         slice_lines.append(lines[l])
                 if end_line < len(lines):
-                    slice_lines.append(lines[end_line][:node.end.column])
+                    slice_lines.append(lines[end_line][: node.end.column])
                 return "\n".join(slice_lines)
     except Exception:
         pass
     return node.get_text(source_bytes)
+
 
 class SemanticGraph:
     """Stores resolved symbol bindings, aliases, and scopes for a parsed AST file."""
@@ -65,7 +66,7 @@ class SemanticGraph:
 
     def __init__(self) -> None:
         self.node_symbols: dict[str, str] = {}  # Maps node_id to fully-qualified resolved symbol
-        self.scopes: dict[str, Scope] = {}      # Maps block/function node_id to its Scope
+        self.scopes: dict[str, Scope] = {}  # Maps block/function node_id to its Scope
         self.alias_tracker = AliasTracker()
 
     def resolve_node(self, node_id: str) -> str | None:
@@ -96,7 +97,12 @@ class SemanticResolver:
 
         # Identify all scope-defining block nodes
         for node_id, node in file_node.nodes_map.items():
-            if node.node_type in ("function_definition", "class_definition", "function_declaration", "class_declaration"):
+            if node.node_type in (
+                "function_definition",
+                "class_definition",
+                "function_declaration",
+                "class_declaration",
+            ):
                 scope_type = ScopeType.CLASS if "class" in node.node_type else ScopeType.FUNCTION
                 # Parent scope will be resolved in second pass, temporary set parent to None
                 graph.scopes[node_id] = Scope(scope_type)

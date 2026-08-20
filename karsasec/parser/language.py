@@ -37,6 +37,7 @@ MANIFEST_LANGUAGE_MAP: dict[str, str] = {
     "build.gradle": "Java",
 }
 
+
 class LanguageDetector:
     """Detects programming languages present in a given list of project paths."""
 

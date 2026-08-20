@@ -1,37 +1,85 @@
 """Untrusted input source registry and language-specific source definitions (E11)."""
+
 from __future__ import annotations
 
 import re
 
 # Language untrusted source sets
-UNTRUSTED_SOURCES_PHP: frozenset[str] = frozenset({
-    "$_GET", "$_POST", "$_REQUEST", "$_SERVER", "$_COOKIE",
-    "$_FILES", "$_ENV", "$HTTP_RAW_POST_DATA", "$argv", "php://input",
-})
+UNTRUSTED_SOURCES_PHP: frozenset[str] = frozenset(
+    {
+        "$_GET",
+        "$_POST",
+        "$_REQUEST",
+        "$_SERVER",
+        "$_COOKIE",
+        "$_FILES",
+        "$_ENV",
+        "$HTTP_RAW_POST_DATA",
+        "$argv",
+        "php://input",
+    }
+)
 
-UNTRUSTED_SOURCES_PYTHON: frozenset[str] = frozenset({
-    "request.args", "request.form", "request.json", "request.GET",
-    "request.POST", "request.values", "sys.argv", "os.environ",
-})
+UNTRUSTED_SOURCES_PYTHON: frozenset[str] = frozenset(
+    {
+        "request.args",
+        "request.form",
+        "request.json",
+        "request.GET",
+        "request.POST",
+        "request.values",
+        "sys.argv",
+        "os.environ",
+    }
+)
 
-UNTRUSTED_SOURCES_JS: frozenset[str] = frozenset({
-    "req.query", "req.body", "req.params", "req.headers",
-    "location.href", "location.search", "document.cookie", "window.name",
-})
+UNTRUSTED_SOURCES_JS: frozenset[str] = frozenset(
+    {
+        "req.query",
+        "req.body",
+        "req.params",
+        "req.headers",
+        "location.href",
+        "location.search",
+        "document.cookie",
+        "window.name",
+    }
+)
 
-UNTRUSTED_SOURCES_GO: frozenset[str] = frozenset({
-    "r.URL.Query()", "r.FormValue", "r.PostFormValue", "r.Body", "os.Args",
-})
+UNTRUSTED_SOURCES_GO: frozenset[str] = frozenset(
+    {
+        "r.URL.Query()",
+        "r.FormValue",
+        "r.PostFormValue",
+        "r.Body",
+        "os.Args",
+    }
+)
 
-UNTRUSTED_SOURCES_JAVA: frozenset[str] = frozenset({
-    "args[", "request.getParameter", "request.getHeader",
-    "HttpServletRequest", "System.getenv", "System.getProperty", "System.in",
-})
+UNTRUSTED_SOURCES_JAVA: frozenset[str] = frozenset(
+    {
+        "args[",
+        "request.getParameter",
+        "request.getHeader",
+        "HttpServletRequest",
+        "System.getenv",
+        "System.getProperty",
+        "System.in",
+    }
+)
 
-UNTRUSTED_SOURCES_RUST: frozenset[str] = frozenset({
-    "env::args", "env::args_os", "env::var", "env::var_os",
-    "std::env::args", "std::env::args_os", "std::env::var", "std::env::var_os",
-})
+UNTRUSTED_SOURCES_RUST: frozenset[str] = frozenset(
+    {
+        "env::args",
+        "env::args_os",
+        "env::var",
+        "env::var_os",
+        "std::env::args",
+        "std::env::args_os",
+        "std::env::var",
+        "std::env::var_os",
+    }
+)
 
 
 class SourceRegistry:

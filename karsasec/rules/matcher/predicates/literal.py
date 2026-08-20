@@ -1,6 +1,5 @@
 """LiteralPredicate plugin evaluating literal text trigger matching."""
 
-
 from karsasec.parser.ast.context import VisitorContext
 from karsasec.parser.ast_nodes import ASTNode
 from karsasec.rules.matcher.compiler import CompiledRule

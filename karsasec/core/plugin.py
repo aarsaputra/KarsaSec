@@ -10,9 +10,11 @@ from karsasec.core.context import AnalysisContext
 if TYPE_CHECKING:
     from karsasec.parser.ast_nodes import FileNode
 
+
 @dataclass
 class Diagnostic:
     """Structured diagnostic warning or error generated during parsing or analysis."""
+
     code: str
     severity: str  # ERROR, WARNING, INFO
     message: str
@@ -20,13 +22,16 @@ class Diagnostic:
     line: int = 0
     column: int = 0
 
+
 @dataclass
 class SymbolTable:
     """Fast symbol table storing extracted high-level symbols for Rule Engine lookup (Sprint 3)."""
+
     functions: list[str] = field(default_factory=list)
     classes: list[str] = field(default_factory=list)
     imports: list[str] = field(default_factory=list)
     globals: list[str] = field(default_factory=list)
+
 
 from karsasec.rules.enums import AnalysisCapability
 
@@ -34,6 +39,7 @@ from karsasec.rules.enums import AnalysisCapability
 @dataclass(frozen=True)
 class ParseResult:
     """Contract returned by ParserPlugin parsing operations containing AST, diagnostics, and metrics (Immutable)."""
+
     language: str
     file_path: Path
     root: Optional["FileNode"] = None
@@ -53,7 +59,9 @@ class ParseResult:
         )
     )
 
+
 ParsedDocument = ParseResult
+
 
 class BasePlugin(ABC):
     """Abstract base class for all KarsaSec plugins."""
@@ -69,6 +77,7 @@ class BasePlugin(ABC):
     def version(self) -> str:
         """Version string of the plugin."""
         pass
+
 
 class ParserPlugin(BasePlugin, ABC):
     """Abstract base class for AST Language Parsers."""
@@ -88,6 +97,7 @@ class ParserPlugin(BasePlugin, ABC):
     def parse_file(self, file_path: Path) -> ParseResult:
         """Parses source file and extracts AST nodes and SymbolTable."""
         pass
+
 
 class ScannerPlugin(BasePlugin, ABC):
     """Abstract base class for Security Rule Scanners."""

@@ -12,6 +12,7 @@ from karsasec.parser.ast_nodes import FileNode
 if TYPE_CHECKING:
     pass
 
+
 @dataclass(slots=True)
 class VisitorContext:
     """Encapsulates context, metadata, and user accumulation state during AST traversal.
@@ -27,6 +28,7 @@ class VisitorContext:
         call_graph:     Optional cross-file CallGraph for inter-procedural analysis.
                         Populated by the executor when project-wide analysis is active.
     """
+
     file_node: FileNode
     symbol_table: SymbolTable | None = None
     language: str = ""

@@ -54,7 +54,9 @@ class FlaskConfigExtractor(SemanticExtractor):
 
         return state
 
-    def validate(self, state: FlaskConfigState, ctx: ExtractorContext | None = None) -> tuple[list[ConfigDefinition], list[SemanticDiagnostic]]:
+    def validate(
+        self, state: FlaskConfigState, ctx: ExtractorContext | None = None
+    ) -> tuple[list[ConfigDefinition], list[SemanticDiagnostic]]:
         """Phase 2: Normalize candidates into ISR objects and emit semantic diagnostics."""
         normalizer = FlaskConfigNormalizer(state)
         config_defs = normalizer.normalize()
@@ -77,7 +79,14 @@ class FlaskConfigExtractor(SemanticExtractor):
 
             if c_def.key == "SECRET_KEY":
                 has_secret_key = True
-                if isinstance(c_def.value, str) and c_def.value.lower() in {"dev", "development", "secret", "123456", "change_me", "test"}:
+                if isinstance(c_def.value, str) and c_def.value.lower() in {
+                    "dev",
+                    "development",
+                    "secret",
+                    "123456",
+                    "change_me",
+                    "test",
+                }:
                     loc = c_def.origin.location_info
                     diag = SemanticDiagnostic(
                         code=ErrorCode.WEAK_SECRET_KEY,

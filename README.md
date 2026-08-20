@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/aarsaputra/KarsaSec"><img src="https://img.shields.io/badge/Status-Sprint%20E12--3%20Completed-brightgreen?style=for-the-badge" alt="Status"></a>
+  <a href="https://github.com/aarsaputra/KarsaSec"><img src="https://img.shields.io/badge/Status-Sprint%20F10%20Completed-brightgreen?style=for-the-badge" alt="Status"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue?style=for-the-badge" alt="License"></a>
   <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python" alt="Python"></a>
   <a href="docs/IMPLEMENTATION_ROADMAP.md"><img src="https://img.shields.io/badge/Rules-Schema%20v2-orange?style=for-the-badge" alt="Schema v2"></a>
@@ -19,12 +19,13 @@
 
 ## 📌 Overview
 
-**KarsaSec** is a high-performance, production-grade static application security testing (SAST) platform. Built from the ground up to power modern DevSecOps pipelines, KarsaSec combines deterministic **Abstract Syntax Tree (AST) matching**, **Incremental Data-Flow & Taint Engine**, **Semantic Finding Qualification**, **Declarative Compatibility Registry**, **hybrid evidence scoring**, and **SARIF standard reporting** with multi-language support (**Python, JavaScript/TypeScript, PHP, Go, Rust, Java**) and Infrastructure-as-Code (**Dockerfile, Kubernetes, GitHub Actions, Terraform, Helm**).
+**KarsaSec** is a high-performance, production-grade static application security testing (SAST) platform. Built from the ground up to power modern DevSecOps pipelines, KarsaSec combines deterministic **Abstract Syntax Tree (AST) matching**, **Incremental Data-Flow & Taint Engine**, **Semantic Finding Qualification**, **Declarative Compatibility Registry**, **hybrid evidence scoring**, **SARIF standard reporting**, and a **Distributed AI Provider Gateway & Token-Budget Fencing Engine** with multi-language support (**Python, JavaScript/TypeScript, PHP, Go, Rust, Java**) and Infrastructure-as-Code (**Dockerfile, Kubernetes, GitHub Actions, Terraform, Helm**).
 
 ---
 
 ## ✨ Key Features & Capabilities
 
+- **🤖 Distributed AI Provider Gateway (Sprint F10)**: Production-grade multi-provider AI Gateway featuring atomic token-budget fencing (`AIBudgetService`), state-machine request lifecycle (`AIRequestStateService`), deterministic cost-aware routing (`ProviderRouter`), and transactional outbox/audit ledger integration (`AIEventService`).
 - **🚀 Dual-Engine AST & Token Matching**: High-throughput streaming AST traversal (`ASTWalker`) backed by Tree-sitter bindings and native parser fallbacks.
 - **🛡️ Incremental Data-Flow & Taint Analysis**: Bounded interprocedural taint propagation engine verifying data flows (`$_GET`, `$_POST`, `os.Args`, etc.), tracing assignments, and constant resolution (`ConstantResolver`).
 - **🎯 Semantic Finding Qualifier & FP Taxonomy**: Formal state-machine engine classifying candidates into `CONFIRMED`, `REJECTED`, or `UNRESOLVED` with explicit taxonomy reasons (`FPTaxonomyReason`). Zero silent drops.
@@ -87,19 +88,9 @@ karsasec scan .
 karsasec scan . --rag
 karsasec scan . --rag --rag-query "server-side request forgery"
 
-# Use a custom external corpus directory, for example a public repo checkout or downloaded security corpus
-# Example: clone a public security corpus repository then pass its path to --rag-corpus
-# git clone https://github.com/OWASP/CheatSheetSeries.git /tmp/owasp-corpus
-karsasec scan . --rag --rag-corpus /tmp/owasp-corpus
-
-Note: Sprint 5 — Hybrid RAG integration is complete. Retrieved RAG context is now available to the analysis engine via `VisitorContext.rag_context`, and rules can opt-in to RAG-aware predicates (see `karsasec.rules.matcher.predicates.rag.RAGPredicate`).
-
 # Export scan results to SARIF or JSON
 karsasec scan . -f sarif -o report.sarif.json
 karsasec scan . -f json -o report.json
-
-# Run a deep security review
-karsasec review .
 
 # System & diagnostic check
 karsasec doctor
@@ -111,99 +102,35 @@ karsasec --version
 ### Run Tests & Platform Verification
 
 ```bash
-# Execute unit test suite & platform verification (137/137 passing)
-python3 -m pytest tests/ -v
+# Execute full test suite including AI Provider Gateway & Phase 5 adversarial verification
+pytest -v
 ```
 
 ---
 
-## ⚙️ How KarsaSec Engine Works (Cara Kerja Engine)
+## ⚙️ How KarsaSec Engine Works
 
-KarsaSec menganalisis berkas kode melalui 4 tahapan eksekusi deterministik:
+KarsaSec menganalisis berkas kode melalui tahapan eksekusi deterministik:
 
-1. **📄 Multi-Language Ingestion & AST Parsing**:
-   Setiap berkas proyek diidentifikasi oleh `ParserRegistry` dan diubah menjadi pohon AST (`FileNode` & `ASTNode`) menggunakan parser C-Tree-sitter atau parser fallback native.
-
-2. **🔍 Deterministic Predicate Matching**:
-   `ASTWalker` menelusuri simpul AST secara streaming. Pipeline predikat (`NodeTypePredicate`, `SymbolPredicate` dengan regex word boundary `\b`, `RegexPredicate`, `LiteralPredicate`) mencocokkan pola aturan secara cepat (*short-circuiting*).
-
-3. **📊 Evidence Collection & Hybrid Confidence Scoring**:
-   `EvidenceCollector` mengekstrak cuplikan kode dan konteks baris. `ConfidenceCalculator` menghitung nilai keyakinan berbasis akumulasi pembobotan bukti kerentanan (*sink*, *source*, *hardcoded string*).
-
-4. **📄 Fingerprinting, Baseline & Standard Reporting**:
-   Setiap temuan diberi sidik jari SHA-256 unik oleh `FindingFactory` untuk mencegah duplikasi. Mesin pembanding baseline memisahkan temuan menjadi `NEW`, `EXISTING`, `FIXED`, atau `REGRESSED` dan mengekspornya ke format **SARIF 2.1.0**, **JSON**, atau **Console CLI**.
-
----
-
-## 🏗️ Core Architecture
-
-```
-                                  Source Code / File Stream
-                                              │
-                                              ▼
-                                   ┌──────────────────────┐
-                                   │    Parser Registry   │
-                                   └──────────┬───────────┘
-                                              │
-                       ┌──────────────────────┼──────────────────────┐
-                       ▼                      ▼                      ▼
-             ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐
-             │  Python Parser   │   │ Generic TS Engine│   │ Tokenizer Engine │
-             └─────────┬────────┘   └─────────┬────────┘   └─────────┬────────┘
-                       └──────────────────────┼──────────────────────┘
-                                              │
-                                              ▼
-                                   ┌──────────────────────┐
-                                   │  FileNode / ASTNode  │
-                                   └──────────┬───────────┘
-                                              │
-                                              ▼
-                                   ┌──────────────────────┐
-                                   │  Predicate Pipeline  │
-                                   │ (NodeType, Symbol,   │
-                                   │  Regex, Literal)     │
-                                   └──────────┬───────────┘
-                                              │
-                                              ▼
-                                   ┌──────────────────────┐
-                                   │  Evidence & Scoring  │
-                                   │ ConfidenceCalculator │
-                                   └──────────┬───────────┘
-                                              │
-                                              ▼
-                                   ┌──────────────────────┐
-                                   │ Finding & Reporters  │
-                                   │ (SARIF, JSON, CLI)   │
-                                   └──────────┬───────────┘
-                                              │
-                                              ▼
-                                   ┌──────────────────────┐
-                                   │ Differential Baseline│
-                                   │ (.karsasec-baseline) │
-                                   └──────────────────────┘
-```
+1. **📄 Multi-Language Ingestion & AST Parsing**: Setiap berkas proyek diidentifikasi oleh `ParserRegistry` dan diubah menjadi pohon AST menggunakan parser C-Tree-sitter atau parser fallback native.
+2. **🔍 Deterministic Predicate Matching**: `ASTWalker` menelusuri simpul AST secara streaming. Pipeline predikat mencocokkan pola aturan secara cepat.
+3. **📊 Evidence Collection & Hybrid Confidence Scoring**: `EvidenceCollector` mengekstrak cuplikan kode dan `ConfidenceCalculator` menghitung nilai keyakinan.
+4. **🤖 Distributed AI Provider Gateway & Transactional Audit**: `AIBudgetService`, `AIRequestStateService`, `ProviderRouter`, dan `AIEventService` menangani permintaan AI secara transactional-safe, outbox-staged, dan budget-fenced.
 
 ---
 
 ## 📚 Documentation Directory
 
-Detailed architectural documentation is organized in `docs/`:
+Detailed architectural & sprint audit documentation is organized in `docs/`:
 
-- 🗺️ **[Implementation Roadmap](docs/IMPLEMENTATION_ROADMAP.md)** — Master 9-Sprint execution strategy
-- 📐 **[Project Blueprint](docs/blueprint/PROJECT_BLUEPRINT.md)** — Vision of SecOS & platform paradigm
-- 🤖 **[Agent Specifications](docs/architecture/AGENT_SPECIFICATIONS.md)** — Agent topology & DAG specifications
-- 🔬 **[Research Foundation](docs/research/RESEARCH_FOUNDATION.md)** — Theoretical & academic security research
-- 💻 **[Development Guide](docs/guides/DEVELOPMENT.md)** — Developer setup & environment guide
-- 🤝 **[Contributing Guide](docs/guides/CONTRIBUTING.md)** — Contribution workflow & guidelines
-- 🧪 **[Testing Strategy](docs/guides/TESTING.md)** — Automated testing strategy & corpus specifications
-
-## Recent Additions
-
-- Added OWASP Top-10 rule coverage expansion for Python, JavaScript, Go, Rust, and Java.
-- New rules: `KS-PY-0004`, `KS-PY-0010`, `KS-JS-0006`, `KS-GO-0008` with accompanying security_corpus samples and unit tests.
-- Continuous validation CI workflow: `.github/workflows/corpus-validation.yml` runs corpus validation and multi-language rule tests on PRs.
-
-If you want these added to project documentation pages, I can generate a short changelog fragment or PR-ready summary.
+- 🛡️ **[Sprint F10 Final Adversarial Audit Report](docs/f10_final_adversarial_audit.md)** — Forensic crash boundary matrix & F9 immutability audit report
+- 📤 **[Sprint F10 Transactional Audit & Outbox](docs/f10_phase4_transactional_audit.md)** — Transactional outbox & audit ledger integration specification
+- 🔀 **[Sprint F10 Cost-Aware Provider Router](docs/f10_phase3_provider_router.md)** — Multi-provider routing policy & health failover
+- 💰 **[Sprint F10 Budget Fencing & State Machine](docs/f10_phase2_budget_fencing.md)** — Token-budget reservation & request state machine
+- 🗄️ **[Sprint F10 Database Schema](docs/f10_database_schema.md)** — PostgreSQL/SQLAlchemy ORM specifications
+- 🏗️ **[Sprint F10 Architecture Audit](docs/f10_architecture_audit.md)** — Distributed AI Gateway architecture audit
+- 🛡️ **[Sprint F9 Security Baseline Audit](docs/f9_final_adversarial_audit.md)** — Disaster recovery & snapshot replay audit
+- 🗺️ **[Implementation Roadmap](docs/IMPLEMENTATION_ROADMAP.md)** — Master execution strategy
 
 ---
 

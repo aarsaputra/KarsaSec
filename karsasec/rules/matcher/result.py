@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 @dataclass(frozen=True)
 class RuleMatch:
     """Immutable result representing the evaluation of a Rule against an ASTNode."""
+
     matched: bool
     rule_id: str
     node_id: str

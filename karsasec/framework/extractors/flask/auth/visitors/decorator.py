@@ -17,8 +17,15 @@ class FlaskCustomDecoratorVisitor:
     """Visits FunctionDef AST nodes to inspect decorator wrappers for auth evidence."""
 
     AUTH_MARKERS = {
-        "current_user", "is_authenticated", "login_required", "jwt_required",
-        "verify_password", "verify_token", "is_admin", "abort(401)", "abort(403)"
+        "current_user",
+        "is_authenticated",
+        "login_required",
+        "jwt_required",
+        "verify_password",
+        "verify_token",
+        "is_admin",
+        "abort(401)",
+        "abort(403)",
     }
 
     def __init__(self, state: FlaskAuthState) -> None:

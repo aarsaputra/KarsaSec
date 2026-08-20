@@ -11,6 +11,7 @@ from karsasec.rules.schema import Rule
 @dataclass(slots=True)
 class MatcherContext:
     """Encapsulates target ASTNode, Rule/CompiledRule, VisitorContext, and source code bytes."""
+
     node: ASTNode
     rule: Rule | CompiledRule
     context: VisitorContext

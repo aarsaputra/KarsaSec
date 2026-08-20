@@ -1,4 +1,5 @@
 """Unit tests for UNKNOWN confidence isolation and rate metrics (E12-2)."""
+
 from __future__ import annotations
 
 import hashlib
@@ -45,7 +46,6 @@ def _make_finding(file_path: str, line: int, rule_id: str, confidence: str = "UN
 
 
 class TestUnknownIsolation:
-
     def test_unknown_not_counted_as_tp_or_fp(self) -> None:
         scan_root = Path("/tmp/scan")
         f_unknown = _make_finding("/tmp/scan/low.php", 10, "KS-PHP-0002", confidence="UNKNOWN")
@@ -56,8 +56,12 @@ class TestUnknownIsolation:
             description="test",
             cases=(
                 GroundTruthCase(
-                    case_id="c1", benchmark="test", file="low.php", line=10,
-                    rule_id="KS-PHP-0002", expected=GroundTruthExpectation.TRUE_POSITIVE,
+                    case_id="c1",
+                    benchmark="test",
+                    file="low.php",
+                    line=10,
+                    rule_id="KS-PHP-0002",
+                    expected=GroundTruthExpectation.TRUE_POSITIVE,
                     description="test",
                 ),
             ),

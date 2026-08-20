@@ -97,7 +97,9 @@ class FlaskControllerExtractor(SemanticExtractor):
         return (ctrl_defs, handler_defs), diagnostics
 
     def emit(
-        self, validated_tuple: tuple[list[ControllerDefinition], list[HandlerDefinition]], ctx: ExtractorContext | None = None
+        self,
+        validated_tuple: tuple[list[ControllerDefinition], list[HandlerDefinition]],
+        ctx: ExtractorContext | None = None,
     ) -> ExtractionResult:
         """Phase 3: Construct ExtractionResult populated with ControllerDefinition and HandlerDefinition ISR objects."""
         ctrl_defs, handler_defs = validated_tuple

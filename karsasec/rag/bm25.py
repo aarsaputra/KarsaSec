@@ -79,7 +79,11 @@ class BM25Index:
         for document in self.documents:
             score = self._score(query_tokens, document)
             if score > 0.0:
-                scores.append(BM25Result(document_id=document.document_id, score=score, text=document.text, metadata=document.metadata))
+                scores.append(
+                    BM25Result(
+                        document_id=document.document_id, score=score, text=document.text, metadata=document.metadata
+                    )
+                )
 
         scores.sort(key=lambda item: item.score, reverse=True)
         return scores[:top_k]

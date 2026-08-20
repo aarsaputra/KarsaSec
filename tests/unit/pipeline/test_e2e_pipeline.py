@@ -17,7 +17,7 @@ def test_e2e_multi_language_pipeline() -> None:
     code_samples = {
         "Python": ("app.py", "import os\nos.system(cmd)"),
         "JavaScript": ("app.js", "eval(user_input)"),
-        "Go": ("main.go", "package main\nimport \"net/http\"\nfunc f(u string) { http.Get(u) }"),
+        "Go": ("main.go", 'package main\nimport "net/http"\nfunc f(u string) { http.Get(u) }'),
         "PHP": ("index.php", "<?php $p = $_GET['p']; include($p); ?>"),
     }
 

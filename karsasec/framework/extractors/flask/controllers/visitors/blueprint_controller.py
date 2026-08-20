@@ -38,7 +38,11 @@ class FlaskBlueprintControllerVisitor:
 
         if func_name == "Blueprint":
             bp_name = ""
-            if call_node.args and isinstance(call_node.args[0], ast.Constant) and isinstance(call_node.args[0].value, str):
+            if (
+                call_node.args
+                and isinstance(call_node.args[0], ast.Constant)
+                and isinstance(call_node.args[0].value, str)
+            ):
                 bp_name = call_node.args[0].value
 
             for target in targets:
@@ -51,7 +55,11 @@ class FlaskBlueprintControllerVisitor:
             route_path = ""
             handler_name = ""
 
-            if call_node.args and isinstance(call_node.args[0], ast.Constant) and isinstance(call_node.args[0].value, str):
+            if (
+                call_node.args
+                and isinstance(call_node.args[0], ast.Constant)
+                and isinstance(call_node.args[0].value, str)
+            ):
                 route_path = call_node.args[0].value
 
             for keyword in call_node.keywords:

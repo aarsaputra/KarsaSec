@@ -61,7 +61,9 @@ class CPGQuery:
         next_nodes = []
         for n in self._current_nodes:
             for edge in self.graph.get_outgoing_edges(n.id):
-                if not edge_type or edge.edge_type.value == (edge_type.value if isinstance(edge_type, EdgeType) else edge_type):
+                if not edge_type or edge.edge_type.value == (
+                    edge_type.value if isinstance(edge_type, EdgeType) else edge_type
+                ):
                     if edge.target_id in self.graph.nodes:
                         next_nodes.append(self.graph.nodes[edge.target_id])
         self._current_nodes = next_nodes
@@ -72,7 +74,9 @@ class CPGQuery:
         next_nodes = []
         for n in self._current_nodes:
             for edge in self.graph.get_incoming_edges(n.id):
-                if not edge_type or edge.edge_type.value == (edge_type.value if isinstance(edge_type, EdgeType) else edge_type):
+                if not edge_type or edge.edge_type.value == (
+                    edge_type.value if isinstance(edge_type, EdgeType) else edge_type
+                ):
                     if edge.source_id in self.graph.nodes:
                         next_nodes.append(self.graph.nodes[edge.source_id])
         self._current_nodes = next_nodes

@@ -3,6 +3,7 @@ from flask.views import View
 
 app = Flask(__name__)
 
+
 class ListView(View):
     methods = ["GET", "POST"]
 

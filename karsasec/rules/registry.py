@@ -31,7 +31,9 @@ class RuleRegistry:
                 raise ValueError(f"Duplicate Rule ID '{rule.id}' detected in registry.")
 
             self._rules_by_id[rule.id] = rule
-            lang_str = rule.match.language.value if isinstance(rule.match.language, LanguageEnum) else str(rule.match.language)
+            lang_str = (
+                rule.match.language.value if isinstance(rule.match.language, LanguageEnum) else str(rule.match.language)
+            )
 
             if not rule.match.ast_node_types:
                 # Universal match for all node types under this language
@@ -76,6 +78,7 @@ class RuleRegistry:
         with self._lock:
             self._rules_by_id.clear()
             self._rules_by_lang_and_node.clear()
+
 
 # Global default rule registry instance
 rule_registry = RuleRegistry()
