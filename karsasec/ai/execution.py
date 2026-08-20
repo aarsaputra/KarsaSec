@@ -1,12 +1,13 @@
-"""Sprint F11 Phase 1–4 — Provider Execution Security Boundary, Hard Timeout, Failure Classification & Bounded Retry Engine.
+"""Sprint F11 Phase 1–5 — Provider Execution Security Boundary, Hard Timeout, Failure Classification, Bounded Retry & Circuit Breaker.
 
 Establishes formal abstraction boundaries, hard timeout isolation, deterministic failure classification,
-and bounded retry/backoff coordination:
+bounded retry/backoff coordination, and circuit breaker protection:
   - ProviderExecutionService
   - ProviderAttemptExecutor
   - ProviderExecutionRequest
   - ProviderExecutionResponse
   - RetryPolicy & BackoffCalculator integration (INV-F11-RETRY-02, INV-F11-RETRY-03, INV-F11-BACKOFF-04)
+  - ProviderCircuitBreaker integration (INV-F11-CIRCUIT-05, ADV-05)
 
 Preserves all F10 router, request state machine, and budget invariants.
 Does NOT mutate frozen F9 primitive recovery/audit/outbox components.
@@ -26,7 +27,7 @@ from karsasec.ai.exceptions import AIRequestStateConflictError
 from karsasec.ai.failure_classifier import FailureClassifier
 from karsasec.ai.provider import ATTEMPT_ERROR_TIMEOUT
 from karsasec.ai.retry import RetryPolicy
-from karsasec.ai.router import InvalidAttemptError
+from karsasec.ai.router import InvalidAttemptError, NoEligibleProviderError
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
@@ -157,7 +158,7 @@ class DummyAttemptExecutor:
 
 
 class ProviderExecutionService:
-    """Orchestrator for AI provider selection, state tracking, execution, and bounded retry coordination."""
+    """Orchestrator for AI provider selection, state tracking, execution, retry, and circuit breaker coordination."""
 
     def __init__(
         self,
@@ -165,11 +166,13 @@ class ProviderExecutionService:
         executor: ProviderAttemptExecutor | None = None,
         retry_policy: RetryPolicy | None = None,
         sleeper: Callable[[float], None] | None = None,
+        circuit_breaker: Any | None = None,
     ) -> None:
         self.router = router
         self.executor = executor or DummyAttemptExecutor()
         self.retry_policy = retry_policy or RetryPolicy()
         self.sleeper = sleeper
+        self.circuit_breaker = circuit_breaker or getattr(router, "circuit_breaker", None)
 
     def _execute_attempt_with_timeout(
         self,
@@ -225,7 +228,7 @@ class ProviderExecutionService:
         policy: RoutingPolicy,
         request: ProviderExecutionRequest,
     ) -> ProviderExecutionResponse:
-        """Executes an AI request within session scope adhering to F10 budget & request state transitions, with F11 bounded retries."""
+        """Executes an AI request within session scope adhering to F10 budget & request state transitions, with F11 retries and circuit breaker."""
         from karsasec.ai.request import AIRequestStateService
         from karsasec.ai.state_machine import (
             STATE_IN_FLIGHT,
@@ -257,8 +260,22 @@ class ProviderExecutionService:
 
         for attempt_number in range(1, effective_max_attempts + 1):
             # Select provider via Router & transition state
-            routing_result = self.router.select_provider(policy=policy)
-            descriptor = routing_result.descriptor
+            try:
+                routing_result = self.router.select_provider(policy=policy)
+                descriptor = routing_result.descriptor
+            except NoEligibleProviderError:
+                # Handle case where all providers are OPEN or ineligible (INV-F11-CIRCUIT-05)
+                req_model = AIRequestStateService.get_request(session, request.request_id)
+                target_status = STATE_PROVIDER_FAILED if attempt_number > 1 else STATE_RESERVED
+                if req_model and req_model.status == target_status:
+                    AIRequestStateService.release_reservation(
+                        session=session,
+                        request_id=request.request_id,
+                        target_status="FAILED",
+                    )
+                if last_response is not None:
+                    return last_response
+                raise
 
             if attempt_number == 1:
                 # Transition RESERVED -> ROUTED -> IN_FLIGHT
@@ -315,7 +332,10 @@ class ProviderExecutionService:
             last_response = response
 
             if response.success:
-                # Success path
+                # Success path — record success in circuit breaker if configured
+                if self.circuit_breaker:
+                    self.circuit_breaker.record_success(descriptor.provider_id, descriptor.model_id)
+
                 attempt_model.status = "COMPLETED"
                 attempt_model.input_tokens = response.input_tokens
                 attempt_model.output_tokens = response.output_tokens
@@ -331,8 +351,11 @@ class ProviderExecutionService:
                 )
                 return response
 
-            # Failure path
+            # Failure path — record failure in circuit breaker if configured
             classification = FailureClassifier.classify(error_class_hint=response.error_class)
+            if self.circuit_breaker:
+                self.circuit_breaker.record_failure(descriptor.provider_id, descriptor.model_id, classification)
+
             self.router.record_attempt_failure(
                 session=session,
                 attempt=attempt_model,

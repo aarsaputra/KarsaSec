@@ -2,7 +2,7 @@
 
 **Date**: 2026-08-20
 **Target Repository**: `karsasec`
-**Status**: In Progress (F11.1, F11.2, F11.3 & F11.4 Complete)
+**Status**: In Progress (F11.1 through F11.5 Complete)
 
 ---
 
@@ -15,11 +15,11 @@ F11.2 Hard Timeout Isolation [COMPLETED - 5899c37]
   ↓
 F11.3 Failure Classification Engine [COMPLETED - d72ce7f]
   ↓
-F11.4 Bounded Retry Engine [COMPLETED - INV-F11-RETRY-02/03, INV-F11-BACKOFF-04, ADV-02/03/04/10 PASS]
+F11.4 Bounded Retry Engine [COMPLETED - 5fd44a7]
   ↓
-F11.5 Circuit Breaker Engine [NEXT]
+F11.5 Circuit Breaker Engine [COMPLETED - INV-F11-CIRCUIT-05, ADV-05 PASS]
   ↓
-F11.6 Distributed Rate Limiter
+F11.6 Distributed Rate Limiter [NEXT]
   ↓
 F11.7 Provider Concurrency Guard
   ↓
@@ -54,8 +54,30 @@ F11.10 Adversarial Security Test Suite
 - **Target Invariants**: `INV-F11-RETRY-02`, `INV-F11-RETRY-03`, `INV-F11-BACKOFF-04`
 - **Target Adversarial Tests**: `ADV-02` (`test_retry_storm_exponential_backoff_and_cap`), `ADV-03` (`test_retry_amplification_bounded_at_max_attempts`), `ADV-04` (`test_concurrent_retry_idempotency_locking`), `ADV-10` (`test_duplicate_attempt_creation_rejection`)
 - **Files Modified**: `karsasec/ai/retry.py` `[NEW]`, `karsasec/ai/execution.py` `[UPDATED]`, `tests/ai/test_f11_phase5_retry.py` `[NEW]`
-- **Verification**: Verified hard limit $N_{max} \le 3$, failure eligibility integration with `FailureClassifier`, exponential backoff with full jitter capped at 30s, atomic database uniqueness locking on `(request_id, attempt_number)`, budget safety, and idempotency.
+- **Status**: **COMPLETE** (Commit `5fd44a7`)
+
+#### F11.5: Provider Circuit Breaker Engine
+- **Target Invariants**: `INV-F11-CIRCUIT-05`, `INV-F11-FAILURE-15`
+- **Target Adversarial Tests**: `ADV-05` (`test_circuit_breaker_trips_open_on_5xx_threshold`), 4xx Poisoning Defense (`test_4xx_poisoning_defense`), HALF_OPEN recovery & failure, OPEN bypass, fallback routing, and HALF_OPEN probe stampede protection.
+- **Files Modified**: `karsasec/ai/circuit_breaker.py` `[NEW]`, `karsasec/ai/router.py` `[UPDATED]`, `karsasec/ai/execution.py` `[UPDATED]`, `tests/ai/test_f11_phase5_circuit_breaker.py` `[NEW]`
+- **Verification**: Verified state machine (CLOSED -> OPEN -> HALF_OPEN -> CLOSED), configurable window/threshold/cooldown, 4xx immunity, router immediate bypass without network/slot/budget consumption, fallback routing, and HALF_OPEN probe concurrency protection.
 - **Status**: **COMPLETE**
+
+---
+
+## Technical Specifications: F11.5 Provider Circuit Breaker
+
+### State Machine & Transitions
+- `CLOSED`: Normal routing. Successes reset failure pressure; provider infrastructure failures are recorded into sliding window.
+- `OPEN`: Unhealthy provider. `ProviderRouter` immediately bypasses provider during eligibility filter (`Stage 3.5`) without making network calls or consuming worker slots/budget.
+- `HALF_OPEN`: Cooldown elapsed (`cooldown_seconds`). Bounded probe request (`half_open_max_probes=1`) allowed. Successful probe transitions `HALF_OPEN -> CLOSED`; failed probe transitions `HALF_OPEN -> OPEN`.
+
+### Configuration Defaults
+- `failure_window_size`: 10
+- `failure_threshold`: 0.5 (50% failure rate)
+- `min_samples`: 5
+- `cooldown_seconds`: 30.0s
+- `half_open_max_probes`: 1
 
 ---
 

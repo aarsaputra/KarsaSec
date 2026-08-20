@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
+from typing import Any
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -91,9 +92,11 @@ class ProviderRouter:
         self,
         registry: ProviderRegistry,
         health_registry: ProviderHealthRegistry | None = None,
+        circuit_breaker: Any | None = None,
     ) -> None:
         self.registry = registry
         self.health_registry = health_registry or ProviderHealthRegistry()
+        self.circuit_breaker = circuit_breaker
 
     def _filter_eligible(
         self,
@@ -109,6 +112,7 @@ class ProviderRouter:
         [1] Exclusion list (prior failed attempts)
         [2] Capability check (INV-F10-ROUTER-06)
         [3] Health eligibility (INV-F10-ROUTER-05)
+        [3.5] Circuit breaker state (INV-F11-CIRCUIT-05)
         [4] Cost ceiling (INV-F10-ROUTER-03/04)
 
         Providers that fail any stage are silently excluded from the candidate set.
@@ -137,6 +141,10 @@ class ProviderRouter:
                 continue  # UNAVAILABLE = rejected
             if active_health == HEALTH_DEGRADED and not policy.allow_degraded:
                 continue  # Policy disallows degraded providers
+
+            # Stage 3.5 — Circuit breaker state (INV-F11-CIRCUIT-05)
+            if self.circuit_breaker and self.circuit_breaker.is_open(descriptor.provider_id, descriptor.model_id):
+                continue  # OPEN circuit — bypass provider immediately without executing network calls
 
             # Stage 4 — Cost ceiling (INV-F10-ROUTER-03/04)
             try:
