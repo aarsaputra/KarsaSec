@@ -1,24 +1,32 @@
-"""Sprint F11 Phase 1 & 2 — Provider Execution Security Boundary & Hard Timeout Isolation.
+"""Sprint F11 Phase 1–4 — Provider Execution Security Boundary, Hard Timeout, Failure Classification & Bounded Retry Engine.
 
-Establishes formal abstraction boundaries and hard per-attempt timeout enforcement:
+Establishes formal abstraction boundaries, hard timeout isolation, deterministic failure classification,
+and bounded retry/backoff coordination:
   - ProviderExecutionService
   - ProviderAttemptExecutor
   - ProviderExecutionRequest
   - ProviderExecutionResponse
+  - RetryPolicy & BackoffCalculator integration (INV-F11-RETRY-02, INV-F11-RETRY-03, INV-F11-BACKOFF-04)
 
-Enforces INV-F11-TIMEOUT-01:
-  A provider execution attempt must never block the executing worker beyond per_attempt_timeout_seconds.
-  Produces bounded ATTEMPT_ERROR_TIMEOUT without leaking credentials or budget.
+Preserves all F10 router, request state machine, and budget invariants.
+Does NOT mutate frozen F9 primitive recovery/audit/outbox components.
 """
 
 from __future__ import annotations
 
 import asyncio
 import concurrent.futures
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
+from sqlalchemy.exc import IntegrityError
+
+from karsasec.ai.exceptions import AIRequestStateConflictError
+from karsasec.ai.failure_classifier import FailureClassifier
 from karsasec.ai.provider import ATTEMPT_ERROR_TIMEOUT
+from karsasec.ai.retry import RetryPolicy
+from karsasec.ai.router import InvalidAttemptError
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
@@ -149,15 +157,19 @@ class DummyAttemptExecutor:
 
 
 class ProviderExecutionService:
-    """Orchestrator for AI provider selection, state tracking, and execution."""
+    """Orchestrator for AI provider selection, state tracking, execution, and bounded retry coordination."""
 
     def __init__(
         self,
         router: ProviderRouter,
         executor: ProviderAttemptExecutor | None = None,
+        retry_policy: RetryPolicy | None = None,
+        sleeper: Callable[[float], None] | None = None,
     ) -> None:
         self.router = router
         self.executor = executor or DummyAttemptExecutor()
+        self.retry_policy = retry_policy or RetryPolicy()
+        self.sleeper = sleeper
 
     def _execute_attempt_with_timeout(
         self,
@@ -189,7 +201,6 @@ class ProviderExecutionService:
                 if loop and loop.is_running():
                     # Running inside an active loop — await with asyncio.wait_for
                     future = asyncio.wait_for(res, timeout=timeout)
-                    # Sync wrapper for coroutine when called in sync context
                     return loop.run_until_complete(future)
                 else:
                     return asyncio.run(asyncio.wait_for(res, timeout=timeout))
@@ -214,9 +225,14 @@ class ProviderExecutionService:
         policy: RoutingPolicy,
         request: ProviderExecutionRequest,
     ) -> ProviderExecutionResponse:
-        """Executes an AI request within session scope adhering to F10 budget & request state transitions."""
+        """Executes an AI request within session scope adhering to F10 budget & request state transitions, with F11 bounded retries."""
         from karsasec.ai.request import AIRequestStateService
-        from karsasec.ai.state_machine import STATE_IN_FLIGHT, STATE_RESERVED, STATE_ROUTED
+        from karsasec.ai.state_machine import (
+            STATE_IN_FLIGHT,
+            STATE_PROVIDER_FAILED,
+            STATE_RESERVED,
+            STATE_ROUTED,
+        )
 
         # 1. Create or idempotently fetch AI request
         AIRequestStateService.create_request(
@@ -228,7 +244,7 @@ class ProviderExecutionService:
             context_hash=request.context_hash,
         )
 
-        # 2. Reserve budget
+        # 2. Reserve budget (once per request lifecycle)
         estimated_total_tokens = request.estimated_input_tokens + request.estimated_output_tokens
         AIRequestStateService.reserve_budget(
             session=session,
@@ -236,71 +252,127 @@ class ProviderExecutionService:
             request_tokens=estimated_total_tokens,
         )
 
-        # 3. Select provider via Router & transition RESERVED -> ROUTED
-        routing_result = self.router.select_provider(policy=policy)
-        descriptor = routing_result.descriptor
+        effective_max_attempts = min(request.max_attempts, self.retry_policy.max_attempts)
+        last_response: ProviderExecutionResponse | None = None
 
-        AIRequestStateService.transition_status(
-            session=session,
-            request_id=request.request_id,
-            expected_status=STATE_RESERVED,
-            new_status=STATE_ROUTED,
-            selected_provider_id=descriptor.provider_id,
-            selected_model_id=descriptor.model_id,
-        )
+        for attempt_number in range(1, effective_max_attempts + 1):
+            # Select provider via Router & transition state
+            routing_result = self.router.select_provider(policy=policy)
+            descriptor = routing_result.descriptor
 
-        # 4. Transition ROUTED -> IN_FLIGHT
-        AIRequestStateService.transition_status(
-            session=session,
-            request_id=request.request_id,
-            expected_status=STATE_ROUTED,
-            new_status=STATE_IN_FLIGHT,
-        )
+            if attempt_number == 1:
+                # Transition RESERVED -> ROUTED -> IN_FLIGHT
+                AIRequestStateService.transition_status(
+                    session=session,
+                    request_id=request.request_id,
+                    expected_status=STATE_RESERVED,
+                    new_status=STATE_ROUTED,
+                    selected_provider_id=descriptor.provider_id,
+                    selected_model_id=descriptor.model_id,
+                )
+            else:
+                # Transition PROVIDER_FAILED -> ROUTED -> IN_FLIGHT
+                AIRequestStateService.transition_status(
+                    session=session,
+                    request_id=request.request_id,
+                    expected_status=STATE_PROVIDER_FAILED,
+                    new_status=STATE_ROUTED,
+                    selected_provider_id=descriptor.provider_id,
+                    selected_model_id=descriptor.model_id,
+                )
 
-        # 5. Record IN_FLIGHT attempt in database ledger
-        attempt_model = self.router.record_attempt(
-            session=session,
-            request_id=request.request_id,
-            attempt_number=routing_result.attempt_number,
-            provider_id=descriptor.provider_id,
-            model_id=descriptor.model_id,
-            status="IN_FLIGHT",
-        )
-
-        # 6. Execute attempt with hard timeout isolation (INV-F11-TIMEOUT-01)
-        response = self._execute_attempt_with_timeout(
-            descriptor=descriptor,
-            request=request,
-            attempt_number=routing_result.attempt_number,
-        )
-
-        if response.success:
-            # 7a. Record completion
-            attempt_model.status = "COMPLETED"
-            attempt_model.input_tokens = response.input_tokens
-            attempt_model.output_tokens = response.output_tokens
-            session.flush()
-
-            AIRequestStateService.commit_execution(
+            AIRequestStateService.transition_status(
                 session=session,
                 request_id=request.request_id,
-                actual_tokens=response.input_tokens + response.output_tokens,
-                actual_cost_micro_units=response.actual_cost_micro_units,
-                selected_provider_id=descriptor.provider_id,
-                selected_model_id=descriptor.model_id,
+                expected_status=STATE_ROUTED,
+                new_status=STATE_IN_FLIGHT,
             )
-        else:
-            # 7b. Record failure
-            error_class = response.error_class or "UNKNOWN_PROVIDER_ERROR"
+
+            # Atomic database attempt recording (UNIQUE constraint on request_id, attempt_number)
+            try:
+                attempt_model = self.router.record_attempt(
+                    session=session,
+                    request_id=request.request_id,
+                    attempt_number=attempt_number,
+                    provider_id=descriptor.provider_id,
+                    model_id=descriptor.model_id,
+                    status="IN_FLIGHT",
+                )
+            except (IntegrityError, AIRequestStateConflictError, InvalidAttemptError):
+                session.rollback()
+                if last_response is not None:
+                    return last_response
+                raise AIRequestStateConflictError(
+                    f"Concurrent attempt conflict for request '{request.request_id}' attempt {attempt_number}."
+                )
+
+            # Execute attempt with hard timeout isolation (INV-F11-TIMEOUT-01)
+            response = self._execute_attempt_with_timeout(
+                descriptor=descriptor,
+                request=request,
+                attempt_number=attempt_number,
+            )
+            last_response = response
+
+            if response.success:
+                # Success path
+                attempt_model.status = "COMPLETED"
+                attempt_model.input_tokens = response.input_tokens
+                attempt_model.output_tokens = response.output_tokens
+                session.flush()
+
+                AIRequestStateService.commit_execution(
+                    session=session,
+                    request_id=request.request_id,
+                    actual_tokens=response.input_tokens + response.output_tokens,
+                    actual_cost_micro_units=response.actual_cost_micro_units,
+                    selected_provider_id=descriptor.provider_id,
+                    selected_model_id=descriptor.model_id,
+                )
+                return response
+
+            # Failure path
+            classification = FailureClassifier.classify(error_class_hint=response.error_class)
             self.router.record_attempt_failure(
                 session=session,
                 attempt=attempt_model,
-                error_class=error_class,
+                error_class=classification.error_class,
             )
+
+            # Transition IN_FLIGHT -> PROVIDER_FAILED
+            AIRequestStateService.transition_status(
+                session=session,
+                request_id=request.request_id,
+                expected_status=STATE_IN_FLIGHT,
+                new_status=STATE_PROVIDER_FAILED,
+            )
+
+            # Evaluate retry policy
+            decision = self.retry_policy.evaluate(
+                attempt_number=attempt_number,
+                classification=classification,
+            )
+
+            if decision.should_retry and attempt_number < effective_max_attempts:
+                # Perform backoff sleep
+                if self.sleeper is not None and decision.backoff_seconds > 0:
+                    self.sleeper(decision.backoff_seconds)
+                continue
+
+            # No further retries: transition PROVIDER_FAILED -> FAILED & release budget reservation
             AIRequestStateService.release_reservation(
                 session=session,
                 request_id=request.request_id,
                 target_status="FAILED",
             )
+            return response
 
-        return response
+        # Fallback return (should be unreachable due to loop control)
+        return last_response or ProviderExecutionResponse(
+            request_id=request.request_id,
+            attempt_number=effective_max_attempts,
+            provider_id="none",
+            model_id="none",
+            success=False,
+            error_class="ATTEMPTS_EXHAUSTED",
+        )
