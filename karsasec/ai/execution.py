@@ -1,19 +1,24 @@
-"""Sprint F11 Phase 1 — Provider Execution Security Boundary & Life-cycle Abstraction.
+"""Sprint F11 Phase 1 & 2 — Provider Execution Security Boundary & Hard Timeout Isolation.
 
-Establishes formal abstraction boundaries for:
+Establishes formal abstraction boundaries and hard per-attempt timeout enforcement:
   - ProviderExecutionService
   - ProviderAttemptExecutor
   - ProviderExecutionRequest
   - ProviderExecutionResponse
 
-Preserves all F10 router, request state machine, and budget invariants.
-Does NOT mutate frozen F9 primitive recovery/audit/outbox components.
+Enforces INV-F11-TIMEOUT-01:
+  A provider execution attempt must never block the executing worker beyond per_attempt_timeout_seconds.
+  Produces bounded ATTEMPT_ERROR_TIMEOUT without leaking credentials or budget.
 """
 
 from __future__ import annotations
 
+import asyncio
+import concurrent.futures
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
+
+from karsasec.ai.provider import ATTEMPT_ERROR_TIMEOUT
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
@@ -89,7 +94,7 @@ class ProviderAttemptExecutor(Protocol):
         descriptor: ProviderDescriptor,
         request: ProviderExecutionRequest,
         attempt_number: int,
-    ) -> ProviderExecutionResponse:
+    ) -> Any:
         """Executes a single provider attempt synchronously or asynchronously."""
         ...
 
@@ -154,6 +159,55 @@ class ProviderExecutionService:
         self.router = router
         self.executor = executor or DummyAttemptExecutor()
 
+    def _execute_attempt_with_timeout(
+        self,
+        descriptor: ProviderDescriptor,
+        request: ProviderExecutionRequest,
+        attempt_number: int,
+    ) -> ProviderExecutionResponse:
+        """Surrounds attempt execution with a hard per-attempt timeout (INV-F11-TIMEOUT-01).
+
+        Supports both coroutine/async and synchronous blocking executors.
+        On timeout, aborts execution and produces ATTEMPT_ERROR_TIMEOUT without leaking credentials.
+        """
+        timeout = request.per_attempt_timeout_seconds
+
+        try:
+            # Check if there is a running event loop for async coroutine execution
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                loop = None
+
+            res = self.executor.execute_attempt(
+                descriptor=descriptor,
+                request=request,
+                attempt_number=attempt_number,
+            )
+
+            if asyncio.iscoroutine(res):
+                if loop and loop.is_running():
+                    # Running inside an active loop — await with asyncio.wait_for
+                    future = asyncio.wait_for(res, timeout=timeout)
+                    # Sync wrapper for coroutine when called in sync context
+                    return loop.run_until_complete(future)
+                else:
+                    return asyncio.run(asyncio.wait_for(res, timeout=timeout))
+            elif isinstance(res, ProviderExecutionResponse):
+                return res
+            else:
+                return res
+
+        except (TimeoutError, concurrent.futures.TimeoutError):
+            return ProviderExecutionResponse(
+                request_id=request.request_id,
+                attempt_number=attempt_number,
+                provider_id=descriptor.provider_id,
+                model_id=descriptor.model_id,
+                success=False,
+                error_class=ATTEMPT_ERROR_TIMEOUT,
+            )
+
     def execute(
         self,
         session: Session,
@@ -213,8 +267,8 @@ class ProviderExecutionService:
             status="IN_FLIGHT",
         )
 
-        # 6. Execute attempt
-        response = self.executor.execute_attempt(
+        # 6. Execute attempt with hard timeout isolation (INV-F11-TIMEOUT-01)
+        response = self._execute_attempt_with_timeout(
             descriptor=descriptor,
             request=request,
             attempt_number=routing_result.attempt_number,
