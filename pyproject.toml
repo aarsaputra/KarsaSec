@@ -30,6 +30,8 @@ dependencies = [
     "tree-sitter>=0.22.0",
     "pyyaml>=6.0.1",
     "litellm>=1.35.0",
+    "fastapi>=0.110.0",
+    "uvicorn>=0.28.0",
     "sqlite3-api; python_version < '3.11'",
 ]
 
@@ -70,3 +72,4 @@ ignore_missing_imports = true
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
+addopts = "--import-mode=importlib"
