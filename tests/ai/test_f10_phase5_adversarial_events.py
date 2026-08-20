@@ -51,7 +51,9 @@ def test_ai_event_lifecycle_sequence_monotonicity(temp_db_path: Path):
     req_id = "req-seq-1"
     AIRequestStateService.create_request(session, req_id, "t-events", "b-events", "1" * 64, "2" * 64)
     AIEventService.stage_budget_reserved(session, req_id, "t-events", "b-events", 500, lease_version=1)
-    AIEventService.stage_provider_selected(session, req_id, "t-events", "att-1", 1, "openai", "gpt-4o", 100, lease_version=2)
+    AIEventService.stage_provider_selected(
+        session, req_id, "t-events", "att-1", 1, "openai", "gpt-4o", 100, lease_version=2
+    )
     AIEventService.stage_budget_committed(session, req_id, "t-events", "b-events", 100, 300, lease_version=3)
     session.commit()
 

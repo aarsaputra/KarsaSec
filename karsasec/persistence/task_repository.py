@@ -12,16 +12,10 @@ Invariants:
 
 from __future__ import annotations
 
-from contextlib import contextmanager
 from datetime import datetime, UTC
-from collections.abc import Generator
 
-from sqlalchemy import select
-from sqlalchemy.orm import Session
 
-from karsasec.persistence.db import DatabaseSessionFactory, get_session_factory
 from karsasec.persistence.models import TaskModel
-from karsasec.workers.repository import TaskRepository
 from karsasec.workers.task import RemediationTask, TaskState
 
 
@@ -51,6 +45,3 @@ def _model_to_domain(model: TaskModel) -> RemediationTask:
         elapsed = (datetime.now(UTC) - model.lease_started_at).total_seconds()
         task.started_at = time.monotonic() - elapsed
     return task
-
-
-from karsasec.persistence.postgres_task_repository import PostgresTaskRepository

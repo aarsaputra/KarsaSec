@@ -1,7 +1,6 @@
 import uuid
-from typing import List, Optional, Any
+from typing import Any
 from sqlalchemy import update, select
-from sqlalchemy.orm import Session
 
 from karsasec.persistence.db import DatabaseSessionFactory, get_session_factory
 from karsasec.persistence.models import TaskModel, WorkerModel, DeadLetterEventModel
@@ -37,11 +36,14 @@ class PostgresTaskRepository(TaskRepository):
         if self._audit_repo:
             try:
                 from karsasec.persistence.audit_repository import AuditEvent
-                self._audit_repo.append(AuditEvent(
-                    task_id=task_id,
-                    event_type=event_type,
-                    details=details,
-                ))
+
+                self._audit_repo.append(
+                    AuditEvent(
+                        task_id=task_id,
+                        event_type=event_type,
+                        details=details,
+                    )
+                )
             except Exception:
                 pass
 
@@ -111,7 +113,7 @@ class PostgresTaskRepository(TaskRepository):
                 deduplication_key=f"task_created_{task.task_id}",
             )
 
-    def get_task(self, task_id: str) -> Optional[RemediationTask]:
+    def get_task(self, task_id: str) -> RemediationTask | None:
         """Retrieves a task by ID from PostgreSQL."""
         session = self._session_factory.get_session()
         try:
@@ -155,14 +157,12 @@ class PostgresTaskRepository(TaskRepository):
         self,
         task_id: str,
         expected_lease_version: int,
-        expected_states: List[TaskState],
+        expected_states: list[TaskState],
         new_state: TaskState,
         **kwargs,
     ) -> RemediationTask:
         """Atomically validates lease_version & state via single SQL UPDATE statement (INV-F5-02)."""
-        expected_state_strs = [
-            s.value if isinstance(s, TaskState) else str(s) for s in expected_states
-        ]
+        expected_state_strs = [s.value if isinstance(s, TaskState) else str(s) for s in expected_states]
         target_state_str = new_state.value if isinstance(new_state, TaskState) else str(new_state)
 
         next_lease_version = kwargs.get("lease_version", expected_lease_version + 1)
@@ -256,9 +256,7 @@ class PostgresTaskRepository(TaskRepository):
                         f"Task state transition rejected for '{task_id}'. Current state '{current_model.state}' not in expected {expected_state_strs}."
                     )
                 else:
-                    invalid_state_error = InvalidTaskStateError(
-                        f"Atomic state transition failed for task '{task_id}'."
-                    )
+                    invalid_state_error = InvalidTaskStateError(f"Atomic state transition failed for task '{task_id}'.")
 
         if result_domain:
             self._append_audit(
@@ -308,7 +306,9 @@ class PostgresTaskRepository(TaskRepository):
                 raise InvalidTaskStateError(f"Terminal state task '{task_id}' cannot be assigned.")
 
             if model.attempts >= model.max_attempts:
-                raise InvalidTaskStateError(f"Task '{task_id}' attempts exhausted ({model.attempts}/{model.max_attempts}).")
+                raise InvalidTaskStateError(
+                    f"Task '{task_id}' attempts exhausted ({model.attempts}/{model.max_attempts})."
+                )
 
             if model.state not in (TaskState.QUEUED.value, TaskState.PENDING.value):
                 raise InvalidTaskStateError(
@@ -384,9 +384,7 @@ class PostgresTaskRepository(TaskRepository):
                 )
 
             if model.state != TaskState.RUNNING.value:
-                raise InvalidTaskStateError(
-                    f"Task state '{model.state}' cannot be completed."
-                )
+                raise InvalidTaskStateError(f"Task state '{model.state}' cannot be completed.")
 
             prev_state = model.state
             model.state = TaskState.COMPLETED.value
@@ -458,9 +456,7 @@ class PostgresTaskRepository(TaskRepository):
                 )
 
             if model.state != TaskState.RUNNING.value:
-                raise InvalidTaskStateError(
-                    f"Task state '{model.state}' cannot record execution failure."
-                )
+                raise InvalidTaskStateError(f"Task state '{model.state}' cannot record execution failure.")
 
             prev_state = model.state
             model.lease_version = expected_lease_version + 1
@@ -529,7 +525,7 @@ class PostgresTaskRepository(TaskRepository):
 
             return self._model_to_domain(model)
 
-    def get_active_task_by_fingerprint(self, fingerprint: str) -> Optional[RemediationTask]:
+    def get_active_task_by_fingerprint(self, fingerprint: str) -> RemediationTask | None:
         """Finds any non-terminal task matching the fingerprint."""
         terminal_states = [
             TaskState.COMPLETED.value,
@@ -550,9 +546,7 @@ class PostgresTaskRepository(TaskRepository):
         finally:
             session.close()
 
-    def list_tasks(
-        self, states: Optional[list[TaskState]] = None, limit: int = 100
-    ) -> list[RemediationTask]:
+    def list_tasks(self, states: list[TaskState] | None = None, limit: int = 100) -> list[RemediationTask]:
         """List tasks optionally filtered by state."""
         session = self._session_factory.get_session()
         try:

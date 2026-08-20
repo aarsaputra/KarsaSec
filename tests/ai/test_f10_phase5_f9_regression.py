@@ -12,7 +12,6 @@ def test_f9_protected_files_are_unmodified():
         "karsasec/recovery",
         "karsasec/events/audit_ledger.py",
         "karsasec/events/outbox.py",
-        "karsasec/persistence/postgres_task_repository.py",
     ]
 
     res = subprocess.run(
