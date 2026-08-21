@@ -1,0 +1,83 @@
+category:
+  id: BREACH_SIMULATION_ENGINE
+  name: Full Multi-Step Breach Simulation & Business Risk Engine
+  cwe: CWE-1000
+  owasp: A06:2021-Vulnerable and Outdated Components
+
+scenario_types:
+  - id: SINGLE_HOP
+    name: Single Hop Vulnerability Path
+  - id: MULTI_HOP
+    name: Multi-Hop Escalation Path
+  - id: CREDENTIAL_BREACH
+    name: Credential / Secret Exposure Breach
+  - id: PRIVILEGE_ESCALATION
+    name: Privilege Escalation & Authorization Boundary Breach
+  - id: TENANT_BOUNDARY_BREACH
+    name: Multi-Tenant Data Isolation Escape Breach
+  - id: INTERNAL_NETWORK_BREACH
+    name: Internal Network / SSRF Metadata Access Breach
+  - id: DATA_EXFILTRATION
+    name: Confidential File / Secret Data Exfiltration Breach
+  - id: DESTRUCTIVE_BREACH
+    name: Destructive Operation / Data Loss Breach
+  - id: FULL_COMPROMISE
+    name: Full System / Infrastructure Administrator Breach
+  - id: BUSINESS_CRITICAL_BREACH
+    name: Business Critical System & Service Destruction Breach
+  - id: UNKNOWN_SCENARIO
+    name: Unresolved / Incomplete Evidence Breach Scenario
+
+business_impacts:
+  - id: NO_BUSINESS_IMPACT
+    weight: 0.0
+  - id: LIMITED_DATA_ACCESS
+    weight: 0.1
+  - id: SENSITIVE_DATA_EXPOSURE
+    weight: 0.3
+  - id: CREDENTIAL_COMPROMISE
+    weight: 0.5
+  - id: PRIVILEGE_ESCALATION
+    weight: 0.6
+  - id: TENANT_COMPROMISE
+    weight: 0.7
+  - id: DATABASE_COMPROMISE
+    weight: 0.8
+  - id: SERVICE_COMPROMISE
+    weight: 0.85
+  - id: DATA_DESTRUCTION
+    weight: 0.9
+  - id: AVAILABILITY_LOSS
+    weight: 0.9
+  - id: MULTI_TENANT_COMPROMISE
+    weight: 0.95
+  - id: FULL_SYSTEM_COMPROMISE
+    weight: 1.0
+
+risk_levels:
+  - id: INFO
+    min_score: 0.0
+    max_score: 19.99
+  - id: LOW
+    min_score: 20.0
+    max_score: 39.99
+  - id: MEDIUM
+    min_score: 40.0
+    max_score: 59.99
+  - id: HIGH
+    min_score: 60.0
+    max_score: 79.99
+  - id: CRITICAL
+    min_score: 80.0
+    max_score: 100.0
+  - id: UNKNOWN
+    min_score: null
+    max_score: null
+
+risk_weights:
+  exploitability: 0.20
+  capability: 0.20
+  privilege: 0.20
+  business_impact: 0.20
+  boundary_crossing: 0.10
+  confidence: 0.10

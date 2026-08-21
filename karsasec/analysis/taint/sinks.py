@@ -18,6 +18,11 @@ class SinkRegistry:
             "cursor.execute",
             "mysqli_query",
             "PDO::query",
+            "PDO::prepare",
+            "mysqli::prepare",
+            "DB::select",
+            "DB::raw",
+            "DB::statement",
         ],
         TaintCategory.COMMAND_INJECTION: [
             "exec(",
@@ -41,7 +46,11 @@ class SinkRegistry:
         TaintCategory.SSRF: [
             "requests.get",
             "requests.post",
+            "requests.request",
+            "urllib.request.urlopen",
             "fetch(",
+            "axios.get",
+            "axios.post",
             "http.Get(",
             "curl_exec",
             "reqwest::get",
@@ -50,8 +59,14 @@ class SinkRegistry:
             "response.write",
             "echo",
             "print(",
+            "printf(",
             "document.write",
             "innerHTML",
+            "outerHTML",
+            "insertAdjacentHTML",
+            "dangerouslySetInnerHTML",
+            "v-html",
+            "eval(",
         ],
     }
 

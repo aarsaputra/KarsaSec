@@ -1,0 +1,66 @@
+rule:
+  id: KS-PHP-0028
+
+metadata:
+  name: PHP Reflected Cross-Site Scripting (XSS)
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-79
+  owasp: A03:2021-Injection
+  created: "2026-08-21"
+  references:
+    - https://cwe.mitre.org/data/definitions/79.html
+  tags:
+    - xss
+    - php
+    - web
+
+target:
+  languages:
+    - PHP
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: PHP
+  ast_node_types:
+    - function_call_expression
+    - call
+    - statement
+
+condition:
+  symbol_triggers:
+    - echo
+    - print
+    - printf
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+
+contract:
+  detection:
+    source_kind: user_input
+    semantic_context: Untrusted HTTP input rendered directly in HTML output context without htmlspecialchars.
+    unsafe_evidence:
+      - user_input_to_html_output
+  safety:
+    safe_evidence:
+      - htmlspecialchars
+      - htmlentities
+    unknown_resolution: UNKNOWN
+  fixtures:
+    positive:
+      - "echo $_GET['name'];"
+    negative:
+      - "echo htmlspecialchars($_GET['name']);"
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Reflected Cross-Site Scripting (XSS) detected via un-sanitized output rendering.
+  remediation: Wrap output in htmlspecialchars() or htmlentities() with ENT_QUOTES.

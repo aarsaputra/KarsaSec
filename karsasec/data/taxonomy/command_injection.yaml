@@ -1,0 +1,43 @@
+category:
+  id: COMMAND_INJECTION_SECURITY
+  name: Command Injection & OS Process Execution Capability Abuse
+  cwe: CWE-78
+  owasp: A03:2021-Injection
+
+subcategories:
+  - id: COMMAND_INJECTION
+    name: OS Command Injection via Shell Concatenation
+    cwe: CWE-78
+    owasp: A03:2021-Injection
+    preconditions:
+      - UNTRUSTED_COMMAND_INPUT
+      - SHELL_INTERPRETED
+
+  - id: SHELL_INJECTION
+    name: Unsafe Shell Interpreter Invocation
+    cwe: CWE-78
+    owasp: A03:2021-Injection
+    preconditions:
+      - EXPLICIT_SHELL_INVOCATION
+
+  - id: ARGUMENT_INJECTION
+    name: Argument Injection via Unsanitized Command Parameter
+    cwe: CWE-88
+    owasp: A03:2021-Injection
+    preconditions:
+      - DIRECT_ARGV
+      - UNVALIDATED_COMMAND_ARGUMENT
+
+  - id: UNSAFE_PROCESS_CONSTRUCTION
+    name: Unsafe Process Execution Context Assembly
+    cwe: CWE-77
+    owasp: A03:2021-Injection
+    preconditions:
+      - DYNAMIC_PROCESS_CONSTRUCTION
+
+  - id: PROCESS_CAPABILITY_EXPOSURE
+    name: Process Spawn Capability Exposed across Trust Boundary
+    cwe: CWE-78
+    owasp: A03:2021-Injection
+    preconditions:
+      - PROCESS_SPAWN_CAPABILITY

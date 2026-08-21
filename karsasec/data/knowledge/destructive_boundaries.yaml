@@ -1,0 +1,61 @@
+destructive_boundaries:
+  - id: USER_INPUT
+    trust_level: UNTRUSTED
+    description: User controlled HTTP request parameters or API inputs
+
+  - id: AUTHENTICATED_USER
+    trust_level: CONDITIONALLY_TRUSTED
+    description: Authenticated user credentials lacking multi-tenant verification
+
+  - id: ADMIN_USER
+    trust_level: PRIVILEGED
+    description: Administrative account with elevated operational privileges
+
+  - id: SYSTEM_OPERATOR
+    trust_level: HIGHLY_PRIVILEGED
+    description: Infrastructure and system level background service account
+
+  - id: DESTRUCTIVE_API
+    trust_level: SERVER_AUTHORITATIVE
+    description: Endpoint or internal service API capable of resource deletion
+
+  - id: DATABASE
+    trust_level: SENSITIVE_STORAGE
+    operations:
+      - DROP_DATABASE
+      - DROP_TABLE
+      - TRUNCATE_TABLE
+      - DELETE_FROM
+
+  - id: OBJECT_STORAGE
+    trust_level: SENSITIVE_STORAGE
+    operations:
+      - DELETE_OBJECT
+      - DELETE_BUCKET
+
+  - id: MESSAGE_QUEUE
+    trust_level: OPERATIONAL_INFRASTRUCTURE
+    operations:
+      - PURGE_QUEUE
+      - DELETE_TOPIC
+
+  - id: CACHE
+    trust_level: OPERATIONAL_INFRASTRUCTURE
+    operations:
+      - FLUSHALL
+      - FLUSHDB
+      - CLEAR_CACHE
+
+  - id: BACKUP_STORAGE
+    trust_level: CRITICAL_INFRASTRUCTURE
+    operations:
+      - DELETE_BACKUP
+      - PURGE_SNAPSHOTS
+
+  - id: OPERATING_SYSTEM
+    trust_level: SYSTEM_ROOT
+    operations:
+      - REMOVE_FILE
+      - REMOVE_DIRECTORY
+      - KILL_PROCESS
+      - SHUTDOWN_SERVICE

@@ -1,0 +1,90 @@
+session_boundaries:
+  - id: SESSION_ID
+    identity_boundary: SESSION
+    trust_level: HIGHLY_SENSITIVE
+    lifecycle: ACTIVE
+    sensitivity: HIGH
+    allowed_transitions:
+      - CREATED
+      - AUTHENTICATED
+      - ROTATING
+      - REVOKED
+
+  - id: SESSION_COOKIE
+    identity_boundary: SESSION
+    trust_level: HIGHLY_SENSITIVE
+    lifecycle: ACTIVE
+    sensitivity: HIGH
+    allowed_transitions:
+      - CREATED
+      - AUTHENTICATED
+      - ROTATING
+      - EXPIRED
+
+  - id: ACCESS_TOKEN
+    identity_boundary: JWT
+    trust_level: SHORT_LIVED
+    lifecycle: ACTIVE
+    sensitivity: HIGH
+    allowed_transitions:
+      - CREATED
+      - ACTIVE
+      - EXPIRED
+
+  - id: REFRESH_TOKEN
+    identity_boundary: REFRESH_TOKEN
+    trust_level: HIGHLY_SENSITIVE_SECRET
+    lifecycle: ROTATING
+    sensitivity: CRITICAL
+    allowed_transitions:
+      - CREATED
+      - ACTIVE
+      - ROTATED
+      - REVOKED
+
+  - id: CSRF_TOKEN
+    identity_boundary: SESSION
+    trust_level: TEMPORARY_SINGLE_USE
+    lifecycle: ACTIVE
+    sensitivity: MEDIUM
+    allowed_transitions:
+      - CREATED
+      - USED
+      - EXPIRED
+
+  - id: SESSION_STORE
+    identity_boundary: SESSION
+    trust_level: SERVER_AUTHORITATIVE
+    lifecycle: ACTIVE
+    sensitivity: CRITICAL
+    allowed_transitions:
+      - CREATED
+      - ACTIVE
+      - REVOKED
+
+  - id: SESSION_FIXATION_INPUT
+    identity_boundary: SESSION
+    trust_level: UNTRUSTED
+    lifecycle: UNKNOWN
+    sensitivity: HIGH
+    allowed_transitions:
+      - CREATED
+      - REVOKED
+
+  - id: SESSION_ROTATION
+    identity_boundary: SESSION
+    trust_level: SERVER_AUTHORITATIVE
+    lifecycle: ROTATING
+    sensitivity: HIGH
+    allowed_transitions:
+      - AUTHENTICATED
+      - ROTATED
+
+  - id: LOGOUT_STATE
+    identity_boundary: SESSION
+    trust_level: UNAUTHENTICATED
+    lifecycle: LOGGED_OUT
+    sensitivity: NONE
+    allowed_transitions:
+      - LOGGED_OUT
+      - REVOKED

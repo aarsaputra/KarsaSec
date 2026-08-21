@@ -1,0 +1,58 @@
+category:
+  id: XSS
+  name: Cross-Site Scripting
+  cwe: CWE-79
+  owasp: A03:2021-Injection
+
+subcategories:
+  - id: REFLECTED_XSS
+    name: Reflected Cross-Site Scripting
+    cwe: CWE-79
+    contexts:
+      - HTML_BODY
+      - HTML_ATTRIBUTE
+      - JAVASCRIPT_CONTEXT
+    sources:
+      - HTTP_GET_PARAM
+      - HTTP_POST_PARAM
+      - HTTP_REQUEST_HEADER
+    sinks:
+      - ECHO_PRINT_OUTPUT
+      - RESPONSE_WRITE
+    sanitizers:
+      - HTMLSPECIALCHARS
+      - HTML_ENTITIES
+      - CONTEXT_ENCODER
+
+  - id: STORED_XSS
+    name: Stored Cross-Site Scripting
+    cwe: CWE-79
+    contexts:
+      - HTML_BODY
+    sources:
+      - DATABASE_RECORD
+      - USER_PROFILE
+    sinks:
+      - HTML_RENDER_OUTPUT
+    sanitizers:
+      - HTML_SANITIZER_PURIFY
+
+  - id: DOM_XSS
+    name: DOM-Based Cross-Site Scripting
+    cwe: CWE-79
+    contexts:
+      - DOM_PROPERTY
+      - SCRIPT_EXECUTION
+    sources:
+      - LOCATION_SEARCH
+      - LOCATION_HASH
+      - DOCUMENT_URL
+      - DOCUMENT_REFERRER
+    sinks:
+      - INNER_HTML
+      - OUTER_HTML
+      - EVAL
+      - DOCUMENT_WRITE
+    sanitizers:
+      - DOMPURIFY
+      - ENCODE_URI_COMPONENT

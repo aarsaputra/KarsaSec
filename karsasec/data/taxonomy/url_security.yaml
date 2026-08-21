@@ -1,0 +1,81 @@
+category:
+  id: URL_SECURITY_REASONING
+  name: Open Redirect & URL Parser Confusion Reasoning
+  cwe: CWE-601
+  owasp: A01:2021-Broken Access Control
+
+subcategories:
+  - id: OPEN_REDIRECT
+    name: Unvalidated Open Redirect
+    cwe: CWE-601
+    owasp: A01:2021-Broken Access Control
+
+  - id: EXTERNAL_REDIRECT
+    name: Arbitrary External Redirect
+    cwe: CWE-601
+    owasp: A01:2021-Broken Access Control
+
+  - id: URL_PARSER_CONFUSION
+    name: URL Parser Ambiguity & Discrepancy
+    cwe: CWE-601
+    owasp: A01:2021-Broken Access Control
+
+  - id: SCHEME_CONFUSION
+    name: Dangerous Scheme Execution (javascript/data/file)
+    cwe: CWE-601
+    owasp: A01:2021-Broken Access Control
+
+  - id: AUTHORITY_CONFUSION
+    name: Authority Extraction & Hostname Discrepancy
+    cwe: CWE-601
+    owasp: A01:2021-Broken Access Control
+
+  - id: USERINFO_CONFUSION
+    name: Userinfo (@) Hostname Confusion
+    cwe: CWE-601
+    owasp: A01:2021-Broken Access Control
+
+  - id: BACKSLASH_URL_CONFUSION
+    name: Backslash Normalization Bypass
+    cwe: CWE-601
+    owasp: A01:2021-Broken Access Control
+
+  - id: ENCODED_URL_BYPASS
+    name: Percent / Double Encoded URL Bypass
+    cwe: CWE-601
+    owasp: A01:2021-Broken Access Control
+
+  - id: UNICODE_HOST_CONFUSION
+    name: IDNA / Homograph Hostname Mismatch
+    cwe: CWE-601
+    owasp: A01:2021-Broken Access Control
+
+  - id: SCHEME_RELATIVE_REDIRECT
+    name: Protocol-Relative (//) Redirect Bypass
+    cwe: CWE-601
+    owasp: A01:2021-Broken Access Control
+
+  - id: OAUTH_REDIRECT_URI_BYPASS
+    name: Weak OAuth redirect_uri Validation
+    cwe: CWE-601
+    owasp: A01:2021-Broken Access Control
+
+  - id: PASSWORD_RESET_URL_POISONING
+    name: Host Header Password Reset Link Poisoning
+    cwe: CWE-601
+    owasp: A05:2021-Security-Misconfiguration
+
+  - id: HOST_HEADER_REDIRECT_POISONING
+    name: Host Header Driven Redirect Poisoning
+    cwe: CWE-601
+    owasp: A05:2021-Security-Misconfiguration
+
+  - id: REDIRECT_CHAIN
+    name: Multi-Hop External Redirect Chain
+    cwe: CWE-601
+    owasp: A01:2021-Broken Access Control
+
+  - id: SSRF_REDIRECT_CORRELATION
+    name: SSRF Redirect Following Correlation
+    cwe: CWE-918
+    owasp: A10:2021-Server-Side Request Forgery

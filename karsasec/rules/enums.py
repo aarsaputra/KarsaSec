@@ -161,12 +161,8 @@ class EvidenceState(StrEnum):
 
 
 class UnknownResolution(StrEnum):
-    """Policy for how a rule handles EvidenceState.UNKNOWN at predicate evaluation time.
+    """Policy for how a rule handles EvidenceState.UNKNOWN at predicate evaluation time."""
 
-    E10-3J policy: all rules use SUPPRESS.
-    REVIEW is reserved for a future ReviewCandidate subsystem that is
-    explicitly separate from the Finding model.
-    """
-
-    SUPPRESS = "SUPPRESS"  # UNKNOWN -> NO FINDING (default, E10-3J policy)
-    REVIEW = "REVIEW"  # UNKNOWN -> ReviewCandidate (future subsystem, never a Finding)
+    SUPPRESS = "SUPPRESS"  # UNKNOWN -> NO FINDING (default)
+    REVIEW = "REVIEW"  # UNKNOWN -> ReviewCandidate (future subsystem)
+    UNKNOWN = "UNKNOWN"  # UNKNOWN -> Low-confidence conservative candidate

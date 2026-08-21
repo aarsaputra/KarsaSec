@@ -1,0 +1,123 @@
+# KarsaSec Batch D4 - Cross-Batch Security Correlation Invariants Knowledge Base
+version: "1.0.0"
+description: "Formal specification of 20 cross-batch security correlation invariants, causal rules, and UNKNOWN semantics."
+
+invariants:
+  - id: "INV-D4-01"
+    name: "Cross-Batch Evidence Integrity"
+    category: "CROSS_BATCH_EVIDENCE_VIOLATION"
+    description: "Input evidence nodes from C13-C15 and D1-D3 must retain source batch provenance without alteration."
+
+  - id: "INV-D4-02"
+    name: "Correlation Identity Integrity"
+    category: "CORRELATION_IDENTITY_VIOLATION"
+    description: "Edges are formed only when evidence explicitly connects nodes via compatible correlation keys."
+
+  - id: "INV-D4-03"
+    name: "Causal Chain Validity"
+    category: "CAUSAL_CHAIN_VIOLATION"
+    description: "Exploitation chains require valid directional causal edges rather than mere proximity."
+
+  - id: "INV-D4-04"
+    name: "Temporal Chain Consistency"
+    category: "TEMPORAL_CHAIN_VIOLATION"
+    description: "Ordering must be derived from D2 temporal evidence (BEFORE, AFTER, CONCURRENT, UNKNOWN)."
+
+  - id: "INV-D4-05"
+    name: "Identity Continuity"
+    category: "IDENTITY_CONTINUITY_VIOLATION"
+    description: "Identity transitions across boundaries must preserve provenance (END_USER, SERVICE_ACCOUNT, DELEGATED, IMPERSONATED)."
+
+  - id: "INV-D4-06"
+    name: "Privilege Monotonicity"
+    category: "PRIVILEGE_AMPLIFICATION"
+    description: "Unexplained privilege escalation jumps yield PRIVILEGE_AMPLIFICATION."
+
+  - id: "INV-D4-07"
+    name: "Tenant Context Continuity"
+    category: "TENANT_ESCAPE"
+    description: "Unverified cross-tenant context switches yield TENANT_ESCAPE."
+
+  - id: "INV-D4-08"
+    name: "Security Boundary Composition"
+    category: "SECURITY_BOUNDARY_COMPOSITION_VIOLATION"
+    description: "Boundary crossings must compose upstream and downstream security controls."
+
+  - id: "INV-D4-09"
+    name: "Exploitability Reachability"
+    category: "EXPLOITABILITY_REACHABILITY_VIOLATION"
+    description: "Determines whether chain reaches forbidden security properties."
+
+  - id: "INV-D4-10"
+    name: "Attack Chain Completeness"
+    category: "INCOMPLETE_EXPLOIT_CHAIN"
+    description: "Chains must possess complete valid paths from entry to reachability node."
+
+  - id: "INV-D4-11"
+    name: "Evidence Sufficiency"
+    category: "UNKNOWN_CORRELATION_STATE"
+    description: "Missing evidence dominance forces UNKNOWN resolution."
+
+  - id: "INV-D4-12"
+    name: "UNKNOWN Propagation"
+    category: "UNKNOWN_CORRELATION_STATE"
+    description: "Unresolved correlation preserves UNKNOWN without defaulting to SAFE or VULNERABLE."
+
+  - id: "INV-D4-13"
+    name: "No Evidence Fabrication"
+    category: "CROSS_BATCH_EVIDENCE_VIOLATION"
+    description: "Engine never invents non-existent correlation edges."
+
+  - id: "INV-D4-14"
+    name: "Deterministic Correlation"
+    category: "CORRELATION_IDENTITY_VIOLATION"
+    description: "Shuffled inputs produce identical canonical chain IDs via SHA256."
+
+  - id: "INV-D4-15"
+    name: "Input Immutability"
+    category: "CROSS_BATCH_EVIDENCE_VIOLATION"
+    description: "Immutable frozen dataclasses ensure 100% read-only input preservation."
+
+  - id: "INV-D4-16"
+    name: "Duplicate Chain Suppression"
+    category: "CORRELATION_IDENTITY_VIOLATION"
+    description: "Duplicate correlation chains deduplicated into single canonical representation."
+
+  - id: "INV-D4-17"
+    name: "Root Cause Preservation"
+    category: "ROOT_CAUSE_CHAIN"
+    description: "Earliest evidence node whose removal breaks chain identified as root_cause."
+
+  - id: "INV-D4-18"
+    name: "Security Property Reachability"
+    category: "EXPLOITABILITY_REACHABILITY_VIOLATION"
+    description: "Reachability evaluated against security property model."
+
+  - id: "INV-D4-19"
+    name: "Chain Severity Composition"
+    category: "COMPOSITE_SECURITY_VIOLATION"
+    description: "Severity derived from chain impact without artificial inflation."
+
+  - id: "INV-D4-20"
+    name: "Cross-Batch Conflict Preservation"
+    category: "CORRELATION_CONFLICT"
+    description: "Contradictory evidence across batches yields CORRELATION_CONFLICT or UNKNOWN."
+
+forbidden_security_properties:
+  - "ACCOUNT_TAKEOVER"
+  - "ROOT_ACCESS"
+  - "CLOUD_ADMIN"
+  - "TENANT_ESCAPE"
+  - "ADMIN_ACCESS"
+  - "SECRET_ACCESS"
+  - "PAYMENT_MODIFICATION"
+  - "DATA_EXFILTRATION"
+  - "CODE_EXECUTION"
+
+valid_sources:
+  - "C13"
+  - "C14"
+  - "C15"
+  - "D1"
+  - "D2"
+  - "D3"

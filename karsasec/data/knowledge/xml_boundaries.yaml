@@ -1,0 +1,42 @@
+xml_boundaries:
+  - id: HTTP_REQUEST
+    trust_level: UNTRUSTED
+    user_controlled: true
+    dtd_expected: false
+    external_entities_expected: false
+    schema_validation: CONDITIONALLY_TRUSTED
+
+  - id: FILE_UPLOAD
+    trust_level: UNTRUSTED
+    user_controlled: true
+    dtd_expected: false
+    external_entities_expected: false
+    schema_validation: CONDITIONALLY_TRUSTED
+
+  - id: MESSAGE_QUEUE
+    trust_level: CONDITIONALLY_TRUSTED
+    user_controlled: true
+    dtd_expected: false
+    external_entities_expected: false
+    schema_validation: INTERNAL_TRUSTED
+
+  - id: EXTERNAL_API
+    trust_level: UNTRUSTED
+    user_controlled: true
+    dtd_expected: false
+    external_entities_expected: false
+    schema_validation: INTERNAL_TRUSTED
+
+  - id: INTERNAL_SERVICE
+    trust_level: INTERNAL_TRUSTED
+    user_controlled: false
+    dtd_expected: false
+    external_entities_expected: false
+    schema_validation: SERVER_AUTHORITATIVE
+
+  - id: TRUSTED_XML
+    trust_level: SERVER_AUTHORITATIVE
+    user_controlled: false
+    dtd_expected: false
+    external_entities_expected: false
+    schema_validation: SERVER_AUTHORITATIVE

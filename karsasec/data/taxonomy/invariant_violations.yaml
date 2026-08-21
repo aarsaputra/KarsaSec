@@ -1,0 +1,92 @@
+# Taxonomy — Invariant Violations (Batch D1)
+
+categories:
+  - id: TRUST_BOUNDARY_VIOLATION
+    name: Trust Boundary Violation
+    severity: HIGH
+    description: Low trust entity influences higher trust entity without validation.
+
+  - id: PRIVILEGE_BOUNDARY_VIOLATION
+    name: Privilege Boundary Violation
+    severity: CRITICAL
+    description: Lower privilege identity achieves higher privilege capability without proof.
+
+  - id: CAPABILITY_LEAK
+    name: Capability Leakage
+    severity: HIGH
+    description: High-value operation capability exercised by unauthorized identity.
+
+  - id: STATE_MACHINE_VIOLATION
+    name: State Machine Violation
+    severity: HIGH
+    description: Illegal or unvalidated state machine transition.
+
+  - id: IDENTITY_CONFUSION
+    name: Identity Confusion
+    severity: HIGH
+    description: Identity mismatch or unverified token identity substitution.
+
+  - id: AUTHORIZATION_INCONSISTENCY
+    name: Authorization Inconsistency
+    severity: MEDIUM
+    description: Inconsistent authorization checks across endpoints or methods.
+
+  - id: TENANT_ISOLATION_FAILURE
+    name: Tenant Isolation Failure
+    severity: CRITICAL
+    description: Tenant identity accesses resources belonging to another tenant.
+
+  - id: SECRETS_SCOPE_VIOLATION
+    name: Secrets Scope Violation
+    severity: HIGH
+    description: Secret accessed outside designated security boundary.
+
+  - id: DATA_FLOW_INVARIANT_VIOLATION
+    name: Data Flow Invariant Violation
+    severity: MEDIUM
+    description: Tainted or untrusted data flows into sensitive logic sink without sanitization.
+
+  - id: AUTHORITY_VIOLATION
+    name: Authority Invariant Violation
+    severity: HIGH
+    description: State-changing or administrative action performed without explicit authority verification.
+
+  - id: RESOURCE_OWNERSHIP_VIOLATION
+    name: Resource Ownership Invariant Violation
+    severity: HIGH
+    description: Direct object access executed without user/tenant ownership enforcement.
+
+  - id: DELEGATION_CHAIN_VIOLATION
+    name: Delegation Chain Invariant Violation
+    severity: HIGH
+    description: Delegated identity or token missing unbroken delegation chain.
+
+  - id: LIFECYCLE_INVARIANT_VIOLATION
+    name: Lifecycle Invariant Violation
+    severity: HIGH
+    description: Credential or token used without expiration, single-use, or revocation enforcement.
+
+  - id: CONSISTENCY_INVARIANT_VIOLATION
+    name: Consistency Invariant Violation
+    severity: MEDIUM
+    description: Mismatch between client/gateway security rules and backend enforcement.
+
+  - id: REACHABILITY_VIOLATION
+    name: Security Property Reachability Violation
+    severity: CRITICAL
+    description: Forbidden security property (e.g. Account Takeover, Root Access) reachable via valid evidence path.
+
+  - id: SEPARATION_OF_DUTY_VIOLATION
+    name: Separation of Duty Violation
+    severity: CRITICAL
+    description: Dual-authorization sensitive action performed by a single identity.
+
+  - id: DEFENSE_IN_DEPTH_VIOLATION
+    name: Defense-in-Depth Violation
+    severity: MEDIUM
+    description: Multi-layered security controls missing required downstream verification layers.
+
+  - id: UNKNOWN_INVARIANT
+    name: Unknown Invariant Violation
+    severity: UNKNOWN
+    description: Unresolved invariant state due to missing or ambiguous evidence.

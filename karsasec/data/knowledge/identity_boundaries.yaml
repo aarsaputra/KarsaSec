@@ -1,0 +1,40 @@
+identity_boundaries:
+  - id: PASSWORD
+    name: Raw User Password Credential
+    trust_level: REQUIRES_VERIFICATION
+    description: Plaintext user secret submitted during authentication requiring hashing before storage or comparison.
+
+  - id: OTP
+    name: One-Time Password / MFA Token
+    trust_level: TEMPORARY_SINGLE_USE
+    description: Time-based or counter-based OTP token valid for short time window during MFA challenge.
+
+  - id: JWT
+    name: Decoded JSON Web Token
+    trust_level: CONDITIONALLY_TRUSTED
+    description: Cryptographically signed token containing user claims requiring signature and expiration check.
+
+  - id: API_KEY
+    name: Machine-to-Machine API Access Key
+    trust_level: LONG_LIVED_CREDENTIAL
+    description: Static secret key used for programmatic API authentication.
+
+  - id: SESSION
+    name: Authenticated Session Identifier
+    trust_level: HIGHLY_TRUSTED
+    description: Server-side active session key issued after successful authentication and MFA completion.
+
+  - id: REFRESH_TOKEN
+    name: OAuth2 / OIDC Refresh Token
+    trust_level: HIGHLY_SENSITIVE_SECRET
+    description: Long-lived secret used to obtain short-lived access tokens, requiring single-use rotation.
+
+  - id: RESET_TOKEN
+    name: Password Reset Secret Token
+    trust_level: TEMPORARY_SINGLE_USE
+    description: Entropy-rich token issued for password recovery bound to a specific user and short expiration window.
+
+  - id: CLIENT_CERT
+    name: Mutual TLS Client Certificate
+    trust_level: CRYPTOGRAPHICALLY_VERIFIED
+    description: Hardware or software certificate validated by TLS handshake for mTLS authentication.

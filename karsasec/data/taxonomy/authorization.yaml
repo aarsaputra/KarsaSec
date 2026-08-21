@@ -1,0 +1,45 @@
+category:
+  id: AUTHORIZATION
+  name: Broken Authorization & Access Control
+  cwe: CWE-285
+  owasp: A01:2021-Broken-Access-Control
+
+subcategories:
+  - id: IDOR
+    name: Insecure Direct Object References
+    cwe: CWE-639
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - UNTRUSTED_OBJECT_IDENTIFIER
+      - MISSING_OWNERSHIP_CHECK
+
+  - id: BOLA
+    name: Broken Object Level Authorization
+    cwe: CWE-639
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - API_OBJECT_REFERENCE
+      - MISSING_SUBJECT_BOUNDING
+
+  - id: MASS_ASSIGNMENT
+    name: Mass Assignment & Property Injection
+    cwe: CWE-915
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - UNFILTERED_MODEL_BINDING
+      - PRIVILEGED_FIELD_EXPOSURE
+
+  - id: TENANT_ISOLATION
+    name: Cross-Tenant Data Access Failure
+    cwe: CWE-284
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - MISSING_TENANT_ID_PREDICATE
+
+  - id: BFLA
+    name: Broken Function Level Authorization
+    cwe: CWE-285
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - ADMINISTRATIVE_ENDPOINT_EXPOSURE
+      - MISSING_ROLE_CHECK

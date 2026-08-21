@@ -1,0 +1,78 @@
+boundaries:
+  - ATTACKER
+  - PUBLIC_INTERFACE
+  - AUTHENTICATED_USER
+  - TENANT
+  - ORGANIZATION
+  - ADMIN
+  - SERVICE_ACCOUNT
+  - CLOUD_ACCOUNT
+  - INTERNAL_NETWORK
+  - DATABASE
+  - OBJECT_STORAGE
+  - MESSAGE_QUEUE
+  - SECRET_STORE
+  - OPERATING_SYSTEM
+  - BACKUP_SYSTEM
+  - BUSINESS_SYSTEM
+
+transitions:
+  - from: SSRF
+    capability: INTERNAL_NETWORK_ACCESS
+    requires:
+      - valid_ssrf_evidence
+
+  - from: INTERNAL_NETWORK_ACCESS
+    capability: METADATA_ACCESS
+    requires:
+      - metadata_target_evidence
+
+  - from: METADATA_ACCESS
+    capability: CLOUD_CREDENTIAL_ACCESS
+    requires:
+      - metadata_credential_evidence
+
+  - from: CLOUD_CREDENTIAL_ACCESS
+    capability: CLOUD_ADMIN_ACCESS
+    requires:
+      - privilege_evidence
+
+  - from: XXE
+    capability: FILE_READ
+    requires:
+      - file_read_evidence
+
+  - from: FILE_READ
+    capability: SECRET_EXPOSURE
+    requires:
+      - secret_exposure_evidence
+
+  - from: SECRET_EXPOSURE
+    capability: CREDENTIAL_COMPROMISE
+    requires:
+      - valid_credential_evidence
+
+  - from: SSTI
+    capability: PROCESS_SPAWN
+    requires:
+      - ssti_rce_evidence
+
+  - from: PROCESS_SPAWN
+    capability: ROOT_ACCESS
+    requires:
+      - privilege_transition_evidence
+
+  - from: IDOR
+    capability: TENANT_BOUNDARY_ESCAPE
+    requires:
+      - tenant_escape_evidence
+
+  - from: TENANT_BOUNDARY_ESCAPE
+    capability: BULK_DELETE
+    requires:
+      - destructive_capability_evidence
+
+  - from: BULK_DELETE
+    capability: TENANT_WIPE
+    requires:
+      - tenant_wipe_evidence

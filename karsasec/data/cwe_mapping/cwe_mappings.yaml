@@ -1,0 +1,63 @@
+mappings:
+  - rule_id: KS-PHP-0002
+    subcategory: SQLI
+    cwe:
+      - CWE-89
+    owasp:
+      - A03:2021-Injection
+    capec:
+      - CAPEC-66
+    impact:
+      - data_exfiltration
+      - database_tampering
+      - auth_bypass
+
+  - rule_id: KS-PY-0002
+    subcategory: SQLI
+    cwe:
+      - CWE-89
+    owasp:
+      - A03:2021-Injection
+    capec:
+      - CAPEC-66
+    impact:
+      - data_exfiltration
+      - database_tampering
+
+  - rule_id: KS-PHP-0020
+    subcategory: REFLECTED_XSS
+    cwe:
+      - CWE-79
+    owasp:
+      - A03:2021-Injection
+    capec:
+      - CAPEC-63
+    impact:
+      - session_hijacking
+      - defacement
+      - dom_manipulation
+
+  - rule_id: KS-JS-0002
+    subcategory: DOM_XSS
+    cwe:
+      - CWE-79
+    owasp:
+      - A03:2021-Injection
+    capec:
+      - CAPEC-588
+    impact:
+      - dom_manipulation
+      - client_side_execution
+
+  - rule_id: KS-PY-0020
+    subcategory: BASIC_SSRF
+    cwe:
+      - CWE-918
+    owasp:
+      - A10:2021-Server-Side-Request-Forgery
+    capec:
+      - CAPEC-664
+    impact:
+      - internal_reconnaissance
+      - cloud_metadata_exfiltration
+      - port_scanning

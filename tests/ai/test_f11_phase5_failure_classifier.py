@@ -18,7 +18,6 @@ from karsasec.ai.provider import (
     ATTEMPT_ERROR_INVALID_REQUEST,
     ATTEMPT_ERROR_INVALID_RESPONSE,
     ATTEMPT_ERROR_NETWORK,
-    ATTEMPT_ERROR_RATE_LIMIT,
     ATTEMPT_ERROR_TIMEOUT,
     ATTEMPT_ERROR_UNAVAILABLE,
     ProviderDescriptor,
@@ -80,15 +79,14 @@ def db_session() -> Session:
 
 
 def test_classification_matrix() -> None:
-    """Verifies complete deterministic failure classification matrix (INV-F11-FAILURE-15)."""
-    # 1. 4xx Client Errors -> non-retryable, client_failure=True, provider_failure=False
+    """Verifies complete deterministic failure classification matrix (INV-F11-FAILURE-15, INV-F11-THROTTLE-10)."""
+    # 1. Generic 4xx Client Errors -> non-retryable, client_failure=True, provider_failure=False
     for code, expected_class in [
         (400, ATTEMPT_ERROR_INVALID_REQUEST),
         (401, ATTEMPT_ERROR_AUTH_FAILED),
         (403, ATTEMPT_ERROR_AUTH_FAILED),
         (404, ATTEMPT_ERROR_INVALID_REQUEST),
         (422, ATTEMPT_ERROR_INVALID_REQUEST),
-        (429, ATTEMPT_ERROR_RATE_LIMIT),
     ]:
         res = FailureClassifier.classify(status_code=code)
         assert isinstance(res, FailureClassification)
@@ -96,6 +94,14 @@ def test_classification_matrix() -> None:
         assert res.retryable is False
         assert res.client_failure is True
         assert res.provider_failure is False
+
+    # 1b. HTTP 429 Provider Throttling (INV-F11-THROTTLE-10) -> provider_failure=True, retryable=True, throttled=True
+    res_429 = FailureClassifier.classify(status_code=429)
+    assert res_429.error_class == "PROVIDER_THROTTLED"
+    assert res_429.retryable is True
+    assert res_429.provider_failure is True
+    assert res_429.client_failure is False
+    assert res_429.throttled is True
 
     # 2. 5xx Server Infrastructure Errors -> retryable, client_failure=False, provider_failure=True
     for code in [500, 502, 503, 504]:

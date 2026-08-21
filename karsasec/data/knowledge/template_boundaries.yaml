@@ -1,0 +1,36 @@
+template_boundaries:
+  - id: HTTP_REQUEST
+    trust_level: UNTRUSTED
+    user_controlled: true
+    template_assembly_allowed: false
+    expression_evaluation_allowed: false
+
+  - id: TEMPLATE_VARIABLE
+    trust_level: CONDITIONALLY_TRUSTED
+    user_controlled: true
+    template_assembly_allowed: false
+    expression_evaluation_allowed: false
+
+  - id: TEMPLATE_EXPRESSION
+    trust_level: UNTRUSTED
+    user_controlled: true
+    template_assembly_allowed: true
+    expression_evaluation_allowed: true
+
+  - id: TEMPLATE_SOURCE
+    trust_level: UNTRUSTED
+    user_controlled: true
+    template_assembly_allowed: true
+    expression_evaluation_allowed: true
+
+  - id: TEMPLATE_FILE_PATH
+    trust_level: UNTRUSTED
+    user_controlled: true
+    template_assembly_allowed: false
+    expression_evaluation_allowed: false
+
+  - id: TRUSTED_TEMPLATE
+    trust_level: SERVER_AUTHORITATIVE
+    user_controlled: false
+    template_assembly_allowed: false
+    expression_evaluation_allowed: false

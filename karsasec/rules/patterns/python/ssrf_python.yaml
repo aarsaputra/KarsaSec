@@ -1,0 +1,67 @@
+rule:
+  id: KS-PY-0031
+
+metadata:
+  name: Python HTTP Client SSRF Detection
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-918
+  owasp: A10:2021-Server-Side-Request-Forgery
+  created: "2026-08-21"
+  references:
+    - https://cwe.mitre.org/data/definitions/918.html
+  tags:
+    - ssrf
+    - python
+    - network
+
+target:
+  languages:
+    - Python
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Python
+  ast_node_types:
+    - call
+
+condition:
+  symbol_triggers:
+    - requests.get
+    - requests.post
+    - requests.request
+    - urllib.request.urlopen
+    - httpx.get
+    - httpx.post
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 50
+    attacker_controlled_url: 40
+
+contract:
+  detection:
+    source_kind: user_controlled_url
+    semantic_context: Untrusted HTTP request parameter or body value reaches HTTP client destination URL.
+    unsafe_evidence:
+      - user_input_to_url_sink
+  safety:
+    safe_evidence:
+      - strict_origin_allowlist
+    unknown_resolution: SUPPRESS
+  fixtures:
+    positive:
+      - "target = request.args.get('url'); requests.get(target)"
+    negative:
+      - "requests.get('https://api.internal.com/data')"
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Server-Side Request Forgery (SSRF) detected via user-controlled HTTP request destination.
+  remediation: Validate destination against a strict allowlist of allowed domains and origins.

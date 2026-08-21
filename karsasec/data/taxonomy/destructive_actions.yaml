@@ -1,0 +1,71 @@
+category:
+  id: DESTRUCTIVE_ACTIONS_REASONING
+  name: Insecure Destructive Actions & Operational Impact Capability Reasoning
+  cwe: CWE-400
+  owasp: A04:2021-Insecure Design
+
+subcategories:
+  - id: DESTRUCTIVE_FILE_DELETE
+    name: Unsafe Single or Multi-File Erasure
+    cwe: CWE-73
+    owasp: A04:2021-Insecure Design
+
+  - id: DESTRUCTIVE_DIRECTORY_DELETE
+    name: Recursive Directory Erasure (rm -rf / rmtree)
+    cwe: CWE-73
+    owasp: A04:2021-Insecure Design
+
+  - id: DATABASE_DESTRUCTION
+    name: Database / Table Drop or Unscoped Truncate
+    cwe: CWE-89
+    owasp: A03:2021-Injection
+
+  - id: QUEUE_PURGE
+    name: Operational Message Queue Purge / Topic Erasure
+    cwe: CWE-400
+    owasp: A04:2021-Insecure Design
+
+  - id: CACHE_FLUSH
+    name: Global Cache Flush (FLUSHALL / FLUSHDB)
+    cwe: CWE-400
+    owasp: A04:2021-Insecure Design
+
+  - id: OBJECT_STORAGE_DELETE
+    name: Cloud Object Storage Bucket / Object Erasure
+    cwe: CWE-284
+    owasp: A01:2021-Broken Access Control
+
+  - id: BACKUP_DELETION
+    name: Snapshot & Backup Erasure
+    cwe: CWE-284
+    owasp: A01:2021-Broken Access Control
+
+  - id: PROCESS_TERMINATION
+    name: Critical System Process Termination
+    cwe: CWE-400
+    owasp: A04:2021-Insecure Design
+
+  - id: SERVICE_SHUTDOWN
+    name: System Infrastructure / Service Shutdown
+    cwe: CWE-400
+    owasp: A04:2021-Insecure Design
+
+  - id: TENANT_WIPE
+    name: Multi-Tenant Data Isolation Breach & Wipe
+    cwe: CWE-284
+    owasp: A01:2021-Broken Access Control
+
+  - id: BULK_DELETE_OPERATION
+    name: Unbounded Bulk Delete Execution
+    cwe: CWE-284
+    owasp: A01:2021-Broken Access Control
+
+  - id: MASS_UPDATE_OPERATION
+    name: Unbounded Mass State Mutation Execution
+    cwe: CWE-284
+    owasp: A01:2021-Broken Access Control
+
+  - id: AVAILABILITY_IMPACT
+    name: High-Severity System Availability Denial Impact
+    cwe: CWE-400
+    owasp: A04:2021-Insecure Design

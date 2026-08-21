@@ -1,0 +1,46 @@
+attack_graph_rules:
+  edge_types:
+    - ENABLES
+    - REQUIRES
+    - ESCALATES_TO
+    - EXPOSES
+    - EXECUTES
+    - DESTROYS
+
+  node_categories:
+    - ROOT_CAUSE
+    - CAPABILITY
+    - IMPACT
+    - TRUST_BOUNDARY
+
+  valid_transitions:
+    - source: ROOT_CAUSE
+      edge: ENABLES
+      target: CAPABILITY
+
+    - source: CAPABILITY
+      edge: EXPOSES
+      target: CAPABILITY
+
+    - source: CAPABILITY
+      edge: ESCALATES_TO
+      target: CAPABILITY
+
+    - source: CAPABILITY
+      edge: EXECUTES
+      target: IMPACT
+
+    - source: CAPABILITY
+      edge: DESTROYS
+      target: IMPACT
+
+  forbidden_transitions:
+    - source: ROOT_CAUSE
+      edge: DIRECT_IMPACT
+      target: IMPACT
+      reason: "INV-C13-01 Violation: Finding cannot directly yield impact without capability edge"
+
+    - source: UNKNOWN
+      edge: ANY
+      target: CAPABILITY
+      reason: "INV-C13-04 Violation: UNKNOWN cannot generate capability edge"

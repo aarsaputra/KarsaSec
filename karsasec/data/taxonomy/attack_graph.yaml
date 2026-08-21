@@ -1,0 +1,31 @@
+category:
+  id: ATTACK_GRAPH_ENGINE
+  name: Attack Graph Construction & Exploit Path Correlation Engine
+  cwe: CWE-1000
+  owasp: A04:2021-Insecure Design
+
+subcategories:
+  - id: ROOT_CAUSE_NODE
+    name: Initial Exploit Primitive Root Cause Node
+    cwe: CWE-1000
+    owasp: A04:2021-Insecure Design
+
+  - id: CAPABILITY_NODE
+    name: Intermediate Attack Capability Node
+    cwe: CWE-269
+    owasp: A01:2021-Broken Access Control
+
+  - id: IMPACT_NODE
+    name: Terminal Business / System Operational Impact Node
+    cwe: CWE-400
+    owasp: A04:2021-Insecure Design
+
+  - id: TRUST_BOUNDARY_NODE
+    name: Security & Isolation Trust Boundary Crossing Node
+    cwe: CWE-284
+    owasp: A01:2021-Broken Access Control
+
+  - id: EXPLOIT_CHAIN_PATH
+    name: End-to-End Correlated Exploit Path Sequence
+    cwe: CWE-1000
+    owasp: A04:2021-Insecure Design

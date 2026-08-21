@@ -1,0 +1,37 @@
+# Knowledge Base — Temporal & State Consistency Invariants (Batch D2)
+
+privilege_revocation_rules:
+  - capability: ADMIN_ACTION
+    authority: ADMIN_ROLE
+    requires: INSTANT_REVOCATION_OR_SHORT_TTL
+  - capability: SENSITIVE_WRITE
+    authority: USER_PERMISSION
+    requires: REVOCATION_CHECK_BEFORE_USE
+
+toctou_rules:
+  - pattern: CHECK_THEN_USE
+    requires: ATOMIC_LOCK_OR_TRANSACTION_BOUNDARY
+
+state_sync_rules:
+  - boundary: CLIENT_GATEWAY_BACKEND
+    requires: UNIFIED_STATE_TOKEN
+
+cache_authorization_rules:
+  - cache_type: ROLE_CACHE
+    requires: EXPLICIT_INVALIDATION_ON_MUTATION
+
+workflow_rules:
+  - sequence: ["REQUEST", "APPROVE", "PAY"]
+    strictly_enforced: true
+
+race_condition_rules:
+  - shared_state: MUTABLE_RESOURCE
+    requires: SYNCHRONIZATION_PRIMITIVE
+
+transactional_rules:
+  - operation: MULTI_DB_WRITE
+    requires: ROLLBACK_HANDLER
+
+replay_rules:
+  - operation: SENSITIVE_MUTATION
+    requires: NONCE_OR_IDEMPOTENCY_KEY

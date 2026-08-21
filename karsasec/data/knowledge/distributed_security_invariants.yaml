@@ -1,0 +1,24 @@
+# Knowledge Base — Distributed Security Consistency Invariants (Batch D3)
+
+trust_domain_rules:
+  - domain: PUBLIC_GATEWAY
+    trust_level: LOW
+  - domain: INTERNAL_SERVICE_MESH
+    trust_level: HIGH
+  - rule: NO_SILENT_TRUST_PROMOTION
+
+identity_rules:
+  - identity_types: ["END_USER", "SERVICE_ACCOUNT", "DELEGATED_IDENTITY", "IMPERSONATED_IDENTITY"]
+  - rule: PRESERVE_ACTOR_PROVENANCE
+
+tenant_rules:
+  - rule: TENANT_CONTEXT_IMMUTABILITY_ACROSS_SERVICES
+
+delegation_rules:
+  - rule: VERIFY_FULL_DELEGATION_CHAIN
+
+gateway_backend_rules:
+  - rule: BACKEND_MUST_INDEPENDENTLY_VALIDATE_OR_VERIFY_HMAC
+
+replay_rules:
+  - rule: DISTRIBUTED_MUTATION_REQUIRES_EXECUTION_NONCE

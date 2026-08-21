@@ -1,0 +1,38 @@
+category:
+  id: SSTI_SECURITY
+  name: Server-Side Template Injection & Expression Evaluator Abuse
+  cwe: CWE-1336
+  owasp: A03:2021-Injection
+
+subcategories:
+  - id: SSTI_COMMAND_EXECUTION
+    name: Server-Side Template Injection Chained to Process Spawn / Command Execution
+    cwe: CWE-1336
+    owasp: A03:2021-Injection
+    preconditions:
+      - UNTRUSTED_TEMPLATE_SOURCE
+      - SANDBOX_DISABLED
+      - PROCESS_SPAWN_CAPABILITY
+
+  - id: SSTI_FILE_READ
+    name: Server-Side Template Injection Arbitrary File Access
+    cwe: CWE-1336
+    owasp: A03:2021-Injection
+    preconditions:
+      - UNTRUSTED_TEMPLATE_SOURCE
+      - FILE_READ_CAPABILITY
+
+  - id: EXPRESSION_INJECTION
+    name: Unsafe Expression Evaluator Injection
+    cwe: CWE-94
+    owasp: A03:2021-Injection
+    preconditions:
+      - UNTRUSTED_EXPRESSION_INPUT
+
+  - id: TEMPLATE_FILE_INCLUSION
+    name: Template Loader Path Traversal / Arbitrary Template Access
+    cwe: CWE-22
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - UNTRUSTED_TEMPLATE_NAME
+      - MISSING_CANONICALIZATION

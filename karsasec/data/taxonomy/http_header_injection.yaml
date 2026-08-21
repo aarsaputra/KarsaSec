@@ -1,0 +1,51 @@
+category:
+  id: HTTP_HEADER_INJECTION_SECURITY
+  name: HTTP Header Injection, Response Splitting & Log Forging
+  cwe: CWE-113
+  owasp: A03:2021-Injection
+
+subcategories:
+  - id: CRLF_INJECTION
+    name: Carriage Return Line Feed (CRLF) Injection
+    cwe: CWE-93
+    owasp: A03:2021-Injection
+    preconditions:
+      - UNTRUSTED_HEADER_INPUT
+      - NEWLINE_CHARACTERS_PRESENT
+
+  - id: HTTP_RESPONSE_SPLITTING
+    name: HTTP Response Splitting
+    cwe: CWE-113
+    owasp: A03:2021-Injection
+    preconditions:
+      - CRLF_INJECTION
+      - RESPONSE_HEADER_SINK
+
+  - id: HTTP_HEADER_INJECTION
+    name: Arbitrary HTTP Header Injection
+    cwe: CWE-113
+    owasp: A03:2021-Injection
+    preconditions:
+      - UNTRUSTED_HEADER_VALUE
+
+  - id: HOST_HEADER_INJECTION
+    name: Host Header Manipulation
+    cwe: CWE-16
+    owasp: A05:2021-Security-Misconfiguration
+    preconditions:
+      - UNTRUSTED_HOST_HEADER
+
+  - id: LOG_INJECTION
+    name: Log Injection & Log Forging
+    cwe: CWE-117
+    owasp: A03:2021-Injection
+    preconditions:
+      - UNTRUSTED_LOG_INPUT
+      - UNESCAPED_NEWLINE
+
+  - id: CACHE_KEY_INJECTION
+    name: Potential Cache Key Manipulation
+    cwe: CWE-113
+    owasp: A03:2021-Injection
+    preconditions:
+      - UNTRUSTED_CACHE_HEADER

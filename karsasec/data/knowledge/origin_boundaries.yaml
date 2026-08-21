@@ -1,0 +1,28 @@
+origin_boundaries:
+  - id: SAME_ORIGIN
+    trust_level: HIGHLY_TRUSTED
+    description: Identical scheme, host, and port matching target application origin.
+
+  - id: SAME_SITE
+    trust_level: CONDITIONALLY_TRUSTED
+    description: Shared registrable domain (eTLD+1) across subdomains.
+
+  - id: CROSS_ORIGIN
+    trust_level: UNTRUSTED
+    description: Different host, scheme, or port requiring CORS header evaluation.
+
+  - id: CROSS_SITE
+    trust_level: UNTRUSTED
+    description: Completely distinct registrable domain requiring CSRF protection.
+
+  - id: TRUSTED_ORIGIN
+    trust_level: HIGHLY_TRUSTED
+    description: Explicitly validated origin contained in strict application allowlist.
+
+  - id: UNTRUSTED_ORIGIN
+    trust_level: UNTRUSTED
+    description: Arbitrary or reflected origin header controlled by remote client.
+
+  - id: UNKNOWN_ORIGIN
+    trust_level: UNRESOLVED
+    description: Unresolved origin state evaluating to UNKNOWN resolution.

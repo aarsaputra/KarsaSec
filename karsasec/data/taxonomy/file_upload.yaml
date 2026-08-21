@@ -1,0 +1,55 @@
+category:
+  id: FILE_UPLOAD_SECURITY
+  name: Unrestricted File Upload & Insecure Storage Vulnerabilities
+  cwe: CWE-434
+  owasp: A04:2021-Insecure-Design
+
+subcategories:
+  - id: UNRESTRICTED_FILE_UPLOAD
+    name: Unrestricted Executable File Upload
+    cwe: CWE-434
+    owasp: A04:2021-Insecure-Design
+    preconditions:
+      - UNTRUSTED_FILE_UPLOAD
+      - DANGEROUS_FILE_EXTENSION
+      - EXECUTABLE_STORAGE_LOCATION
+
+  - id: PATH_TRAVERSAL_UPLOAD
+    name: File Upload Path Traversal / Arbitrary File Overwrite
+    cwe: CWE-22
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - UNTRUSTED_FILENAME
+      - TRAVERSAL_SEQUENCE_PRESENT
+      - MISSING_CANONICALIZATION
+
+  - id: MIME_CONTENT_MISMATCH
+    name: Content-Type / Magic Byte Extension Mismatch
+    cwe: CWE-434
+    owasp: A04:2021-Insecure-Design
+    preconditions:
+      - CLIENT_MIME_TRUSTED
+      - MAGIC_BYTES_MISMATCH
+
+  - id: ZIP_SLIP_TRAVERSAL
+    name: Archive Extraction Path Traversal (Zip / Tar Slip)
+    cwe: CWE-22
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - UNTRUSTED_ARCHIVE_ENTRY
+      - RELATIVE_PATH_ESCAPE
+
+  - id: PREDICTABLE_TEMP_FILE
+    name: Predictable Temporary File Creation
+    cwe: CWE-377
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - PREDICTABLE_PATH_CONSTRUCTION
+
+  - id: FILE_UPLOAD_TOCTOU
+    name: Time-of-Check to Time-of-Use Upload Race Condition
+    cwe: CWE-367
+    owasp: A04:2021-Insecure-Design
+    preconditions:
+      - SEPARATE_CHECK_AND_WRITE
+      - MUTABLE_FILESYSTEM_GAP

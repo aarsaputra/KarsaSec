@@ -1,0 +1,92 @@
+# Taxonomy — Distributed Security Consistency Violations (Batch D3)
+
+categories:
+  - id: CROSS_SERVICE_TRUST_VIOLATION
+    name: Cross-Service Trust Continuity Violation
+    severity: CRITICAL
+    description: Trust level silently increased when data crossed a service boundary.
+
+  - id: AUTHORIZATION_CONTEXT_DRIFT
+    name: Authorization Decision Context Drift
+    severity: HIGH
+    description: Authorization decision relied on outdated or changed security context.
+
+  - id: IDENTITY_PROVENANCE_LOSS
+    name: Identity Provenance Loss
+    severity: HIGH
+    description: Original actor identity lost or untraceable across service boundaries.
+
+  - id: CROSS_SERVICE_TENANT_ESCAPE
+    name: Cross-Service Tenant Context Escape
+    severity: CRITICAL
+    description: Tenant identity mutated or lost between distributed service calls.
+
+  - id: DISTRIBUTED_PRIVILEGE_AMPLIFICATION
+    name: Distributed Privilege Amplification
+    severity: CRITICAL
+    description: Cross-service delegation increased privilege without explicit proof.
+
+  - id: DISTRIBUTED_DELEGATION_VIOLATION
+    name: Distributed Delegation Chain Violation
+    severity: HIGH
+    description: Delegation chain broken or unverifiable across distributed components.
+
+  - id: AUTHORIZATION_CONTEXT_DETACHMENT
+    name: Authorization Context Detachment
+    severity: HIGH
+    description: Sensitive action executed detached from authorized principal context.
+
+  - id: MESSAGE_SECURITY_CONTEXT_LOSS
+    name: Message Security Context Loss
+    severity: HIGH
+    description: Event or queue message missing actor, tenant, or authorization context.
+
+  - id: ASYNC_AUTHORIZATION_DRIFT
+    name: Async Authorization Drift
+    severity: HIGH
+    description: Asynchronous operation executed using revoked or stale authorization.
+
+  - id: DISTRIBUTED_STATE_INCONSISTENCY
+    name: Distributed State Inconsistency
+    severity: HIGH
+    description: Security-relevant state contradicts between distributed services.
+
+  - id: DISTRIBUTED_CACHE_SECURITY_DRIFT
+    name: Distributed Cache Security Drift
+    severity: HIGH
+    description: Distributed cache contains stale or contradictory security policy state.
+
+  - id: GATEWAY_BACKEND_SECURITY_MISMATCH
+    name: Gateway/Backend Security Policy Mismatch
+    severity: HIGH
+    description: Security enforcement policy at edge gateway contradicts backend checks.
+
+  - id: SERVICE_USER_IDENTITY_CONFUSION
+    name: Service vs User Identity Confusion
+    severity: HIGH
+    description: Service identity treated as user identity without explicit impersonation proof.
+
+  - id: EVENT_PROVENANCE_VIOLATION
+    name: Event Provenance Integrity Violation
+    severity: HIGH
+    description: Security-sensitive event missing immutable provenance or correlation ID.
+
+  - id: DISTRIBUTED_REPLAY_VIOLATION
+    name: Cross-Boundary Replay Attack Violation
+    severity: HIGH
+    description: Distributed operation missing execution identity or replay protection.
+
+  - id: DISTRIBUTED_SOD_VIOLATION
+    name: Distributed Separation of Duty Violation
+    severity: CRITICAL
+    description: Multi-step sensitive actions across services executed by single identity.
+
+  - id: DISTRIBUTED_DEFENSE_IN_DEPTH_VIOLATION
+    name: Distributed Defense-in-Depth Violation
+    severity: HIGH
+    description: Downstream service silently removes upstream security controls.
+
+  - id: UNKNOWN_DISTRIBUTED_SECURITY_STATE
+    name: Cross-Boundary Unknown Security State
+    severity: UNKNOWN
+    description: Ambiguous or missing cross-service evidence preserves UNKNOWN state.

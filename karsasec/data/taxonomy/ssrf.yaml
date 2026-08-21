@@ -1,0 +1,56 @@
+category:
+  id: SSRF_REASONING
+  name: Server-Side Request Forgery & Internal Network Capability Reasoning
+  cwe: CWE-918
+  owasp: A10:2021-Server-Side Request Forgery
+
+subcategories:
+  - id: SSRF
+    name: Server-Side Request Forgery (General)
+    cwe: CWE-918
+    owasp: A10:2021-Server-Side Request Forgery
+
+  - id: BLIND_SSRF
+    name: Blind Server-Side Request Forgery
+    cwe: CWE-918
+    owasp: A10:2021-Server-Side Request Forgery
+
+  - id: INTERNAL_NETWORK_ACCESS
+    name: Internal RFC1918 Private Network Access
+    cwe: CWE-918
+    owasp: A10:2021-Server-Side Request Forgery
+
+  - id: CLOUD_METADATA_ACCESS
+    name: Cloud Instance Metadata Service Access (AWS/GCP/Azure/DO/Alibaba)
+    cwe: CWE-918
+    owasp: A10:2021-Server-Side Request Forgery
+
+  - id: KUBERNETES_METADATA_ACCESS
+    name: Kubernetes API & Cluster Service Metadata Access
+    cwe: CWE-918
+    owasp: A10:2021-Server-Side Request Forgery
+
+  - id: REDIRECT_BASED_SSRF
+    name: HTTP Redirect Followed to Internal Network
+    cwe: CWE-918
+    owasp: A10:2021-Server-Side Request Forgery
+
+  - id: DNS_REBINDING_RISK
+    name: Time-of-Check Time-of-Use DNS Rebinding Risk
+    cwe: CWE-918
+    owasp: A10:2021-Server-Side Request Forgery
+
+  - id: URL_PARSER_CONFUSION_SSRF
+    name: Multi-Parser Disagreement Driven SSRF
+    cwe: CWE-918
+    owasp: A10:2021-Server-Side Request Forgery
+
+  - id: PROTOCOL_SMUGGLING
+    name: Dangerous Protocol Smuggling (gopher/file/dict/ldap)
+    cwe: CWE-918
+    owasp: A10:2021-Server-Side Request Forgery
+
+  - id: SERVICE_DISCOVERY_ABUSE
+    name: Internal Service Mesh & Discovery API Abuse
+    cwe: CWE-918
+    owasp: A10:2021-Server-Side Request Forgery

@@ -1,0 +1,62 @@
+category:
+  id: SESSION_MANAGEMENT
+  name: Broken Session Management & Token Lifecycle
+  cwe: CWE-384
+  owasp: A07:2021-Identification-and-Authentication-Failures
+
+subcategories:
+  - id: SESSION_FIXATION
+    name: Session Fixation Vulnerability
+    cwe: CWE-384
+    owasp: A07:2021-Identification-and-Authentication-Failures
+    preconditions:
+      - PRE_AUTH_SESSION_RETAINED_POST_AUTH
+
+  - id: MISSING_SESSION_ROTATION
+    name: Missing Session Identifier Rotation
+    cwe: CWE-384
+    owasp: A07:2021-Identification-and-Authentication-Failures
+    preconditions:
+      - SENSITIVE_TRANSITION_WITHOUT_ROTATION
+
+  - id: REFRESH_TOKEN_REUSE
+    name: Refresh Token Reuse / Replay
+    cwe: CWE-613
+    owasp: A07:2021-Identification-and-Authentication-Failures
+    preconditions:
+      - REVOKED_TOKEN_REUSED
+
+  - id: INSECURE_COOKIE_ATTRIBUTES
+    name: Insecure Cookie Flags (Missing Secure / HttpOnly / SameSite)
+    cwe: CWE-614
+    owasp: A05:2021-Security-Misconfiguration
+    preconditions:
+      - SENSITIVE_COOKIE_MISSING_FLAGS
+
+  - id: SESSION_NOT_INVALIDATED_ON_LOGOUT
+    name: Session Not Invalidated on Logout
+    cwe: CWE-613
+    owasp: A07:2021-Identification-and-Authentication-Failures
+    preconditions:
+      - ACTIVE_SESSION_RETAINED_POST_LOGOUT
+
+  - id: TOKEN_IN_URL
+    name: Sensitive Security Token Exposed in URL Parameter
+    cwe: CWE-598
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - TOKEN_EXPOSED_IN_GET_PARAM
+
+  - id: TOKEN_LEAKAGE
+    name: Sensitive Token Leakage in Logs / Referer / Exceptions
+    cwe: CWE-532
+    owasp: A09:2021-Security-Logging-and-Monitoring-Failures
+    preconditions:
+      - TOKEN_FLOWS_TO_UNTRUSTED_SINK
+
+  - id: CONCURRENT_SESSION_ABUSE
+    name: Concurrent Session State Race Condition
+    cwe: CWE-362
+    owasp: A07:2021-Identification-and-Authentication-Failures
+    preconditions:
+      - UNRESTRICTED_CONCURRENT_SESSIONS

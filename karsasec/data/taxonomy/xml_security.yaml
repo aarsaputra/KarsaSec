@@ -1,0 +1,46 @@
+category:
+  id: XML_SECURITY
+  name: XML External Entity (XXE), Entity Expansion & XML Processing Security
+  cwe: CWE-611
+  owasp: A05:2021-Security-Misconfiguration
+
+subcategories:
+  - id: XXE_FILE_DISCLOSURE
+    name: XML External Entity (XXE) Arbitrary File Disclosure
+    cwe: CWE-611
+    owasp: A05:2021-Security-Misconfiguration
+    preconditions:
+      - UNTRUSTED_XML_INPUT
+      - DTD_ENABLED
+      - EXTERNAL_ENTITIES_ENABLED
+      - FILE_READ_CAPABILITY
+
+  - id: XXE_SSRF
+    name: XML External Entity (XXE) Server-Side Request Forgery
+    cwe: CWE-611
+    owasp: A05:2021-Security-Misconfiguration
+    preconditions:
+      - UNTRUSTED_XML_INPUT
+      - EXTERNAL_ENTITIES_ENABLED
+      - NETWORK_RESOLVER_ENABLED
+
+  - id: BILLION_LAUGHS_ENTITY_EXPANSION
+    name: Recursive XML Entity Expansion (Billion Laughs DoS)
+    cwe: CWE-776
+    owasp: A05:2021-Security-Misconfiguration
+    preconditions:
+      - UNBOUNDED_ENTITY_EXPANSION
+
+  - id: XPATH_INJECTION
+    name: XPath Expression Injection
+    cwe: CWE-643
+    owasp: A03:2021-Injection
+    preconditions:
+      - UNTRUSTED_STRING_CONCATENATION_IN_XPATH
+
+  - id: XINCLUDE_ABUSE
+    name: Unsafe XInclude External Resource Inclusion
+    cwe: CWE-611
+    owasp: A05:2021-Security-Misconfiguration
+    preconditions:
+      - XINCLUDE_ENABLED

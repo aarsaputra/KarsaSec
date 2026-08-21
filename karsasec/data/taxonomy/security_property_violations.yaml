@@ -1,0 +1,56 @@
+# KarsaSec Batch D5 - Security Property Proof Violations Taxonomy
+version: "1.0.0"
+description: "Taxonomy categories for security property formal proof violations and resolutions."
+
+categories:
+  - name: "SECURITY_PROPERTY_UNREACHABLE"
+    severity: "INFO"
+    description: "Target security property is provably safe and unreachable."
+
+  - name: "SECURITY_PROPERTY_REACHABLE"
+    severity: "CRITICAL"
+    description: "Target security property is provably reachable via a complete causal evidence chain."
+
+  - name: "PROOF_INSUFFICIENT"
+    severity: "UNKNOWN"
+    description: "Missing mandatory proof evidence forces an UNKNOWN verdict."
+
+  - name: "PROOF_CONFLICT"
+    severity: "UNKNOWN"
+    description: "Contradictory valid evidence prevents resolution."
+
+  - name: "IDENTITY_PROOF_FAILURE"
+    severity: "HIGH"
+    description: "Failure to establish verified identity provenance."
+
+  - name: "PRIVILEGE_PROOF_FAILURE"
+    severity: "HIGH"
+    description: "Failure to prove valid privilege escalation path."
+
+  - name: "TENANT_PROOF_FAILURE"
+    severity: "CRITICAL"
+    description: "Failure to prove cross-tenant context transition."
+
+  - name: "AUTHORIZATION_PROOF_FAILURE"
+    severity: "HIGH"
+    description: "Failure to demonstrate security control bypass."
+
+  - name: "TEMPORAL_PROOF_FAILURE"
+    severity: "HIGH"
+    description: "Temporal inconsistency invalidates causality."
+
+  - name: "DISTRIBUTED_PROOF_FAILURE"
+    severity: "HIGH"
+    description: "Cross-service delegation or context loss invalidates proof."
+
+  - name: "CAUSALITY_PROOF_FAILURE"
+    severity: "HIGH"
+    description: "Absence of direct causal edge between evidence nodes."
+
+  - name: "IMPACT_BINDING_FAILURE"
+    severity: "MEDIUM"
+    description: "Mismatch between reachability proof and severity impact."
+
+  - name: "UNKNOWN_SECURITY_PROPERTY_STATE"
+    severity: "UNKNOWN"
+    description: "Epistemic UNKNOWN state due to incomplete analysis bounds."

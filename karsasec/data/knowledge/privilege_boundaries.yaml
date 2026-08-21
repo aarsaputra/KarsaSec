@@ -1,0 +1,52 @@
+privilege_levels:
+  - id: ANONYMOUS
+    level: 0
+    can_escalate_to:
+      - USER
+      - VERIFIED_USER
+      - TENANT_ADMIN
+
+  - id: USER
+    level: 1
+    can_escalate_to:
+      - VERIFIED_USER
+      - TENANT_ADMIN
+      - ORG_ADMIN
+
+  - id: VERIFIED_USER
+    level: 2
+    can_escalate_to:
+      - TENANT_ADMIN
+      - ORG_ADMIN
+
+  - id: TENANT_ADMIN
+    level: 3
+    can_escalate_to:
+      - ORG_ADMIN
+      - SYSTEM_OPERATOR
+
+  - id: ORG_ADMIN
+    level: 4
+    can_escalate_to:
+      - SYSTEM_OPERATOR
+      - CLOUD_ADMIN
+
+  - id: SERVICE_ACCOUNT
+    level: 3
+    can_escalate_to:
+      - SYSTEM_OPERATOR
+      - ROOT
+
+  - id: SYSTEM_OPERATOR
+    level: 5
+    can_escalate_to:
+      - ROOT
+      - CLOUD_ADMIN
+
+  - id: ROOT
+    level: 6
+    can_escalate_to: []
+
+  - id: CLOUD_ADMIN
+    level: 6
+    can_escalate_to: []

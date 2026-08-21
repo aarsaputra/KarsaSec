@@ -1,0 +1,133 @@
+# KarsaSec Batch D5 - Security Property Proofs Knowledge Base
+version: "1.0.0"
+description: "Formal specification of formal security property proof requirements, prerequisites, allowed/forbidden transitions, and resolution semantics."
+
+properties:
+  ACCOUNT_TAKEOVER:
+    prerequisites:
+      - "AUTHENTICATION_BYPASS"
+      - "IDENTITY_PROVENANCE_CORRUPTION"
+    required_evidence:
+      - "identity"
+      - "authorization"
+      - "causal_path"
+    allowed_transitions:
+      - "ANONYMOUS -> USER"
+      - "USER -> VICTIM_USER"
+    forbidden_transitions:
+      - "ANONYMOUS -> VICTIM_USER (without auth bypass)"
+    default_severity: "CRITICAL"
+
+  ROOT_ACCESS:
+    prerequisites:
+      - "PRIVILEGE_ESCALATION"
+      - "OS_CAPABILITY_LEAK"
+    required_evidence:
+      - "privilege"
+      - "system_boundary"
+      - "causal_path"
+    allowed_transitions:
+      - "USER -> ROOT"
+      - "SERVICE -> ROOT"
+    forbidden_transitions:
+      - "LOW -> ROOT (without privilege proof)"
+    default_severity: "CRITICAL"
+
+  ADMIN_ACCESS:
+    prerequisites:
+      - "AUTHORIZATION_BYPASS"
+      - "ROLE_IMPERSONATION"
+    required_evidence:
+      - "authorization"
+      - "role_binding"
+      - "causal_path"
+    allowed_transitions:
+      - "USER -> ADMIN"
+    forbidden_transitions:
+      - "ANONYMOUS -> ADMIN (without auth bypass)"
+    default_severity: "HIGH"
+
+  CLOUD_ADMIN:
+    prerequisites:
+      - "CLOUD_CREDENTIAL_LEAK"
+      - "IAM_IMPERSONATION"
+    required_evidence:
+      - "cloud_identity"
+      - "credential_provenance"
+      - "causal_path"
+    allowed_transitions:
+      - "WORKLOAD -> CLOUD_ADMIN"
+    forbidden_transitions:
+      - "UNTRUSTED -> CLOUD_ADMIN (without credential leak)"
+    default_severity: "CRITICAL"
+
+  TENANT_ESCAPE:
+    prerequisites:
+      - "TENANT_CONTEXT_SWITCH"
+      - "CROSS_TENANT_ACCESS"
+    required_evidence:
+      - "source_tenant"
+      - "target_tenant"
+      - "authorization_failure"
+      - "causal_path"
+    allowed_transitions:
+      - "TENANT_A -> TENANT_B"
+    forbidden_transitions:
+      - "TENANT_A -> TENANT_B (without context switch evidence)"
+    default_severity: "CRITICAL"
+
+  SECRET_ACCESS:
+    prerequisites:
+      - "UNAUTHORIZED_READ"
+      - "SECRET_LEAK"
+    required_evidence:
+      - "secret_binding"
+      - "authorization_failure"
+      - "causal_path"
+    allowed_transitions:
+      - "USER -> SENSITIVE_SECRET"
+    forbidden_transitions:
+      - "UNAUTHORIZED -> SECRET (without read exploit)"
+    default_severity: "HIGH"
+
+  DATA_EXFILTRATION:
+    prerequisites:
+      - "BULK_READ_ACCESS"
+      - "BOUNDARY_BYPASS"
+    required_evidence:
+      - "data_source"
+      - "exfiltration_path"
+      - "causal_path"
+    allowed_transitions:
+      - "INTERNAL -> EXTERNAL"
+    forbidden_transitions:
+      - "INTERNAL -> EXTERNAL (without bypass proof)"
+    default_severity: "HIGH"
+
+  CODE_EXECUTION:
+    prerequisites:
+      - "UNTRUSTED_DESERIALIZATION_OR_INJECTION"
+      - "EXEC_CAPABILITY"
+    required_evidence:
+      - "payload_delivery"
+      - "execution_sink"
+      - "causal_path"
+    allowed_transitions:
+      - "INPUT -> SYSTEM_EXEC"
+    forbidden_transitions:
+      - "INPUT -> EXEC (without injection proof)"
+    default_severity: "CRITICAL"
+
+  PAYMENT_MODIFICATION:
+    prerequisites:
+      - "TRANSACTION_MUTATION"
+      - "SOD_VIOLATION"
+    required_evidence:
+      - "transaction_state"
+      - "authorization_failure"
+      - "causal_path"
+    allowed_transitions:
+      - "PENDING -> PAID"
+    forbidden_transitions:
+      - "PENDING -> PAID (without bypass proof)"
+    default_severity: "CRITICAL"

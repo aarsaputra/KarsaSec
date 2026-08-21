@@ -261,7 +261,7 @@ class ProviderExecutionService:
         for attempt_number in range(1, effective_max_attempts + 1):
             # Select provider via Router & transition state
             try:
-                routing_result = self.router.select_provider(policy=policy)
+                routing_result = self.router.select_provider(policy=policy, session=session)
                 descriptor = routing_result.descriptor
             except NoEligibleProviderError:
                 # Handle case where all providers are OPEN or ineligible (INV-F11-CIRCUIT-05)
@@ -332,9 +332,13 @@ class ProviderExecutionService:
             last_response = response
 
             if response.success:
-                # Success path — record success in circuit breaker if configured
+                # Success path — record success in circuit breaker & save persistent state
                 if self.circuit_breaker:
                     self.circuit_breaker.record_success(descriptor.provider_id, descriptor.model_id)
+                    circuit_repo = getattr(self.router, "circuit_repository", None)
+                    if circuit_repo:
+                        data = self.circuit_breaker.export_data(descriptor.provider_id, descriptor.model_id)
+                        circuit_repo.save(session, data)
 
                 attempt_model.status = "COMPLETED"
                 attempt_model.input_tokens = response.input_tokens
@@ -351,10 +355,17 @@ class ProviderExecutionService:
                 )
                 return response
 
-            # Failure path — record failure in circuit breaker if configured
+            # Failure path — record failure in circuit breaker & save persistent state
             classification = FailureClassifier.classify(error_class_hint=response.error_class)
             if self.circuit_breaker:
                 self.circuit_breaker.record_failure(descriptor.provider_id, descriptor.model_id, classification)
+                rate_limiter = getattr(self.router, "rate_limiter", None)
+                if classification.throttled and rate_limiter:
+                    rate_limiter.set_cooldown(session, descriptor.provider_id, descriptor.model_id, cooldown_seconds=60.0, reason=classification.error_class)
+                circuit_repo = getattr(self.router, "circuit_repository", None)
+                if circuit_repo:
+                    data = self.circuit_breaker.export_data(descriptor.provider_id, descriptor.model_id)
+                    circuit_repo.save(session, data)
 
             self.router.record_attempt_failure(
                 session=session,

@@ -1,0 +1,38 @@
+category:
+  id: DESERIALIZATION_SECURITY
+  name: Insecure Deserialization & Polymorphic Object Reconstruction
+  cwe: CWE-502
+  owasp: A08:2021-Software-and-Data-Integrity-Failures
+
+subcategories:
+  - id: INSECURE_DESERIALIZATION
+    name: Insecure Deserialization of Untrusted Data
+    cwe: CWE-502
+    owasp: A08:2021-Software-and-Data-Integrity-Failures
+    preconditions:
+      - UNTRUSTED_SERIALIZED_INPUT
+      - DANGEROUS_DESERIALIZER
+
+  - id: DESERIALIZATION_TO_COMMAND_EXECUTION
+    name: Deserialization Chained to Arbitrary Command Execution
+    cwe: CWE-502
+    owasp: A08:2021-Software-and-Data-Integrity-Failures
+    preconditions:
+      - UNTRUSTED_SERIALIZED_INPUT
+      - DANGEROUS_DESERIALIZER
+      - PROCESS_SPAWN_CAPABILITY
+
+  - id: MISSING_INTEGRITY_VERIFICATION
+    name: Missing Integrity Verification on Serialized Object Payload
+    cwe: CWE-502
+    owasp: A08:2021-Software-and-Data-Integrity-Failures
+    preconditions:
+      - UNTRUSTED_SERIALIZED_INPUT
+      - MISSING_HMAC_OR_SIGNATURE
+
+  - id: UNRESTRICTED_TYPE_DESERIALIZATION
+    name: Missing Type Allowlist / Polymorphic Type Abuse
+    cwe: CWE-915
+    owasp: A08:2021-Software-and-Data-Integrity-Failures
+    preconditions:
+      - UNRESTRICTED_TYPE_RESOLUTION

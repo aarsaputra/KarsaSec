@@ -1,0 +1,85 @@
+trust_boundaries:
+  - id: HTTP_REQUEST
+    name: Untrusted Client HTTP Request Entry Point
+    trust_level: UNTRUSTED
+    description: Untrusted user input entering via GET/POST parameters, headers, cookies, or body payload.
+
+  - id: JWT_CLAIM
+    name: Decoded JSON Web Token Claim
+    trust_level: CONDITIONALLY_TRUSTED
+    description: Identity claim contained within JWT payload requiring signature verification before trust promotion.
+
+  - id: DATABASE_RECORD
+    name: Persistent Database Record
+    trust_level: INTERNAL_TRUSTED
+    description: Data retrieved from internal database tables, subject to second-order injection risks.
+
+  - id: SESSION_STATE
+    name: Server-Side Session State Store
+    trust_level: HIGHLY_TRUSTED
+    description: Server-managed user session dictionary created after successful authentication.
+
+  - id: CACHE_STATE
+    name: Shared Distributed Cache Store (Redis / Memcached)
+    trust_level: INTERNAL_TRUSTED
+    description: Cached objects subject to cache poisoning or key collision injection.
+
+  - id: EXTERNAL_API
+    name: External Third-Party API Response
+    trust_level: UNTRUSTED
+    description: Data returned from external webhooks or upstream services requiring sanitization before processing.
+
+  - id: FILE_UPLOAD
+    name: Multipart User File Upload Stream
+    trust_level: UNTRUSTED
+    description: Raw file stream uploaded by user containing filename, headers, and binary content.
+
+  - id: MESSAGE_QUEUE
+    name: Distributed Asynchronous Message Queue Payload
+    trust_level: CONDITIONALLY_TRUSTED
+    description: Asynchronous job payload ingested from RabbitMQ/Kafka/SQS requiring identity validation.
+
+  - id: FILE_UPLOAD
+    name: Multipart File Upload Payload
+    trust_level: UNTRUSTED
+    description: Raw user multipart file payload stream.
+
+  - id: UPLOADED_FILENAME
+    name: User Supplied Upload Filename
+    trust_level: UNTRUSTED
+    description: Original filename provided in Content-Disposition header.
+
+  - id: UPLOADED_CONTENT
+    name: User Supplied Upload File Binary Content
+    trust_level: UNTRUSTED
+    description: Raw bytes of uploaded file payload.
+
+  - id: UPLOAD_METADATA
+    name: File Upload Client Metadata
+    trust_level: CONDITIONALLY_TRUSTED
+    description: Client-provided Content-Type, file size, and header attributes.
+
+  - id: TEMP_FILE
+    name: Temporary Upload File System Location
+    trust_level: CONDITIONALLY_TRUSTED
+    description: Intermediate temporary file path created during processing.
+
+  - id: USER_CONTROLLED_PATH
+    name: User Influenced Destination File Path
+    trust_level: UNTRUSTED
+    description: Filesystem path incorporating untrusted parameters.
+
+  - id: SERVER_STORAGE
+    name: Internal Server Storage Directory
+    trust_level: INTERNAL_TRUSTED
+    description: Protected server storage directory isolated from public HTTP access.
+
+  - id: PUBLIC_MEDIA
+    name: Public Static Media Web Directory
+    trust_level: CONTEXT_DEPENDENT
+    description: Web-accessible media directory served directly by web server.
+
+  - id: EXECUTABLE_DIRECTORY
+    name: Web Root / Executable Script Storage Directory
+    trust_level: HIGH_RISK
+    description: Webroot, CGI-BIN, or script directory parsed and executed by application server.

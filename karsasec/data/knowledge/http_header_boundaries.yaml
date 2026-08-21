@@ -1,0 +1,60 @@
+http_header_boundaries:
+  - id: HTTP_REQUEST
+    trust_level: UNTRUSTED
+    user_controlled: true
+    header_injection_possible: true
+
+  - id: HTTP_HEADER
+    trust_level: UNTRUSTED
+    user_controlled: true
+    header_injection_possible: true
+
+  - id: HTTP_RESPONSE
+    trust_level: SERVER_AUTHORITATIVE
+    user_controlled: false
+    header_injection_possible: false
+
+  - id: HTTP_REDIRECT
+    trust_level: UNTRUSTED
+    user_controlled: true
+    header_injection_possible: true
+
+  - id: COOKIE
+    trust_level: UNTRUSTED
+    user_controlled: true
+    header_injection_possible: true
+
+  - id: PROXY_HEADER
+    trust_level: CONDITIONALLY_TRUSTED
+    user_controlled: true
+    header_injection_possible: true
+
+  - id: HOST_HEADER
+    trust_level: UNTRUSTED
+    user_controlled: true
+    header_injection_possible: true
+
+  - id: LOG_OUTPUT
+    trust_level: UNTRUSTED
+    user_controlled: true
+    header_injection_possible: false
+
+  - id: CACHE_KEY
+    trust_level: CONDITIONALLY_TRUSTED
+    user_controlled: true
+    header_injection_possible: true
+
+  - id: DOWNSTREAM_PROXY
+    trust_level: INTERNAL_TRUSTED
+    user_controlled: false
+    header_injection_possible: false
+
+  - id: TRUSTED_CONSTANT
+    trust_level: SERVER_AUTHORITATIVE
+    user_controlled: false
+    header_injection_possible: false
+
+  - id: VALIDATED_HEADER_VALUE
+    trust_level: SERVER_AUTHORITATIVE
+    user_controlled: false
+    header_injection_possible: false

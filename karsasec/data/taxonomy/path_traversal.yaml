@@ -1,0 +1,69 @@
+category:
+  id: PATH_TRAVERSAL_FILE_ACCESS
+  name: Path Traversal, File Inclusion & Arbitrary File Access
+  cwe: CWE-22
+  owasp: A01:2021-Broken-Access-Control
+
+subcategories:
+  - id: PATH_TRAVERSAL
+    name: Directory / Path Traversal
+    cwe: CWE-22
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - UNTRUSTED_PATH_INPUT
+      - MISSING_CANONICAL_CONTAINMENT_CHECK
+
+  - id: ARBITRARY_FILE_READ
+    name: Arbitrary File Read Access
+    cwe: CWE-22
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - UNTRUSTED_PATH_INPUT
+      - FILE_READ_SINK
+
+  - id: ARBITRARY_FILE_WRITE
+    name: Arbitrary File Write / Overwrite Access
+    cwe: CWE-73
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - UNTRUSTED_PATH_INPUT
+      - FILE_WRITE_SINK
+
+  - id: LOCAL_FILE_INCLUSION
+    name: Local File Inclusion (LFI)
+    cwe: CWE-98
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - UNTRUSTED_FILE_NAME
+      - DYNAMIC_INCLUDE_SINK
+
+  - id: REMOTE_FILE_INCLUSION
+    name: Remote File Inclusion (RFI) / Stream Wrapper Abuse
+    cwe: CWE-98
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - UNTRUSTED_REMOTE_URL
+      - DYNAMIC_INCLUDE_SINK
+
+  - id: SYMLINK_TRAVERSAL
+    name: Symbolic Link Traversal Escape
+    cwe: CWE-59
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - UNTRUSTED_SYMLINK_TARGET
+
+  - id: ZIP_SLIP_EXTRACTION
+    name: Unsafe Archive Extraction Traversal (Zip / Tar Slip)
+    cwe: CWE-22
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - UNTRUSTED_ARCHIVE_MEMBER
+      - MISSING_CONTAINMENT_CHECK
+
+  - id: TOCTOU_FILE_ACCESS
+    name: Time-of-Check to Time-of-Use File Race Condition
+    cwe: CWE-367
+    owasp: A04:2021-Insecure-Design
+    preconditions:
+      - SEPARATE_CHECK_AND_OPEN
+      - INTERVENING_GAP

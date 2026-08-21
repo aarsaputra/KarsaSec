@@ -1,0 +1,66 @@
+category:
+  id: PRIVILEGE_ESCALATION_ENGINE
+  name: Privilege Escalation Graph & Authorization Transition Engine
+  cwe: CWE-269
+  owasp: A01:2021-Broken Access Control
+
+subcategories:
+  - id: VERTICAL_PRIVILEGE_ESCALATION
+    name: Vertical Privilege Escalation (Lower User -> Admin / Higher Role)
+    cwe: CWE-269
+    owasp: A01:2021-Broken Access Control
+
+  - id: HORIZONTAL_PRIVILEGE_ESCALATION
+    name: Horizontal Privilege Escalation (User A -> User B Peer Account Access)
+    cwe: CWE-639
+    owasp: A01:2021-Broken Access Control
+
+  - id: TENANT_BOUNDARY_ESCAPE
+    name: Cross-Tenant Isolation Escape / Unscoped Multi-Tenant Access
+    cwe: CWE-639
+    owasp: A01:2021-Broken Access Control
+
+  - id: ROLE_CONFUSION
+    name: Role Assumption / Context Switch Authorization Failure
+    cwe: CWE-269
+    owasp: A01:2021-Broken Access Control
+
+  - id: FUNCTION_LEVEL_AUTHZ_BYPASS
+    name: Missing Function Level Access Control / Admin Endpoint Access
+    cwe: CWE-862
+    owasp: A01:2021-Broken Access Control
+
+  - id: RESOURCE_LEVEL_AUTHZ_BYPASS
+    name: Insecure Direct Object Reference / Resource Level Bypass
+    cwe: CWE-639
+    owasp: A01:2021-Broken Access Control
+
+  - id: ADMIN_ENDPOINT_BYPASS
+    name: Unauthenticated / Unauthorized Admin Route Access
+    cwe: CWE-306
+    owasp: A07:2021-Identification and Authentication Failures
+
+  - id: SERVICE_ACCOUNT_ESCALATION
+    name: Service Account Token / Managed Identity Privilege Theft
+    cwe: CWE-250
+    owasp: A01:2021-Broken Access Control
+
+  - id: CLOUD_ROLE_ESCALATION
+    name: Cloud IAM Role / Metadata Credentials Escalation
+    cwe: CWE-269
+    owasp: A01:2021-Broken Access Control
+
+  - id: ROOT_ACCESS
+    name: Operating System Root / System Administrator Privilege Escalation
+    cwe: CWE-250
+    owasp: A01:2021-Broken Access Control
+
+  - id: IMPERSONATION
+    name: Identity Impersonation / User Session Hijacking
+    cwe: CWE-287
+    owasp: A07:2021-Identification and Authentication Failures
+
+  - id: TOKEN_PRIVILEGE_ESCALATION
+    name: JWT / OAuth Token Privilege Manipulation
+    cwe: CWE-269
+    owasp: A01:2021-Broken Access Control

@@ -22,6 +22,7 @@ from sqlalchemy import (
     BigInteger,
     CheckConstraint,
     DateTime,
+    Float,
     ForeignKey,
     Index,
     Integer,
@@ -468,6 +469,8 @@ class AIRequestModel(Base):
     actual_cost_micro_units: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
     selected_provider_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     selected_model_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    winner_provider: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    winner_claimed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=_utcnow)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -535,4 +538,93 @@ class AIProviderAttemptModel(Base):
             "status IN ('IN_FLIGHT', 'COMPLETED', 'FAILED', 'CANCELLED')",
             name="ck_ai_attempts_status_valid",
         ),
+    )
+
+
+class AICircuitStateModel(Base):
+    """Authoritative Persistent Circuit Breaker State Ledger for Sprint F11.6 & F11.7 (INV-F11-CIRCUIT-06/07, INV-F11-CONSENSUS-18).
+
+    Guarantees UNIQUE(provider_id, model_id) and persists circuit state, failure windows, cooldown reasons,
+    and state_version for optimistic concurrency locking across distributed workers.
+    """
+
+    __tablename__ = "ai_circuit_states"
+
+    id: Mapped[str] = mapped_column(
+        String(128),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
+        nullable=False,
+    )
+    provider_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    model_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    state: Mapped[str] = mapped_column(String(32), nullable=False, default="CLOSED")
+    state_version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    failure_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    success_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    failures_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    opened_at: Mapped[float | None] = mapped_column(Float, nullable=True)
+    cooldown_until: Mapped[float | None] = mapped_column(Float, nullable=True)
+    cooldown_reason: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    probe_generation: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=_utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=_utcnow,
+        onupdate=_utcnow,
+    )
+
+    __table_args__ = (
+        UniqueConstraint("provider_id", "model_id", name="uq_ai_circuit_provider_model"),
+        CheckConstraint("state IN ('CLOSED', 'OPEN', 'HALF_OPEN')", name="ck_ai_circuit_state_valid"),
+    )
+
+
+class AIProviderRateLimitModel(Base):
+    """Database-authoritative Rate Limiter Token Bucket Ledger for Sprint F11.6 (INV-F11-RATELIMIT-08/09/13).
+
+    Guarantees UNIQUE(provider_id, model_id) and separates request bucket (RPM) from token bucket (TPM).
+    Uses DB locking / atomic updates to guarantee cluster-wide token acquisition atomicity.
+    """
+
+    __tablename__ = "ai_provider_rate_limits"
+
+    id: Mapped[str] = mapped_column(
+        String(128),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
+        nullable=False,
+    )
+    provider_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    model_id: Mapped[str] = mapped_column(String(64), nullable=False)
+
+    # Request Bucket (RPM)
+    requests_remaining: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    max_requests: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    rpm_refill_rate: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    last_request_refill_at: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+
+    # Token Bucket (TPM)
+    tokens_remaining: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    max_tokens: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    tpm_refill_rate: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    last_token_refill_at: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+
+    # Cooldown Tracking
+    cooldown_until: Mapped[float | None] = mapped_column(Float, nullable=True)
+    cooldown_reason: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=_utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=_utcnow,
+        onupdate=_utcnow,
+    )
+
+    __table_args__ = (
+        UniqueConstraint("provider_id", "model_id", name="uq_ai_rate_limit_provider_model"),
+        CheckConstraint("requests_remaining >= 0", name="ck_ai_rate_limit_requests_pos"),
+        CheckConstraint("tokens_remaining >= 0", name="ck_ai_rate_limit_tokens_pos"),
     )

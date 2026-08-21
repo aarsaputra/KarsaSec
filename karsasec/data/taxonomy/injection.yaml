@@ -1,0 +1,51 @@
+category:
+  id: INJECTION
+  name: Injection Vulnerabilities
+  cwe: CWE-89
+  owasp: A03:2021-Injection
+
+subcategories:
+  - id: SQLI
+    name: SQL Injection
+    cwe: CWE-89
+    owasp: A03:2021-Injection
+    sources:
+      - HTTP_REQUEST_PARAM
+      - HTTP_REQUEST_BODY
+      - HTTP_REQUEST_HEADER
+    sinks:
+      - DATABASE_QUERY_EXECUTE
+      - DATABASE_PREPARE
+      - ORM_RAW_QUERY
+    sanitizers:
+      - PARAMETERIZED_QUERY
+      - INTEGER_CAST
+      - IDENTIFIER_QUOTE
+    preconditions:
+      - UNTRUSTED_STRING_CONCATENATION
+
+  - id: BLIND_SQLI
+    name: Blind SQL Injection
+    cwe: CWE-89
+    owasp: A03:2021-Injection
+    sources:
+      - HTTP_REQUEST_PARAM
+    sinks:
+      - DATABASE_QUERY_EXECUTE
+    sanitizers:
+      - PARAMETERIZED_QUERY
+    preconditions:
+      - UNTRUSTED_STRING_CONCATENATION
+
+  - id: SECOND_ORDER_SQLI
+    name: Second-Order SQL Injection
+    cwe: CWE-89
+    owasp: A03:2021-Injection
+    sources:
+      - DATABASE_READ
+    sinks:
+      - DATABASE_QUERY_EXECUTE
+    sanitizers:
+      - PARAMETERIZED_QUERY
+    preconditions:
+      - UNTRUSTED_STRING_CONCATENATION

@@ -1,38 +1,63 @@
-"""Sanitizer Registry managing security cleaning routines across supported languages."""
+"""Sanitizer Registry managing security cleaning routines across supported languages and execution contexts."""
 
 from __future__ import annotations
 
+from enum import StrEnum
 from karsasec.analysis.taint.models import TaintCategory, TaintSanitizer
 
 
-class SanitizerRegistry:
-    """Registry maintaining multi-language security sanitizers categorized by vulnerability type."""
+class SanitizerContext(StrEnum):
+    HTML_BODY = "HTML_BODY"
+    HTML_ATTRIBUTE = "HTML_ATTRIBUTE"
+    JAVASCRIPT_CONTEXT = "JAVASCRIPT_CONTEXT"
+    SQL_QUERY = "SQL_QUERY"
+    URL_DESTINATION = "URL_DESTINATION"
+    FILE_PATH = "FILE_PATH"
+    COMMAND = "COMMAND"
+    GENERIC = "GENERIC"
 
-    DEFAULT_SANITIZERS: dict[TaintCategory, list[str]] = {
-        TaintCategory.SQL_INJECTION: [
-            "escape_string",
+
+class SanitizerRegistry:
+    """Registry maintaining multi-language security sanitizers categorized by vulnerability type and context."""
+
+    DEFAULT_CONTEXT_SANITIZERS: dict[SanitizerContext, list[str]] = {
+        SanitizerContext.HTML_BODY: [
+            "htmlspecialchars",
+            "html.escape",
+            "escape(",
+            "sanitize_html",
+        ],
+        SanitizerContext.HTML_ATTRIBUTE: [
+            "htmlspecialchars",
+            "attribute_escape",
+        ],
+        SanitizerContext.JAVASCRIPT_CONTEXT: [
+            "encodeURIComponent",
+            "JSON.stringify",
+            "DOMPurify.sanitize",
+            "js_escape",
+        ],
+        SanitizerContext.SQL_QUERY: [
             "PreparedStatement",
             "parameterized",
             "int(",
             "intval",
             "int()",
+            "escape_string",
             "quote_identifier",
         ],
-        TaintCategory.XSS: [
-            "escape(",
-            "html.escape",
-            "htmlspecialchars",
-            "sanitize_html",
-            "encodeURIComponent",
+        SanitizerContext.URL_DESTINATION: [
+            "strict_url_allowlist",
+            "validate_origin",
         ],
-        TaintCategory.PATH_TRAVERSAL: [
+        SanitizerContext.FILE_PATH: [
             "Path.normalize",
             "filepath.Clean",
             "basename",
             "safe_join",
             "secure_filename",
         ],
-        TaintCategory.COMMAND_INJECTION: [
+        SanitizerContext.COMMAND: [
             "shlex.quote",
             "escapeshellarg",
             "escapeshellcmd",
@@ -40,27 +65,26 @@ class SanitizerRegistry:
     }
 
     def __init__(self) -> None:
-        self.sanitizers: dict[TaintCategory, list[str]] = {
-            cat: list(pats) for cat, pats in self.DEFAULT_SANITIZERS.items()
+        self.context_sanitizers: dict[SanitizerContext, list[str]] = {
+            ctx: list(pats) for ctx, pats in self.DEFAULT_CONTEXT_SANITIZERS.items()
         }
 
-    def register_sanitizer(self, category: TaintCategory, pattern: str) -> None:
-        if category not in self.sanitizers:
-            self.sanitizers[category] = []
-        if pattern not in self.sanitizers[category]:
-            self.sanitizers[category].append(pattern)
-
     def is_sanitizer(self, text: str) -> bool:
-        """Returns True if the text matches any registered sanitizer pattern."""
-        for patterns in self.sanitizers.values():
+        """Returns True if text matches any registered sanitizer pattern."""
+        for patterns in self.context_sanitizers.values():
             if any(pat in text for pat in patterns):
                 return True
         return False
 
+    def is_sanitizer_for_context(self, text: str, target_context: SanitizerContext) -> bool:
+        """Returns True ONLY if text matches a sanitizer valid for the target context."""
+        patterns = self.context_sanitizers.get(target_context, [])
+        return any(pat in text for pat in patterns)
+
     def match_sanitizer(self, text: str, line_number: int = 1) -> TaintSanitizer | None:
         """Returns TaintSanitizer object if text matches a sanitizer pattern, else None."""
-        for cat, patterns in self.sanitizers.items():
+        for ctx, patterns in self.context_sanitizers.items():
             for pat in patterns:
                 if pat in text:
-                    return TaintSanitizer(name=pat, category=cat, line_number=line_number, pattern=pat)
+                    return TaintSanitizer(name=pat, category=TaintCategory.GENERIC, line_number=line_number, pattern=pat)
         return None

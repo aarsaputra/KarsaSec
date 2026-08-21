@@ -1,4 +1,4 @@
-"""Sprint F11 Phase 5 — Provider Circuit Breaker (INV-F11-CIRCUIT-05, ADV-05).
+"""Sprint F11 Phase 5 & Phase 6 — Provider Circuit Breaker Engine (INV-F11-CIRCUIT-05, INV-F11-CIRCUIT-06, INV-F11-CIRCUIT-07, INV-F11-CIRCUIT-14, ADV-05).
 
 Provides process-local thread-safe circuit breaker state machine:
   - STATES: CLOSED, OPEN, HALF_OPEN
@@ -6,18 +6,21 @@ Provides process-local thread-safe circuit breaker state machine:
   - Cooldown timer for OPEN -> HALF_OPEN state transition
   - Atomic HALF_OPEN probe count limiting (prevents probe stampedes)
   - 4xx Poisoning Protection: Only FailureClassification.provider_failure == True items trip the circuit.
+  - Hardening 7 (INV-F11-CIRCUIT-14): Non-mutating startup recovery from persistent repository.
 """
 
 from __future__ import annotations
 
 import time
-
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from threading import Lock
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 from karsasec.ai.failure_classifier import FailureClassification
+
+if TYPE_CHECKING:
+    from karsasec.ai.circuit_repository import CircuitStateData
 
 STATE_CLOSED: Final[str] = "CLOSED"
 STATE_OPEN: Final[str] = "OPEN"
@@ -45,11 +48,14 @@ class ProviderCircuitState:
     state: str = STATE_CLOSED
     failures: list[bool] = field(default_factory=list)  # Sliding window: True for provider failure, False for success
     opened_at: float | None = None
+    cooldown_until: float | None = None
+    cooldown_reason: str | None = None
+    probe_generation: int = 0
     active_probes: int = 0
 
 
 class ProviderCircuitBreaker:
-    """Thread-safe Provider Circuit Breaker Engine (INV-F11-CIRCUIT-05).
+    """Thread-safe Provider Circuit Breaker Engine (INV-F11-CIRCUIT-05, INV-F11-CIRCUIT-14).
 
     Manages provider execution health state transitions (CLOSED -> OPEN -> HALF_OPEN -> CLOSED).
     Protects downstream infrastructure from cascading failures while excluding 4xx client errors.
@@ -91,6 +97,37 @@ class ProviderCircuitBreaker:
             self._states[key] = ProviderCircuitState(provider_id=provider_id, model_id=model_id)
         return self._states[key]
 
+    def restore_from_data(self, data: CircuitStateData) -> None:
+        """Restores circuit state from persistent data snapshot without mutating state (INV-F11-CIRCUIT-14)."""
+        with self._lock:
+            st = self._get_or_create_state(data.provider_id, data.model_id)
+            st.state = data.state
+            st.failures = list(data.failures)
+            st.opened_at = data.opened_at
+            st.cooldown_until = data.cooldown_until
+            st.cooldown_reason = data.cooldown_reason
+            st.probe_generation = data.probe_generation
+            st.active_probes = 0
+
+    def export_data(self, provider_id: str, model_id: str) -> CircuitStateData:
+        """Exports an immutable snapshot of circuit state data for persistence."""
+        from karsasec.ai.circuit_repository import CircuitStateData
+
+        with self._lock:
+            st = self._get_or_create_state(provider_id, model_id)
+            return CircuitStateData(
+                provider_id=st.provider_id,
+                model_id=st.model_id,
+                state=st.state,
+                failure_count=sum(1 for f in st.failures if f),
+                success_count=sum(1 for f in st.failures if not f),
+                failures=list(st.failures),
+                opened_at=st.opened_at,
+                cooldown_until=st.cooldown_until,
+                cooldown_reason=st.cooldown_reason,
+                probe_generation=st.probe_generation,
+            )
+
     def get_state(self, provider_id: str, model_id: str) -> str:
         """Returns active circuit state string ('CLOSED', 'OPEN', or 'HALF_OPEN')."""
         with self._lock:
@@ -106,15 +143,18 @@ class ProviderCircuitBreaker:
             return st.state
 
     def is_open(self, provider_id: str, model_id: str) -> bool:
-        """Checks if circuit is OPEN (or HALF_OPEN probe limit reached), bypassing provider execution (INV-F11-CIRCUIT-05).
-
-        Returns:
-            True: If provider circuit is OPEN and MUST be bypassed by ProviderRouter.
-            False: If provider circuit is CLOSED or HALF_OPEN with available probe slot.
-        """
+        """Checks if circuit is OPEN (or HALF_OPEN probe limit reached), bypassing provider execution (INV-F11-CIRCUIT-05)."""
         with self._lock:
             st = self._get_or_create_state(provider_id, model_id)
             now = self.clock()
+
+            # Check if active cooldown is present
+            if st.cooldown_until is not None:
+                if now < st.cooldown_until:
+                    return True
+                else:
+                    st.cooldown_until = None
+                    st.cooldown_reason = None
 
             if st.state == STATE_CLOSED:
                 return False
@@ -136,6 +176,20 @@ class ProviderCircuitBreaker:
                 return True
 
             return False
+
+    def record_throttling(
+        self,
+        provider_id: str,
+        model_id: str,
+        cooldown_seconds: float = 60.0,
+        reason: str = "PROVIDER_THROTTLED",
+    ) -> None:
+        """Records provider 429 throttling and activates cooldown without tripping main circuit (INV-F11-THROTTLE-11)."""
+        with self._lock:
+            st = self._get_or_create_state(provider_id, model_id)
+            now = self.clock()
+            st.cooldown_until = now + cooldown_seconds
+            st.cooldown_reason = reason
 
     def record_success(self, provider_id: str, model_id: str) -> None:
         """Records a successful execution outcome."""
@@ -166,18 +220,18 @@ class ProviderCircuitBreaker:
         model_id: str,
         classification: FailureClassification,
     ) -> None:
-        """Records an attempt failure outcome.
-
-        Security Requirement (INV-F11-FAILURE-15):
-        Only provider infrastructure failures (classification.provider_failure == True) count towards circuit tripping.
-        4xx client errors (classification.client_failure == True) are ignored to prevent circuit poisoning.
-        """
+        """Records an attempt failure outcome."""
         if not classification.provider_failure:
             return  # Ignore 4xx client errors, invalid payloads, auth failures
 
         with self._lock:
             st = self._get_or_create_state(provider_id, model_id)
             now = self.clock()
+
+            # Handle throttling 429 (INV-F11-THROTTLE-10 / INV-F11-THROTTLE-11)
+            if classification.throttled:
+                st.cooldown_until = now + self.cooldown_seconds
+                st.cooldown_reason = classification.error_class
 
             if st.state == STATE_OPEN and st.opened_at is not None and (now - st.opened_at) >= self.cooldown_seconds:
                 st.state = STATE_HALF_OPEN

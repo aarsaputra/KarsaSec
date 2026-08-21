@@ -1,0 +1,60 @@
+# KarsaSec Batch D4 - Cross-Batch Security Correlation Taxonomy
+version: "1.0.0"
+description: "Taxonomy categories for cross-batch correlation engine violations."
+
+categories:
+  - name: "CROSS_BATCH_EVIDENCE_VIOLATION"
+    severity: "HIGH"
+    description: "Violation of evidence integrity or provenance preservation across batch boundaries."
+
+  - name: "CORRELATION_IDENTITY_VIOLATION"
+    severity: "HIGH"
+    description: "Invalid correlation key association or broken identity mapping."
+
+  - name: "CAUSAL_CHAIN_VIOLATION"
+    severity: "CRITICAL"
+    description: "Invalid or unsupported causal relationship in attack chain."
+
+  - name: "TEMPORAL_CHAIN_VIOLATION"
+    severity: "HIGH"
+    description: "Inconsistent temporal ordering violating causal sequence."
+
+  - name: "IDENTITY_CONTINUITY_VIOLATION"
+    severity: "CRITICAL"
+    description: "Loss or confusion of identity provenance across boundaries."
+
+  - name: "PRIVILEGE_AMPLIFICATION"
+    severity: "CRITICAL"
+    description: "Unexplained privilege escalation jump across connected nodes."
+
+  - name: "TENANT_ESCAPE"
+    severity: "CRITICAL"
+    description: "Unverified cross-tenant context switch across connected nodes."
+
+  - name: "SECURITY_BOUNDARY_COMPOSITION_VIOLATION"
+    severity: "HIGH"
+    description: "Failure of defense-in-depth or security control drop across boundaries."
+
+  - name: "EXPLOITABILITY_REACHABILITY_VIOLATION"
+    severity: "CRITICAL"
+    description: "Exploit chain successfully reaches a forbidden security property."
+
+  - name: "INCOMPLETE_EXPLOIT_CHAIN"
+    severity: "UNKNOWN"
+    description: "Exploit chain has missing intermediate evidence nodes."
+
+  - name: "CORRELATION_CONFLICT"
+    severity: "UNKNOWN"
+    description: "Contradictory evidence detected across different analysis batches."
+
+  - name: "COMPOSITE_SECURITY_VIOLATION"
+    severity: "HIGH"
+    description: "Composite security flaw emerging from multi-batch correlation."
+
+  - name: "ROOT_CAUSE_CHAIN"
+    severity: "INFO"
+    description: "Root cause identification for exploit chain mitigation."
+
+  - name: "UNKNOWN_CORRELATION_STATE"
+    severity: "UNKNOWN"
+    description: "Correlation state cannot be resolved due to insufficient evidence."

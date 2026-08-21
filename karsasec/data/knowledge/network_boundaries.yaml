@@ -1,0 +1,66 @@
+network_boundaries:
+  - id: USER_INPUT
+    trust_level: UNTRUSTED
+    description: Raw user input passed into network URL construction or request sink
+
+  - id: URL_CONSTRUCTION
+    trust_level: UNTRUSTED
+    description: Dynamic URL string formatting or parameter interpolation
+
+  - id: URL_CANONICALIZATION
+    trust_level: SERVER_AUTHORITATIVE
+    description: Canonical URL parsing and percent/backslash normalization
+
+  - id: REDIRECT_CHAIN
+    trust_level: CONDITIONALLY_TRUSTED
+    description: Multi-hop HTTP redirect following chain
+
+  - id: DNS_RESOLUTION
+    trust_level: CONDITIONALLY_TRUSTED
+    description: Domain name system address resolution
+
+  - id: NETWORK_REQUEST
+    trust_level: SERVER_AUTHORITATIVE
+    description: Outbound HTTP/socket client execution
+
+  - id: INTERNAL_NETWORK
+    trust_level: PRIVILEGED
+    cidr_ranges:
+      - 10.0.0.0/8
+      - 172.16.0.0/12
+      - 192.168.0.0/16
+
+  - id: LOOPBACK
+    trust_level: PRIVILEGED
+    ip_addresses:
+      - 127.0.0.1
+      - ::1
+      - localhost
+
+  - id: LINK_LOCAL
+    trust_level: PRIVILEGED
+    cidr_ranges:
+      - 169.254.0.0/16
+
+  - id: CLOUD_METADATA
+    trust_level: HIGHLY_SENSITIVE
+    endpoints:
+      - 169.254.169.254
+      - metadata.google.internal
+      - 100.100.100.200
+
+  - id: KUBERNETES_API
+    trust_level: HIGHLY_SENSITIVE
+    endpoints:
+      - kubernetes.default.svc
+      - 10.96.0.1
+
+  - id: SERVICE_DISCOVERY
+    trust_level: PRIVILEGED
+    endpoints:
+      - consul.service.consul
+      - eureka.internal
+
+  - id: NETWORK_RESPONSE
+    trust_level: UNTRUSTED
+    description: HTTP response body or headers returned from network sink

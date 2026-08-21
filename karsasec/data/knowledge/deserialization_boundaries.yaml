@@ -1,0 +1,69 @@
+deserialization_boundaries:
+  - id: HTTP_REQUEST
+    trust_level: UNTRUSTED
+    user_controlled: true
+    integrity_expected: false
+    allowed_formats:
+      - JSON
+      - XML
+      - PICKLE
+      - PHP_SERIALIZE
+      - JAVA_SERIALIZE
+
+  - id: MESSAGE_QUEUE
+    trust_level: CONDITIONALLY_TRUSTED
+    user_controlled: true
+    integrity_expected: true
+    allowed_formats:
+      - JSON
+      - PROTOBUF
+      - PICKLE
+
+  - id: CACHE
+    trust_level: INTERNAL_TRUSTED
+    user_controlled: false
+    integrity_expected: true
+    allowed_formats:
+      - JSON
+      - PICKLE
+      - REDIS_OBJECT
+
+  - id: DATABASE
+    trust_level: SERVER_AUTHORITATIVE
+    user_controlled: false
+    integrity_expected: true
+    allowed_formats:
+      - JSON
+      - BLOB
+
+  - id: FILE_UPLOAD
+    trust_level: UNTRUSTED
+    user_controlled: true
+    integrity_expected: false
+    allowed_formats:
+      - ZIP
+      - TAR
+      - SERIALIZED_OBJECT
+
+  - id: SESSION
+    trust_level: HIGHLY_SENSITIVE
+    user_controlled: false
+    integrity_expected: true
+    allowed_formats:
+      - SIGNED_COOKIE
+      - ENCRYPTED_JWT
+
+  - id: JWT
+    trust_level: SHORT_LIVED
+    user_controlled: true
+    integrity_expected: true
+    allowed_formats:
+      - JOSE_HEADER_PAYLOAD
+
+  - id: TRUSTED_STORAGE
+    trust_level: SERVER_AUTHORITATIVE
+    user_controlled: false
+    integrity_expected: true
+    allowed_formats:
+      - JSON
+      - PICKLE

@@ -1,0 +1,51 @@
+category:
+  id: CROSS_ORIGIN_SECURITY
+  name: Cross-Site Request Forgery & Cross-Origin Resource Sharing Misconfigurations
+  cwe: CWE-352
+  owasp: A01:2021-Broken-Access-Control
+
+subcategories:
+  - id: MISSING_CSRF_PROTECTION
+    name: Missing Cross-Site Request Forgery Protection
+    cwe: CWE-352
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - BROWSER_AUTHENTICATION_COOKIE
+      - STATE_CHANGING_OPERATION
+      - MISSING_CSRF_TOKEN
+
+  - id: STATE_CHANGING_GET
+    name: State-Changing Operation Handled via HTTP GET Method
+    cwe: CWE-352
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - HTTP_GET_STATE_MUTATION
+
+  - id: LOGIN_CSRF
+    name: Login Cross-Site Request Forgery
+    cwe: CWE-352
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - CROSS_ORIGIN_LOGIN_SUBMISSION
+
+  - id: CORS_WILDCARD_WITH_CREDENTIALS
+    name: Insecure CORS Wildcard Policy with Credentials Allowed
+    cwe: CWE-942
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - CORS_WILDCARD_ORIGIN
+      - CORS_CREDENTIALS_TRUE
+
+  - id: CORS_ORIGIN_REFLECTION
+    name: Unvalidated Cross-Origin Reflection (Arbitrary Origin Trust)
+    cwe: CWE-942
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - UNVALIDATED_ORIGIN_REFLECTION
+
+  - id: ORIGIN_VALIDATION_BYPASS
+    name: Origin / Referer Validation Bypass via Weak String Matching
+    cwe: CWE-20
+    owasp: A01:2021-Broken-Access-Control
+    preconditions:
+      - WEAK_ORIGIN_REGEX_OR_ENDSWITH

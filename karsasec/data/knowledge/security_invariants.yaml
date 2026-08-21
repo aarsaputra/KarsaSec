@@ -1,0 +1,82 @@
+# Knowledge Base — Security Invariants (Batch D1)
+
+trust_boundaries:
+  - source: USER
+    target: ADMIN
+    requires: AUTHORIZATION_PROOF
+  - source: USER
+    target: ROOT
+    requires: PRIVILEGED_AUTHENTICATION
+  - source: PUBLIC
+    target: INTERNAL
+    requires: GATEWAY_AUTHENTICATION
+  - source: TENANT_A
+    target: TENANT_B
+    requires: TENANT_SCOPE_VERIFICATION
+
+privilege_boundaries:
+  - initial: USER
+    resulting: ADMIN
+    requires: VERTICAL_PRIVILEGE_PROOF
+  - initial: ADMIN
+    resulting: ROOT
+    requires: SYSTEM_ROOT_PROOF
+  - initial: SERVICE_ACCOUNT
+    resulting: ROOT
+    requires: SUDO_VERIFICATION
+
+authority_boundaries:
+  - operation: STATE_CHANGE
+    requires: EXPLICIT_AUTHORITY_CHECK
+  - operation: ADMINISTRATIVE_ACTION
+    requires: ADMIN_ROLE_VERIFICATION
+
+ownership_boundaries:
+  - target_resource: USER_DATA
+    requires: USER_ID_MATCH
+  - target_resource: TENANT_DATA
+    requires: TENANT_ID_MATCH
+
+delegation_boundaries:
+  - token_type: JWT
+    requires: SIGNATURE_AND_DELEGATION_CHAIN
+  - token_type: OAUTH
+    requires: SCOPE_AND_DELEGATION_CHAIN
+  - token_type: IAM_STS
+    requires: ASSUME_ROLE_CHAIN
+  - token_type: SERVICE_ACCOUNT
+    requires: BOUND_ROLE_BINDING
+
+lifecycle_constraints:
+  - credential: PASSWORD_RESET_TOKEN
+    requires: EXPIRATION_AND_SINGLE_USE
+  - credential: API_KEY
+    requires: REVOCATION_AND_EXPIRATION
+
+consistency_constraints:
+  - abstraction: FRONTEND_GATEWAY
+    backend: SERVER_ENFORCEMENT
+    requires: MATCHING_SECURITY_RULES
+
+security_properties:
+  - ACCOUNT_TAKEOVER
+  - TENANT_ESCAPE
+  - ROOT_ACCESS
+  - CLOUD_ADMIN
+  - DATA_EXFILTRATION
+  - DESTRUCTIVE_ACTION
+
+separation_of_duty:
+  - action_pair: ["CREATE_PAYMENT", "APPROVE_PAYMENT"]
+    requires: DISTINCT_IDENTITIES
+  - action_pair: ["CREATE_USER", "APPROVE_USER"]
+    requires: DISTINCT_IDENTITIES
+  - action_pair: ["CREATE_ROLE", "ASSIGN_ROLE"]
+    requires: DISTINCT_IDENTITIES
+
+defense_in_depth:
+  required_layers:
+    - AUTHN
+    - AUTHZ
+    - OWNERSHIP
+    - TENANT_ISOLATION

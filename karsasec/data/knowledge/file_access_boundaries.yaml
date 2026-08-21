@@ -1,0 +1,50 @@
+file_access_boundaries:
+  - id: HTTP_REQUEST
+    trust_level: UNTRUSTED
+    taint_behavior: PASS_THROUGH
+    description: Untrusted HTTP request payload.
+
+  - id: QUERY_PARAMETER
+    trust_level: UNTRUSTED
+    taint_behavior: PASS_THROUGH
+    description: Untrusted URL query string parameter.
+
+  - id: PATH_PARAMETER
+    trust_level: UNTRUSTED
+    taint_behavior: PASS_THROUGH
+    description: Untrusted URL path parameter.
+
+  - id: FORM_FIELD
+    trust_level: UNTRUSTED
+    taint_behavior: PASS_THROUGH
+    description: Untrusted POST form field parameter.
+
+  - id: UPLOADED_FILENAME
+    trust_level: UNTRUSTED
+    taint_behavior: PASS_THROUGH
+    description: User-controlled original upload filename.
+
+  - id: LOCAL_FILE
+    trust_level: INTERNAL_TRUSTED
+    taint_behavior: CONTEXT_DEPENDENT
+    description: Local server filesystem resource.
+
+  - id: ARCHIVE_ENTRY
+    trust_level: UNTRUSTED
+    taint_behavior: PASS_THROUGH
+    description: Individual member filename inside archive archive (zip/tar).
+
+  - id: SYMLINK
+    trust_level: UNTRUSTED
+    taint_behavior: PASS_THROUGH
+    description: Filesystem symbolic link target.
+
+  - id: TRUSTED_BASE_DIRECTORY
+    trust_level: SERVER_AUTHORITATIVE
+    taint_behavior: SANITIZED
+    description: Root directory constraint for canonical containment checks.
+
+  - id: STATIC_RESOURCE
+    trust_level: INTERNAL_TRUSTED
+    taint_behavior: SANITIZED
+    description: Pre-defined static application resource asset.

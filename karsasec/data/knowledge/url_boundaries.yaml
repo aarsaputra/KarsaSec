@@ -1,0 +1,75 @@
+url_boundaries:
+  - id: UNTRUSTED_URL
+    trust_level: UNTRUSTED
+    user_controlled: true
+    allowed_schemes: []
+    validation_required: true
+    canonicalization_required: true
+
+  - id: USER_CONTROLLED_REDIRECT
+    trust_level: UNTRUSTED
+    user_controlled: true
+    allowed_schemes:
+      - http
+      - https
+    validation_required: true
+    canonicalization_required: true
+
+  - id: EXTERNAL_ORIGIN
+    trust_level: UNTRUSTED
+    user_controlled: true
+    allowed_schemes: []
+    validation_required: true
+    canonicalization_required: true
+
+  - id: TRUSTED_ORIGIN
+    trust_level: SERVER_AUTHORITATIVE
+    user_controlled: false
+    allowed_schemes:
+      - https
+    validation_required: false
+    canonicalization_required: false
+
+  - id: OAUTH_REDIRECT_URI
+    trust_level: CONDITIONALLY_TRUSTED
+    user_controlled: true
+    allowed_schemes:
+      - https
+    validation_required: true
+    canonicalization_required: true
+
+  - id: PASSWORD_RESET_ORIGIN
+    trust_level: CONDITIONALLY_TRUSTED
+    user_controlled: true
+    allowed_schemes:
+      - https
+    validation_required: true
+    canonicalization_required: true
+
+  - id: HOST_HEADER
+    trust_level: UNTRUSTED
+    user_controlled: true
+    allowed_schemes: []
+    validation_required: true
+    canonicalization_required: true
+
+  - id: PROXY_FORWARDED_HOST
+    trust_level: CONDITIONALLY_TRUSTED
+    user_controlled: true
+    allowed_schemes: []
+    validation_required: true
+    canonicalization_required: true
+
+  - id: URL_CANONICALIZATION
+    trust_level: SERVER_AUTHORITATIVE
+    user_controlled: false
+    allowed_schemes: []
+    validation_required: false
+    canonicalization_required: false
+
+  - id: URL_VALIDATION
+    trust_level: SERVER_AUTHORITATIVE
+    user_controlled: false
+    allowed_schemes: []
+    validation_required: false
+    canonicalization_required: false

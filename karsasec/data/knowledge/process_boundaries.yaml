@@ -1,0 +1,42 @@
+process_boundaries:
+  - id: HTTP_REQUEST
+    trust_level: UNTRUSTED
+    user_controlled: true
+    shell_execution_allowed: false
+    argument_injection_possible: true
+
+  - id: FILE_UPLOAD
+    trust_level: UNTRUSTED
+    user_controlled: true
+    shell_execution_allowed: false
+    argument_injection_possible: true
+
+  - id: DATABASE_RECORD
+    trust_level: SERVER_AUTHORITATIVE
+    user_controlled: false
+    shell_execution_allowed: false
+    argument_injection_possible: false
+
+  - id: MESSAGE_QUEUE
+    trust_level: CONDITIONALLY_TRUSTED
+    user_controlled: true
+    shell_execution_allowed: false
+    argument_injection_possible: true
+
+  - id: INTERNAL_SERVICE
+    trust_level: INTERNAL_TRUSTED
+    user_controlled: false
+    shell_execution_allowed: false
+    argument_injection_possible: false
+
+  - id: TRUSTED_CONSTANT
+    trust_level: SERVER_AUTHORITATIVE
+    user_controlled: false
+    shell_execution_allowed: true
+    argument_injection_possible: false
+
+  - id: TEMPLATE_OUTPUT
+    trust_level: UNTRUSTED
+    user_controlled: true
+    shell_execution_allowed: false
+    argument_injection_possible: true

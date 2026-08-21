@@ -1,0 +1,67 @@
+# Taxonomy — Temporal & State Consistency Violations (Batch D2)
+
+categories:
+  - id: REVOCATION_DRIFT_VIOLATION
+    name: Privilege Revocation Consistency Violation
+    severity: CRITICAL
+    description: Capability remains usable after primary authority or role revocation.
+
+  - id: TOCTOU_VIOLATION
+    name: Time-of-Check to Time-of-Use (TOCTOU) Violation
+    severity: HIGH
+    description: Non-atomic gap between state verification and resource usage.
+
+  - id: STATE_DESYNC_VIOLATION
+    name: State Desynchronization Violation
+    severity: HIGH
+    description: Inconsistent security state between client, gateway, middleware, or backend.
+
+  - id: CACHE_AUTHORIZATION_DRIFT
+    name: Cache Authorization Drift
+    severity: HIGH
+    description: Cached authorization state not invalidated upon primary database policy changes.
+
+  - id: WORKFLOW_BYPASS_VIOLATION
+    name: Multi-Step Workflow Integrity Violation
+    severity: CRITICAL
+    description: Intermediate required workflow stage bypassed or executed out of sequence.
+
+  - id: RACE_CONDITION_REACHABILITY
+    name: Race Condition Reachability
+    severity: HIGH
+    description: Concurrent non-atomic paths modify shared security-sensitive state.
+
+  - id: TRANSACTIONAL_INVARIANT_FAILURE
+    name: Transactional Invariant Failure
+    severity: HIGH
+    description: Multi-operation state change fails to maintain atomic rollback on failure.
+
+  - id: TEMPORAL_AUTHORIZATION_VIOLATION
+    name: Temporal Authorization Violation
+    severity: HIGH
+    description: Authorization invalid or changed at time of sensitive operation.
+
+  - id: CAPABILITY_LIFETIME_ABUSE
+    name: Capability Lifetime Abuse
+    severity: HIGH
+    description: Revoked or expired capability transitions back to active state.
+
+  - id: REPLAY_ATTACK_VIOLATION
+    name: Single-Use Replay Attack Violation
+    severity: HIGH
+    description: One-time sensitive operation lacks nonce, single-use token, or idempotency key.
+
+  - id: TEMPORAL_TENANT_ISOLATION_VIOLATION
+    name: Temporal Tenant Isolation Violation
+    severity: CRITICAL
+    description: Tenant context shifts or drifts during workflow execution.
+
+  - id: STATE_MONOTONICITY_VIOLATION
+    name: State Monotonicity Violation
+    severity: MEDIUM
+    description: Security state degrades backward without explicit reauthorization transition.
+
+  - id: UNKNOWN_TEMPORAL_VIOLATION
+    name: Unknown Temporal Violation
+    severity: UNKNOWN
+    description: Unresolved temporal state or ambiguous ordering evidence.

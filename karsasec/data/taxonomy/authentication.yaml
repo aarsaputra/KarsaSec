@@ -1,0 +1,44 @@
+category:
+  id: AUTHENTICATION
+  name: Broken Authentication & Credential Management
+  cwe: CWE-287
+  owasp: A07:2021-Identification-and-Authentication-Failures
+
+subcategories:
+  - id: WEAK_CREDENTIAL_VERIFICATION
+    name: Weak Password Hashing & Insecure Credentials
+    cwe: CWE-327
+    owasp: A07:2021-Identification-and-Authentication-Failures
+    preconditions:
+      - UNSALTED_HASH_ALGORITHM
+      - HARDCODED_CREDENTIAL
+
+  - id: INSECURE_PASSWORD_RESET
+    name: Insecure Password Reset Logic
+    cwe: CWE-640
+    owasp: A07:2021-Identification-and-Authentication-Failures
+    preconditions:
+      - PREDICTABLE_RESET_TOKEN
+      - MISSING_EXPIRATION_WINDOW
+      - UNBOUND_RESET_TOKEN
+
+  - id: MFA_BYPASS
+    name: Multi-Factor Authentication State Machine Bypass
+    cwe: CWE-304
+    owasp: A07:2021-Identification-and-Authentication-Failures
+    preconditions:
+      - SESSION_ISSUED_BEFORE_MFA_COMPLETION
+
+  - id: ACCOUNT_ENUMERATION
+    name: User Account Enumeration
+    cwe: CWE-204
+    owasp: A07:2021-Identification-and-Authentication-Failures
+    preconditions:
+      - DIVERGENT_AUTH_ERROR_RESPONSE
+
+  - id: TIMING_ATTACK_SURFACE
+    name: Secret Comparison Timing Attack
+    cwe: CWE-208
+    owasp: A07:2021-Identification-and-Authentication-Failures
+    preconditions:
+      - NON_CONSTANT_TIME_STRING_COMPARISON
