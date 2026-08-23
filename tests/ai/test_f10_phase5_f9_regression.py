@@ -6,7 +6,10 @@ from pathlib import Path
 
 def test_f9_protected_files_are_unmodified():
     """INV-F10-AUDIT-14: Git diff check to guarantee ZERO modifications to frozen F9 files."""
+    import pytest
     repo_root = Path(__file__).resolve().parents[2]
+    if not (repo_root / ".git").exists():
+        pytest.skip("Not a git repository (e.g. extracted zip archive)")
 
     protected_paths = [
         "karsasec/recovery",

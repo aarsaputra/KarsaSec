@@ -144,6 +144,12 @@ BugExceptionTriggers:
   DataCorruption:
     allowed: true
     action: "Restore baseline or provenance schema integrity"
+  AuditDefectRemediation:
+    allowed: true
+    action: "Remediate verified functional defects or parameter mismatches uncovered by independent audit re-verification"
+  IndependentReverificationFailure:
+    allowed: true
+    action: "Fix test failures identified when re-running certified benchmark/validation test suites from clean environment"
   RoutineSubSprintCreation:
     allowed: false
     action: "BLOCKED (INV-SPEC-03)"

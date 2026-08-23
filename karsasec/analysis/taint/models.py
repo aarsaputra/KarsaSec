@@ -35,6 +35,10 @@ class TaintSource:
     framework: str = "Java Servlet"
     is_user_controlled: bool = True
 
+    @property
+    def source_origin(self) -> str:
+        return self.name or self.pattern or "UNKNOWN"
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "name": self.name,

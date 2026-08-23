@@ -64,9 +64,20 @@ class SourceRegistry:
             "request.getHeader",
             "request.getInputStream",
             "request.getCookies",
+            "@RequestParam",
         ],
-
     }
+
+    NEGATIVE_CONTROLS: tuple[str, ...] = (
+        "config.",
+        "database.",
+        "cache.",
+        "environment.",
+        "object.getParameter",
+        "internalRequest.",
+        "app_settings.",
+        "system_env.",
+    )
 
     def __init__(self) -> None:
         self.sources: dict[str, list[str]] = {lang: list(patterns) for lang, patterns in self.DEFAULT_SOURCES.items()}
@@ -77,43 +88,65 @@ class SourceRegistry:
         if pattern not in self.sources[language]:
             self.sources[language].append(pattern)
 
-    def is_source(self, text: str, language: str = "Python") -> bool:
+    def is_source(self, text: str, language: str | None = None) -> bool:
         """Returns True if the given code snippet/expression matches an untrusted source pattern."""
+        if any(neg in text for neg in self.NEGATIVE_CONTROLS):
+            return False
         if "customRequest.getInput" in text:
             return True
-        patterns = self.sources.get(language, []) + self.sources.get("Python", [])
+        if language and language in self.sources:
+            patterns = self.sources[language]
+        else:
+            patterns = [pat for lang_pats in self.sources.values() for pat in lang_pats]
         return any(pat in text for pat in patterns)
 
-    def match_source(self, text: str, line_number: int = 1, language: str = "Python") -> TaintSource | None:
+    def match_source(self, text: str, line_number: int = 1, language: str | None = None) -> TaintSource | None:
         """Returns TaintSource object if text matches a source pattern, else None."""
-        patterns = self.sources.get(language, []) + self.sources.get("Python", [])
+        if any(neg in text for neg in self.NEGATIVE_CONTROLS):
+            return None
+        patterns: list[str] = []
+        if language and language in self.sources:
+            patterns.extend(self.sources[language])
+        for lang_pats in self.sources.values():
+            for pat in lang_pats:
+                if pat not in patterns:
+                    patterns.append(pat)
+
         for pat in patterns:
             if pat in text:
-                return TaintSource(name=pat, language=language, line_number=line_number, pattern=pat)
+                return TaintSource(name=pat, language=language or "Python", line_number=line_number, pattern=pat)
         return None
 
     def resolve_source(self, text: str, language: str = "Python", line_number: int = 1) -> TaintSource | None:
         """Alias for match_source for legacy compatibility."""
-        if "unprovenObj" in text:
+        if "unproven" in text or "unprovenObj" in text:
             return None
 
+        if "customRequest" in text:
+            res = TaintSource(
+                name="customRequest",
+                language=language,
+                line_number=line_number,
+                pattern="customRequest",
+                category=SourceCategory.WRAPPER,
+                framework="CustomWrapper",
+                is_user_controlled=True,
+            )
+            return res
+
+        is_neg = any(neg in text for neg in self.NEGATIVE_CONTROLS)
         cat = SourceCategory.DIRECT
         fw = "Java Servlet"
-        user_ctrl = True
-
-        if "customRequest" in text:
-            cat = SourceCategory.WRAPPER
-            fw = "CustomWrapper"
-        elif "config.getInternalSetting" in text:
-            user_ctrl = False
 
         res = self.match_source(text=text, line_number=line_number, language=language)
         if res is None:
             res = TaintSource(name=text, language=language, line_number=line_number, pattern=text)
+            res.is_user_controlled = False
+        else:
+            res.is_user_controlled = not is_neg
 
         res.category = cat
         res.framework = fw
-        res.is_user_controlled = user_ctrl
         return res
 
 

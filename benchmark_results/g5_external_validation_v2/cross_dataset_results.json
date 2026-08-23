@@ -5,33 +5,33 @@
       "tier": "GOLD",
       "metrics": {
         "total_evaluated_cases": 70,
-        "tp": 15,
+        "tp": 5,
         "tn": 35,
         "fp": 0,
-        "fn": 20,
+        "fn": 30,
         "correct_unknown": 0,
         "correct_conflict": 0,
         "strict_precision": 1.0,
-        "strict_recall": 0.42857142857142855,
+        "strict_recall": 0.14285714285714285,
         "fpr": 0.0,
-        "fnr": 0.5714285714285714,
+        "fnr": 0.8571428571428571,
         "specificity": 1.0,
-        "epistemic_decision_correctness": 0.7142857142857143,
+        "epistemic_decision_correctness": 0.5714285714285714,
         "wilson_95_ci": {
           "precision": {
             "point": 1.0,
-            "lower": 0.7961173589253615,
-            "upper": 1.0
+            "lower": 0.5655185342473467,
+            "upper": 0.9999999999999999
           },
           "recall": {
-            "point": 0.42857142857142855,
-            "lower": 0.27984594186874295,
-            "upper": 0.5914255766984653
+            "point": 0.14285714285714285,
+            "lower": 0.06260241288251168,
+            "upper": 0.2937551799535296
           },
           "edc": {
-            "point": 0.7142857142857143,
-            "lower": 0.5994982791971432,
-            "upper": 0.806777637134757
+            "point": 0.5714285714285714,
+            "lower": 0.4547785978043638,
+            "upper": 0.6806467076396029
           }
         }
       }
@@ -53,33 +53,33 @@
       "tier": "BRONZE",
       "metrics": {
         "total_evaluated_cases": 30,
-        "tp": 0,
-        "tn": 0,
-        "fp": 0,
-        "fn": 20,
+        "tp": 17,
+        "tn": 6,
+        "fp": 4,
+        "fn": 3,
         "correct_unknown": 0,
         "correct_conflict": 0,
-        "strict_precision": 1.0,
-        "strict_recall": 0.0,
-        "fpr": 0.0,
-        "fnr": 1.0,
-        "specificity": 1.0,
-        "epistemic_decision_correctness": 0.0,
+        "strict_precision": 0.8095238095238095,
+        "strict_recall": 0.85,
+        "fpr": 0.4,
+        "fnr": 0.15,
+        "specificity": 0.6,
+        "epistemic_decision_correctness": 0.7666666666666667,
         "wilson_95_ci": {
           "precision": {
-            "point": 0.0,
-            "lower": 0.0,
-            "upper": 0.0
+            "point": 0.8095238095238095,
+            "lower": 0.5999948198072902,
+            "upper": 0.9233242118004504
           },
           "recall": {
-            "point": 0.0,
-            "lower": 0.0,
-            "upper": 0.16112460848604168
+            "point": 0.85,
+            "lower": 0.6395816254952756,
+            "upper": 0.9476311485644952
           },
           "edc": {
-            "point": 0.0,
-            "lower": 0.0,
-            "upper": 0.11351298402718175
+            "point": 0.7666666666666667,
+            "lower": 0.590717121403517,
+            "upper": 0.882075953781986
           }
         }
       }
