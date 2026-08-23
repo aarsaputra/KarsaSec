@@ -15,8 +15,10 @@ class TestE11TPRecallProtection:
     """Ensures that Sprint E12-4 evidence quality & correlation hardening strictly preserves all recall gates."""
 
     def test_e11_tp_cases_are_fully_retained(self) -> None:
-        dvwa_root = Path("/home/lota1337/pentest/DVWA")
-        scan_target = dvwa_root / "vulnerabilities"
+        import os
+
+        env_dvwa = os.getenv("KARSASEC_DVWA_PATH") or os.getenv("DVWA_TARGET_PATH") or "/opt/DVWA/vulnerabilities"
+        scan_target = Path(env_dvwa)
         manifest_path = Path("benchmarks/dvwa/manifest.yaml")
         assert manifest_path.exists(), "DVWA manifest.yaml must exist"
         if not scan_target.exists():

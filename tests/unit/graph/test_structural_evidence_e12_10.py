@@ -125,13 +125,18 @@ def test_e12_10_safe_preparation_rejection():
 
 @pytest.fixture
 def dvwa_e12_10_scan_results():
+    import os
+
     repo_root = Path(__file__).resolve().parents[3]
-    root = Path("/home/lota1337/pentest/DVWA/vulnerabilities")
+    env_dvwa = os.getenv("KARSASEC_DVWA_PATH") or os.getenv("DVWA_TARGET_PATH") or "/opt/DVWA/vulnerabilities"
+    root = Path(env_dvwa)
+    if not root.exists():
+        pytest.skip("DVWA target directory not found; set KARSASEC_DVWA_PATH to run benchmark tests.")
+
     rules = YAMLRuleLoader().load_directory(repo_root / "karsasec" / "rules" / "patterns")
 
     all_findings = []
-    if root.exists():
-        for f in sorted(list(root.glob("**/*.php"))):
+    for f in sorted(list(root.glob("**/*.php"))):
             res = php_parser.parse_file(f)
             ctx = ScanContext(
                 file_node=res.root,

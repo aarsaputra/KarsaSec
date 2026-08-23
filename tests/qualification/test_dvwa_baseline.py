@@ -22,9 +22,11 @@ import pytest
 
 from karsasec.qualification.model import ManifestLoader
 
+import os
+
 MANIFEST_PATH = Path(__file__).parents[2] / "benchmarks" / "dvwa" / "manifest.yaml"
 RULES_DIR = Path(__file__).parents[2] / "karsasec" / "rules" / "patterns"
-DVWA_ROOT = Path("/home/lota1337/pentest/DVWA/vulnerabilities")
+DVWA_ROOT = Path(os.getenv("KARSASEC_DVWA_PATH") or os.getenv("DVWA_TARGET_PATH") or "/opt/DVWA/vulnerabilities")
 
 
 @pytest.fixture(scope="module")

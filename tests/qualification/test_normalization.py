@@ -19,8 +19,8 @@ class TestNormalization:
         assert p1 == p2 == p3 == p4
 
     def test_normalize_file_relative_to_scan_root(self) -> None:
-        scan_root = Path("/home/lota1337/pentest/DVWA/vulnerabilities")
-        abs_path = Path("/home/lota1337/pentest/DVWA/vulnerabilities/sqli/source/low.php")
+        scan_root = Path("/tmp/DVWA/vulnerabilities")
+        abs_path = Path("/tmp/DVWA/vulnerabilities/sqli/source/low.php")
 
         norm = _normalize_file(abs_path, scan_root)
         assert norm == "vulnerabilities/sqli/source/low.php"

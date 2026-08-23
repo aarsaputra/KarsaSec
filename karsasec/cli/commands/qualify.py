@@ -75,13 +75,16 @@ def run_qualify(
     # Resolve target
     scan_root = target
     if scan_root is None:
+        import os
+
+        env_dvwa = os.getenv("KARSASEC_DVWA_PATH") or os.getenv("DVWA_TARGET_PATH")
         candidates = [
-            Path("/home/lota1337/pentest/DVWA/vulnerabilities"),
+            Path(env_dvwa) if env_dvwa else None,
             Path("/var/www/html/DVWA/vulnerabilities"),
             Path("/opt/DVWA/vulnerabilities"),
         ]
         for c in candidates:
-            if c.exists():
+            if c and c.exists():
                 scan_root = c
                 break
         if scan_root is None:

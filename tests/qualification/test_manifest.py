@@ -61,9 +61,10 @@ class TestDVWAManifest:
                 "Use TRUE_NEGATIVE for code that should not be flagged."
             )
 
-    def test_dvwa_files_exist(self) -> None:
-        """Verify that referenced DVWA files exist on this system."""
-        dvwa_root = Path("/home/lota1337/pentest/DVWA/vulnerabilities")
+        import os
+
+        env_dvwa = os.getenv("KARSASEC_DVWA_PATH") or os.getenv("DVWA_TARGET_PATH") or "/opt/DVWA/vulnerabilities"
+        dvwa_root = Path(env_dvwa)
         if not dvwa_root.exists():
             pytest.skip("DVWA not installed at expected path — skipping file existence check")
 
