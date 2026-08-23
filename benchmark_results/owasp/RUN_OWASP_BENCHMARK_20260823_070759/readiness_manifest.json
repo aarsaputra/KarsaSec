@@ -1,0 +1,35 @@
+{
+  "git_commit": "cbbb7fe4d088cd55212e97fe7928847103892d97",
+  "dirty_worktree": {
+    "is_clean": false,
+    "modified_files": [
+      "M karsasec/analysis/correlation/engine.py",
+      "M karsasec/analysis/correlation/models.py",
+      "M pyproject.toml",
+      "?? docs/architecture_baseline.md",
+      "?? docs/d1_d6_contract_inventory.md",
+      "?? karsasec/analysis/decision/",
+      "?? karsasec/benchmark/",
+      "?? karsasec/data/knowledge/security_decision_rules.yaml",
+      "?? karsasec/data/taxonomy/security_decision_violations.yaml",
+      "?? tests/adversarial/test_security_decision_chains.py",
+      "?? tests/benchmark/",
+      "?? tests/decision/",
+      "?? tests/qualification/test_batch_d6_golden_corpus.py"
+    ]
+  },
+  "engine_version": "v1.0.0",
+  "rule_version": "v1.0.0",
+  "dataset_version": "v1.2",
+  "adapter_version": "1.0.0",
+  "oracle_version": "1.0.0",
+  "configuration_hash": "f6eb1f484e6a0992",
+  "environment_hash": "26fb86d7b31e33ce",
+  "python_version": "3.13.12",
+  "dependency_hash": "4522fb59cc2c18d1",
+  "timestamp": "2026-08-23T07:07:59.785030+00:00",
+  "oracle_independence_verified": true,
+  "determinism_verified": true,
+  "is_blocked": false,
+  "blocked_reasons": []
+}

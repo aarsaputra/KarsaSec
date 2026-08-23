@@ -1,0 +1,90 @@
+version: "1.0"
+taxonomy: "security_decision_violations"
+description: "Taxonomy categories for Batch D6 Security Decision Engine violations"
+
+categories:
+  - id: SDV-001
+    name: SECURITY_FINDING_REACHABLE
+    cwe: CWE-693
+    invariant: INV-D6-07
+    description: "Formally proven reachable security finding."
+  - id: SDV-002
+    name: SECURITY_FINDING_UNREACHABLE
+    cwe: CWE-693
+    invariant: INV-D6-15
+    description: "Security property proven unreachable by explicit safe controls."
+  - id: SDV-003
+    name: SECURITY_FINDING_UNKNOWN
+    cwe: CWE-693
+    invariant: INV-D6-13
+    description: "Epistemic UNKNOWN finding due to missing evidence."
+  - id: SDV-004
+    name: SECURITY_FINDING_CONFLICT
+    cwe: CWE-693
+    invariant: INV-D6-14
+    description: "Epistemic CONFLICT finding due to contradictory evidence."
+  - id: SDV-005
+    name: DUPLICATE_FINDING
+    cwe: CWE-693
+    invariant: INV-D6-05
+    description: "Duplicate finding candidate identified and suppressed."
+  - id: SDV-006
+    name: ROOT_CAUSE_CONSOLIDATION
+    cwe: CWE-693
+    invariant: INV-D6-06
+    description: "Multiple findings consolidated under identical root cause."
+  - id: SDV-007
+    name: IMPACT_COMPOSITION_FAILURE
+    cwe: CWE-693
+    invariant: INV-D6-07
+    description: "Failure to preserve security property impacts."
+  - id: SDV-008
+    name: SEVERITY_COMPOSITION_FAILURE
+    cwe: CWE-693
+    invariant: INV-D6-09
+    description: "Severity composition error or artificial inflation."
+  - id: SDV-009
+    name: CONFIDENCE_COMPOSITION_FAILURE
+    cwe: CWE-693
+    invariant: INV-D6-10
+    description: "Confidence composition error or contamination."
+  - id: SDV-010
+    name: BLAST_RADIUS_COMPOSITION_FAILURE
+    cwe: CWE-693
+    invariant: INV-D6-11
+    description: "Blast radius calculation error or unproven cross-tenant scope."
+  - id: SDV-011
+    name: REMEDIATION_PRIORITY_FAILURE
+    cwe: CWE-693
+    invariant: INV-D6-12
+    description: "Remediation priority monotonicity failure."
+  - id: SDV-012
+    name: PROVENANCE_FAILURE
+    cwe: CWE-693
+    invariant: INV-D6-01
+    description: "Missing or incomplete evidence provenance trace."
+  - id: SDV-013
+    name: EPISTEMIC_STATE_VIOLATION
+    cwe: CWE-693
+    invariant: INV-D6-13
+    description: "Forbidden conversion of UNKNOWN or CONFLICT states."
+  - id: SDV-014
+    name: CROSS_TENANT_CONTAMINATION
+    cwe: CWE-693
+    invariant: INV-D6-20
+    description: "Cross-tenant scope inferred without explicit proof."
+  - id: SDV-015
+    name: CROSS_SERVICE_CONTAMINATION
+    cwe: CWE-693
+    invariant: INV-D6-21
+    description: "Cross-service scope inferred without explicit proof."
+  - id: SDV-016
+    name: DECISION_CORRELATION_CONFLICT
+    cwe: CWE-693
+    invariant: INV-D6-14
+    description: "Conflict during decision candidate correlation."
+  - id: SDV-017
+    name: UNKNOWN_SECURITY_DECISION_STATE
+    cwe: CWE-693
+    invariant: INV-D6-13
+    description: "Unresolvable decision state defaulted to UNKNOWN."

@@ -1,0 +1,426 @@
+{
+  "k1-biz-001": {
+    "expected_property": "MISSING_AUTHZ",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "Business Logic",
+        "property_name": "MISSING_AUTHZ",
+        "rule_id": "K1-BIZ-001",
+        "severity": "HIGH"
+      }
+    ],
+    "source_file": "benchmarks/k1/development/k1-biz-001.py"
+  },
+  "k1-biz-002": {
+    "expected_property": "ENFORCED_AUTHZ",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/development/k1-biz-002.py"
+  },
+  "k1-biz-003": {
+    "expected_property": "IDOR_HORIZONTAL",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "Business Logic",
+        "property_name": "IDOR_HORIZONTAL",
+        "rule_id": "K1-BIZ-002",
+        "severity": "HIGH"
+      }
+    ],
+    "source_file": "benchmarks/k1/development/k1-biz-003.py"
+  },
+  "k1-biz-004": {
+    "expected_property": "IDOR_HORIZONTAL",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/development/k1-biz-004.py"
+  },
+  "k1-biz-005": {
+    "expected_property": "IDOR_VERTICAL",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "Business Logic",
+        "property_name": "IDOR_VERTICAL",
+        "rule_id": "K1-BIZ-003",
+        "severity": "HIGH"
+      }
+    ],
+    "source_file": "benchmarks/k1/development/k1-biz-005.py"
+  },
+  "k1-biz-006": {
+    "expected_property": "IDOR_VERTICAL",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/development/k1-biz-006.py"
+  },
+  "k1-biz-007": {
+    "expected_property": "WORKFLOW_BYPASS",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "Business Logic",
+        "property_name": "IDOR_HORIZONTAL",
+        "rule_id": "K1-BIZ-002",
+        "severity": "HIGH"
+      },
+      {
+        "knowledge_pack": "Business Logic",
+        "property_name": "WORKFLOW_BYPASS",
+        "rule_id": "K1-BIZ-004",
+        "severity": "HIGH"
+      }
+    ],
+    "source_file": "benchmarks/k1/validation/k1-biz-007.py"
+  },
+  "k1-biz-008": {
+    "expected_property": "WORKFLOW_BYPASS",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/validation/k1-biz-008.py"
+  },
+  "k1-biz-009": {
+    "expected_property": "RACE_AUTHZ",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "Business Logic",
+        "property_name": "IDOR_HORIZONTAL",
+        "rule_id": "K1-BIZ-002",
+        "severity": "HIGH"
+      },
+      {
+        "knowledge_pack": "Business Logic",
+        "property_name": "RACE_AUTHZ",
+        "rule_id": "K1-BIZ-005",
+        "severity": "HIGH"
+      }
+    ],
+    "source_file": "benchmarks/k1/validation/k1-biz-009.py"
+  },
+  "k1-biz-010": {
+    "expected_property": "RACE_AUTHZ",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/validation/k1-biz-010.py"
+  },
+  "k1-biz-011": {
+    "expected_property": "QUANTITY_MANIPULATION",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "Business Logic",
+        "property_name": "QUANTITY_MANIPULATION",
+        "rule_id": "K1-BIZ-006",
+        "severity": "HIGH"
+      }
+    ],
+    "source_file": "benchmarks/k1/holdout/k1-biz-011.py"
+  },
+  "k1-biz-012": {
+    "expected_property": "QUANTITY_MANIPULATION",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/holdout/k1-biz-012.py"
+  },
+  "k1-biz-013": {
+    "expected_property": "PRICE_MANIPULATION",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "Business Logic",
+        "property_name": "PRICE_MANIPULATION",
+        "rule_id": "K1-BIZ-007",
+        "severity": "HIGH"
+      }
+    ],
+    "source_file": "benchmarks/k1/holdout/k1-biz-013.py"
+  },
+  "k1-biz-014": {
+    "expected_property": "PRICE_MANIPULATION",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/holdout/k1-biz-014.py"
+  },
+  "k1-biz-015": {
+    "expected_property": "INVARIANT_BYPASS",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "Business Logic",
+        "property_name": "INVARIANT_BYPASS",
+        "rule_id": "K1-BIZ-008",
+        "severity": "HIGH"
+      }
+    ],
+    "source_file": "benchmarks/k1/holdout/k1-biz-015.py"
+  },
+  "k1-biz-016": {
+    "expected_property": "INVARIANT_BYPASS",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/holdout/k1-biz-016.py"
+  },
+  "k1-jwt-001": {
+    "expected_property": "JWT_VERIFICATION",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/development/k1-jwt-001.py"
+  },
+  "k1-jwt-002": {
+    "expected_property": "JWT_UNVERIFIED_SIGNATURE",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "JWT",
+        "property_name": "JWT_UNVERIFIED_SIGNATURE",
+        "rule_id": "K1-JWT-001",
+        "severity": "HIGH"
+      }
+    ],
+    "source_file": "benchmarks/k1/development/k1-jwt-002.py"
+  },
+  "k1-jwt-003": {
+    "expected_property": "JWT_ALG_CONFUSION",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "JWT",
+        "property_name": "JWT_ALG_CONFUSION",
+        "rule_id": "K1-JWT-003",
+        "severity": "CRITICAL"
+      }
+    ],
+    "source_file": "benchmarks/k1/development/k1-jwt-003.py"
+  },
+  "k1-jwt-004": {
+    "expected_property": "JWT_NONE_ALG",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "JWT",
+        "property_name": "JWT_UNVERIFIED_SIGNATURE",
+        "rule_id": "K1-JWT-001",
+        "severity": "HIGH"
+      },
+      {
+        "knowledge_pack": "JWT",
+        "property_name": "JWT_NONE_ALG",
+        "rule_id": "K1-JWT-002",
+        "severity": "CRITICAL"
+      }
+    ],
+    "source_file": "benchmarks/k1/development/k1-jwt-004.py"
+  },
+  "k1-jwt-005": {
+    "expected_property": "JWT_WEAK_ALG",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "JWT",
+        "property_name": "JWT_WEAK_ALG",
+        "rule_id": "K1-JWT-004",
+        "severity": "HIGH"
+      }
+    ],
+    "source_file": "benchmarks/k1/development/k1-jwt-005.py"
+  },
+  "k1-jwt-006": {
+    "expected_property": "JWT_VERIFICATION",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/development/k1-jwt-006.py"
+  },
+  "k1-jwt-007": {
+    "expected_property": "JWT_EXPIRED",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "JWT",
+        "property_name": "JWT_EXPIRED",
+        "rule_id": "K1-JWT-005",
+        "severity": "MEDIUM"
+      }
+    ],
+    "source_file": "benchmarks/k1/development/k1-jwt-007.py"
+  },
+  "k1-jwt-008": {
+    "expected_property": "JWT_VERIFICATION",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/development/k1-jwt-008.py"
+  },
+  "k1-jwt-009": {
+    "expected_property": "JWT_ISSUER",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "JWT",
+        "property_name": "JWT_ISSUER",
+        "rule_id": "K1-JWT-006",
+        "severity": "MEDIUM"
+      }
+    ],
+    "source_file": "benchmarks/k1/validation/k1-jwt-009.py"
+  },
+  "k1-jwt-010": {
+    "expected_property": "JWT_VERIFICATION",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/validation/k1-jwt-010.py"
+  },
+  "k1-jwt-011": {
+    "expected_property": "JWT_KEY_CONFUSION",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "JWT",
+        "property_name": "JWT_KEY_CONFUSION",
+        "rule_id": "K1-JWT-007",
+        "severity": "CRITICAL"
+      }
+    ],
+    "source_file": "benchmarks/k1/validation/k1-jwt-011.py"
+  },
+  "k1-jwt-012": {
+    "expected_property": "JWT_VERIFICATION",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/holdout/k1-jwt-012.py"
+  },
+  "k1-jwt-013": {
+    "expected_property": "JWT_UNTRUSTED_SOURCE",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "JWT",
+        "property_name": "JWT_UNVERIFIED_SIGNATURE",
+        "rule_id": "K1-JWT-001",
+        "severity": "HIGH"
+      },
+      {
+        "knowledge_pack": "JWT",
+        "property_name": "JWT_UNTRUSTED_SOURCE",
+        "rule_id": "K1-JWT-008",
+        "severity": "HIGH"
+      }
+    ],
+    "source_file": "benchmarks/k1/holdout/k1-jwt-013.py"
+  },
+  "k1-jwt-014": {
+    "expected_property": "JWT_VERIFICATION",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/holdout/k1-jwt-014.py"
+  },
+  "k1-oauth-001": {
+    "expected_property": "OAUTH_REDIRECT_URI",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "OAuth",
+        "property_name": "OAUTH_REDIRECT_URI",
+        "rule_id": "K1-OAUTH-001",
+        "severity": "HIGH"
+      }
+    ],
+    "source_file": "benchmarks/k1/development/k1-oauth-001.py"
+  },
+  "k1-oauth-002": {
+    "expected_property": "OAUTH_REDIRECT_URI",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/development/k1-oauth-002.py"
+  },
+  "k1-oauth-003": {
+    "expected_property": "OAUTH_MISSING_STATE",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "OAuth",
+        "property_name": "OAUTH_MISSING_STATE",
+        "rule_id": "K1-OAUTH-002",
+        "severity": "HIGH"
+      }
+    ],
+    "source_file": "benchmarks/k1/development/k1-oauth-003.py"
+  },
+  "k1-oauth-004": {
+    "expected_property": "OAUTH_STATE_VALIDATION",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/development/k1-oauth-004.py"
+  },
+  "k1-oauth-005": {
+    "expected_property": "OAUTH_MISSING_PKCE",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "OAuth",
+        "property_name": "OAUTH_MISSING_PKCE",
+        "rule_id": "K1-OAUTH-003",
+        "severity": "MEDIUM"
+      }
+    ],
+    "source_file": "benchmarks/k1/development/k1-oauth-005.py"
+  },
+  "k1-oauth-006": {
+    "expected_property": "OAUTH_PKCE",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/development/k1-oauth-006.py"
+  },
+  "k1-oauth-007": {
+    "expected_property": "OAUTH_CODE_REUSE",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "OAuth",
+        "property_name": "OAUTH_CODE_REUSE",
+        "rule_id": "K1-OAUTH-004",
+        "severity": "HIGH"
+      }
+    ],
+    "source_file": "benchmarks/k1/validation/k1-oauth-007.py"
+  },
+  "k1-oauth-008": {
+    "expected_property": "OAUTH_TOKEN_LEAKAGE",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "OAuth",
+        "property_name": "OAUTH_REDIRECT_URI",
+        "rule_id": "K1-OAUTH-001",
+        "severity": "HIGH"
+      },
+      {
+        "knowledge_pack": "OAuth",
+        "property_name": "OAUTH_TOKEN_LEAKAGE",
+        "rule_id": "K1-OAUTH-005",
+        "severity": "HIGH"
+      }
+    ],
+    "source_file": "benchmarks/k1/validation/k1-oauth-008.py"
+  },
+  "k1-oauth-009": {
+    "expected_property": "OAUTH_TOKEN_LEAKAGE",
+    "expected_status": "TRUE_NEGATIVE",
+    "normalized_findings": [],
+    "source_file": "benchmarks/k1/validation/k1-oauth-009.py"
+  },
+  "k1-oauth-010": {
+    "expected_property": "OAUTH_SCOPE_ESCALATION",
+    "expected_status": "TRUE_POSITIVE",
+    "normalized_findings": [
+      {
+        "knowledge_pack": "OAuth",
+        "property_name": "OAUTH_SCOPE_ESCALATION",
+        "rule_id": "K1-OAUTH-006",
+        "severity": "HIGH"
+      }
+    ],
+    "source_file": "benchmarks/k1/holdout/k1-oauth-010.py"
+  }
+}

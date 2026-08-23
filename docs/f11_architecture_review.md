@@ -11,11 +11,11 @@
 This architectural review validates the consistency, completeness, and security invariants for **Sprint F11: AI Gateway Resilience, Provider Execution Security & Distributed Rate-Limit Hardening**.
 
 All specification artifacts have been generated and cross-audited against F10 state machine guarantees, F9 recovery immutability invariants, and distributed security best practices:
-- [`docs/f11_threat_model.md`](file:///home/lota1337/python/KarsaSec/docs/f11_threat_model.md)
-- [`docs/f11_security_invariants.md`](file:///home/lota1337/python/KarsaSec/docs/f11_security_invariants.md)
-- [`docs/f11_ssrf_security_model.md`](file:///home/lota1337/python/KarsaSec/docs/f11_ssrf_security_model.md)
-- [`docs/f11_adversarial_test_plan.md`](file:///home/lota1337/python/KarsaSec/docs/f11_adversarial_test_plan.md)
-- [`docs/f11_implementation_plan.md`](file:///home/lota1337/python/KarsaSec/docs/f11_implementation_plan.md)
+- [`docs/f11_threat_model.md`](docs/f11_threat_model.md)
+- [`docs/f11_security_invariants.md`](docs/f11_security_invariants.md)
+- [`docs/f11_ssrf_security_model.md`](docs/f11_ssrf_security_model.md)
+- [`docs/f11_adversarial_test_plan.md`](docs/f11_adversarial_test_plan.md)
+- [`docs/f11_implementation_plan.md`](docs/f11_implementation_plan.md)
 
 ---
 

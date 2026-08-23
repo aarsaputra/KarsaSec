@@ -1,0 +1,63 @@
+{
+  "GOLD": {
+    "OWASP_Benchmark_70": {
+      "total_cases": 70,
+      "tp": 35,
+      "tn": 35,
+      "fp": 0,
+      "fn": 0,
+      "strict_precision": 1.0,
+      "strict_recall": 1.0,
+      "epistemic_recall": 1.0,
+      "tier": "GOLD"
+    }
+  },
+  "SILVER": {
+    "JuiceShop_API_Manifest": {
+      "total_cases": 25,
+      "tp": 15,
+      "tn": 10,
+      "fp": 0,
+      "fn": 0,
+      "strict_precision": 1.0,
+      "strict_recall": 1.0,
+      "epistemic_recall": 1.0,
+      "tier": "SILVER"
+    },
+    "VAmPI_REST_Manifest": {
+      "total_cases": 20,
+      "tp": 12,
+      "tn": 8,
+      "fp": 0,
+      "fn": 0,
+      "strict_precision": 1.0,
+      "strict_recall": 1.0,
+      "epistemic_recall": 1.0,
+      "tier": "SILVER"
+    }
+  },
+  "BRONZE": {
+    "WebGoat_Java_Manifest": {
+      "total_cases": 30,
+      "tp": 18,
+      "tn": 10,
+      "fp": 2,
+      "fn": 0,
+      "strict_precision": 0.9,
+      "strict_recall": 1.0,
+      "epistemic_recall": 0.9333,
+      "tier": "BRONZE"
+    },
+    "NodeGoat_Express_Manifest": {
+      "total_cases": 20,
+      "tp": 10,
+      "tn": 8,
+      "fp": 1,
+      "fn": 1,
+      "strict_precision": 0.9091,
+      "strict_recall": 0.9091,
+      "epistemic_recall": 0.9,
+      "tier": "BRONZE"
+    }
+  }
+}

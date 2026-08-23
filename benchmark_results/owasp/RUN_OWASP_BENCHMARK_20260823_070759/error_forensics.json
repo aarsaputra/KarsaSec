@@ -1,0 +1,83 @@
+[
+  {
+    "test_case_id": "BenchmarkTest00017",
+    "cwe": "CWE-78",
+    "ground_truth": "VULNERABLE",
+    "prediction": "UNKNOWN",
+    "error_taxonomy": "FN_FRAMEWORK",
+    "failure_stage": "SOURCE_RESOLUTION",
+    "root_cause": "Framework request wrapper unresolved by D1 pass"
+  },
+  {
+    "test_case_id": "BenchmarkTest00018",
+    "cwe": "CWE-78",
+    "ground_truth": "SAFE",
+    "prediction": "UNKNOWN",
+    "error_taxonomy": "UNRESOLVED_WRAPPER",
+    "failure_stage": "DECISION",
+    "root_cause": "Unresolved custom sanitization wrapper"
+  },
+  {
+    "test_case_id": "BenchmarkTest00019",
+    "cwe": "CWE-78",
+    "ground_truth": "VULNERABLE",
+    "prediction": "UNKNOWN",
+    "error_taxonomy": "FN_FRAMEWORK",
+    "failure_stage": "SOURCE_RESOLUTION",
+    "root_cause": "Framework request wrapper unresolved by D1 pass"
+  },
+  {
+    "test_case_id": "BenchmarkTest00037",
+    "cwe": "CWE-22",
+    "ground_truth": "VULNERABLE",
+    "prediction": "UNKNOWN",
+    "error_taxonomy": "FN_FRAMEWORK",
+    "failure_stage": "SOURCE_RESOLUTION",
+    "root_cause": "Framework request wrapper unresolved by D1 pass"
+  },
+  {
+    "test_case_id": "BenchmarkTest00038",
+    "cwe": "CWE-22",
+    "ground_truth": "SAFE",
+    "prediction": "UNKNOWN",
+    "error_taxonomy": "UNRESOLVED_WRAPPER",
+    "failure_stage": "DECISION",
+    "root_cause": "Unresolved custom sanitization wrapper"
+  },
+  {
+    "test_case_id": "BenchmarkTest00039",
+    "cwe": "CWE-22",
+    "ground_truth": "VULNERABLE",
+    "prediction": "UNKNOWN",
+    "error_taxonomy": "FN_FRAMEWORK",
+    "failure_stage": "SOURCE_RESOLUTION",
+    "root_cause": "Framework request wrapper unresolved by D1 pass"
+  },
+  {
+    "test_case_id": "BenchmarkTest00057",
+    "cwe": "CWE-330",
+    "ground_truth": "VULNERABLE",
+    "prediction": "UNKNOWN",
+    "error_taxonomy": "FN_FRAMEWORK",
+    "failure_stage": "SOURCE_RESOLUTION",
+    "root_cause": "Framework request wrapper unresolved by D1 pass"
+  },
+  {
+    "test_case_id": "BenchmarkTest00058",
+    "cwe": "CWE-330",
+    "ground_truth": "SAFE",
+    "prediction": "UNKNOWN",
+    "error_taxonomy": "UNRESOLVED_WRAPPER",
+    "failure_stage": "DECISION",
+    "root_cause": "Unresolved custom sanitization wrapper"
+  },
+  {
+    "test_case_id": "BenchmarkTest00059",
+    "cwe": "CWE-330",
+    "ground_truth": "VULNERABLE",
+    "prediction": "UNKNOWN",
+    "error_taxonomy": "FN_FRAMEWORK",
+    "failure_stage": "SOURCE_RESOLUTION",
+    "root_cause": "Framework request wrapper unresolved by D1 pass"
+  }
+]

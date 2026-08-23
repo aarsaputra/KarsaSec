@@ -1,0 +1,119 @@
+version: "1.0"
+domain: "security_decision_rules"
+description: "Machine-readable rules for Batch D6 Security Decision & Finding Consolidation Engine"
+
+invariants:
+  - id: INV-D6-01
+    name: Evidence Provenance Integrity
+    rule: "All findings must carry verifiable source evidence provenance traces."
+  - id: INV-D6-02
+    name: Input Immutability
+    rule: "Upstream inputs from C13-C15 and D1-D5 must remain strictly unmodified."
+  - id: INV-D6-03
+    name: Finding Identity Integrity
+    rule: "Finding identity must be deterministically computed via canonical SHA256."
+  - id: INV-D6-04
+    name: Root-Cause Identity Integrity
+    rule: "Root cause identity must preserve the earliest causally necessary node."
+  - id: INV-D6-05
+    name: Duplicate Finding Suppression
+    rule: "Identical findings sharing root cause, resolution, and impact must be deduplicated."
+  - id: INV-D6-06
+    name: Root-Cause Consolidation Correctness
+    rule: "Findings with identical root cause must consolidate into one canonical finding."
+  - id: INV-D6-07
+    name: Security-Property Impact Preservation
+    rule: "Security property impacts must be fully preserved across consolidation."
+  - id: INV-D6-08
+    name: Exploitability Preservation
+    rule: "Exploitability level must strictly correspond to evidence-backed proof paths."
+  - id: INV-D6-09
+    name: Severity Composition Correctness
+    rule: "Severity must be derived from property, exploitability, and blast radius without inflation."
+  - id: INV-D6-10
+    name: Confidence Composition Correctness
+    rule: "Confidence reflects evidence quality and provenance quality without contamination."
+  - id: INV-D6-11
+    name: Blast-Radius Correctness
+    rule: "Blast radius must be explicitly grounded in tenant/service evidence."
+  - id: INV-D6-12
+    name: Remediation-Priority Correctness
+    rule: "Remediation priority must strictly rank findings based on resolution, exploitability, severity."
+  - id: INV-D6-13
+    name: UNKNOWN Preservation
+    rule: "UNKNOWN epistemic state must remain UNKNOWN unless authoritative proof resolves it."
+  - id: INV-D6-14
+    name: CONFLICT Preservation
+    rule: "CONFLICT epistemic state must remain CONFLICT unless contradiction is resolved."
+  - id: INV-D6-15
+    name: No UNKNOWN -> SAFE
+    rule: "Missing evidence must never collapse into SAFE."
+  - id: INV-D6-16
+    name: No UNKNOWN -> VULNERABLE
+    rule: "Missing evidence must never collapse into VULNERABLE."
+  - id: INV-D6-17
+    name: No CONFLICT -> SAFE
+    rule: "Contradictory evidence must never be silently resolved to SAFE."
+  - id: INV-D6-18
+    name: No CONFLICT -> VULNERABLE
+    rule: "Contradictory evidence must never be silently resolved to VULNERABLE."
+  - id: INV-D6-19
+    name: Evidence Non-Contamination
+    rule: "Unrelated findings must not contaminate severity, confidence, or exploitability of each other."
+  - id: INV-D6-20
+    name: Cross-Tenant Isolation
+    rule: "Cross-tenant scope requires explicit tenant transition evidence."
+  - id: INV-D6-21
+    name: Cross-Service Isolation
+    rule: "Cross-service scope requires explicit distributed interaction evidence."
+  - id: INV-D6-22
+    name: Deterministic Ordering
+    rule: "Output findings must be canonically sorted by remediation priority, severity, finding_id."
+  - id: INV-D6-23
+    name: Canonical SHA256 Finding Identity
+    rule: "finding_id = SHA256(canonical_json(root_cause + properties + impact + resolution))."
+  - id: INV-D6-24
+    name: Explainability/Provenance Completeness
+    rule: "Findings must contain structured explainability traces."
+  - id: INV-D6-25
+    name: F9 Zero-Diff Immunity
+    rule: "Frozen paths karsasec/recovery/, audit_ledger.py, outbox.py must have zero diff."
+
+epistemic_state_rules:
+  VULNERABLE:
+    allowed_sources: ["VULNERABLE"]
+    forbidden_conversions: ["UNKNOWN", "CONFLICT"]
+  SAFE:
+    allowed_sources: ["SAFE"]
+    forbidden_conversions: ["UNKNOWN", "CONFLICT"]
+  UNKNOWN:
+    allowed_sources: ["UNKNOWN", "MISSING_EVIDENCE"]
+    forbidden_conversions: ["SAFE", "VULNERABLE"]
+  CONFLICT:
+    allowed_sources: ["CONFLICT", "CONTRADICTORY_EVIDENCE"]
+    forbidden_conversions: ["SAFE", "VULNERABLE"]
+
+severity_weight_matrix:
+  ROOT_ACCESS: CRITICAL
+  CLOUD_ADMIN: CRITICAL
+  ACCOUNT_TAKEOVER: HIGH
+  TENANT_ESCAPE: HIGH
+  CODE_EXECUTION: HIGH
+  SECRET_ACCESS: HIGH
+  PAYMENT_MODIFICATION: HIGH
+  DATA_EXFILTRATION: MEDIUM
+  ADMIN_ACCESS: MEDIUM
+
+exploitability_weights:
+  PROVEN_EXPLOIT: CRITICAL
+  HIGH_REACHABILITY: HIGH
+  CONDITIONAL_EXPLOIT: MEDIUM
+  SAFE_CONTROL: NONE
+  UNKNOWN_PROOF: UNKNOWN
+
+blast_radius_rules:
+  MULTI_TENANT: "Explicit cross-tenant transition proof required"
+  TENANT: "Single tenant scope proven"
+  MULTI_SERVICE: "Explicit cross-service interaction proof required"
+  SERVICE: "Single service scope proven"
+  LOCAL: "Local component scope proven"

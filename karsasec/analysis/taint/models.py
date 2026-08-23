@@ -31,6 +31,9 @@ class TaintSource:
     language: str = "Python"
     line_number: int = 1
     pattern: str = ""
+    category: str = "DIRECT"
+    framework: str = "Java Servlet"
+    is_user_controlled: bool = True
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -38,6 +41,9 @@ class TaintSource:
             "language": self.language,
             "line_number": self.line_number,
             "pattern": self.pattern,
+            "category": self.category,
+            "framework": self.framework,
+            "is_user_controlled": self.is_user_controlled,
         }
 
 
@@ -67,6 +73,8 @@ class TaintSanitizer:
     category: TaintCategory = TaintCategory.GENERIC
     line_number: int = 1
     pattern: str = ""
+    is_verified_safe: bool = True
+    transformation_type: str = "ESCAPE"
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -74,7 +82,11 @@ class TaintSanitizer:
             "category": self.category.value,
             "line_number": self.line_number,
             "pattern": self.pattern,
+            "is_verified_safe": self.is_verified_safe,
+            "transformation_type": str(self.transformation_type),
         }
+
+
 
 
 @dataclass

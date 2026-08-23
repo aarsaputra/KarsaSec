@@ -1,0 +1,44 @@
+{
+  "certification": "K1.6",
+  "status": "K1.6_FINAL_CERTIFIED",
+  "schema_version": "1.0",
+  "trust_anchors": {
+    "k1_4_provenance_sha256": "f41f0e74d7e703cc60c4471b7fe944085b0cbcbb7d6c32612e5d5142cf0cbc48"
+  },
+  "baseline": {
+    "benchmarks/k1/baseline/k1_4_findings.json": "33299f0390f1971391d75d9f398e9b502d3895208b93eeee5ba91ce4d90ee644",
+    "benchmarks/k1/baseline/k1_4_provenance.json": "f41f0e74d7e703cc60c4471b7fe944085b0cbcbb7d6c32612e5d5142cf0cbc48"
+  },
+  "production_scope": {
+    "path": "karsasec/analysis/taint/",
+    "required_git_diff": "EMPTY"
+  },
+  "corpus_scope": {
+    "path": "benchmarks/k1/",
+    "manifest_files": [
+      "benchmarks/k1/manifest.json",
+      "benchmarks/k1/holdout_manifest.json"
+    ]
+  },
+  "certification_metrics": {
+    "mutation_attacks": {
+      "eligible": 14,
+      "detected": 14
+    },
+    "benchmark_tests": {
+      "passed": 47
+    },
+    "decision_tests": {
+      "passed": 129
+    },
+    "negative_fpr": 0.0,
+    "determinism": {
+      "passes": 100,
+      "identical": 100
+    },
+    "order_determinism": {
+      "seeds": 100,
+      "identical": 100
+    }
+  }
+}

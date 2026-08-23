@@ -1,0 +1,1265 @@
+{
+  "total_cases": 140,
+  "cases": [
+    {
+      "vulnerability_id": "HOLDOUT_TP_001",
+      "CWE": "CWE-79",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_1 = request.getParameter(\"id_1\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_1);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_002",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_2 = request.getParameter(\"id_2\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_2);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_003",
+      "CWE": "CWE-79",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_3 = request.getParameter(\"id_3\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_3);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_004",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_4 = request.getParameter(\"id_4\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_4);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_005",
+      "CWE": "CWE-79",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_5 = request.getParameter(\"id_5\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_5);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_006",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_6 = request.getParameter(\"id_6\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_6);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_007",
+      "CWE": "CWE-79",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_7 = request.getParameter(\"id_7\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_7);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_008",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_8 = request.getParameter(\"id_8\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_8);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_009",
+      "CWE": "CWE-79",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_9 = request.getParameter(\"id_9\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_9);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_010",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_10 = request.getParameter(\"id_10\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_10);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_011",
+      "CWE": "CWE-79",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_11 = request.getParameter(\"id_11\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_11);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_012",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_12 = request.getParameter(\"id_12\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_12);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_013",
+      "CWE": "CWE-79",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_13 = request.getParameter(\"id_13\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_13);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_014",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_14 = request.getParameter(\"id_14\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_14);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_015",
+      "CWE": "CWE-79",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_15 = request.getParameter(\"id_15\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_15);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_016",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_16 = request.getParameter(\"id_16\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_16);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_017",
+      "CWE": "CWE-79",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_17 = request.getParameter(\"id_17\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_17);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_018",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_18 = request.getParameter(\"id_18\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_18);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_019",
+      "CWE": "CWE-79",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_19 = request.getParameter(\"id_19\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_19);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_020",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_20 = request.getParameter(\"id_20\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_20);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_021",
+      "CWE": "CWE-79",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_21 = request.getParameter(\"id_21\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_21);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_022",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_22 = request.getParameter(\"id_22\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_22);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_023",
+      "CWE": "CWE-79",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_23 = request.getParameter(\"id_23\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_23);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_024",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_24 = request.getParameter(\"id_24\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_24);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_025",
+      "CWE": "CWE-79",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_25 = request.getParameter(\"id_25\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_25);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_026",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_26 = request.getParameter(\"id_26\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_26);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_027",
+      "CWE": "CWE-79",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_27 = request.getParameter(\"id_27\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_27);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_028",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_28 = request.getParameter(\"id_28\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_28);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_029",
+      "CWE": "CWE-79",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_29 = request.getParameter(\"id_29\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_29);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_030",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "TRUE_POSITIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_30 = request.getParameter(\"id_30\"); db.execute(\"SELECT * FROM users WHERE id = \" + val_30);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_001",
+      "CWE": "CWE-79",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_1 = int(request.getParameter(\"id_1\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_002",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_2 = int(request.getParameter(\"id_2\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_003",
+      "CWE": "CWE-79",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_3 = int(request.getParameter(\"id_3\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_004",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_4 = int(request.getParameter(\"id_4\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_005",
+      "CWE": "CWE-79",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_5 = int(request.getParameter(\"id_5\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_006",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_6 = int(request.getParameter(\"id_6\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_007",
+      "CWE": "CWE-79",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_7 = int(request.getParameter(\"id_7\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_008",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_8 = int(request.getParameter(\"id_8\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_009",
+      "CWE": "CWE-79",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_9 = int(request.getParameter(\"id_9\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_010",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_10 = int(request.getParameter(\"id_10\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_011",
+      "CWE": "CWE-79",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_11 = int(request.getParameter(\"id_11\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_012",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_12 = int(request.getParameter(\"id_12\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_013",
+      "CWE": "CWE-79",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_13 = int(request.getParameter(\"id_13\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_014",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_14 = int(request.getParameter(\"id_14\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_015",
+      "CWE": "CWE-79",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_15 = int(request.getParameter(\"id_15\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_016",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_16 = int(request.getParameter(\"id_16\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_017",
+      "CWE": "CWE-79",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_17 = int(request.getParameter(\"id_17\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_018",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_18 = int(request.getParameter(\"id_18\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_019",
+      "CWE": "CWE-79",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_19 = int(request.getParameter(\"id_19\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_020",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_20 = int(request.getParameter(\"id_20\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_021",
+      "CWE": "CWE-79",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_21 = int(request.getParameter(\"id_21\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_022",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_22 = int(request.getParameter(\"id_22\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_023",
+      "CWE": "CWE-79",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_23 = int(request.getParameter(\"id_23\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_024",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_24 = int(request.getParameter(\"id_24\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_025",
+      "CWE": "CWE-79",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_25 = int(request.getParameter(\"id_25\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_026",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_26 = int(request.getParameter(\"id_26\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_027",
+      "CWE": "CWE-79",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_27 = int(request.getParameter(\"id_27\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_028",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_28 = int(request.getParameter(\"id_28\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_029",
+      "CWE": "CWE-79",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_29 = int(request.getParameter(\"id_29\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_030",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "TRUE_NEGATIVE",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_30 = int(request.getParameter(\"id_30\")); stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_001",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_1 = unproven_custom_getter(req_1); execute_op(val_1);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_002",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_2 = unproven_custom_getter(req_2); execute_op(val_2);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_003",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_3 = unproven_custom_getter(req_3); execute_op(val_3);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_004",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_4 = unproven_custom_getter(req_4); execute_op(val_4);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_005",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_5 = unproven_custom_getter(req_5); execute_op(val_5);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_006",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_6 = unproven_custom_getter(req_6); execute_op(val_6);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_007",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_7 = unproven_custom_getter(req_7); execute_op(val_7);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_008",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_8 = unproven_custom_getter(req_8); execute_op(val_8);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_009",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_9 = unproven_custom_getter(req_9); execute_op(val_9);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_010",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_10 = unproven_custom_getter(req_10); execute_op(val_10);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_011",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_11 = unproven_custom_getter(req_11); execute_op(val_11);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_012",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_12 = unproven_custom_getter(req_12); execute_op(val_12);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_013",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_13 = unproven_custom_getter(req_13); execute_op(val_13);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_014",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_14 = unproven_custom_getter(req_14); execute_op(val_14);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_015",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_15 = unproven_custom_getter(req_15); execute_op(val_15);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_016",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_16 = unproven_custom_getter(req_16); execute_op(val_16);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_017",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_17 = unproven_custom_getter(req_17); execute_op(val_17);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_018",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_18 = unproven_custom_getter(req_18); execute_op(val_18);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_019",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_19 = unproven_custom_getter(req_19); execute_op(val_19);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_020",
+      "CWE": "CWE-862",
+      "expected_status": "UNKNOWN",
+      "category": "AMBIGUOUS",
+      "language": "Java",
+      "framework": "Custom",
+      "code_snippet": "val_20 = unproven_custom_getter(req_20); execute_op(val_20);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_001",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_1 = request.getParameter(\"q\"); safe_v = html.escape(val_1); render(val_1);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_002",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_2 = request.getParameter(\"q\"); safe_v = html.escape(val_2); render(val_2);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_003",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_3 = request.getParameter(\"q\"); safe_v = html.escape(val_3); render(val_3);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_004",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_4 = request.getParameter(\"q\"); safe_v = html.escape(val_4); render(val_4);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_005",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_5 = request.getParameter(\"q\"); safe_v = html.escape(val_5); render(val_5);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_006",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_6 = request.getParameter(\"q\"); safe_v = html.escape(val_6); render(val_6);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_007",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_7 = request.getParameter(\"q\"); safe_v = html.escape(val_7); render(val_7);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_008",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_8 = request.getParameter(\"q\"); safe_v = html.escape(val_8); render(val_8);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_009",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_9 = request.getParameter(\"q\"); safe_v = html.escape(val_9); render(val_9);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_010",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_10 = request.getParameter(\"q\"); safe_v = html.escape(val_10); render(val_10);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_011",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_11 = request.getParameter(\"q\"); safe_v = html.escape(val_11); render(val_11);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_012",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_12 = request.getParameter(\"q\"); safe_v = html.escape(val_12); render(val_12);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_013",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_13 = request.getParameter(\"q\"); safe_v = html.escape(val_13); render(val_13);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_014",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_14 = request.getParameter(\"q\"); safe_v = html.escape(val_14); render(val_14);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_015",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_15 = request.getParameter(\"q\"); safe_v = html.escape(val_15); render(val_15);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_016",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_16 = request.getParameter(\"q\"); safe_v = html.escape(val_16); render(val_16);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_017",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_17 = request.getParameter(\"q\"); safe_v = html.escape(val_17); render(val_17);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_018",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_18 = request.getParameter(\"q\"); safe_v = html.escape(val_18); render(val_18);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_019",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_19 = request.getParameter(\"q\"); safe_v = html.escape(val_19); render(val_19);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_020",
+      "CWE": "CWE-79",
+      "expected_status": "UNKNOWN",
+      "category": "CONTRADICTORY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_20 = request.getParameter(\"q\"); safe_v = html.escape(val_20); render(val_20);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_001",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_1 = config.get(\"internal_id_1\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_1);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_002",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_2 = config.get(\"internal_id_2\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_2);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_003",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_3 = config.get(\"internal_id_3\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_3);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_004",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_4 = config.get(\"internal_id_4\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_4);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_005",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_5 = config.get(\"internal_id_5\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_5);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_006",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_6 = config.get(\"internal_id_6\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_6);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_007",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_7 = config.get(\"internal_id_7\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_7);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_008",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_8 = config.get(\"internal_id_8\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_8);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_009",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_9 = config.get(\"internal_id_9\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_9);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_010",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_10 = config.get(\"internal_id_10\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_10);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_011",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_11 = config.get(\"internal_id_11\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_11);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_012",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_12 = config.get(\"internal_id_12\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_12);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_013",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_13 = config.get(\"internal_id_13\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_13);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_014",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_14 = config.get(\"internal_id_14\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_14);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_015",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_15 = config.get(\"internal_id_15\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_15);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_016",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_16 = config.get(\"internal_id_16\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_16);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_017",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_17 = config.get(\"internal_id_17\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_17);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_018",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_18 = config.get(\"internal_id_18\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_18);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_019",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_19 = config.get(\"internal_id_19\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_19);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_020",
+      "CWE": "CWE-89",
+      "expected_status": "SAFE",
+      "category": "BOUNDARY",
+      "language": "Java",
+      "framework": "Servlet",
+      "code_snippet": "val_20 = config.get(\"internal_id_20\"); db.execute(\"SELECT * FROM config WHERE id = \" + val_20);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_001",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_1 = request.args.get(\"q\"); clean_1 = fake_sanitize(val_1); db.execute(clean_1);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_002",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_2 = request.args.get(\"q\"); clean_2 = fake_sanitize(val_2); db.execute(clean_2);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_003",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_3 = request.args.get(\"q\"); clean_3 = fake_sanitize(val_3); db.execute(clean_3);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_004",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_4 = request.args.get(\"q\"); clean_4 = fake_sanitize(val_4); db.execute(clean_4);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_005",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_5 = request.args.get(\"q\"); clean_5 = fake_sanitize(val_5); db.execute(clean_5);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_006",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_6 = request.args.get(\"q\"); clean_6 = fake_sanitize(val_6); db.execute(clean_6);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_007",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_7 = request.args.get(\"q\"); clean_7 = fake_sanitize(val_7); db.execute(clean_7);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_008",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_8 = request.args.get(\"q\"); clean_8 = fake_sanitize(val_8); db.execute(clean_8);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_009",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_9 = request.args.get(\"q\"); clean_9 = fake_sanitize(val_9); db.execute(clean_9);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_010",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_10 = request.args.get(\"q\"); clean_10 = fake_sanitize(val_10); db.execute(clean_10);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_011",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_11 = request.args.get(\"q\"); clean_11 = fake_sanitize(val_11); db.execute(clean_11);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_012",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_12 = request.args.get(\"q\"); clean_12 = fake_sanitize(val_12); db.execute(clean_12);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_013",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_13 = request.args.get(\"q\"); clean_13 = fake_sanitize(val_13); db.execute(clean_13);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_014",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_14 = request.args.get(\"q\"); clean_14 = fake_sanitize(val_14); db.execute(clean_14);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_015",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_15 = request.args.get(\"q\"); clean_15 = fake_sanitize(val_15); db.execute(clean_15);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_016",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_16 = request.args.get(\"q\"); clean_16 = fake_sanitize(val_16); db.execute(clean_16);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_017",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_17 = request.args.get(\"q\"); clean_17 = fake_sanitize(val_17); db.execute(clean_17);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_018",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_18 = request.args.get(\"q\"); clean_18 = fake_sanitize(val_18); db.execute(clean_18);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_019",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_19 = request.args.get(\"q\"); clean_19 = fake_sanitize(val_19); db.execute(clean_19);"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_020",
+      "CWE": "CWE-89",
+      "expected_status": "VULNERABLE",
+      "category": "DECEPTIVE",
+      "language": "Python",
+      "framework": "Flask",
+      "code_snippet": "val_20 = request.args.get(\"q\"); clean_20 = fake_sanitize(val_20); db.execute(clean_20);"
+    }
+  ]
+}

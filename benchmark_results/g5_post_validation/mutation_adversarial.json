@@ -1,0 +1,128 @@
+{
+  "total_mutations": 15,
+  "killed": 15,
+  "survived": 0,
+  "mutation_score": 1.0,
+  "results": [
+    {
+      "mutation_id": "MUT-IND-001",
+      "mutation_name": "SOURCE_REMOVED",
+      "original_resolution": "VULNERABLE",
+      "mutated_resolution": "SAFE",
+      "status": "KILLED",
+      "killed": true
+    },
+    {
+      "mutation_id": "MUT-IND-002",
+      "mutation_name": "SOURCE_RENAMED",
+      "original_resolution": "VULNERABLE",
+      "mutated_resolution": "SAFE",
+      "status": "KILLED",
+      "killed": true
+    },
+    {
+      "mutation_id": "MUT-IND-003",
+      "mutation_name": "SOURCE_WRAPPED",
+      "original_resolution": "VULNERABLE",
+      "mutated_resolution": "UNKNOWN",
+      "status": "KILLED",
+      "killed": true
+    },
+    {
+      "mutation_id": "MUT-IND-004",
+      "mutation_name": "SINK_REPLACED",
+      "original_resolution": "VULNERABLE",
+      "mutated_resolution": "SAFE",
+      "status": "KILLED",
+      "killed": true
+    },
+    {
+      "mutation_id": "MUT-IND-005",
+      "mutation_name": "SINK_MOVED",
+      "original_resolution": "VULNERABLE",
+      "mutated_resolution": "UNKNOWN",
+      "status": "KILLED",
+      "killed": true
+    },
+    {
+      "mutation_id": "MUT-IND-006",
+      "mutation_name": "WRAPPER_DEPTH_CHANGED",
+      "original_resolution": "VULNERABLE",
+      "mutated_resolution": "UNKNOWN",
+      "status": "KILLED",
+      "killed": true
+    },
+    {
+      "mutation_id": "MUT-IND-007",
+      "mutation_name": "SANITIZER_WRONG_PROPERTY",
+      "original_resolution": "SAFE",
+      "mutated_resolution": "VULNERABLE",
+      "status": "KILLED",
+      "killed": true
+    },
+    {
+      "mutation_id": "MUT-IND-008",
+      "mutation_name": "SANITIZER_REMOVED",
+      "original_resolution": "SAFE",
+      "mutated_resolution": "VULNERABLE",
+      "status": "KILLED",
+      "killed": true
+    },
+    {
+      "mutation_id": "MUT-IND-009",
+      "mutation_name": "SANITIZER_RENAMED",
+      "original_resolution": "SAFE",
+      "mutated_resolution": "VULNERABLE",
+      "status": "KILLED",
+      "killed": true
+    },
+    {
+      "mutation_id": "MUT-IND-010",
+      "mutation_name": "SANITIZER_AFTER_SINK",
+      "original_resolution": "SAFE",
+      "mutated_resolution": "VULNERABLE",
+      "status": "KILLED",
+      "killed": true
+    },
+    {
+      "mutation_id": "MUT-IND-011",
+      "mutation_name": "DEAD_CODE_SANITIZER",
+      "original_resolution": "SAFE",
+      "mutated_resolution": "VULNERABLE",
+      "status": "KILLED",
+      "killed": true
+    },
+    {
+      "mutation_id": "MUT-IND-012",
+      "mutation_name": "CONDITIONAL_SANITIZER",
+      "original_resolution": "SAFE",
+      "mutated_resolution": "UNKNOWN",
+      "status": "KILLED",
+      "killed": true
+    },
+    {
+      "mutation_id": "MUT-IND-013",
+      "mutation_name": "AUTHZ_SCOPE_CHANGED",
+      "original_resolution": "SAFE",
+      "mutated_resolution": "VULNERABLE",
+      "status": "KILLED",
+      "killed": true
+    },
+    {
+      "mutation_id": "MUT-IND-014",
+      "mutation_name": "AUTHZ_PERMISSION_WEAKENED",
+      "original_resolution": "SAFE",
+      "mutated_resolution": "VULNERABLE",
+      "status": "KILLED",
+      "killed": true
+    },
+    {
+      "mutation_id": "MUT-IND-015",
+      "mutation_name": "AUTHZ_MOVED_AFTER_SINK",
+      "original_resolution": "SAFE",
+      "mutated_resolution": "VULNERABLE",
+      "status": "KILLED",
+      "killed": true
+    }
+  ]
+}

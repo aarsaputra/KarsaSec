@@ -1,0 +1,564 @@
+{
+  "predictions": [
+    {
+      "vulnerability_id": "HOLDOUT_TP_001",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_002",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_003",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_004",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_005",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_006",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_007",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_008",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_009",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_010",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_011",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_012",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_013",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_014",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_015",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_016",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_017",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_018",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_019",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_020",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_021",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_022",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_023",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_024",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_025",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_026",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_027",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_028",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_029",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TP_030",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_001",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_002",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_003",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_004",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_005",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_006",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_007",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_008",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_009",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_010",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_011",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_012",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_013",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_014",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_015",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_016",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_017",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_018",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_019",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_020",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_021",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_022",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_023",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_024",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_025",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_026",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_027",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_028",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_029",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_TN_030",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_001",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_002",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_003",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_004",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_005",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_006",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_007",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_008",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_009",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_010",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_011",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_012",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_013",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_014",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_015",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_016",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_017",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_018",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_019",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_AMB_020",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_001",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_002",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_003",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_004",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_005",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_006",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_007",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_008",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_009",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_010",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_011",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_012",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_013",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_014",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_015",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_016",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_017",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_018",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_019",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_CONTR_020",
+      "predicted_status": "SAFE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_001",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_002",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_003",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_004",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_005",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_006",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_007",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_008",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_009",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_010",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_011",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_012",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_013",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_014",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_015",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_016",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_017",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_018",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_019",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_BOUND_020",
+      "predicted_status": "UNKNOWN"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_001",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_002",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_003",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_004",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_005",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_006",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_007",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_008",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_009",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_010",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_011",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_012",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_013",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_014",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_015",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_016",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_017",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_018",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_019",
+      "predicted_status": "VULNERABLE"
+    },
+    {
+      "vulnerability_id": "HOLDOUT_DEC_020",
+      "predicted_status": "VULNERABLE"
+    }
+  ]
+}

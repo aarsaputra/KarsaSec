@@ -1,0 +1,88 @@
+"""K1 Business Logic Knowledge Pack Declarative Rules Definition (Task K1.3)."""
+
+from __future__ import annotations
+
+from typing import Any
+
+K1_BUSINESS_LOGIC_RULES: list[dict[str, Any]] = [
+    {
+        "rule_id": "K1-BIZ-001",
+        "name": "Missing Sensitive Operation Authorization",
+        "cwe": "CWE-862",
+        "property": "MISSING_AUTHZ",
+        "severity": "HIGH",
+        "category": "BUSINESS_LOGIC",
+        "sanitizer_semantics": "NONE",
+        "description": "Detects sensitive endpoint performing destructive operations without authorization checks.",
+    },
+    {
+        "rule_id": "K1-BIZ-002",
+        "name": "Insecure Direct Object Reference (Horizontal IDOR)",
+        "cwe": "CWE-639",
+        "property": "IDOR_HORIZONTAL",
+        "severity": "HIGH",
+        "category": "BUSINESS_LOGIC",
+        "sanitizer_semantics": "NONE",
+        "description": "Detects resource lookup without verifying owner_id constraint against current authenticated user.",
+    },
+    {
+        "rule_id": "K1-BIZ-003",
+        "name": "Privilege Escalation / Unvalidated Role Assignment (Vertical IDOR)",
+        "cwe": "CWE-269",
+        "property": "IDOR_VERTICAL",
+        "severity": "HIGH",
+        "category": "BUSINESS_LOGIC",
+        "sanitizer_semantics": "NONE",
+        "description": "Detects role assignment from request parameters without super admin privilege verification.",
+    },
+    {
+        "rule_id": "K1-BIZ-004",
+        "name": "Workflow State Transition Bypass",
+        "cwe": "CWE-841",
+        "property": "WORKFLOW_BYPASS",
+        "severity": "HIGH",
+        "category": "BUSINESS_LOGIC",
+        "sanitizer_semantics": "NONE",
+        "description": "Detects fulfillment or state mutation performed without checking required workflow state preconditions.",
+    },
+    {
+        "rule_id": "K1-BIZ-005",
+        "name": "Race Condition in Financial / Balance Mutation",
+        "cwe": "CWE-362",
+        "property": "RACE_AUTHZ",
+        "severity": "HIGH",
+        "category": "BUSINESS_LOGIC",
+        "sanitizer_semantics": "NONE",
+        "description": "Detects financial balance mutations executed without pessimistic row-level locking.",
+    },
+    {
+        "rule_id": "K1-BIZ-006",
+        "name": "Unvalidated Quantity / Negative Quantity Abuse",
+        "cwe": "CWE-20",
+        "property": "QUANTITY_MANIPULATION",
+        "severity": "HIGH",
+        "category": "BUSINESS_LOGIC",
+        "sanitizer_semantics": "NONE",
+        "description": "Detects order quantity calculations lacking non-positive numeric validation.",
+    },
+    {
+        "rule_id": "K1-BIZ-007",
+        "name": "Client-Supplied Price Manipulation",
+        "cwe": "CWE-20",
+        "property": "PRICE_MANIPULATION",
+        "severity": "HIGH",
+        "category": "BUSINESS_LOGIC",
+        "sanitizer_semantics": "NONE",
+        "description": "Detects price parameters accepted directly from client requests rather than database product master.",
+    },
+    {
+        "rule_id": "K1-BIZ-008",
+        "name": "Business Invariant Coupon / Discount Replay Bypass",
+        "cwe": "CWE-840",
+        "property": "INVARIANT_BYPASS",
+        "severity": "HIGH",
+        "category": "BUSINESS_LOGIC",
+        "sanitizer_semantics": "NONE",
+        "description": "Detects discount application lacking single-use invariant validation.",
+    },
+]

@@ -1,0 +1,9 @@
+{
+  "oracle_version": "1.0",
+  "generation_timestamp": "2026-08-23T16:37:00+08:00",
+  "total_fixtures": 40,
+  "dev_fixtures": 20,
+  "val_fixtures": 10,
+  "holdout_fixtures": 10,
+  "corpus_sha256": "29a1316e698689755290e79c3e70442cd5426c2d46e568b9b40438fdfd633c25"
+}

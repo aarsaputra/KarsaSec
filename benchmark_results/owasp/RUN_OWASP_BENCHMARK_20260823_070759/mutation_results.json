@@ -1,0 +1,34 @@
+[
+  {
+    "mutation_id": "MUT-SQL-001",
+    "original_verdict": "VULNERABLE",
+    "mutated_verdict": "SAFE",
+    "status": "KILLED",
+    "killed": true,
+    "failure_reason": ""
+  },
+  {
+    "mutation_id": "MUT-SRC-001",
+    "original_verdict": "VULNERABLE",
+    "mutated_verdict": "SAFE",
+    "status": "KILLED",
+    "killed": true,
+    "failure_reason": ""
+  },
+  {
+    "mutation_id": "MUT-SAN-001",
+    "original_verdict": "VULNERABLE",
+    "mutated_verdict": "UNKNOWN",
+    "status": "KILLED",
+    "killed": true,
+    "failure_reason": ""
+  },
+  {
+    "mutation_id": "MUT-AUTH-001",
+    "original_verdict": "VULNERABLE",
+    "mutated_verdict": "VULNERABLE",
+    "status": "SURVIVED",
+    "killed": false,
+    "failure_reason": "Engine verdict remained insensitive (VULNERABLE) after semantic mutation"
+  }
+]

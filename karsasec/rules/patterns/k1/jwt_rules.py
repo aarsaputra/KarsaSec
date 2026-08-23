@@ -1,0 +1,88 @@
+"""K1 JWT Knowledge Pack Declarative Rules Definition (Task K1.1)."""
+
+from __future__ import annotations
+
+from typing import Any
+
+K1_JWT_RULES: list[dict[str, Any]] = [
+    {
+        "rule_id": "K1-JWT-001",
+        "name": "JWT Unverified Signature",
+        "cwe": "CWE-347",
+        "property": "JWT_UNVERIFIED_SIGNATURE",
+        "severity": "HIGH",
+        "category": "JWT",
+        "sanitizer_semantics": "NONE",
+        "description": "Detects decoding of JWT tokens without signature verification.",
+    },
+    {
+        "rule_id": "K1-JWT-002",
+        "name": "JWT none Algorithm Accepted",
+        "cwe": "CWE-327",
+        "property": "JWT_NONE_ALG",
+        "severity": "CRITICAL",
+        "category": "JWT",
+        "sanitizer_semantics": "NONE",
+        "description": "Detects JWT decoder configured to accept unauthenticated 'none' algorithm.",
+    },
+    {
+        "rule_id": "K1-JWT-003",
+        "name": "JWT Algorithm Confusion",
+        "cwe": "CWE-327",
+        "property": "JWT_ALG_CONFUSION",
+        "severity": "CRITICAL",
+        "category": "JWT",
+        "sanitizer_semantics": "NONE",
+        "description": "Detects JWT algorithm selection directly derived from unverified header.",
+    },
+    {
+        "rule_id": "K1-JWT-004",
+        "name": "JWT Weak Secret Key",
+        "cwe": "CWE-327",
+        "property": "JWT_WEAK_ALG",
+        "severity": "HIGH",
+        "category": "JWT",
+        "sanitizer_semantics": "NONE",
+        "description": "Detects static or low-entropy secret keys used for HMAC JWT signatures.",
+    },
+    {
+        "rule_id": "K1-JWT-005",
+        "name": "JWT Expiration Validation Disabled",
+        "cwe": "CWE-613",
+        "property": "JWT_EXPIRED",
+        "severity": "MEDIUM",
+        "category": "JWT",
+        "sanitizer_semantics": "NONE",
+        "description": "Detects JWT decoding with verify_exp set to False.",
+    },
+    {
+        "rule_id": "K1-JWT-006",
+        "name": "JWT Issuer Validation Disabled",
+        "cwe": "CWE-287",
+        "property": "JWT_ISSUER",
+        "severity": "MEDIUM",
+        "category": "JWT",
+        "sanitizer_semantics": "NONE",
+        "description": "Detects JWT decoding with verify_iss set to False.",
+    },
+    {
+        "rule_id": "K1-JWT-007",
+        "name": "JWT Key Confusion Attack",
+        "cwe": "CWE-327",
+        "property": "JWT_KEY_CONFUSION",
+        "severity": "CRITICAL",
+        "category": "JWT",
+        "sanitizer_semantics": "NONE",
+        "description": "Detects RSA public key passed as secret key to HMAC verification.",
+    },
+    {
+        "rule_id": "K1-JWT-008",
+        "name": "JWT Untrusted Source Token",
+        "cwe": "CWE-287",
+        "property": "JWT_UNTRUSTED_SOURCE",
+        "severity": "HIGH",
+        "category": "JWT",
+        "sanitizer_semantics": "NONE",
+        "description": "Detects JWT token ingested directly from untrusted URL query string.",
+    },
+]

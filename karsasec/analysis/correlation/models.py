@@ -68,6 +68,23 @@ class EdgeRelation(str, Enum):
     DELEGATION = "DELEGATION"
     BOUNDARY = "BOUNDARY"
     REACHABILITY = "REACHABILITY"
+    CORRELATION_ONLY = "CORRELATION_ONLY"
+
+
+class CausalEvidenceType(str, Enum):
+    """Typed causal evidence classes. Only these constitute genuine causal signals.
+
+    Contextual correlation signals (same_actor, same_resource, same_timestamp,
+    cross_batch, same_tenant) are NOT causal evidence — they are correlation
+    context that may support but never independently prove causation.
+    """
+
+    DATA_DEPENDENCY = "DATA_DEPENDENCY"
+    CONTROL_DEPENDENCY = "CONTROL_DEPENDENCY"
+    PRIVILEGE_TRANSITION = "PRIVILEGE_TRANSITION"
+    EXPLICIT_DELEGATION = "EXPLICIT_DELEGATION"
+    EXPLICIT_PROVENANCE = "EXPLICIT_PROVENANCE"
+    AUTHORIZATION_CONTEXT = "AUTHORIZATION_CONTEXT"
 
 
 class TemporalRelation(str, Enum):
@@ -118,6 +135,7 @@ class CrossBatchNode:
     evidence_references: tuple[str, ...] = field(default_factory=tuple)
     temporal_metadata: tuple[str, ...] = field(default_factory=tuple)
     boundary_metadata: tuple[str, ...] = field(default_factory=tuple)
+    causal_evidence: tuple[CausalEvidenceType, ...] = field(default_factory=tuple)
 
     def to_dict(self) -> dict[str, Any]:
         return {

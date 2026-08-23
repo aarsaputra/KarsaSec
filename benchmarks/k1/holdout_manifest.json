@@ -1,0 +1,206 @@
+{
+  "corpus": "K1_SEMANTIC_ADVERSARIAL_HOLDOUT",
+  "holdout_count": 10,
+  "cases": [
+    {
+      "case_id": "k1-jwt-012",
+      "dataset": "K1_SEMANTIC_ADVERSARIAL_CORPUS",
+      "dataset_version": "2.0",
+      "source_artifact": "benchmarks/k1/holdout/k1-jwt-012.py",
+      "source_file": "benchmarks/k1/holdout/k1-jwt-012.py",
+      "line_range": [
+        1,
+        4
+      ],
+      "language": "Python",
+      "framework": "K1_Framework",
+      "expected_status": "TRUE_NEGATIVE",
+      "expected_property": "JWT_VERIFICATION",
+      "expected_cwe": "CWE-327",
+      "sha256": "3f1c7887974da19e9c62af5a3a211af0a11d98b4581ed7d4a34d19732b4fac24",
+      "partition": "holdout",
+      "semantic_fixture_id": "fix-k1-jwt-012",
+      "oracle_version": "1.0"
+    },
+    {
+      "case_id": "k1-jwt-013",
+      "dataset": "K1_SEMANTIC_ADVERSARIAL_CORPUS",
+      "dataset_version": "2.0",
+      "source_artifact": "benchmarks/k1/holdout/k1-jwt-013.py",
+      "source_file": "benchmarks/k1/holdout/k1-jwt-013.py",
+      "line_range": [
+        1,
+        3
+      ],
+      "language": "Python",
+      "framework": "K1_Framework",
+      "expected_status": "TRUE_POSITIVE",
+      "expected_property": "JWT_UNTRUSTED_SOURCE",
+      "expected_cwe": "CWE-287",
+      "sha256": "d0ef46131a107157510111aadcd8fb20286a470b188560e5eb5b961107b4a3d2",
+      "partition": "holdout",
+      "semantic_fixture_id": "fix-k1-jwt-013",
+      "oracle_version": "1.0"
+    },
+    {
+      "case_id": "k1-jwt-014",
+      "dataset": "K1_SEMANTIC_ADVERSARIAL_CORPUS",
+      "dataset_version": "2.0",
+      "source_artifact": "benchmarks/k1/holdout/k1-jwt-014.py",
+      "source_file": "benchmarks/k1/holdout/k1-jwt-014.py",
+      "line_range": [
+        1,
+        4
+      ],
+      "language": "Python",
+      "framework": "K1_Framework",
+      "expected_status": "TRUE_NEGATIVE",
+      "expected_property": "JWT_VERIFICATION",
+      "expected_cwe": "CWE-287",
+      "sha256": "74a5977c5c0a9caa08a470a4469bcba1e20db8217a44aaf8083668f1879b0984",
+      "partition": "holdout",
+      "semantic_fixture_id": "fix-k1-jwt-014",
+      "oracle_version": "1.0"
+    },
+    {
+      "case_id": "k1-oauth-010",
+      "dataset": "K1_SEMANTIC_ADVERSARIAL_CORPUS",
+      "dataset_version": "2.0",
+      "source_artifact": "benchmarks/k1/holdout/k1-oauth-010.py",
+      "source_file": "benchmarks/k1/holdout/k1-oauth-010.py",
+      "line_range": [
+        1,
+        2
+      ],
+      "language": "Python",
+      "framework": "K1_Framework",
+      "expected_status": "TRUE_POSITIVE",
+      "expected_property": "OAUTH_SCOPE_ESCALATION",
+      "expected_cwe": "CWE-269",
+      "sha256": "4650e0190a6a93fc7e999f6d5b9832623fec7c6c401d54975c263eff53bef716",
+      "partition": "holdout",
+      "semantic_fixture_id": "fix-k1-oauth-010",
+      "oracle_version": "1.0"
+    },
+    {
+      "case_id": "k1-biz-011",
+      "dataset": "K1_SEMANTIC_ADVERSARIAL_CORPUS",
+      "dataset_version": "2.0",
+      "source_artifact": "benchmarks/k1/holdout/k1-biz-011.py",
+      "source_file": "benchmarks/k1/holdout/k1-biz-011.py",
+      "line_range": [
+        1,
+        2
+      ],
+      "language": "Python",
+      "framework": "K1_Framework",
+      "expected_status": "TRUE_POSITIVE",
+      "expected_property": "QUANTITY_MANIPULATION",
+      "expected_cwe": "CWE-20",
+      "sha256": "7b0760b6371f3593607f7446fb82efeaf73f097c76fcdbe8d322acb08fbe5ee5",
+      "partition": "holdout",
+      "semantic_fixture_id": "fix-k1-biz-011",
+      "oracle_version": "1.0"
+    },
+    {
+      "case_id": "k1-biz-012",
+      "dataset": "K1_SEMANTIC_ADVERSARIAL_CORPUS",
+      "dataset_version": "2.0",
+      "source_artifact": "benchmarks/k1/holdout/k1-biz-012.py",
+      "source_file": "benchmarks/k1/holdout/k1-biz-012.py",
+      "line_range": [
+        1,
+        4
+      ],
+      "language": "Python",
+      "framework": "K1_Framework",
+      "expected_status": "TRUE_NEGATIVE",
+      "expected_property": "QUANTITY_MANIPULATION",
+      "expected_cwe": "CWE-20",
+      "sha256": "f00a6bd8476471632c0710c0821a20f9f2d357b96302c5ddcd8a360ec0a5a50a",
+      "partition": "holdout",
+      "semantic_fixture_id": "fix-k1-biz-012",
+      "oracle_version": "1.0"
+    },
+    {
+      "case_id": "k1-biz-013",
+      "dataset": "K1_SEMANTIC_ADVERSARIAL_CORPUS",
+      "dataset_version": "2.0",
+      "source_artifact": "benchmarks/k1/holdout/k1-biz-013.py",
+      "source_file": "benchmarks/k1/holdout/k1-biz-013.py",
+      "line_range": [
+        1,
+        3
+      ],
+      "language": "Python",
+      "framework": "K1_Framework",
+      "expected_status": "TRUE_POSITIVE",
+      "expected_property": "PRICE_MANIPULATION",
+      "expected_cwe": "CWE-20",
+      "sha256": "d36e0540218d07c6e632e17da04fee2a756d1bb0e6e85a57785b5f5a7a370007",
+      "partition": "holdout",
+      "semantic_fixture_id": "fix-k1-biz-013",
+      "oracle_version": "1.0"
+    },
+    {
+      "case_id": "k1-biz-014",
+      "dataset": "K1_SEMANTIC_ADVERSARIAL_CORPUS",
+      "dataset_version": "2.0",
+      "source_artifact": "benchmarks/k1/holdout/k1-biz-014.py",
+      "source_file": "benchmarks/k1/holdout/k1-biz-014.py",
+      "line_range": [
+        1,
+        3
+      ],
+      "language": "Python",
+      "framework": "K1_Framework",
+      "expected_status": "TRUE_NEGATIVE",
+      "expected_property": "PRICE_MANIPULATION",
+      "expected_cwe": "CWE-20",
+      "sha256": "c1eaceb0cee7c8490a2e53217375985f156e99fde324a5e1cd98b62ccb0210a6",
+      "partition": "holdout",
+      "semantic_fixture_id": "fix-k1-biz-014",
+      "oracle_version": "1.0"
+    },
+    {
+      "case_id": "k1-biz-015",
+      "dataset": "K1_SEMANTIC_ADVERSARIAL_CORPUS",
+      "dataset_version": "2.0",
+      "source_artifact": "benchmarks/k1/holdout/k1-biz-015.py",
+      "source_file": "benchmarks/k1/holdout/k1-biz-015.py",
+      "line_range": [
+        1,
+        3
+      ],
+      "language": "Python",
+      "framework": "K1_Framework",
+      "expected_status": "TRUE_POSITIVE",
+      "expected_property": "INVARIANT_BYPASS",
+      "expected_cwe": "CWE-840",
+      "sha256": "7aee5dd6cfde5b0213bcb101c8b4b3d56a83ec768417f63867e56d30cc84963d",
+      "partition": "holdout",
+      "semantic_fixture_id": "fix-k1-biz-015",
+      "oracle_version": "1.0"
+    },
+    {
+      "case_id": "k1-biz-016",
+      "dataset": "K1_SEMANTIC_ADVERSARIAL_CORPUS",
+      "dataset_version": "2.0",
+      "source_artifact": "benchmarks/k1/holdout/k1-biz-016.py",
+      "source_file": "benchmarks/k1/holdout/k1-biz-016.py",
+      "line_range": [
+        1,
+        5
+      ],
+      "language": "Python",
+      "framework": "K1_Framework",
+      "expected_status": "TRUE_NEGATIVE",
+      "expected_property": "INVARIANT_BYPASS",
+      "expected_cwe": "CWE-840",
+      "sha256": "f7e0f67a5639ba98ab7734eba8a0aafb3acc4ddd74bc8a0810df73b8289f71f8",
+      "partition": "holdout",
+      "semantic_fixture_id": "fix-k1-biz-016",
+      "oracle_version": "1.0"
+    }
+  ]
+}

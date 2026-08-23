@@ -1,0 +1,32 @@
+{
+  "total_evaluated_cases": 140,
+  "tp": 50,
+  "tn": 35,
+  "fp": 15,
+  "fn": 0,
+  "correct_unknown": 20,
+  "correct_conflict": 0,
+  "strict_precision": 0.7692307692307693,
+  "strict_recall": 1.0,
+  "fpr": 0.3,
+  "fnr": 0.0,
+  "specificity": 0.7,
+  "epistemic_decision_correctness": 0.75,
+  "wilson_95_ci": {
+    "precision": {
+      "point": 0.7692307692307693,
+      "lower": 0.6535531637070996,
+      "upper": 0.8548615117014854
+    },
+    "recall": {
+      "point": 1.0,
+      "lower": 0.9286526702633809,
+      "upper": 1.0
+    },
+    "edc": {
+      "point": 0.75,
+      "lower": 0.6722462737845845,
+      "upper": 0.8144006788735029
+    }
+  }
+}

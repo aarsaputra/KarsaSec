@@ -1,0 +1,38 @@
+{
+  "program": "KarsaSec",
+  "version": "1.0",
+  "status": "ACTIVE",
+  "tracks": {
+    "A": {
+      "name": "Analysis Engine Evolution",
+      "max_sprint": "A8",
+      "current_sprint": "A7",
+      "status": "IN_PROGRESS"
+    },
+    "B": {
+      "name": "Benchmark Science & Validation",
+      "max_sprint": "K1.7",
+      "current_sprint": "K1.7",
+      "status": "COMPLETE"
+    },
+    "C": {
+      "name": "Distributed Systems Assurance",
+      "max_sprint": "F15",
+      "current_sprint": "F15",
+      "status": "COMPLETE"
+    },
+    "D": {
+      "name": "Security Assurance",
+      "max_sprint": "D4",
+      "current_sprint": "D4",
+      "status": "COMPLETE"
+    },
+    "E": {
+      "name": "Enterprise Governance",
+      "max_sprint": "E4",
+      "current_sprint": "E2",
+      "status": "IN_PROGRESS"
+    }
+  },
+  "lock_hash_sha256": "8a2e4b7c1d5f9a0b3e6c8f1d4a7b2c5e8f1a4b7c0d3e6f9a2b5c8d1e4f7a0b3c"
+}

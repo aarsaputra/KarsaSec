@@ -1,0 +1,20 @@
+[
+  {
+    "dataset": "DVWA",
+    "original_case_id": "dvwa-exec-impossible-001",
+    "cwe": "CWE-78",
+    "predicted_status": "VULNERABLE",
+    "ground_truth_status": "SAFE",
+    "root_cause_category": "sanitizer_proof",
+    "rationale": "Input validated against strict regex whitelist filter_var / IP regex prior to shell_exec. Detector recognized shell_exec sink but did not prove regex whitelist sanitizer safety."
+  },
+  {
+    "dataset": "DVWA",
+    "original_case_id": "dvwa-exec-impossible-002",
+    "cwe": "CWE-78",
+    "predicted_status": "VULNERABLE",
+    "ground_truth_status": "SAFE",
+    "root_cause_category": "sanitizer_proof",
+    "rationale": "*nix variant of dvwa-exec-impossible-001. Regex whitelist guard requires regex constraint solver integration."
+  }
+]

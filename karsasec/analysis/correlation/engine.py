@@ -8,6 +8,7 @@ import hashlib
 from typing import Any
 
 from karsasec.analysis.correlation.models import (
+    CausalEvidenceType,
     ChainEvidence,
     ChainRootCause,
     CorrelationConfidence,
@@ -224,7 +225,15 @@ class CrossBatchCorrelationEngine:
         return nodes
 
     def build_correlation_graph(self, nodes: list[CrossBatchNode]) -> list[CrossBatchEdge]:
-        """Builds directional edges between nodes if and only if explicit compatible correlation evidence exists."""
+        """Builds directional edges between nodes based on causal evidence evaluation.
+
+        Enforces:
+        - INV-D4-GRAPH-BOUND-01: Max linear edge generation E <= 10 * V.
+        - INV-D4-CAUSALITY-01: Correlation identifiers alone may never create
+          exploit edges without at least one supporting causal evidence signal.
+          Contextual correlation signals (same_actor, same_resource, same_timestamp)
+          are NOT causal evidence.
+        """
         edges: list[CrossBatchEdge] = []
         node_map: dict[str, list[CrossBatchNode]] = {}
 
@@ -232,24 +241,82 @@ class CrossBatchCorrelationEngine:
             if n.correlation_id and n.correlation_id not in ("MISSING_CORRELATION", "UNKNOWN"):
                 node_map.setdefault(n.correlation_id, []).append(n)
 
+        # INV-D4-GRAPH-BOUND-01: Enforce linear edge ceiling
+        max_allowed_edges = max(100, 10 * len(nodes))
+
         for corr_id, group in node_map.items():
             if len(group) > 1:
                 sorted_group = sorted(group, key=lambda n: (n.source_batch.value, n.node_id))
                 for i in range(len(sorted_group) - 1):
+                    if len(edges) >= max_allowed_edges:
+                        break  # INV-D4-GRAPH-BOUND-01
                     src = sorted_group[i]
                     tgt = sorted_group[i + 1]
+
+                    # INV-D4-CAUSALITY-01: Evaluate causal evidence gate
+                    causal_result = self._evaluate_causal_evidence(src, tgt)
+                    if causal_result is None:
+                        continue  # No causal evidence → no edge
+
+                    relation, confidence = causal_result
                     edges.append(
                         CrossBatchEdge(
                             edge_id=f"EDGE_{src.node_id}_{tgt.node_id}",
                             source_node_id=src.node_id,
                             target_node_id=tgt.node_id,
-                            relation=EdgeRelation.CAUSAL,
+                            relation=relation,
                             evidence_id=f"EV_CORR_{corr_id}",
-                            confidence=CorrelationConfidence.HIGH,
+                            confidence=confidence,
                         )
                     )
 
         return edges
+
+    def _evaluate_causal_evidence(
+        self,
+        src: CrossBatchNode,
+        tgt: CrossBatchNode,
+    ) -> tuple[EdgeRelation, CorrelationConfidence] | None:
+        """Evaluates whether typed causal evidence exists between two candidate nodes.
+
+        INV-D4-CAUSALITY-01: Only typed causal evidence creates edges.
+        Contextual correlation signals (same_actor, same_resource, same_timestamp,
+        cross_batch, same_tenant) are NOT sufficient to create an edge.
+
+        Returns:
+            (EdgeRelation, CorrelationConfidence) if causal evidence exists.
+            None if no causal evidence exists (no edge should be created).
+        """
+        # Check for explicit typed causal evidence on either node
+        src_causal = set(src.causal_evidence)
+        tgt_causal = set(tgt.causal_evidence)
+        all_causal = src_causal | tgt_causal
+
+        if not all_causal:
+            # No typed causal evidence on either node.
+            # Check if there is an implicit causal structure:
+            # a monotonic privilege escalation IS a privilege transition.
+            priv_order = {"LOW": 0, "MEDIUM": 1, "HIGH": 2, "ADMIN": 3}
+            src_priv = priv_order.get(src.privilege_level, -1)
+            tgt_priv = priv_order.get(tgt.privilege_level, -1)
+            if tgt_priv > src_priv and src_priv >= 0:
+                all_causal = {CausalEvidenceType.PRIVILEGE_TRANSITION}
+            elif src.identity_type == IdentityType.DELEGATED_IDENTITY or tgt.identity_type == IdentityType.DELEGATED_IDENTITY:
+                all_causal = {CausalEvidenceType.EXPLICIT_DELEGATION}
+            else:
+                return None  # INV-D4-CAUSALITY-01: No causal evidence → no edge
+
+        # Determine edge relation and confidence from causal evidence type
+        if CausalEvidenceType.DATA_DEPENDENCY in all_causal or CausalEvidenceType.CONTROL_DEPENDENCY in all_causal:
+            return EdgeRelation.CAUSAL, CorrelationConfidence.HIGH
+        elif CausalEvidenceType.EXPLICIT_PROVENANCE in all_causal:
+            return EdgeRelation.CAUSAL, CorrelationConfidence.HIGH
+        elif CausalEvidenceType.PRIVILEGE_TRANSITION in all_causal:
+            return EdgeRelation.PRIVILEGE, CorrelationConfidence.MEDIUM
+        elif CausalEvidenceType.EXPLICIT_DELEGATION in all_causal:
+            return EdgeRelation.DELEGATION, CorrelationConfidence.MEDIUM
+        else:
+            return EdgeRelation.CORRELATION_ONLY, CorrelationConfidence.LOW
 
     def validate_temporal_edges(self, nodes: list[CrossBatchNode], edges: list[CrossBatchEdge]) -> list[CrossBatchEdge]:
         """Validates temporal consistency using D2 evidence."""

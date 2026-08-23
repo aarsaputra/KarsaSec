@@ -28,21 +28,23 @@ from karsasec.rules.loader import YAMLRuleLoader
 
 @pytest.fixture
 def dvwa_e12_9_scan_results():
+    repo_root = Path(__file__).resolve().parents[3]
     root = Path("/home/lota1337/pentest/DVWA/vulnerabilities")
-    rules = YAMLRuleLoader().load_directory(Path("/home/lota1337/python/KarsaSec/karsasec/rules/patterns"))
+    rules = YAMLRuleLoader().load_directory(repo_root / "karsasec" / "rules" / "patterns")
 
     all_findings = []
-    for f in sorted(list(root.glob("**/*.php"))):
-        res = php_parser.parse_file(f)
-        ctx = ScanContext(
-            file_node=res.root,
-            symbol_table=res.symbol_table,
-            language="PHP",
-            file_path=f,
-            source_bytes=f.read_bytes(),
-        )
-        exec_res = rule_executor.execute_scan(ctx, rules)
-        all_findings.extend(exec_res.findings)
+    if root.exists():
+        for f in sorted(list(root.glob("**/*.php"))):
+            res = php_parser.parse_file(f)
+            ctx = ScanContext(
+                file_node=res.root,
+                symbol_table=res.symbol_table,
+                language="PHP",
+                file_path=f,
+                source_bytes=f.read_bytes(),
+            )
+            exec_res = rule_executor.execute_scan(ctx, rules)
+            all_findings.extend(exec_res.findings)
 
     correlator = FindingCorrelator()
     canon = correlator.correlate(all_findings)
@@ -52,7 +54,7 @@ def dvwa_e12_9_scan_results():
         f for f in final_findings if getattr(f, "qualification_state", None) != QualificationState.REJECTED
     ]
 
-    bm = ManifestLoader().load(Path("/home/lota1337/python/KarsaSec/benchmarks/dvwa/manifest.yaml"))
+    bm = ManifestLoader().load(repo_root / "benchmarks" / "dvwa" / "manifest.yaml")
     classifier = QualificationClassifier()
     report = classifier.classify(bm, active_findings, root)
     return report, final_findings

@@ -1,0 +1,1052 @@
+[
+  {
+    "test_case_id": "BenchmarkTest00001",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "SQL_INJECTION",
+    "cwe": "CWE-89",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 40,
+    "sink_function": "executeQuery",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00002",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "SQL_INJECTION",
+    "cwe": "CWE-89",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00002.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 41,
+    "sink_function": "executeQuery",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00003",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "SQL_INJECTION",
+    "cwe": "CWE-89",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00003.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 42,
+    "sink_function": "executeQuery",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00004",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "SQL_INJECTION",
+    "cwe": "CWE-89",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00004.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 43,
+    "sink_function": "executeQuery",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00005",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "SQL_INJECTION",
+    "cwe": "CWE-89",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00005.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 44,
+    "sink_function": "executeQuery",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00006",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "SQL_INJECTION",
+    "cwe": "CWE-89",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00006.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 45,
+    "sink_function": "executeQuery",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00007",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "SQL_INJECTION",
+    "cwe": "CWE-89",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00007.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 46,
+    "sink_function": "executeQuery",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00008",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "SQL_INJECTION",
+    "cwe": "CWE-89",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00008.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 47,
+    "sink_function": "executeQuery",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00009",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "SQL_INJECTION",
+    "cwe": "CWE-89",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00009.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 48,
+    "sink_function": "executeQuery",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00010",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "SQL_INJECTION",
+    "cwe": "CWE-89",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00010.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 49,
+    "sink_function": "executeQuery",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00011",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "COMMAND_INJECTION",
+    "cwe": "CWE-78",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00011.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 40,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00012",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "COMMAND_INJECTION",
+    "cwe": "CWE-78",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00012.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 41,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00013",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "COMMAND_INJECTION",
+    "cwe": "CWE-78",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00013.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 42,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00014",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "COMMAND_INJECTION",
+    "cwe": "CWE-78",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00014.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 43,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00015",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "COMMAND_INJECTION",
+    "cwe": "CWE-78",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00015.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 44,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00016",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "COMMAND_INJECTION",
+    "cwe": "CWE-78",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00016.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 45,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00017",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "COMMAND_INJECTION",
+    "cwe": "CWE-78",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00017.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 46,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00018",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "COMMAND_INJECTION",
+    "cwe": "CWE-78",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00018.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 47,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00019",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "COMMAND_INJECTION",
+    "cwe": "CWE-78",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00019.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 48,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00020",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "COMMAND_INJECTION",
+    "cwe": "CWE-78",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00020.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 49,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00021",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "CROSS_SITE_SCRIPTING",
+    "cwe": "CWE-79",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00021.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 40,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00022",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "CROSS_SITE_SCRIPTING",
+    "cwe": "CWE-79",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00022.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 41,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00023",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "CROSS_SITE_SCRIPTING",
+    "cwe": "CWE-79",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00023.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 42,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00024",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "CROSS_SITE_SCRIPTING",
+    "cwe": "CWE-79",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00024.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 43,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00025",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "CROSS_SITE_SCRIPTING",
+    "cwe": "CWE-79",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00025.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 44,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00026",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "CROSS_SITE_SCRIPTING",
+    "cwe": "CWE-79",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00026.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 45,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00027",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "CROSS_SITE_SCRIPTING",
+    "cwe": "CWE-79",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00027.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 46,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00028",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "CROSS_SITE_SCRIPTING",
+    "cwe": "CWE-79",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00028.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 47,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00029",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "CROSS_SITE_SCRIPTING",
+    "cwe": "CWE-79",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00029.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 48,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00030",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "CROSS_SITE_SCRIPTING",
+    "cwe": "CWE-79",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00030.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 49,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00031",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "PATH_TRAVERSAL",
+    "cwe": "CWE-22",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00031.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 40,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00032",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "PATH_TRAVERSAL",
+    "cwe": "CWE-22",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00032.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 41,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00033",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "PATH_TRAVERSAL",
+    "cwe": "CWE-22",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00033.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 42,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00034",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "PATH_TRAVERSAL",
+    "cwe": "CWE-22",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00034.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 43,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00035",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "PATH_TRAVERSAL",
+    "cwe": "CWE-22",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00035.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 44,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00036",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "PATH_TRAVERSAL",
+    "cwe": "CWE-22",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00036.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 45,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00037",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "PATH_TRAVERSAL",
+    "cwe": "CWE-22",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00037.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 46,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00038",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "PATH_TRAVERSAL",
+    "cwe": "CWE-22",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00038.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 47,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00039",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "PATH_TRAVERSAL",
+    "cwe": "CWE-22",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00039.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 48,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00040",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "PATH_TRAVERSAL",
+    "cwe": "CWE-22",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00040.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 49,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00041",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_CRYPTOGRAPHY",
+    "cwe": "CWE-327",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00041.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 40,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00042",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_CRYPTOGRAPHY",
+    "cwe": "CWE-327",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00042.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 41,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00043",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_CRYPTOGRAPHY",
+    "cwe": "CWE-327",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00043.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 42,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00044",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_CRYPTOGRAPHY",
+    "cwe": "CWE-327",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00044.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 43,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00045",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_CRYPTOGRAPHY",
+    "cwe": "CWE-327",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00045.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 44,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00046",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_CRYPTOGRAPHY",
+    "cwe": "CWE-327",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00046.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 45,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00047",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_CRYPTOGRAPHY",
+    "cwe": "CWE-327",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00047.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 46,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00048",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_CRYPTOGRAPHY",
+    "cwe": "CWE-327",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00048.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 47,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00049",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_CRYPTOGRAPHY",
+    "cwe": "CWE-327",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00049.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 48,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00050",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_CRYPTOGRAPHY",
+    "cwe": "CWE-327",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00050.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 49,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00051",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_RANDOMNESS",
+    "cwe": "CWE-330",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00051.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 40,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00052",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_RANDOMNESS",
+    "cwe": "CWE-330",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00052.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 41,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00053",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_RANDOMNESS",
+    "cwe": "CWE-330",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00053.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 42,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00054",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_RANDOMNESS",
+    "cwe": "CWE-330",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00054.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 43,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00055",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_RANDOMNESS",
+    "cwe": "CWE-330",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00055.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 44,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00056",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_RANDOMNESS",
+    "cwe": "CWE-330",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00056.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 45,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00057",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_RANDOMNESS",
+    "cwe": "CWE-330",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00057.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 46,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00058",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_RANDOMNESS",
+    "cwe": "CWE-330",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00058.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 47,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00059",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_RANDOMNESS",
+    "cwe": "CWE-330",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00059.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 48,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00060",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "WEAK_RANDOMNESS",
+    "cwe": "CWE-330",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00060.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 49,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00061",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "INSECURE_COOKIE",
+    "cwe": "CWE-614",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00061.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 40,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00062",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "INSECURE_COOKIE",
+    "cwe": "CWE-614",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00062.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 41,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00063",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "INSECURE_COOKIE",
+    "cwe": "CWE-614",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00063.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 42,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00064",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "INSECURE_COOKIE",
+    "cwe": "CWE-614",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00064.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 43,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00065",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "INSECURE_COOKIE",
+    "cwe": "CWE-614",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00065.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 44,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00066",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "INSECURE_COOKIE",
+    "cwe": "CWE-614",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00066.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 45,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00067",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "INSECURE_COOKIE",
+    "cwe": "CWE-614",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00067.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 46,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00068",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "INSECURE_COOKIE",
+    "cwe": "CWE-614",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00068.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 47,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00069",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "INSECURE_COOKIE",
+    "cwe": "CWE-614",
+    "expected_status": "VULNERABLE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00069.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 48,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  {
+    "test_case_id": "BenchmarkTest00070",
+    "dataset_name": "OWASP_BENCHMARK",
+    "vulnerability_class": "INSECURE_COOKIE",
+    "cwe": "CWE-614",
+    "expected_status": "SAFE",
+    "file_path": "org/owasp/benchmark/testcode/BenchmarkTest00070.java",
+    "language": "java",
+    "framework": "servlet",
+    "line_number": 49,
+    "sink_function": "exec",
+    "metadata": {
+      "synthetic": true
+    }
+  }
+]

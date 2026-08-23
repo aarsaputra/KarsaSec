@@ -1,0 +1,11 @@
+{
+  "baseline_version": "K1.4",
+  "case_count": 40,
+  "created_at": "2026-08-23T09:46:32.126901+00:00",
+  "detector_revision": "cbbb7fe4d088cd55212e97fe7928847103892d97",
+  "findings_sha256": "33299f0390f1971391d75d9f398e9b502d3895208b93eeee5ba91ce4d90ee644",
+  "fixtures_sha256": "1a40da5bd33084790360f5bde447ec0e454aba9342b9102bc5c7110bf2948a80",
+  "holdout_manifest_sha256": "125a20815041cc6c7b25d15ebe74a59efc3382670405b33844d5a75cd16129da",
+  "manifest_sha256": "29a1316e698689755290e79c3e70442cd5426c2d46e568b9b40438fdfd633c25",
+  "schema_version": "K1.6-1"
+}

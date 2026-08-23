@@ -1,0 +1,775 @@
+{
+  "schema_version": "G5.3-1",
+  "cases": [
+    {
+      "case_id": "BenchmarkTest00001",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00002",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00003",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00004",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00005",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00006",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00007",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00008",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00009",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00010",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00011",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00012",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00013",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00014",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00015",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00016",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00017",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00018",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00019",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00020",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00021",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00022",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00023",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00024",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00025",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00026",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00027",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00028",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00029",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00030",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00031",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00032",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00033",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00034",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00035",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00036",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00037",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00038",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00039",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00040",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00041",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00042",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00043",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00044",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00045",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00046",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00047",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00048",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00049",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00050",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00051",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00052",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00053",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00054",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00055",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00056",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00057",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00058",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00059",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00060",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00061",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00062",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00063",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00064",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00065",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00066",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00067",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00068",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00069",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "BenchmarkTest00070",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    }
+  ]
+}

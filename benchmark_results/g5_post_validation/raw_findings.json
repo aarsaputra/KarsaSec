@@ -1,0 +1,1684 @@
+{
+  "predictions": [
+    {
+      "case_id": "HOLDOUT_TP_001",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_002",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_003",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_004",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_005",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_006",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_007",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_008",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_009",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_010",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_011",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_012",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_013",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_014",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_015",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_016",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_017",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_018",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_019",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_020",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_021",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_022",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_023",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_024",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_025",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_026",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_027",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_028",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_029",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TP_030",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_001",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_002",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_003",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_004",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_005",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_006",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_007",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_008",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_009",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_010",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_011",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_012",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_013",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_014",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_015",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_016",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_017",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_018",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_019",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_020",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_021",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_022",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_023",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_024",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_025",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_026",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_027",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_028",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_029",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_TN_030",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_001",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_002",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_003",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_004",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_005",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_006",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_007",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_008",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_009",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_010",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_011",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_012",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_013",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_014",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_015",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_016",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_017",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_018",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_019",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_AMB_020",
+      "source_provenance": "UNKNOWN",
+      "findings": {
+        "SQL_INJECTION": "UNKNOWN",
+        "CROSS_SITE_SCRIPTING": "UNKNOWN",
+        "COMMAND_INJECTION": "UNKNOWN",
+        "SSRF": "UNKNOWN",
+        "PATH_TRAVERSAL": "UNKNOWN",
+        "AUTHORIZATION": "UNKNOWN"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_001",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_002",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_003",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_004",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_005",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_006",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_007",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_008",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_009",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_010",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_011",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_012",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_013",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_014",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_015",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_016",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_017",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_018",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_019",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_CONTR_020",
+      "source_provenance": "getParameter",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_001",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_002",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_003",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_004",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_005",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_006",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_007",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_008",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_009",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_010",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_011",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_012",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_013",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_014",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_015",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_016",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_017",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_018",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_019",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_BOUND_020",
+      "source_provenance": "NON_HTTP_OBJECT",
+      "findings": {
+        "SQL_INJECTION": "SAFE",
+        "CROSS_SITE_SCRIPTING": "SAFE",
+        "COMMAND_INJECTION": "SAFE",
+        "SSRF": "SAFE",
+        "PATH_TRAVERSAL": "SAFE",
+        "AUTHORIZATION": "SAFE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_001",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_002",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_003",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_004",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_005",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_006",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_007",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_008",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_009",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_010",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_011",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_012",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_013",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_014",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_015",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_016",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_017",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_018",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_019",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    },
+    {
+      "case_id": "HOLDOUT_DEC_020",
+      "source_provenance": "request.args",
+      "findings": {
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
+      }
+    }
+  ]
+}
