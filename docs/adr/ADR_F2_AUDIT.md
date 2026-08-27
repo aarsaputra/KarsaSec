@@ -70,21 +70,21 @@ A comprehensive, zero-modification verification process was executed on the Kars
 
 | Threat | Status | Evidence |
 | :--- | :--- | :--- |
-| **Queue Poisoning** | **PASS** | `tests/security/server/test_async_workers_security.py` |
-| **Replay Attack** | **PASS** | `tests/security/server/test_async_workers_security.py` |
-| **Worker Crash** | **PASS** | `tests/security/server/test_async_workers_security.py` |
-| **Forged Completion** | **PASS** | `tests/security/server/test_async_workers_security.py` |
-| **State Corruption** | **PASS** | `karsasec/workers/task.py` |
-| **Task Loss** | **PASS** | `karsasec/workers/redis_queue.py` |
+| **Queue Poisoning** | **PASS** | [test_async_workers_security.py:L202](file:///home/lota1337/python/KarsaSec/tests/security/server/test_async_workers_security.py#L202) |
+| **Replay Attack** | **PASS** | [test_async_workers_security.py:L88](file:///home/lota1337/python/KarsaSec/tests/security/server/test_async_workers_security.py#L88) |
+| **Worker Crash** | **PASS** | [test_async_workers_security.py:L113](file:///home/lota1337/python/KarsaSec/tests/security/server/test_async_workers_security.py#L113) |
+| **Forged Completion** | **PASS** | [test_async_workers_security.py:L216](file:///home/lota1337/python/KarsaSec/tests/security/server/test_async_workers_security.py#L216) |
+| **State Corruption** | **PASS** | [task.py:L64](file:///home/lota1337/python/KarsaSec/karsasec/workers/task.py#L64) |
+| **Task Loss** | **PASS** | [redis_queue.py:L29](file:///home/lota1337/python/KarsaSec/karsasec/workers/redis_queue.py#L29) |
 
 ---
 
 ## 4. Evidence Table
 
-*   **RTP Verification Invocation**: `karsasec/workers/worker.py`
-*   **BRPOPLPUSH Queue Dequeue**: `karsasec/workers/redis_queue.py`
-*   **Idempotency Fingerprint Generation**: `karsasec/server/services/remediation_service.py`
-*   **Task State Check**: `karsasec/workers/task.py`
+*   **RTP Verification Invocation**: [worker.py:L83](file:///home/lota1337/python/KarsaSec/karsasec/workers/worker.py#L83)
+*   **BRPOPLPUSH Queue Dequeue**: [redis_queue.py:L29-L32](file:///home/lota1337/python/KarsaSec/karsasec/workers/redis_queue.py#L29-L32)
+*   **Idempotency Fingerprint Generation**: [remediation_service.py:L48-L56](file:///home/lota1337/python/KarsaSec/karsasec/server/services/remediation_service.py#L48-L56)
+*   **Task State Check**: [task.py:L64-L79](file:///home/lota1337/python/KarsaSec/karsasec/workers/task.py#L64-L79)
 
 ---
 

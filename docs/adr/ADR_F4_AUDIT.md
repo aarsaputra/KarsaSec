@@ -23,12 +23,12 @@ All 6 core invariant categories passed 100% of inspection criteria and 10/10 aut
 
 | Category | Invariant Description | Status Verdict | Audit Report File |
 | :--- | :--- | :--- | :--- |
-| **L7** | Zero Security Authority (Worker registry/scheduler never calculate verdicts) | **PASS** | [`L7_AUDIT.md`](../audit/f4/L7_AUDIT.md) |
-| **R7–R9** | Privacy Boundary (No code, diffs, secrets, or tokens in /metrics or traces) | **PASS** | [`PRIVACY_AUDIT.md`](../audit/f4/PRIVACY_AUDIT.md) |
-| **Determinism** | Round Robin v1 scheduler worker assignment determinism | **PASS** | [`DETERMINISM_AUDIT.md`](../audit/f4/DETERMINISM_AUDIT.md) |
-| **Immutability** | Audit events & worker telemetry state immutability | **PASS** | [`IMMUTABILITY_AUDIT.md`](../audit/f4/IMMUTABILITY_AUDIT.md) |
-| **Recovery** | `ClusterRecoveryEngine` targets ONLY expired `RUNNING` tasks of offline workers | **PASS** | [`RECOVERY_AUDIT.md`](../audit/f4/RECOVERY_AUDIT.md) |
-| **Capabilities** | Zero `subprocess`, `os.system`, `eval`, `exec`, or `pickle` | **PASS** | [`CAPABILITY_AUDIT.md`](../audit/f4/CAPABILITY_AUDIT.md) |
+| **L7** | Zero Security Authority (Worker registry/scheduler never calculate verdicts) | **PASS** | [`L7_AUDIT.md`](file:///home/lota1337/python/KarsaSec/docs/audit/f4/L7_AUDIT.md) |
+| **R7–R9** | Privacy Boundary (No code, diffs, secrets, or tokens in /metrics or traces) | **PASS** | [`PRIVACY_AUDIT.md`](file:///home/lota1337/python/KarsaSec/docs/audit/f4/PRIVACY_AUDIT.md) |
+| **Determinism** | Round Robin v1 scheduler worker assignment determinism | **PASS** | [`DETERMINISM_AUDIT.md`](file:///home/lota1337/python/KarsaSec/docs/audit/f4/DETERMINISM_AUDIT.md) |
+| **Immutability** | Audit events & worker telemetry state immutability | **PASS** | [`IMMUTABILITY_AUDIT.md`](file:///home/lota1337/python/KarsaSec/docs/audit/f4/IMMUTABILITY_AUDIT.md) |
+| **Recovery** | `ClusterRecoveryEngine` targets ONLY expired `RUNNING` tasks of offline workers | **PASS** | [`RECOVERY_AUDIT.md`](file:///home/lota1337/python/KarsaSec/docs/audit/f4/RECOVERY_AUDIT.md) |
+| **Capabilities** | Zero `subprocess`, `os.system`, `eval`, `exec`, or `pickle` | **PASS** | [`CAPABILITY_AUDIT.md`](file:///home/lota1337/python/KarsaSec/docs/audit/f4/CAPABILITY_AUDIT.md) |
 
 ---
 

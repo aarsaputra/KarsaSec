@@ -1,0 +1,46 @@
+# K1.5 Original Corpus Cryptographic Lock Report
+
+| File Path | Size (bytes) | Initial SHA256 Hash |
+|:---|:---:|:---|
+| `benchmarks/k1/development/k1-biz-001.py` | 116 | `38adf9e4fd82357b8d21ffbc9783e27b3084e1b32f1f5a42550106e59fab0f80` |
+| `benchmarks/k1/development/k1-biz-002.py` | 184 | `92678883d42fd01a9bbdaf8691203b8b9eea7752a235e147661cc8dcb20155e8` |
+| `benchmarks/k1/development/k1-biz-003.py` | 86 | `910d862597f15fb4b01d6300537173dd2e50a28c404de5060e9c18627de91ac6` |
+| `benchmarks/k1/development/k1-biz-004.py` | 155 | `b2aa3a8dbeddd9c1581052e4854abdaf5e7a3749a21d91954e64cf4065decf55` |
+| `benchmarks/k1/development/k1-biz-005.py` | 84 | `86df4748af73e756ed1fb12fb35e3ba4848f039f7021de6bd9bd478b0c788d6f` |
+| `benchmarks/k1/development/k1-biz-006.py` | 199 | `9d8eb24cafc7d3e1e9c3dfcbbcd160c665969d8f139939ce781c4aa80410b853` |
+| `benchmarks/k1/development/k1-jwt-001.py` | 240 | `51eee673a0c6aa7a5580fc99d2f99cf2f15396409f06aca6aa668fda75c0cfe6` |
+| `benchmarks/k1/development/k1-jwt-002.py` | 125 | `c1dc4fa8d74c1feb0376cab502c2393fcf4bd37f583a5d37585d3e210242b91f` |
+| `benchmarks/k1/development/k1-jwt-003.py` | 192 | `200283e2451886e6e0673dd4f33b586338dedacae89c9620ed2c61167945b55c` |
+| `benchmarks/k1/development/k1-jwt-004.py` | 115 | `9aa1c31662fbda13dcde6a76ad222e8753f742d072c2b76c8db0e33356ce9272` |
+| `benchmarks/k1/development/k1-jwt-005.py` | 91 | `facf142f95c9e80000f62fa75a707c3cb358e7050eb383eb422cef9d218827b9` |
+| `benchmarks/k1/development/k1-jwt-006.py` | 121 | `f06b0cc57c2f26a4f823c044cc1234c7724eaf5d2d470f43f94f86d94164f8ba` |
+| `benchmarks/k1/development/k1-jwt-007.py` | 116 | `57799707bba37d14567cc3d01f92bc9bef32a3cff94a72d50f923b7045f79c11` |
+| `benchmarks/k1/development/k1-jwt-008.py` | 134 | `bf15c60e73c6eca49dacf5aa118a5e61b2d961b562beb91e62ecbea5a4b13136` |
+| `benchmarks/k1/development/k1-oauth-001.py` | 153 | `8399f1a417da456961a48681037efe37c5902d14fa659c2de110b23c4fbb5095` |
+| `benchmarks/k1/development/k1-oauth-002.py` | 166 | `28a2e189f6915ad12af80e93a30155f81e247e088bf5a18b8577598b2d134cae` |
+| `benchmarks/k1/development/k1-oauth-003.py` | 75 | `ab6ebac6b49145697c6003ebf1aec47bf8c6e4804c28d0cc0cc4fdecca35b137` |
+| `benchmarks/k1/development/k1-oauth-004.py` | 174 | `de9da063964b2b8f024b50cd8cd5967ad783cf3c62d4bbb887b994d1984ebf32` |
+| `benchmarks/k1/development/k1-oauth-005.py` | 134 | `5606d12fdc46a4f78146276cf68d8e1809635c4f9bda94552038322e4116626b` |
+| `benchmarks/k1/development/k1-oauth-006.py` | 214 | `72c33bb1b48238705d9d366f99d925c431586fc513c18d8515af66be8f12cac4` |
+| `benchmarks/k1/holdout/k1-biz-011.py` | 64 | `7b0760b6371f3593607f7446fb82efeaf73f097c76fcdbe8d322acb08fbe5ee5` |
+| `benchmarks/k1/holdout/k1-biz-012.py` | 152 | `f00a6bd8476471632c0710c0821a20f9f2d357b96302c5ddcd8a360ec0a5a50a` |
+| `benchmarks/k1/holdout/k1-biz-013.py` | 98 | `d36e0540218d07c6e632e17da04fee2a756d1bb0e6e85a57785b5f5a7a370007` |
+| `benchmarks/k1/holdout/k1-biz-014.py` | 118 | `c1eaceb0cee7c8490a2e53217375985f156e99fde324a5e1cd98b62ccb0210a6` |
+| `benchmarks/k1/holdout/k1-biz-015.py` | 135 | `7aee5dd6cfde5b0213bcb101c8b4b3d56a83ec768417f63867e56d30cc84963d` |
+| `benchmarks/k1/holdout/k1-biz-016.py` | 210 | `f7e0f67a5639ba98ab7734eba8a0aafb3acc4ddd74bc8a0810df73b8289f71f8` |
+| `benchmarks/k1/holdout/k1-jwt-012.py` | 199 | `3f1c7887974da19e9c62af5a3a211af0a11d98b4581ed7d4a34d19732b4fac24` |
+| `benchmarks/k1/holdout/k1-jwt-013.py` | 125 | `d0ef46131a107157510111aadcd8fb20286a470b188560e5eb5b961107b4a3d2` |
+| `benchmarks/k1/holdout/k1-jwt-014.py` | 163 | `74a5977c5c0a9caa08a470a4469bcba1e20db8217a44aaf8083668f1879b0984` |
+| `benchmarks/k1/holdout/k1-oauth-010.py` | 87 | `4650e0190a6a93fc7e999f6d5b9832623fec7c6c401d54975c263eff53bef716` |
+| `benchmarks/k1/holdout_manifest.json` | 6907 | `125a20815041cc6c7b25d15ebe74a59efc3382670405b33844d5a75cd16129da` |
+| `benchmarks/k1/manifest.json` | 27716 | `29a1316e698689755290e79c3e70442cd5426c2d46e568b9b40438fdfd633c25` |
+| `benchmarks/k1/validation/k1-biz-007.py` | 91 | `2917804c7c8bbe900bbeda8f5e29c1f9fba1dd5b683f7755f0597b43b3d533e1` |
+| `benchmarks/k1/validation/k1-biz-008.py` | 176 | `0ad7c628d9d8be0d4e439433ae9e5a6e3e034ce82ce9bdcce020b78fc47a4097` |
+| `benchmarks/k1/validation/k1-biz-009.py` | 148 | `2118b58bf20bac69c3d0b14ff085735b68e5041d56010e7cec98a0397855a5aa` |
+| `benchmarks/k1/validation/k1-biz-010.py` | 190 | `a03210b6f78a6d1c73fde628d838aa26cb391496f8a35c51390f2b63b12c2d17` |
+| `benchmarks/k1/validation/k1-jwt-009.py` | 121 | `d440322a7b3a4fd9ce6db6fcd5bb21047c0fc52cac06efe6df89bc58d310d7da` |
+| `benchmarks/k1/validation/k1-jwt-010.py` | 134 | `88b70cb8edd813451f1736fcd006c995b3eaf8a1ed99a7f21fba3158ade16881` |
+| `benchmarks/k1/validation/k1-jwt-011.py` | 117 | `baa5b611735fa305b6070761a3b0a376cb54b2a92bc4a610472aeca75f45173e` |
+| `benchmarks/k1/validation/k1-oauth-007.py` | 94 | `b13a49761dcc6b5d39fc884c80ed96d1b78d898136355d3ec2d1957b23a7d03b` |
+| `benchmarks/k1/validation/k1-oauth-008.py` | 113 | `c9689a50574b7941ceae0fafce4f560868cd5d845a1890f4fcab4be17f4ff34c` |
+| `benchmarks/k1/validation/k1-oauth-009.py` | 112 | `a240d9acfe64c8db508e8e7b487e48ea717fbe1de5364879c57adb31c88ee97d` |
