@@ -17,13 +17,36 @@
 
 ---
 
-## 🇮🇩 Filosofi & Arti Nama "KarsaSec"
+## 🇮🇩 / 🇬🇧 Philosophy & Meaning of "KarsaSec"
 
-> **Karsa** *(Bahasa Kawi / Sansekerta / Indonesia)*: **Niat Luhur, Kehendak Kuat, Cita-Cita, dan Daya Cipta**.
+> **Karsa** *(Ancient Kawi / Sanskrit / Indonesian)*: **Noble Intent, Strong Will, High Aspirations, and Soulful Creative Power**.
 
+### 🇮🇩 Bahasa Indonesia
 **KarsaSec** melambangkan **"Kehendak Luhur & Tekad Kuat untuk Membangun Benteng Keamanan Siber yang Mandiri, Tangguh, Presisi, dan Otonom"**. Platform ini dirancang bukan sekadar sebagai alat pemindai kode biasa, melainkan sebagai manifestasi tekad untuk melindungi ekosistem perangkat lunak di Indonesia dan dunia dari ancaman kerentanan siber melalui pendekatan analisis deterministik yang digabungkan dengan kecerdasan buatan terpadu.
 
+### 🇬🇧 English
+**KarsaSec** embodies **"The Noble Will & Unwavering Determination to Build a Sovereign, Resilient, Precise, and Autonomous Cybersecurity Fortress"**. This platform is engineered not merely as a conventional code scanner, but as a manifestation of a noble pledge to protect software ecosystems in Indonesia and worldwide from cyber threats through deterministic AST analysis combined with integrated AI security authority.
+
 ---
+
+## ⚙️ Installation & Setup
+
+You can install KarsaSec directly from the official GitHub repository:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/aarsaputra/KarsaSec.git
+cd KarsaSec
+
+# 2. Install KarsaSec with core dependencies
+pip install -e .
+
+# Optional: Install development & testing dependencies
+pip install -e '.[dev]'
+
+# 3. Verify installation
+karsasec doctor
+```
 
 ## 📌 Overview
 

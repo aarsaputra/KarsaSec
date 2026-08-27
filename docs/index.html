@@ -3,15 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KarsaSec — Autonomous Application Security Operating System (SecOS)</title>
-  <meta name="description" content="Platform SAST otonom berbasis AI dengan Invarian L7 (Zero-LLM Authority), 5-Step Chain-of-Remediation (CoR), dan analisis AST deterministik untuk deteksi & perbaikan kerentanan kode.">
-  <meta name="keywords" content="KarsaSec, SAST, SecOS, AppSec, Static Analysis, AI Remediation, Cybersecurity, Indonesia, Zero-LLM Authority">
   
-  <!-- Open Graph / Meta -->
-  <meta property="og:title" content="KarsaSec — Autonomous Application Security Operating System">
-  <meta property="og:description" content="Platform SAST & Remediasi Otonom berbasis AI dengan prinsip Zero-LLM Authority dan 5-Step Chain-of-Remediation.">
-  <meta property="og:image" content="./img/KarsaSec.webp">
+  <!-- Primary SEO Meta Tags -->
+  <title>KarsaSec — Autonomous Application Security Operating System (SecOS)</title>
+  <meta name="title" content="KarsaSec — Autonomous Application Security Operating System (SecOS)">
+  <meta name="description" content="Platform SAST & Remediasi Kode Otonom berbasis AI dengan Invarian L7 (Zero-LLM Security Authority), 5-Step Chain-of-Remediation (CoR), 143+ Rule Packs, dan analisis AST deterministik.">
+  <meta name="keywords" content="KarsaSec, SAST, SecOS, AppSec, Static Analysis, AI Remediation, Cybersecurity, Indonesia, Zero-LLM Authority, Tree-Sitter, Code Security, DevSecOps, Vulnerability Scanner, Automated Patching">
+  <meta name="author" content="KarsaSec Core Security Team">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#080C14">
+  <link rel="canonical" href="https://aarsaputra.github.io/KarsaSec/">
+
+  <!-- Open Graph / Facebook / LinkedIn SEO -->
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://aarsaputra.github.io/KarsaSec/">
+  <meta property="og:title" content="KarsaSec — Autonomous Application Security Operating System">
+  <meta property="og:description" content="Platform SAST otonom berbasis AI dengan Invarian L7 (Zero-LLM Security Authority), 5-Step CoR, 143+ Rule Packs, dan analisis AST deterministik.">
+  <meta property="og:image" content="https://aarsaputra.github.io/KarsaSec/img/KarsaSec.webp">
+  <meta property="og:site_name" content="KarsaSec Platform">
+  <meta property="og:locale" content="id_ID">
+  <meta property="og:locale:alternate" content="en_US">
+
+  <!-- Twitter Card SEO -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://aarsaputra.github.io/KarsaSec/">
+  <meta name="twitter:title" content="KarsaSec — Autonomous SecOS & AI SAST Engine">
+  <meta name="twitter:description" content="Platform SAST otonom berbasis AI dengan Invarian L7 (Zero-LLM Authority) & 5-Step Chain-of-Remediation.">
+  <meta name="twitter:image" content="https://aarsaputra.github.io/KarsaSec/img/KarsaSec.webp">
+  <meta name="twitter:creator" content="@aarsaputra">
+
+  <!-- Structured Data JSON-LD for Google Search Rich Snippets -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "KarsaSec",
+    "operatingSystem": "Linux, macOS, Windows",
+    "applicationCategory": "DeveloperApplication, SecurityApplication",
+    "description": "Autonomous Application Security Operating System (SecOS) powered by AST Analysis, Zero-LLM Security Authority, and 5-Step Chain-of-Remediation.",
+    "url": "https://aarsaputra.github.io/KarsaSec/",
+    "image": "https://aarsaputra.github.io/KarsaSec/img/KarsaSec.webp",
+    "softwareVersion": "0.1.0",
+    "license": "https://opensource.org/licenses/Apache-2.0",
+    "author": {
+      "@type": "Organization",
+      "name": "KarsaSec Security Team",
+      "url": "https://github.com/aarsaputra/KarsaSec"
+    }
+  }
+  </script>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -580,57 +620,6 @@
       line-height: 1.6;
     }
 
-    /* Invariant Pillar Ribbon */
-    .pillar-card {
-      background: linear-gradient(135deg, rgba(0, 242, 254, 0.05), rgba(59, 130, 246, 0.05));
-      border: 1px solid var(--border-glow);
-      border-radius: 20px;
-      padding: 3rem;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3rem;
-      align-items: center;
-      margin-bottom: 6rem;
-    }
-
-    .pillar-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-    }
-
-    .pillar-item {
-      display: flex;
-      gap: 1rem;
-      align-items: flex-start;
-    }
-
-    .pillar-bullet {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: var(--emerald);
-      color: #080C14;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      font-weight: bold;
-      flex-shrink: 0;
-      margin-top: 0.2rem;
-    }
-
-    .pillar-text h4 {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .pillar-text p {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-
     /* Taxonomy Filter & Cards */
     .taxonomy-filters {
       display: flex;
@@ -710,13 +699,12 @@
       color: var(--primary-cyan);
     }
 
-    /* Philosophy Banner (Indonesian Heritage) */
+    /* Bilingual Philosophy Section */
     .philosophy-banner {
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(15, 23, 42, 0.95));
-      border: 1px solid rgba(239, 68, 68, 0.3);
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(15, 23, 42, 0.95));
+      border: 1px solid rgba(239, 68, 68, 0.35);
       border-radius: 20px;
-      padding: 3.5rem;
-      text-align: center;
+      padding: 3.5rem 2.5rem;
       margin-bottom: 6rem;
       position: relative;
       overflow: hidden;
@@ -725,57 +713,100 @@
     .philosophy-banner::before {
       content: 'KARSA';
       position: absolute;
-      top: -20px;
+      top: -25px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 8rem;
+      font-size: 9rem;
       font-weight: 900;
       color: rgba(255, 255, 255, 0.02);
       pointer-events: none;
-      letter-spacing: 10px;
+      letter-spacing: 12px;
+    }
+
+    .philosophy-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .lang-toggle-btn {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.4rem 1.2rem;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .lang-toggle-btn.active {
+      background: #EF4444;
+      color: #FFFFFF;
+      border-color: #EF4444;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
     }
 
     .philosophy-title {
       font-size: 2.2rem;
       font-weight: 800;
+      text-align: center;
       margin-bottom: 1rem;
     }
 
     .philosophy-desc {
-      max-width: 800px;
+      max-width: 850px;
       margin: 0 auto 2rem;
       font-size: 1.1rem;
       color: var(--text-muted);
       line-height: 1.8;
+      text-align: center;
     }
 
     /* Quick Install Section */
-    .install-box {
+    .install-card {
       background: #0D1117;
       border: 1px solid var(--border-glow);
-      border-radius: 14px;
-      padding: 1.5rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 700px;
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 800px;
       margin: 0 auto;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .install-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
       font-family: var(--font-mono);
     }
 
-    .install-code {
+    .install-step-item {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .step-cmd {
       color: var(--primary-cyan);
-      font-size: 1.05rem;
+      font-size: 0.95rem;
     }
 
     .btn-copy {
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: var(--text-main);
-      padding: 0.5rem 1rem;
+      padding: 0.4rem 0.85rem;
       border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
+      font-size: 0.85rem;
       transition: all 0.2s ease;
     }
 
@@ -848,7 +879,6 @@
       .hero-actions { justify-content: center; }
       .features-grid { grid-template-columns: repeat(2, 1fr); }
       .taxonomy-grid { grid-template-columns: repeat(2, 1fr); }
-      .pillar-card { grid-template-columns: 1fr; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
       .stat-item { border-right: none; }
     }
@@ -880,6 +910,7 @@
       </a>
 
       <ul class="nav-links">
+        <li><a href="#install" class="nav-link">Instalasi Git</a></li>
         <li><a href="#features" class="nav-link">Fitur Utama</a></li>
         <li><a href="#terminal" class="nav-link">CLI Simulator</a></li>
         <li><a href="#taxonomies" class="nav-link">Rule Packs</a></li>
@@ -903,12 +934,12 @@
         Deteksi & Remediasi Kode <span>Secara Otonom</span> Tanpa Hallucination.
       </h1>
       <p class="hero-desc">
-        KarsaSec adalah **Application Security Operating System (SecOS)** generasi baru yang mengombinasikan **Analisis AST Deterministik**, **Invarian L7 (Zero-LLM Authority)**, dan **5-Step Chain-of-Remediation (CoR)** untuk mengamankan repositori secara presisi.
+        KarsaSec adalah <strong>Application Security Operating System (SecOS)</strong> generasi baru yang mengombinasikan <strong>Analisis AST Deterministik</strong>, <strong>Invarian L7 (Zero-LLM Authority)</strong>, dan <strong>5-Step Chain-of-Remediation (CoR)</strong> untuk mengamankan repositori secara presisi.
       </p>
 
       <div class="hero-actions">
-        <a href="#terminal" class="btn-primary">
-          <i class="fa-solid fa-terminal"></i> Coba CLI Simulator
+        <a href="#install" class="btn-primary">
+          <i class="fa-brands fa-github"></i> Git Clone & Install
         </a>
         <a href="https://github.com/aarsaputra/KarsaSec#readme" target="_blank" class="btn-secondary">
           <i class="fa-solid fa-book"></i> Dokumentasi Resmi
@@ -943,6 +974,31 @@
       </div>
     </div>
   </div>
+
+  <!-- Quick Installation Section (Git Clone) -->
+  <section id="install" class="section-container">
+    <div class="section-header">
+      <div class="section-subtitle">Official Setup</div>
+      <h2 class="section-title">Instalasi Dari GitHub Repository</h2>
+    </div>
+
+    <div class="install-card">
+      <div class="install-steps">
+        <div class="install-step-item">
+          <span class="step-cmd">$ git clone https://github.com/aarsaputra/KarsaSec.git</span>
+          <button class="btn-copy" onclick="copyText('git clone https://github.com/aarsaputra/KarsaSec.git')"><i class="fa-regular fa-copy"></i> Salin</button>
+        </div>
+        <div class="install-step-item">
+          <span class="step-cmd">$ cd KarsaSec && pip install -e .</span>
+          <button class="btn-copy" onclick="copyText('cd KarsaSec && pip install -e .')"><i class="fa-regular fa-copy"></i> Salin</button>
+        </div>
+        <div class="install-step-item">
+          <span class="step-cmd">$ karsasec doctor</span>
+          <button class="btn-copy" onclick="copyText('karsasec doctor')"><i class="fa-regular fa-copy"></i> Salin</button>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- Terminal Simulator Section -->
   <section id="terminal" class="section-container">
@@ -1037,29 +1093,31 @@
     </div>
   </section>
 
-  <!-- Philosophy Banner -->
+  <!-- Bilingual Philosophy Banner (Indonesian Heritage) -->
   <section id="philosophy" class="section-container">
     <div class="philosophy-banner">
-      <h2 class="philosophy-title">Filosofi "KarsaSec": Niat Luhur & Daya Cipta</h2>
-      <p class="philosophy-desc">
-        Kata **"Karsa"** berasal dari Bahasa Indonesia yang bermakna **Niat Luhur, Kehendak Kuat, dan Daya Cipta Jiwa**. KarsaSec dibangun dengan niat luhur untuk menciptakan ekosistem keamanan perangkat lunak yang mandiri, jujur, tangguh, dan menjunjung tinggi kedaulatan teknologi nasional.
-      </p>
+      <div class="philosophy-toggle">
+        <button class="lang-toggle-btn active" id="btn-lang-id" onclick="setPhilosophyLang('id')">🇮🇩 Bahasa Indonesia</button>
+        <button class="lang-toggle-btn" id="btn-lang-en" onclick="setPhilosophyLang('en')">🇬🇧 English</button>
+      </div>
+
+      <div id="philo-id">
+        <h2 class="philosophy-title">Filosofi "KarsaSec": Niat Luhur & Daya Cipta</h2>
+        <p class="philosophy-desc">
+          Kata <strong>"Karsa"</strong> berasal dari Bahasa Kawi / Sansekerta / Indonesia yang bermakna <strong>Niat Luhur, Kehendak Kuat, Cita-Cita, dan Daya Cipta</strong>. KarsaSec dibangun dengan niat luhur untuk menciptakan ekosistem keamanan perangkat lunak yang mandiri, jujur, tangguh, dan menjunjung tinggi kedaulatan teknologi nasional maupun global.
+        </p>
+      </div>
+
+      <div id="philo-en" style="display: none;">
+        <h2 class="philosophy-title">The Philosophy of "KarsaSec": Noble Intent & Creative Power</h2>
+        <p class="philosophy-desc">
+          The word <strong>"Karsa"</strong> originates from ancient Kawi / Sanskrit / Indonesian, embodying <strong>Noble Intent, Unwavering Will, High Aspirations, and Soulful Creative Power</strong>. KarsaSec is built upon a noble pledge to engineer a sovereign, resilient, and precise cybersecurity ecosystem for global software engineering.
+        </p>
+      </div>
+
       <div class="hero-tag" style="margin: 0 auto;">
         <i class="fa-solid fa-heart-pulse"></i> Built with Pride for Global AppSec Engineering
       </div>
-    </div>
-  </section>
-
-  <!-- Installation Box -->
-  <section class="section-container">
-    <div class="section-header">
-      <div class="section-subtitle">Quick Start</div>
-      <h2 class="section-title">Instalasi KarsaSec Dalam 1 Langkah</h2>
-    </div>
-
-    <div class="install-box">
-      <div class="install-code">$ pip install karsasec</div>
-      <button class="btn-copy" onclick="copyInstallCmd()"><i class="fa-regular fa-copy"></i> Salin</button>
     </div>
   </section>
 
@@ -1188,9 +1246,16 @@
 
     renderTax('all');
 
-    function copyInstallCmd() {
-      navigator.clipboard.writeText('pip install karsasec');
-      alert('Perintah "pip install karsasec" berhasil disalin!');
+    function setPhilosophyLang(lang) {
+      document.getElementById('btn-lang-id').classList.toggle('active', lang === 'id');
+      document.getElementById('btn-lang-en').classList.toggle('active', lang === 'en');
+      document.getElementById('philo-id').style.display = lang === 'id' ? 'block' : 'none';
+      document.getElementById('philo-en').style.display = lang === 'en' ? 'block' : 'none';
+    }
+
+    function copyText(txt) {
+      navigator.clipboard.writeText(txt);
+      alert('Perintah berhasil disalin:\n' + txt);
     }
   </script>
 </body>
