@@ -90,6 +90,7 @@ remediation_result.json
 remediation_ledger.json
 scratch/
 .gemini/
+research/
 *.tmp
 *.bak
 
