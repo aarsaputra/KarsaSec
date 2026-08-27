@@ -204,13 +204,17 @@ Detailed architectural & sprint audit documentation is organized in **[docs/](do
 
 ## 🙏 Acknowledgments & Research Foundation
 
-KarsaSec incorporates conceptual research, taxonomy patterns, and benchmark methodologies derived from pioneering open-source security analysis tools and research repositories:
+KarsaSec incorporates conceptual research, taxonomy patterns, and benchmark methodologies derived from pioneering open-source security analysis tools, AI agent skill frameworks, and research repositories:
 
 - **[Semgrep](https://github.com/semgrep/semgrep)** — Structural AST pattern matching, rule syntax ergonomics, and interprocedural taint flow analysis concepts.
+- **[Daytona](https://github.com/daytonaio/daytona)** — Ephemeral secure dev environment management, containerized sandbox execution, and workspace isolation paradigms.
+- **[Agent Skills](https://github.com/tech-leads-club/agent-skills)** — Modular agent skill composition, context window optimization, and token-budgeted tool execution patterns.
+- **[Claude Secure Coding Rules](https://github.com/TikiTribe/claude-secure-coding-rules)** — Defensive coding rules, zero-trust input sanitization, and cryptographic safety constraints.
+- **[Project CodeGuard (CoSAI / OASIS)](https://github.com/cosai-oasis/project-codeguard)** — AI safety guardrails, adversarial defense boundaries, and non-hallucinated patch verification standards.
 - **`sast-skills` & `sast-scan`** — Real-world vulnerability corpus patterns, static analysis benchmarks, and multi-language sink/source taxonomies.
 - **`awesome-ai-security-tools` & `static-analysis`** — Open security research indexes and static code analysis paradigms.
 
-We express our sincere gratitude to the global open-source security community, researchers, and maintainers whose work provided invaluable foundation benchmarks and conceptual inspiration for KarsaSec.
+We express our sincere gratitude to the global open-source security community, AI researchers, and maintainers whose work provided invaluable foundation benchmarks and conceptual inspiration for KarsaSec.
 
 ---
 
