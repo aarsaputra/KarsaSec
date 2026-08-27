@@ -68,17 +68,31 @@ class DataFlowAnalyzer:
         sym_match_outer = re.match(r"^([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*)\)$", clean_snippet_no_semi, re.DOTALL)
         if sym_match_outer and sink_category:
             outer_func = sym_match_outer.group(1)
-            cap = sanitizer_registry.identify_sanitizer(outer_func, clean_snippet_no_semi, language=lang)
-            if cap and sanitizer_registry.is_compatible(cap, sink_category):
-                return DataFlowEvidence(
-                    state=TaintState.SANITIZED,
-                    path=(),
-                    adjusted_confidence=Confidence.LOW,
-                    adjusted_severity=Severity.LOW,
-                    reason=f"Sink snippet is wrapped in compatible sanitizer '{outer_func}'",
-                    truncated=False,
-                    hop_count=0,
-                )
+            # Ensure it is a single outermost function call (balanced parenthesis to the end)
+            open_paren_idx = clean_snippet_no_semi.find("(")
+            depth = 0
+            is_single_call = False
+            for i in range(open_paren_idx, len(clean_snippet_no_semi)):
+                char = clean_snippet_no_semi[i]
+                if char == "(":
+                    depth += 1
+                elif char == ")":
+                    depth -= 1
+                    if depth == 0:
+                        is_single_call = (i == len(clean_snippet_no_semi) - 1)
+                        break
+            if is_single_call:
+                cap = sanitizer_registry.identify_sanitizer(outer_func, clean_snippet_no_semi, language=lang)
+                if cap and sanitizer_registry.is_compatible(cap, sink_category):
+                    return DataFlowEvidence(
+                        state=TaintState.SANITIZED,
+                        path=(),
+                        adjusted_confidence=Confidence.LOW,
+                        adjusted_severity=Severity.LOW,
+                        reason=f"Sink snippet is wrapped in compatible sanitizer '{outer_func}'",
+                        truncated=False,
+                        hop_count=0,
+                    )
 
         # Step 2: Build graph representation
         graph_data = self.builder.build_graph(source_text, file_path=file_path, language=lang)
