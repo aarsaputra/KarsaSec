@@ -1,6 +1,5 @@
 """Unit tests for KarsaSec AI Agent Skills System."""
 
-import os
 import pytest
 from karsasec.ai.skills import (
     DaytonaSandboxSkill,
@@ -56,26 +55,52 @@ def test_agent_skills_budget_contract_validation():
 
 def test_claude_secure_coding_rules_detection():
     rules = ClaudeSecureCodingSkill()
-    vulnerable_snippet = 'subprocess.run(f"ls {user_input}", shell=True)'
-    audit_res = rules.audit_proposed_patch(vulnerable_snippet)
 
+    # Command Injection
+    vulnerable_cmd = 'subprocess.run(f"ls {user_input}", shell=True)'
+    audit_res = rules.audit_proposed_patch(vulnerable_cmd)
     assert audit_res["passed"] is False
-    assert audit_res["violation_count"] >= 1
     assert any(v["cwe"] == "CWE-78" for v in audit_res["violations"])
 
+    # JWT None algorithm confusion
+    vulnerable_jwt = 'payload = jwt.decode(token, key, algorithms=["HS256", "none"])'
+    audit_jwt = rules.audit_proposed_patch(vulnerable_jwt)
+    assert audit_jwt["passed"] is False
+    assert any(v["cwe"] == "CWE-347" for v in audit_jwt["violations"])
+
+    # AI Model Loading Safety
+    vulnerable_llm = 'AutoModel.from_pretrained("org/repo", trust_remote_code=True)'
+    audit_llm = rules.audit_proposed_patch(vulnerable_llm)
+    assert audit_llm["passed"] is False
+    assert any(v["cwe"] == "OWASP-LLM05" for v in audit_llm["violations"])
+
+    # Safe snippet
     safe_snippet = 'subprocess.run(["ls", "-la", user_input], capture_output=True, check=True)'
     safe_res = rules.audit_proposed_patch(safe_snippet)
     assert safe_res["passed"] is True
 
 
-def test_codeguard_verifier_hardcoded_secrets():
+def test_codeguard_verifier_hardcoded_secrets_and_banned_crypto():
     verifier = CodeGuardVerifierSkill()
+
+    # Hardcoded Secret Check
     vuln_code = 'AWS_SECRET_KEY = "AKIAIOSFODNN7EXAMPLEKEY"'
     review = verifier.verify_patch_safety(vuln_code)
-
     assert review["is_safe"] is False
     assert review["fail_closed"] is True
     assert any(issue["cwe"] == "CWE-798" for issue in review["issues"])
+
+    # Banned Hash MD5 Check
+    vuln_md5 = 'hash_val = hashlib.md5(password.encode()).hexdigest()'
+    review_md5 = verifier.verify_patch_safety(vuln_md5)
+    assert review_md5["is_safe"] is False
+    assert any(issue["cwe"] == "CWE-328" for issue in review_md5["issues"])
+
+    # Banned AES-ECB Mode Check
+    vuln_ecb = 'cipher = AES.new(key, AES.MODE_ECB)'
+    review_ecb = verifier.verify_patch_safety(vuln_ecb)
+    assert review_ecb["is_safe"] is False
+    assert any(issue["cwe"] == "CWE-327" for issue in review_ecb["issues"])
 
 
 def test_ai_skill_registry_integration(tmp_path):
