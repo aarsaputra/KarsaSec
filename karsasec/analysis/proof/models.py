@@ -3,27 +3,27 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, StrEnum
 from typing import Any
 
 from karsasec.analysis.correlation.models import SecurityProperty, EvidenceSource
 
 
-class SecurityPropertyResolution(str, Enum):
+class SecurityPropertyResolution(StrEnum):
     VULNERABLE = "VULNERABLE"
     SAFE = "SAFE"
     UNKNOWN = "UNKNOWN"
     CONFLICT = "CONFLICT"
 
 
-class ProofConfidence(str, Enum):
+class ProofConfidence(StrEnum):
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
     LOW = "LOW"
     UNKNOWN = "UNKNOWN"
 
 
-class ProofSeverity(str, Enum):
+class ProofSeverity(StrEnum):
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
@@ -32,7 +32,7 @@ class ProofSeverity(str, Enum):
     UNKNOWN = "UNKNOWN"
 
 
-class ProofStepType(str, Enum):
+class ProofStepType(StrEnum):
     ENTRY = "ENTRY"
     IDENTITY = "IDENTITY"
     AUTHENTICATION = "AUTHENTICATION"

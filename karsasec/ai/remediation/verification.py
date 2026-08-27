@@ -191,7 +191,7 @@ def execute_business_test_suite(project_root: Path | str) -> tuple[bool, str]:
     # 2. Node/JS project check
     if (root_path / "package.json").exists():
         try:
-            with open(root_path / "package.json", "r", encoding="utf-8") as f:
+            with open(root_path / "package.json", encoding="utf-8") as f:
                 pkg = json.load(f)
             if "scripts" in pkg and "test" in pkg["scripts"]:
                 res = subprocess.run(

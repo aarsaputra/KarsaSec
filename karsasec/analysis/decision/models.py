@@ -4,7 +4,7 @@ All models are frozen immutable dataclasses supporting canonical serialization a
 """
 
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, StrEnum
 import hashlib
 import json
 from typing import Any
@@ -12,14 +12,14 @@ from typing import Any
 from karsasec.analysis.correlation.models import EvidenceSource, SecurityProperty
 
 
-class DecisionResolution(str, Enum):
+class DecisionResolution(StrEnum):
     VULNERABLE = "VULNERABLE"
     SAFE = "SAFE"
     UNKNOWN = "UNKNOWN"
     CONFLICT = "CONFLICT"
 
 
-class RiskSeverity(str, Enum):
+class RiskSeverity(StrEnum):
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
@@ -27,7 +27,7 @@ class RiskSeverity(str, Enum):
     UNKNOWN = "UNKNOWN"
 
 
-class BusinessRisk(str, Enum):
+class BusinessRisk(StrEnum):
     """Business risk dimension — computed independently from technical severity.
 
     Invariant: UNKNOWN business risk must NOT collapse to LOW.
@@ -41,7 +41,7 @@ class BusinessRisk(str, Enum):
     UNKNOWN = "UNKNOWN"
 
 
-class ExploitabilityLevel(str, Enum):
+class ExploitabilityLevel(StrEnum):
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
@@ -50,7 +50,7 @@ class ExploitabilityLevel(str, Enum):
     UNKNOWN = "UNKNOWN"
 
 
-class ConfidenceLevel(str, Enum):
+class ConfidenceLevel(StrEnum):
     PROVEN = "PROVEN"
     VERY_HIGH = "VERY_HIGH"
     HIGH = "HIGH"
@@ -59,7 +59,7 @@ class ConfidenceLevel(str, Enum):
     UNKNOWN = "UNKNOWN"
 
 
-class BlastRadiusScope(str, Enum):
+class BlastRadiusScope(StrEnum):
     GLOBAL = "GLOBAL"
     MULTI_TENANT = "MULTI_TENANT"
     TENANT = "TENANT"

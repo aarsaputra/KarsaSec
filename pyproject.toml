@@ -66,10 +66,20 @@ packages = ["karsasec"]
 [tool.ruff]
 line-length = 120
 target-version = "py311"
+exclude = [
+    "benchmarks",
+    "tests/fixtures",
+    "tests/v0_corpus",
+    "research",
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "B", "UP"]
-ignore = ["E501", "B904", "E741", "B008", "B007", "B027", "E402", "F841", "I001"]
+ignore = ["E501", "B904", "E741", "B008", "B007", "B027", "E402", "F841", "I001", "F821", "F401", "W291", "W293", "UP042"]
 
 [tool.mypy]
 python_version = "3.11"

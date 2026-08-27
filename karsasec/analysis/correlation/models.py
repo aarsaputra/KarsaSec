@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, StrEnum
 from typing import Any
 
 
-class CorrelationViolationCategory(str, Enum):
+class CorrelationViolationCategory(StrEnum):
     """Taxonomy categories for cross-batch correlation violations."""
 
     CROSS_BATCH_EVIDENCE_VIOLATION = "CROSS_BATCH_EVIDENCE_VIOLATION"
@@ -26,7 +26,7 @@ class CorrelationViolationCategory(str, Enum):
     UNKNOWN_CORRELATION_STATE = "UNKNOWN_CORRELATION_STATE"
 
 
-class CorrelationSeverity(str, Enum):
+class CorrelationSeverity(StrEnum):
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
@@ -35,20 +35,20 @@ class CorrelationSeverity(str, Enum):
     UNKNOWN = "UNKNOWN"
 
 
-class CorrelationConfidence(str, Enum):
+class CorrelationConfidence(StrEnum):
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
     LOW = "LOW"
     UNKNOWN = "UNKNOWN"
 
 
-class CorrelationResolution(str, Enum):
+class CorrelationResolution(StrEnum):
     SAFE = "SAFE"
     VULNERABLE = "VULNERABLE"
     UNKNOWN = "UNKNOWN"
 
 
-class EvidenceSource(str, Enum):
+class EvidenceSource(StrEnum):
     C13 = "C13"
     C14 = "C14"
     C15 = "C15"
@@ -59,7 +59,7 @@ class EvidenceSource(str, Enum):
     D5 = "D5"
 
 
-class EdgeRelation(str, Enum):
+class EdgeRelation(StrEnum):
     CAUSAL = "CAUSAL"
     TEMPORAL = "TEMPORAL"
     IDENTITY = "IDENTITY"
@@ -71,7 +71,7 @@ class EdgeRelation(str, Enum):
     CORRELATION_ONLY = "CORRELATION_ONLY"
 
 
-class CausalEvidenceType(str, Enum):
+class CausalEvidenceType(StrEnum):
     """Typed causal evidence classes. Only these constitute genuine causal signals.
 
     Contextual correlation signals (same_actor, same_resource, same_timestamp,
@@ -87,14 +87,14 @@ class CausalEvidenceType(str, Enum):
     AUTHORIZATION_CONTEXT = "AUTHORIZATION_CONTEXT"
 
 
-class TemporalRelation(str, Enum):
+class TemporalRelation(StrEnum):
     BEFORE = "BEFORE"
     AFTER = "AFTER"
     CONCURRENT = "CONCURRENT"
     UNKNOWN = "UNKNOWN"
 
 
-class IdentityType(str, Enum):
+class IdentityType(StrEnum):
     END_USER = "END_USER"
     SERVICE_ACCOUNT = "SERVICE_ACCOUNT"
     DELEGATED_IDENTITY = "DELEGATED_IDENTITY"
@@ -102,7 +102,7 @@ class IdentityType(str, Enum):
     UNKNOWN = "UNKNOWN"
 
 
-class SecurityProperty(str, Enum):
+class SecurityProperty(StrEnum):
     ACCOUNT_TAKEOVER = "ACCOUNT_TAKEOVER"
     ROOT_ACCESS = "ROOT_ACCESS"
     CLOUD_ADMIN = "CLOUD_ADMIN"

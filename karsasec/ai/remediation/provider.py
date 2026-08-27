@@ -106,25 +106,25 @@ class TemplatePatchProvider:
         if s_val == RemediationStrategyType.ADD_PARAMETERIZATION.value:
             if ext == "php":
                 return (
-                    f"$stmt = mysqli_prepare($conn, \"SELECT * FROM users WHERE id = ?\");\n"
-                    f"mysqli_stmt_bind_param($stmt, \"i\", $id);\n"
-                    f"mysqli_stmt_execute($stmt);\n"
-                    f"$res = mysqli_stmt_get_result($stmt);"
+                    "$stmt = mysqli_prepare($conn, \"SELECT * FROM users WHERE id = ?\");\n"
+                    "mysqli_stmt_bind_param($stmt, \"i\", $id);\n"
+                    "mysqli_stmt_execute($stmt);\n"
+                    "$res = mysqli_stmt_get_result($stmt);"
                 )
             elif ext in ("js", "ts"):
-                return f"db.query('SELECT * FROM users WHERE id = $1', [id]);"
+                return "db.query('SELECT * FROM users WHERE id = $1', [id]);"
             elif ext == "go":
-                return f"db.Query(\"SELECT * FROM users WHERE id = ?\", id)"
+                return "db.Query(\"SELECT * FROM users WHERE id = ?\", id)"
             elif ext == "java":
                 return (
-                    f"PreparedStatement stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");\n"
-                    f"stmt.setInt(1, id);\n"
-                    f"ResultSet res = stmt.executeQuery();"
+                    "PreparedStatement stmt = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\");\n"
+                    "stmt.setInt(1, id);\n"
+                    "ResultSet res = stmt.executeQuery();"
                 )
             elif ext in ("cs", "csharp"):
-                return f"cmd.CommandText = \"SELECT * FROM users WHERE id = @id\";\ncmd.Parameters.AddWithValue(\"@id\", id);"
+                return "cmd.CommandText = \"SELECT * FROM users WHERE id = @id\";\ncmd.Parameters.AddWithValue(\"@id\", id);"
             else:
-                return f"cursor.execute(\"SELECT * FROM users WHERE id = %s\", (user_input,))"
+                return "cursor.execute(\"SELECT * FROM users WHERE id = %s\", (user_input,))"
 
         if s_val == RemediationStrategyType.REMOVE_SECRET.value:
             if ext == "php":
