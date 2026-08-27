@@ -4,7 +4,7 @@ Unifies Daytona, Agent Skills, Claude Secure Rules, and CodeGuard Guardrails
 into an atomic pipeline for AI patch generation & security audits.
 """
 
-from typing import Dict, Any, Optional
+from typing import Any, Optional
 from .daytona_sandbox import DaytonaSandboxSkill
 from .agent_skills_budget import AgentSkillsBudgetSkill
 from .claude_secure_rules import ClaudeSecureCodingSkill
@@ -26,7 +26,7 @@ class AISkillRegistry:
         target_line: int,
         patch_code: str,
         language: str = "python"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Runs pre-patch security validation across all 4 skill pillars before submitting for SAST rescan."""
         # 1. Prune context window using Agent Skills budget
         prune_res = self.budget.prune_file_context(file_path, target_line)

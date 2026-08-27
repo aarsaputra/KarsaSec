@@ -11,7 +11,7 @@ Performs:
 
 import re
 import ast
-from typing import Dict, Any, List, Set
+from typing import Any
 
 
 class CodeGuardVerifierSkill:
@@ -34,7 +34,7 @@ class CodeGuardVerifierSkill:
         (r'\b(AES_encrypt|AES_decrypt|RSA_new|SHA1_Init)\s*\(', "CWE-327", "Forbidden Deprecated OpenSSL C API: Use EVP high-level APIs (EVP_EncryptInit_ex, EVP_Q_MAC).")
     ]
 
-    def verify_patch_safety(self, patch_code: str, language: str = "python") -> Dict[str, Any]:
+    def verify_patch_safety(self, patch_code: str, language: str = "python") -> dict[str, Any]:
         """Performs full CodeGuard pre-submission safety review of a proposed patch."""
         issues = []
 
@@ -74,7 +74,7 @@ class CodeGuardVerifierSkill:
             "issues": issues
         }
 
-    def _check_python_ast_symbols(self, python_code: str) -> Dict[str, Any]:
+    def _check_python_ast_symbols(self, python_code: str) -> dict[str, Any]:
         """Parses python snippet using AST walker to detect hallucinated imports or broken syntax."""
         try:
             tree = ast.parse(python_code)

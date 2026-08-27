@@ -8,7 +8,7 @@ and process isolation for AI patch application workflows.
 import os
 import tempfile
 import subprocess
-from typing import Dict, Any, Optional
+from typing import Any, Optional
 
 
 class DaytonaSandboxSkill:
@@ -17,7 +17,7 @@ class DaytonaSandboxSkill:
     def __init__(self, workspace_path: str = "."):
         self.workspace_path = os.path.abspath(workspace_path)
 
-    def create_git_branch_fence(self, finding_id: str) -> Dict[str, Any]:
+    def create_git_branch_fence(self, finding_id: str) -> dict[str, Any]:
         """Creates an isolated git branch fence for patching to prevent mutating main working state.
         
         Branch pattern: fix/karsasec-finding-<id>
@@ -46,7 +46,7 @@ class DaytonaSandboxSkill:
                 "error": str(exc)
             }
 
-    def execute_in_temp_sandbox(self, script_contents: str, extension: str = ".py") -> Dict[str, Any]:
+    def execute_in_temp_sandbox(self, script_contents: str, extension: str = ".py") -> dict[str, Any]:
         """Executes a code patch validation script inside an ephemeral temp sandbox."""
         with tempfile.TemporaryDirectory() as tmpdir:
             script_path = os.path.join(tmpdir, f"sandbox_runner{extension}")

@@ -14,7 +14,7 @@ Enforces Security-by-Default defensive coding patterns:
 """
 
 import re
-from typing import Dict, Any, List
+from typing import Any
 
 
 class ClaudeSecureCodingSkill:
@@ -50,7 +50,7 @@ class ClaudeSecureCodingSkill:
         (r'random\.(choice|randint|random)\s*\(', "CWE-330", "Do NOT use random for tokens/secrets; use secrets module (secrets.token_urlsafe)."),
     ]
 
-    def audit_proposed_patch(self, patch_code: str) -> Dict[str, Any]:
+    def audit_proposed_patch(self, patch_code: str) -> dict[str, Any]:
         """Audits a proposed code patch snippet against Claude Secure Coding rules."""
         violations = []
         for pattern, cwe, guidance in self.PATTERNS_TO_REFUSE:

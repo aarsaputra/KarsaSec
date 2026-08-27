@@ -6,7 +6,7 @@ task execution phases (Specify -> Design -> Tasks -> Execute) to eliminate token
 """
 
 import os
-from typing import Dict, Any, List, Optional
+from typing import Any, Optional
 
 
 class AgentSkillsBudgetSkill:
@@ -20,13 +20,13 @@ class AgentSkillsBudgetSkill:
         file_path: str,
         target_line: int,
         context_window: int = 25
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Extracts a pruned line-bounded context window around the target line to avoid loading full files raw into LLM context."""
         if not os.path.exists(file_path):
             return {"error": f"File not found: {file_path}", "lines": []}
 
         try:
-            with open(file_path, "r", encoding="utf-8", errors="replace") as f:
+            with open(file_path, encoding="utf-8", errors="replace") as f:
                 all_lines = f.readlines()
 
             total_lines = len(all_lines)
@@ -49,7 +49,7 @@ class AgentSkillsBudgetSkill:
         except Exception as exc:
             return {"error": str(exc), "lines": []}
 
-    def validate_typed_proposal_contract(self, proposal_json: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_typed_proposal_contract(self, proposal_json: dict[str, Any]) -> dict[str, Any]:
         """Validates that an AI patch proposal strictly satisfies the typed JSON contract schema."""
         required_fields = ["hunks"]
         hunk_required_fields = ["start_line", "end_line", "original_text", "proposed_text"]
