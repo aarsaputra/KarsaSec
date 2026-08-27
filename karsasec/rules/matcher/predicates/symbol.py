@@ -88,6 +88,30 @@ class SymbolPredicate(BasePredicate):
                     ):
                         return True, trigger, resolved_symbol
 
+        # Special PHP Shorthand Echo support (<?= ... ?>)
+        if context.language.lower() == "php" and "echo" in triggers:
+            if node.parent_id and context.file_node:
+                parent = context.file_node.nodes_map.get(node.parent_id)
+                if parent:
+                    try:
+                        idx = parent.children.index(node.node_id)
+                        if idx > 0:
+                            prev_sibling_id = parent.children[idx - 1]
+                            prev_sibling = context.file_node.nodes_map.get(prev_sibling_id)
+                            if prev_sibling:
+                                # Case A: Preceding sibling is directly the php_tag
+                                if prev_sibling.node_type == "php_tag" and prev_sibling.get_text(source_bytes) == "<?=":
+                                    return True, "echo", node_text
+                                # Case B: Preceding sibling is text_interpolation ending with php_tag <?=
+                                if prev_sibling.node_type == "text_interpolation":
+                                    if prev_sibling.children:
+                                        last_child_id = prev_sibling.children[-1]
+                                        last_child = context.file_node.nodes_map.get(last_child_id)
+                                        if last_child and last_child.node_type == "php_tag" and last_child.get_text(source_bytes) == "<?=":
+                                            return True, "echo", node_text
+                    except ValueError:
+                        pass
+
         # Step 2: Exact or word-boundary text search for symbol trigger in node_text
         for trigger in triggers:
             if any(separator in trigger for separator in (".", "->", "::")):

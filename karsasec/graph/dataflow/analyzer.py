@@ -63,6 +63,23 @@ class DataFlowAnalyzer:
             symbol = sym_match.group(1) if sym_match else ""
             sink_category = sink_registry.classify_sink(symbol, clean_snippet, language=lang)
 
+        # Step 1.5: Check if the entire sink snippet is wrapped in a compatible sanitizer
+        clean_snippet_no_semi = clean_snippet.rstrip(";")
+        sym_match_outer = re.match(r"^([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*)\)$", clean_snippet_no_semi, re.DOTALL)
+        if sym_match_outer and sink_category:
+            outer_func = sym_match_outer.group(1)
+            cap = sanitizer_registry.identify_sanitizer(outer_func, clean_snippet_no_semi, language=lang)
+            if cap and sanitizer_registry.is_compatible(cap, sink_category):
+                return DataFlowEvidence(
+                    state=TaintState.SANITIZED,
+                    path=(),
+                    adjusted_confidence=Confidence.LOW,
+                    adjusted_severity=Severity.LOW,
+                    reason=f"Sink snippet is wrapped in compatible sanitizer '{outer_func}'",
+                    truncated=False,
+                    hop_count=0,
+                )
+
         # Step 2: Build graph representation
         graph_data = self.builder.build_graph(source_text, file_path=file_path, language=lang)
 
