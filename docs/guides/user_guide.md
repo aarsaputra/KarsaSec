@@ -116,3 +116,38 @@ karsasec doctor
 # Create default configuration file
 karsasec init
 ```
+
+---
+
+## 🤖 Configuring AI & LLM Settings
+
+KarsaSec allows you to configure whether and how AI/LLM models are integrated into your security scanning and remediation workflow.
+
+### 1. Opting In/Out of AI (RAG Context)
+By default, standard scans do not use AI retrieval. To enable local hybrid RAG (Retrieval-Augmented Generation) context lookup:
+* **Enable RAG**: Add the `--rag` flag to the scan command:
+  ```bash
+  karsasec scan . --rag
+  ```
+* **Disable RAG / Standalone Mode**: Simply run scans without the `--rag` flag to use pure deterministic AST and data-flow analysis (recommended for air-gapped CI/CD environments).
+
+### 2. Configuring LLM Provider and Models
+You can configure the default AI model and token fencing either via environment variables or the `karsasec.yaml` configuration file.
+
+#### Option A: via `karsasec.yaml`
+Generate the configuration file using `karsasec init` and set the fields in the root of the file:
+```yaml
+# karsasec.yaml
+default_llm_provider: "litellm"      # AI provider adapter (e.g., litellm, ollama)
+default_llm_model: "gemini-2.5-flash" # Model identifier
+max_token_budget_per_scan: 50000      # Max token limit per audit session to control costs
+```
+
+#### Option B: via `.env` or Environment Variables
+Set the following environment variables in your shell or `.env` file:
+```bash
+KARSASEC_DEFAULT_LLM_PROVIDER=litellm
+KARSASEC_DEFAULT_LLM_MODEL=gemini-2.5-flash
+KARSASEC_MAX_TOKEN_BUDGET_PER_SCAN=50000
+```
+
