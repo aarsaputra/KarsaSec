@@ -1,0 +1,8 @@
+{
+  "category": "command_injection",
+  "name": "Command Injection via System Shell",
+  "vuln_class": "COMMAND_INJECTION",
+  "expected_severity": "CRITICAL",
+  "expected_decision": "BLOCK",
+  "expected_admission": "BLOCKED"
+}

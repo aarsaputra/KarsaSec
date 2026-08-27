@@ -16,7 +16,7 @@ def test_e2e_multi_language_pipeline() -> None:
     """Verify that Python, JS, Go, and PHP files flow through identical pipeline layers to produce findings."""
     code_samples = {
         "Python": ("app.py", "import os\nos.system(cmd)"),
-        "JavaScript": ("app.js", "eval(user_input)"),
+        "JavaScript": ("app.js", "const user_input = 'code'; eval(user_input)"),
         "Go": ("main.go", 'package main\nimport "net/http"\nfunc f(u string) { http.Get(u) }'),
         "PHP": ("index.php", "<?php $p = $_GET['p']; include($p); ?>"),
     }

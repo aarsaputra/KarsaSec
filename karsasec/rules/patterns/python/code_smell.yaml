@@ -1,0 +1,42 @@
+rule:
+  id: KS-PY-0033
+
+metadata:
+  name: Deprecated Function or Code Smell
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-477
+  owasp: A04:2021-Insecure Design
+  created: "2026-08-27"
+  references:
+    - https://cwe.mitre.org/data/definitions/477.html
+  tags:
+    - code_smell
+    - deprecated
+    - python
+
+target:
+  languages:
+    - Python
+
+analysis:
+  engine: AST
+  behavior: PATTERN
+
+match:
+  language: Python
+  ast_node_types:
+    - call
+
+condition:
+  symbol_triggers:
+    - urllib.urlopen
+    - optparse
+    - imp.load_source
+  pattern: '(?i)(urllib\.urlopen|optparse|imp\.load_source)'
+
+output:
+  severity: INFO
+  confidence: CONFIDENT
+  message: Usage of deprecated Python standard library function.
+  remediation: Upgrade to modern Python API equivalents (e.g. urllib.request.urlopen, argparse).

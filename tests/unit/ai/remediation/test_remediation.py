@@ -587,7 +587,7 @@ def test_41_offline_provider_fallback():
     hunks = provider.generate_hunks(strat, original_source="query = input", start_line=1)
 
     assert len(hunks) == 1
-    assert "SAFE PARAMETERIZED" in hunks[0].proposed_text
+    assert "cursor.execute" in hunks[0].proposed_text
 
 
 def test_42_provider_failure_fallback():

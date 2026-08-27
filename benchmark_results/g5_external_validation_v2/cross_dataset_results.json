@@ -53,33 +53,33 @@
       "tier": "BRONZE",
       "metrics": {
         "total_evaluated_cases": 30,
-        "tp": 17,
-        "tn": 6,
-        "fp": 4,
-        "fn": 3,
+        "tp": 20,
+        "tn": 0,
+        "fp": 10,
+        "fn": 0,
         "correct_unknown": 0,
         "correct_conflict": 0,
-        "strict_precision": 0.8095238095238095,
-        "strict_recall": 0.85,
-        "fpr": 0.4,
-        "fnr": 0.15,
-        "specificity": 0.6,
-        "epistemic_decision_correctness": 0.7666666666666667,
+        "strict_precision": 0.6666666666666666,
+        "strict_recall": 1.0,
+        "fpr": 1.0,
+        "fnr": 0.0,
+        "specificity": 0.0,
+        "epistemic_decision_correctness": 0.6666666666666666,
         "wilson_95_ci": {
           "precision": {
-            "point": 0.8095238095238095,
-            "lower": 0.5999948198072902,
-            "upper": 0.9233242118004504
+            "point": 0.6666666666666666,
+            "lower": 0.4878008769260288,
+            "upper": 0.8076947950649104
           },
           "recall": {
-            "point": 0.85,
-            "lower": 0.6395816254952756,
-            "upper": 0.9476311485644952
+            "point": 1.0,
+            "lower": 0.8388753915139584,
+            "upper": 1.0
           },
           "edc": {
-            "point": 0.7666666666666667,
-            "lower": 0.590717121403517,
-            "upper": 0.882075953781986
+            "point": 0.6666666666666666,
+            "lower": 0.4878008769260288,
+            "upper": 0.8076947950649104
           }
         }
       }

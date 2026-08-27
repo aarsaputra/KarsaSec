@@ -30,6 +30,8 @@ match:
     - assignment_expression
     - assignment
     - call
+    - call_expression
+    - expression_statement
 
 condition:
   symbol_triggers:

@@ -1,0 +1,46 @@
+rule:
+  id: KS-PHP-0030
+
+metadata:
+  name: PHP Sensitive Information Disclosure in Logs
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-532
+  owasp: A09:2021-Security Logging and Monitoring Failures
+  created: "2026-08-27"
+  references:
+    - https://cwe.mitre.org/data/definitions/532.html
+  tags:
+    - info_disclosure
+    - logging
+    - php
+
+target:
+  languages:
+    - PHP
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: PHP
+  ast_node_types:
+    - function_call_expression
+    - member_call_expression
+    - method_call_expression
+    - call_expression
+    - expression_statement
+
+condition:
+  symbol_triggers:
+    - error_log
+    - var_dump
+    - print_r
+  pattern: '(?i)(error_log|var_dump|print_r)\([^)]*(password|token|secret|key)'
+
+output:
+  severity: LOW
+  confidence: CONFIDENT
+  message: Sensitive variable printed to PHP output or error log.
+  remediation: Avoid dumping raw secrets to output; sanitize or scrub sensitive tokens.

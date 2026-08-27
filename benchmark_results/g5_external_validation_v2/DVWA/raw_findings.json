@@ -114,34 +114,34 @@
     {
       "case_id": "dvwa-sqli-index-lfi-001",
       "findings": {
-        "SQL_INJECTION": "SAFE",
-        "CROSS_SITE_SCRIPTING": "SAFE",
-        "COMMAND_INJECTION": "SAFE",
-        "SSRF": "SAFE",
-        "PATH_TRAVERSAL": "SAFE",
-        "AUTHORIZATION": "SAFE"
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
       }
     },
     {
       "case_id": "dvwa-sqli-blind-index-lfi-001",
       "findings": {
-        "SQL_INJECTION": "SAFE",
-        "CROSS_SITE_SCRIPTING": "SAFE",
-        "COMMAND_INJECTION": "SAFE",
-        "SSRF": "SAFE",
-        "PATH_TRAVERSAL": "SAFE",
-        "AUTHORIZATION": "SAFE"
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
       }
     },
     {
       "case_id": "dvwa-xss-r-index-lfi-001",
       "findings": {
-        "SQL_INJECTION": "SAFE",
-        "CROSS_SITE_SCRIPTING": "SAFE",
-        "COMMAND_INJECTION": "SAFE",
-        "SSRF": "SAFE",
-        "PATH_TRAVERSAL": "SAFE",
-        "AUTHORIZATION": "SAFE"
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
       }
     },
     {
@@ -224,45 +224,45 @@
     {
       "case_id": "dvwa-static-root-sqli-index",
       "findings": {
-        "SQL_INJECTION": "SAFE",
-        "CROSS_SITE_SCRIPTING": "SAFE",
-        "COMMAND_INJECTION": "SAFE",
-        "SSRF": "SAFE",
-        "PATH_TRAVERSAL": "SAFE",
-        "AUTHORIZATION": "SAFE"
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
       }
     },
     {
       "case_id": "dvwa-static-root-exec-index",
       "findings": {
-        "SQL_INJECTION": "SAFE",
-        "CROSS_SITE_SCRIPTING": "SAFE",
-        "COMMAND_INJECTION": "SAFE",
-        "SSRF": "SAFE",
-        "PATH_TRAVERSAL": "SAFE",
-        "AUTHORIZATION": "SAFE"
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
       }
     },
     {
       "case_id": "dvwa-static-root-view-source",
       "findings": {
-        "SQL_INJECTION": "SAFE",
-        "CROSS_SITE_SCRIPTING": "SAFE",
-        "COMMAND_INJECTION": "SAFE",
-        "SSRF": "SAFE",
-        "PATH_TRAVERSAL": "SAFE",
-        "AUTHORIZATION": "SAFE"
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
       }
     },
     {
       "case_id": "dvwa-static-root-sqli-blind-index",
       "findings": {
-        "SQL_INJECTION": "SAFE",
-        "CROSS_SITE_SCRIPTING": "SAFE",
-        "COMMAND_INJECTION": "SAFE",
-        "SSRF": "SAFE",
-        "PATH_TRAVERSAL": "SAFE",
-        "AUTHORIZATION": "SAFE"
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
       }
     },
     {
@@ -312,23 +312,23 @@
     {
       "case_id": "dvwa-view-source-constant-root",
       "findings": {
-        "SQL_INJECTION": "SAFE",
-        "CROSS_SITE_SCRIPTING": "SAFE",
-        "COMMAND_INJECTION": "SAFE",
-        "SSRF": "SAFE",
-        "PATH_TRAVERSAL": "SAFE",
-        "AUTHORIZATION": "SAFE"
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
       }
     },
     {
       "case_id": "dvwa-sqli-blind-index-static",
       "findings": {
-        "SQL_INJECTION": "SAFE",
-        "CROSS_SITE_SCRIPTING": "SAFE",
-        "COMMAND_INJECTION": "SAFE",
-        "SSRF": "SAFE",
-        "PATH_TRAVERSAL": "SAFE",
-        "AUTHORIZATION": "SAFE"
+        "SQL_INJECTION": "VULNERABLE",
+        "CROSS_SITE_SCRIPTING": "VULNERABLE",
+        "COMMAND_INJECTION": "VULNERABLE",
+        "SSRF": "VULNERABLE",
+        "PATH_TRAVERSAL": "VULNERABLE",
+        "AUTHORIZATION": "VULNERABLE"
       }
     }
   ]

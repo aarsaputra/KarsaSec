@@ -23,12 +23,12 @@ All 6 core invariant categories passed 100% of inspection criteria and 27/27 aut
 
 | Category | Invariant Description | Status Verdict | Audit Report File |
 | :--- | :--- | :--- | :--- |
-| **L7** | Zero Security Authority (verdicts output-only from RTPValidator) | **PASS** | [`L7_AUDIT.md`](file:///home/lota1337/python/KarsaSec/docs/audit/f3/L7_AUDIT.md) |
-| **R7–R9** | Privacy Boundary (no source code, diffs, credentials in DB) | **PASS** | [`PRIVACY_AUDIT.md`](file:///home/lota1337/python/KarsaSec/docs/audit/f3/PRIVACY_AUDIT.md) |
-| **Determinism** | Explicit `ORDER BY` on all list/multi-row queries | **PASS** | [`DETERMINISM_AUDIT.md`](file:///home/lota1337/python/KarsaSec/docs/audit/f3/DETERMINISM_AUDIT.md) |
-| **Immutability** | Audit events & receipts are strictly append-only / write-once | **PASS** | [`IMMUTABILITY_AUDIT.md`](file:///home/lota1337/python/KarsaSec/docs/audit/f3/IMMUTABILITY_AUDIT.md) |
-| **Recovery** | `StartupRecoveryEngine` targets ONLY expired `RUNNING` tasks | **PASS** | [`RECOVERY_AUDIT.md`](file:///home/lota1337/python/KarsaSec/docs/audit/f3/RECOVERY_AUDIT.md) |
-| **Capabilities** | Zero `subprocess`, `os.system`, `eval`, `exec`, or `pickle` | **PASS** | [`CAPABILITY_AUDIT.md`](file:///home/lota1337/python/KarsaSec/docs/audit/f3/CAPABILITY_AUDIT.md) |
+| **L7** | Zero Security Authority (verdicts output-only from RTPValidator) | **PASS** | [`L7_AUDIT.md`](../audit/f3/L7_AUDIT.md) |
+| **R7–R9** | Privacy Boundary (no source code, diffs, credentials in DB) | **PASS** | [`PRIVACY_AUDIT.md`](../audit/f3/PRIVACY_AUDIT.md) |
+| **Determinism** | Explicit `ORDER BY` on all list/multi-row queries | **PASS** | [`DETERMINISM_AUDIT.md`](../audit/f3/DETERMINISM_AUDIT.md) |
+| **Immutability** | Audit events & receipts are strictly append-only / write-once | **PASS** | [`IMMUTABILITY_AUDIT.md`](../audit/f3/IMMUTABILITY_AUDIT.md) |
+| **Recovery** | `StartupRecoveryEngine` targets ONLY expired `RUNNING` tasks | **PASS** | [`RECOVERY_AUDIT.md`](../audit/f3/RECOVERY_AUDIT.md) |
+| **Capabilities** | Zero `subprocess`, `os.system`, `eval`, `exec`, or `pickle` | **PASS** | [`CAPABILITY_AUDIT.md`](../audit/f3/CAPABILITY_AUDIT.md) |
 
 ---
 

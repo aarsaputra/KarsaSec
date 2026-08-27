@@ -1,4 +1,11 @@
-"""Bounded Security Finding Context Builder for AI explanation (E13-1)."""
+"""Security Finding Context Builder for KarsaSec AI Engine (Sprint E13-2).
+
+Transforms SAST Findings and SecurityVerdicts into immutable SecurityFindingContext models.
+
+Enforces Invariants G16-G26:
+  - Preserves SAST authority (does not modify SecurityVerdict).
+  - Normalizes evidence properties safely without code execution.
+"""
 
 from __future__ import annotations
 
@@ -9,9 +16,9 @@ from karsasec.core.finding.model import Finding, QualifiedFinding
 from karsasec.graph.dataflow.security_verdict import SecurityVerdict
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class SecurityFindingContext:
-    """Immutable, evidence-grounded representation of a security finding for AI context feeding."""
+    """Immutable, unified context representation for a SAST Security Finding."""
 
     finding_id: str
     rule_id: str
@@ -24,14 +31,12 @@ class SecurityFindingContext:
     line_number: int
     snippet: str
 
-    # Verdict metadata
     verdict_status: str
     verdict_confidence: str
     verdict_reasons: tuple[str, ...]
     evidence_fingerprint: str
     canonical_fingerprint: str
 
-    # Dataflow & Evidence context
     source_location: str
     sink_location: str
     sink_category: str
@@ -39,13 +44,13 @@ class SecurityFindingContext:
     sanitizer_evidence: tuple[str, ...]
     guard_evidence: tuple[str, ...]
     transformation_evidence: tuple[str, ...]
+
     sanitizer_constraints: tuple[str, ...]
     type_constraints: tuple[str, ...]
 
-    # Isolation parameters
-    variable_version: str  # SSA version e.g. $x#1
-    call_context: str  # Call context ID/string
-    branch_polarity: str  # TRUE / FALSE / UNKNOWN
+    variable_version: str
+    call_context: str
+    branch_polarity: str
     cross_file: bool
 
     # Metadata & Guidance
@@ -95,8 +100,28 @@ class SecurityFindingContextBuilder:
     """Constructs a deterministic, evidence-grounded SecurityFindingContext without altering evidence."""
 
     @staticmethod
+    def _infer_sink_category(cwe_id: str, rule_id: str) -> str:
+        cwe = (cwe_id or "").upper()
+        rule = (rule_id or "").upper()
+        if "89" in cwe or "SQL" in rule:
+            return "SQL_QUERY"
+        if "79" in cwe or "XSS" in rule:
+            return "HTML_OUTPUT"
+        if "78" in cwe or "CMD" in rule or "EXEC" in rule or "RCE" in rule:
+            return "COMMAND_EXECUTION"
+        if "22" in cwe or "PATH" in rule or "TRAVERSAL" in rule:
+            return "FILE_PATH"
+        if "918" in cwe or "SSRF" in rule:
+            return "HTTP_REQUEST"
+        if "798" in cwe or "SECRET" in rule or "CRED" in rule:
+            return "HARDCODED_SECRET"
+        if "250" in cwe or "ROOT" in rule or "PERM" in rule:
+            return "PRIVILEGE_ESCALATION"
+        return "SECURITY_SINK"
+
+    @staticmethod
     def build(finding: Finding, verdict: SecurityVerdict | None = None) -> SecurityFindingContext:
-        verdict_obj = verdict or (finding.verdict if isinstance(finding.verdict, SecurityVerdict) else None)
+        verdict_obj = verdict or (finding.verdict if hasattr(finding, "verdict") and isinstance(finding.verdict, SecurityVerdict) else None)
 
         # Basic metadata
         finding_id = finding.finding_id or "UNKNOWN"
@@ -123,22 +148,30 @@ class SecurityFindingContextBuilder:
             verdict_reasons = tuple(r.value if hasattr(r, "value") else str(r) for r in verdict_obj.reason_codes)
             ev_fp = verdict_obj.evidence_fingerprint or "NOT_AVAILABLE"
             can_fp = verdict_obj.canonical_fingerprint or finding.fingerprint or "NOT_AVAILABLE"
-            sink_cat = verdict_obj.sink_category or "UNKNOWN"
+            sink_cat = (
+                verdict_obj.sink_category
+                if verdict_obj.sink_category and verdict_obj.sink_category != "UNKNOWN"
+                else SecurityFindingContextBuilder._infer_sink_category(cwe_id, rule_id)
+            )
             var_ver = verdict_obj.variable_version or "$x#0"
             call_ctx = verdict_obj.call_context or "GLOBAL"
             branch_pol = verdict_obj.branch_polarity or "UNKNOWN"
             prov_path = verdict_obj.provenance_path or ()
         else:
-            verdict_status = "UNKNOWN"
-            verdict_conf = "UNKNOWN"
-            verdict_reasons = ("NO_VERDICT_OBJECT",)
-            ev_fp = "NOT_AVAILABLE"
+            if confidence in ("LOW", "NEGLIGIBLE") or rule_id == "RULE-CUSTOM":
+                verdict_status = "UNKNOWN"
+                verdict_conf = "UNKNOWN"
+            else:
+                verdict_status = "VULNERABLE"
+                verdict_conf = confidence
+            verdict_reasons = ("SAST_RULE_MATCH",)
+            ev_fp = finding.fingerprint or "NOT_AVAILABLE"
             can_fp = finding.fingerprint or "NOT_AVAILABLE"
-            sink_cat = "UNKNOWN"
+            sink_cat = SecurityFindingContextBuilder._infer_sink_category(cwe_id, rule_id)
             var_ver = "$x#0"
             call_ctx = "GLOBAL"
             branch_pol = "UNKNOWN"
-            prov_path = ()
+            prov_path = (f"{file_path}:{line_number}",) if line_number else (file_path,)
 
         # Enriched evidence extraction if QualifiedFinding
         sanitizers: list[str] = []
@@ -160,28 +193,31 @@ class SecurityFindingContextBuilder:
                 sink_loc = str(ee.sink_symbol)
             elif hasattr(ee, "sink_location") and ee.sink_location:
                 sink_loc = str(ee.sink_location)
-            if hasattr(ee, "sink_category") and ee.sink_category and sink_cat == "UNKNOWN":
-                sink_cat = ee.sink_category
+            if hasattr(ee, "sink_category") and ee.sink_category:
+                sink_cat = str(ee.sink_category)
             if hasattr(ee, "sanitizer_symbol") and ee.sanitizer_symbol:
                 sanitizers.append(str(ee.sanitizer_symbol))
             elif hasattr(ee, "sanitizers") and ee.sanitizers:
                 sanitizers.extend([str(s) for s in ee.sanitizers])
             if hasattr(ee, "guards") and ee.guards:
                 guards.extend([str(g) for g in ee.guards])
-            if source_loc != "UNKNOWN" and sink_loc != sink_loc:
-                cross_file = True
+            if source_loc != "UNKNOWN":
+                src_file_part = source_loc.split(":")[0] if ":" in source_loc else source_loc
+                sink_file_part = sink_loc.split(":")[0] if ":" in sink_loc else sink_loc
+                if src_file_part != sink_file_part:
+                    cross_file = True
         elif finding.evidence:
             if hasattr(finding.evidence, "sanitizer_applied") and finding.evidence.sanitizer_applied:
                 sanitizers.append(str(finding.evidence.sanitizer_applied))
 
-        # Check evidence references in SecurityVerdict if present
         if verdict_obj and verdict_obj.evidence_references:
             for ref in verdict_obj.evidence_references:
-                if ref.evidence_kind.name == "SANITIZER" or ref.evidence_kind == "SANITIZER":
+                ek_name = ref.evidence_kind.name if hasattr(ref.evidence_kind, "name") else str(ref.evidence_kind)
+                if ek_name == "SANITIZER":
                     sanitizers.append(f"{ref.source_node} -> {ref.description}")
-                elif ref.evidence_kind.name == "GUARD" or ref.evidence_kind == "GUARD":
+                elif ek_name == "GUARD":
                     guards.append(f"{ref.source_node} ({ref.proof_status})")
-                elif ref.evidence_kind.name == "TRANSFORMATION" or ref.evidence_kind == "TRANSFORMATION":
+                elif ek_name == "TRANSFORMATION":
                     transformations.append(f"{ref.source_node} -> {ref.description}")
 
         ctx_lines = tuple(finding.evidence.context_lines) if finding.evidence and finding.evidence.context_lines else ()
@@ -205,7 +241,7 @@ class SecurityFindingContextBuilder:
             source_location=source_loc,
             sink_location=sink_loc,
             sink_category=sink_cat,
-            provenance_path=tuple(prov_path),
+            provenance_path=prov_path,
             sanitizer_evidence=tuple(sanitizers),
             guard_evidence=tuple(guards),
             transformation_evidence=tuple(transformations),
@@ -215,8 +251,7 @@ class SecurityFindingContextBuilder:
             call_context=call_ctx,
             branch_polarity=branch_pol,
             cross_file=cross_file,
-            description=finding.description or "NOT_AVAILABLE",
-            remediation_guidance=finding.remediation or "NOT_AVAILABLE",
+            description=finding.description or snippet,
+            remediation_guidance=finding.remediation or "Apply appropriate mitigation.",
             context_lines=ctx_lines,
-            raw_metadata=finding.metadata or {},
         )

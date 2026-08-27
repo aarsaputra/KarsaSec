@@ -108,3 +108,61 @@ def test_universal_ir_builder() -> None:
     assert len(ir_funcs[0].body_statements) == 2
     assert isinstance(ir_funcs[0].body_statements[0], IRAssignment)
     assert isinstance(ir_funcs[0].body_statements[1], IRCall)
+
+
+def test_virtual_main_and_augmented_assignment() -> None:
+    # 1. Test virtual __main__ wrapping of top-level statements
+    file_node = FileNode(
+        node_id="root",
+        file_path=Path("script.php"),
+        language="PHP",
+        start=Position(1, 0),
+        end=Position(10, 0),
+    )
+
+    assign1 = AssignmentNode(
+        node_id="assign_1",
+        parent_id="root",
+        language="PHP",
+        file_path=Path("script.php"),
+        start=Position(2, 0),
+        end=Position(2, 20),
+        byte_start=0,
+        byte_end=7,
+        target="$x",
+        value_expression="1",
+    )
+
+    # Augmented assignment node type
+    assign2 = AssignmentNode(
+        node_id="assign_2",
+        parent_id="root",
+        language="PHP",
+        file_path=Path("script.php"),
+        start=Position(3, 0),
+        end=Position(3, 20),
+        byte_start=8,
+        byte_end=16,
+        target="$x",
+        value_expression="2",
+    )
+    assign2.node_type = "augmented_assignment_expression"
+
+    file_node.nodes_map = {
+        "root": file_node,
+        "assign_1": assign1,
+        "assign_2": assign2,
+    }
+
+    builder = IRBuilder()
+    ir_funcs = builder.build_from_file_nodes([file_node], source_bytes_map={"script.php": b"$x = 1;\n$x .= 2;"})
+
+    # Should wrap the top-level statements in a virtual __main__ function
+    assert len(ir_funcs) == 1
+    assert ir_funcs[0].name == "__main__"
+    assert len(ir_funcs[0].body_statements) == 2
+    assert ir_funcs[0].body_statements[0].target.name == "$x"
+    assert ir_funcs[0].body_statements[0].operator == "="
+    assert ir_funcs[0].body_statements[1].target.name == "$x"
+    assert ir_funcs[0].body_statements[1].operator == ".="
+

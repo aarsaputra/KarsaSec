@@ -28,6 +28,8 @@ match:
   language: JavaScript
   ast_node_types:
     - call
+    - call_expression
+    - expression_statement
 
 condition:
   symbol_triggers:

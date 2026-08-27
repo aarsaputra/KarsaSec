@@ -72,3 +72,46 @@ def test_ssa_pass_pipeline_integration() -> None:
     assert final_context.artifact_store.has("SSA")
     ssa_map = final_context.artifact_store.get("SSA")
     assert "bar" in ssa_map
+
+
+def test_ssa_builder_augmented_assignment() -> None:
+    ir_func = IRFunction(
+        id="app.py::foo::1",
+        line_number=1,
+        file_path="app.py",
+        language="Python",
+        name="foo",
+    )
+
+    a1 = IRAssignment(
+        id="app.py::assign::2",
+        line_number=2,
+        file_path="app.py",
+        language="Python",
+        target="a",
+        value_expression="1",
+        operator="=",
+    )
+
+    a2 = IRAssignment(
+        id="app.py::assign::3",
+        line_number=3,
+        file_path="app.py",
+        language="Python",
+        target="a",
+        value_expression="2",
+        operator=".=",
+    )
+
+    ir_func.body_statements = [a1, a2]
+
+    cfg = CFGBuilder().build_cfg(ir_func)
+    ssa_func = SSABuilder().build_ssa(cfg)
+
+    assert len(ssa_func.nodes) == 2
+    assert ssa_func.nodes[0].target.ssa_name == "a_1"
+    assert ssa_func.nodes[1].target.ssa_name == "a_2"
+    # The second statement should have "a_1" in its use_vars because of augmented assignment
+    assert len(ssa_func.nodes[1].use_vars) == 1
+    assert ssa_func.nodes[1].use_vars[0].ssa_name == "a_1"
+

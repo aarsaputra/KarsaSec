@@ -82,3 +82,14 @@ codebase_memory.db
 .karsasec_cache/
 *.sarif
 .karsasec-baseline.json
+
+# Remediation CLI Artifacts & Temporary Files
+approval_token.json
+remediation_proposal.json
+remediation_result.json
+remediation_ledger.json
+scratch/
+.gemini/
+*.tmp
+*.bak
+

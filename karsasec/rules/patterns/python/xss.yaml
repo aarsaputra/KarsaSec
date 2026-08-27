@@ -1,0 +1,50 @@
+rule:
+  id: KS-PY-0034
+
+metadata:
+  name: Python Cross-Site Scripting (XSS)
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-79
+  owasp: A03:2021-Injection
+  created: "2026-08-27"
+  references:
+    - https://cwe.mitre.org/data/definitions/79.html
+  tags:
+    - xss
+    - injection
+    - python
+
+target:
+  languages:
+    - Python
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Python
+  ast_node_types:
+    - call
+
+condition:
+  symbol_triggers:
+    - render_template_string
+    - Markup
+    - HttpResponse
+    - print
+    - response.write
+  pattern: '(?i)(render_template_string|Markup\(|HttpResponse\(|print\(|response\.write\()'
+
+evidence:
+  require:
+    - user_input
+  score_weights:
+    dangerous_sink: 40
+
+output:
+  severity: HIGH
+  confidence: CONFIDENT
+  message: Detects un-sanitized user input formatted directly into HTML response sinks in Python.
+  remediation: Auto-escape HTML template variables or use escape() / render_template with HTML templates.

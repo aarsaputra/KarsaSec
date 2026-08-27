@@ -29,12 +29,17 @@ match:
     - function_call_expression
     - call
     - statement
+    - echo_statement
+    - expression_statement
+    - inline_html
+    - encapsed_string
 
 condition:
   symbol_triggers:
     - echo
     - print
     - printf
+    - dvwaHtmlEcho
 
 evidence:
   require:

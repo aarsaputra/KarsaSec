@@ -71,14 +71,77 @@ class IRBuilder:
 
                 functions.append(ir_func)
 
+        # Gather top-level statements and wrap them in a virtual __main__ function
+        def is_inside_function(node_id: str) -> bool:
+            curr_id = node_id
+            while curr_id:
+                parent = file_node.nodes_map.get(curr_id)
+                if not parent:
+                    break
+                if isinstance(parent, FunctionNode) or parent.node_type in [
+                    "function_definition",
+                    "function_declaration",
+                    "def",
+                    "func_decl",
+                ]:
+                    return True
+                curr_id = parent.parent_id
+            return False
+
+        top_level_stmts = []
+        sorted_nodes = sorted(
+            file_node.nodes_map.values(),
+            key=lambda x: (x.start.line, x.byte_start)
+        )
+        for node in sorted_nodes:
+            if not is_inside_function(node.node_id):
+                # Ensure we only convert statements that are top-level constructs,
+                # avoiding converting their sub-expressions twice if they are part of another statement.
+                # In tree-sitter, the top-level statements are direct children of the program/file root node.
+                # The root node has parent_id == None.
+                if node.parent_id is None or file_node.nodes_map.get(node.parent_id) is None or file_node.nodes_map.get(node.parent_id).node_type in ("program", "file", "text_interpolation"):
+                    stmt = self._convert_statement(node, file_node, source_bytes)
+                    if stmt:
+                        top_level_stmts.append(stmt)
+
+        if top_level_stmts:
+            main_func = IRFunction(
+                id=f"{file_path_str}::__main__::1",
+                line_number=1,
+                file_path=file_path_str,
+                language=file_node.language,
+                name="__main__",
+                parameters=[],
+                body_statements=top_level_stmts,
+            )
+            functions.append(main_func)
+
     def _convert_statement(self, node: ASTNode, file_node: FileNode, source_bytes: bytes) -> IRStatement | None:
         file_path_str = str(file_node.file_path) if file_node.file_path else "unknown"
         line_no = node.start.line
         lang = node.language or file_node.language
 
-        if isinstance(node, AssignmentNode) or node.node_type in ["assignment", "assignment_expression"]:
+        if isinstance(node, AssignmentNode) or node.node_type in ["assignment", "assignment_expression", "augmented_assignment_expression"]:
             target = getattr(node, "target", "")
             val_expr = getattr(node, "value_expression", "") or getattr(node, "value", "")
+            op = "="
+            if not target or not val_expr:
+                children_nodes = [file_node.nodes_map[cid] for cid in node.children if cid in file_node.nodes_map]
+                if len(children_nodes) >= 3:
+                    target = children_nodes[0].get_text(source_bytes)
+                    op = children_nodes[1].get_text(source_bytes)
+                    val_expr = children_nodes[2].get_text(source_bytes)
+                elif len(children_nodes) == 2:
+                    target = children_nodes[0].get_text(source_bytes)
+                    val_expr = children_nodes[1].get_text(source_bytes)
+
+            if node.node_type == "augmented_assignment_expression" and op == "=":
+                raw_text = node.get_text(source_bytes)
+                for possible_op in [".=", "+=", "-=", "*=", "/=", "&=", "|=", "^="]:
+                    if possible_op in raw_text:
+                        op = possible_op
+                        break
+
             return IRAssignment(
                 id=f"{file_path_str}::assign::{line_no}",
                 line_number=line_no,
@@ -86,6 +149,7 @@ class IRBuilder:
                 language=lang,
                 target=target,
                 value_expression=val_expr,
+                operator=op,
             )
 
         elif isinstance(node, ASTCallNode) or node.node_type in ["call", "call_expression"]:

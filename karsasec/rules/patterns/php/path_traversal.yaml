@@ -28,7 +28,12 @@ match:
   ast_node_types:
     - function_call_expression
     - call_expression
+    - include_expression
+    - include_once_expression
+    - require_expression
+    - require_once_expression
     - statement
+    - expression_statement
     - call
 
 condition:

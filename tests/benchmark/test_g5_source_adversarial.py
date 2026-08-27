@@ -74,3 +74,22 @@ def test_strict_negative_controls() -> None:
         if sem is not None:
             assert not sem.is_user_controlled, f"Snippet improperly classified as HTTP source: {snippet}"
         assert not registry.is_source(snippet), f"Snippet matched in SourceRegistry: {snippet}"
+
+
+def test_negative_controls_do_not_suppress_true_sources() -> None:
+    """True HTTP sources must NOT be suppressed even if negative control keywords appear in variable names or calls."""
+    resolver = SourceResolver()
+    registry = SourceRegistry()
+
+    mixed_snippets = [
+        "cacheKey = $_GET['key']",
+        "$cacheKey = $_GET['key'];\n$conn->query('SELECT * FROM x WHERE k = ' . $cacheKey);",
+        "cache.set('key', request.getParameter('id'))",
+        "config_val = request.args.get('user')",
+        "database.query('SELECT * FROM users WHERE id = ' + request.getParameter('id'))",
+    ]
+
+    for snippet in mixed_snippets:
+        sem = resolver.resolve_source(snippet)
+        assert sem is not None and sem.is_user_controlled, f"True source wrongly suppressed in: {snippet}"
+        assert registry.is_source(snippet), f"True source missed in registry for: {snippet}"

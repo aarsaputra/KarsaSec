@@ -1,0 +1,8 @@
+{
+  "category": "path_traversal",
+  "name": "Path Traversal File Read",
+  "vuln_class": "PATH_TRAVERSAL",
+  "expected_severity": "HIGH",
+  "expected_decision": "BLOCK",
+  "expected_admission": "BLOCKED"
+}

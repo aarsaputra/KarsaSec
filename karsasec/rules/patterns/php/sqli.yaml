@@ -27,6 +27,10 @@ match:
   language: PHP
   ast_node_types:
     - function_call_expression
+    - member_call_expression
+    - method_call_expression
+    - call_expression
+    - expression_statement
     - call
     - statement
 
@@ -35,14 +39,14 @@ condition:
     - mysqli_query
     - PDO::query
     - ->query
+    - ->where
+    - ->get
     - DB::select
     - DB::statement
     - DB::insert
     - DB::update
     - DB::delete
     - DB::raw
-    - PDO::prepare
-    - mysqli::prepare
 
 evidence:
   require:

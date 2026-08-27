@@ -154,11 +154,29 @@ class RemediationApplicationAgent:
         # 3. Perform Post-Apply SAST Verification (H4)
         ver_res = self.verifier.verify(finding=finding, post_apply_findings=post_apply_findings)
 
+        # Run business test suite if SAST verification passes
+        if ver_res.status == VerificationStatus.VERIFIED_FIXED:
+            from karsasec.ai.remediation.verification import execute_business_test_suite
+            test_success, test_output = execute_business_test_suite(self.repository_root)
+            if not test_success:
+                # Override verification result to trigger rollback
+                ver_res = VerificationResult(
+                    verification_id=ver_res.verification_id,
+                    finding_id=ver_res.finding_id,
+                    pre_apply_verdict_status=ver_res.pre_apply_verdict_status,
+                    post_apply_verdict_status=ver_res.post_apply_verdict_status,
+                    status=VerificationStatus.ROLLBACK_REQUIRED,
+                    contract=ver_res.contract,
+                    matching_findings_count=ver_res.matching_findings_count,
+                    details=f"Business test suite regression detected:\n{test_output}",
+                )
+
         # 4. If Verification Fails (STILL_VULNERABLE or UNKNOWN), Execute Automatic Rollback (H5, H16)
         if ver_res.status in (
             VerificationStatus.STILL_VULNERABLE,
             VerificationStatus.UNKNOWN,
             VerificationStatus.VERIFICATION_FAILED,
+            VerificationStatus.ROLLBACK_REQUIRED,
         ):
             # Capture backup buffers from target files and restore original snapshots
             # Re-read files to capture current mutated state

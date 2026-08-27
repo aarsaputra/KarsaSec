@@ -1,0 +1,46 @@
+rule:
+  id: KS-PHP-0031
+
+metadata:
+  name: PHP Deprecated Function Usage
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-477
+  owasp: A04:2021-Insecure Design
+  created: "2026-08-27"
+  references:
+    - https://cwe.mitre.org/data/definitions/477.html
+  tags:
+    - code_smell
+    - deprecated
+    - php
+
+target:
+  languages:
+    - PHP
+
+analysis:
+  engine: AST
+  behavior: PATTERN
+
+match:
+  language: PHP
+  ast_node_types:
+    - function_call_expression
+    - member_call_expression
+    - method_call_expression
+    - call_expression
+    - expression_statement
+
+condition:
+  symbol_triggers:
+    - mysql_connect
+    - mysql_query
+    - create_function
+  pattern: '(?i)(mysql_connect|mysql_query|create_function)\('
+
+output:
+  severity: INFO
+  confidence: CONFIDENT
+  message: Usage of deprecated PHP function (mysql_* or create_function).
+  remediation: Migrate to PDO or MySQLi prepared statements.

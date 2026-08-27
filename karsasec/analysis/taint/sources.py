@@ -69,12 +69,12 @@ class SourceRegistry:
     }
 
     NEGATIVE_CONTROLS: tuple[str, ...] = (
-        "config.",
-        "database.",
-        "cache.",
-        "environment.",
+        "config.get",
+        "database.get",
+        "cache.get",
+        "environment.get",
         "object.getParameter",
-        "internalRequest.",
+        "internalRequest.get",
         "app_settings.",
         "system_env.",
     )
@@ -88,21 +88,47 @@ class SourceRegistry:
         if pattern not in self.sources[language]:
             self.sources[language].append(pattern)
 
+    HTTP_SOURCE_PATTERNS: tuple[str, ...] = (
+        "request.getParameter",
+        "req.getParameter",
+        "servletRequest",
+        "$_GET",
+        "$_POST",
+        "$_REQUEST",
+        "request.args",
+        "request.GET",
+        "request.POST",
+        "req.query",
+        "customRequest",
+    )
+
+    def _has_http_source(self, text: str, language: str | None = None) -> bool:
+        if any(pat in text for pat in self.HTTP_SOURCE_PATTERNS):
+            return True
+        patterns: list[str] = []
+        if language and language in self.sources:
+            patterns.extend(self.sources[language])
+        for lang_pats in self.sources.values():
+            for pat in lang_pats:
+                if pat not in patterns:
+                    patterns.append(pat)
+        return any(pat in text for pat in patterns)
+
     def is_source(self, text: str, language: str | None = None) -> bool:
         """Returns True if the given code snippet/expression matches an untrusted source pattern."""
-        if any(neg in text for neg in self.NEGATIVE_CONTROLS):
-            return False
         if "customRequest.getInput" in text:
             return True
-        if language and language in self.sources:
-            patterns = self.sources[language]
-        else:
-            patterns = [pat for lang_pats in self.sources.values() for pat in lang_pats]
-        return any(pat in text for pat in patterns)
+        if any(neg in text for neg in self.NEGATIVE_CONTROLS) and not any(
+            pat in text for pat in self.HTTP_SOURCE_PATTERNS
+        ):
+            return False
+        return self._has_http_source(text, language)
 
     def match_source(self, text: str, line_number: int = 1, language: str | None = None) -> TaintSource | None:
         """Returns TaintSource object if text matches a source pattern, else None."""
-        if any(neg in text for neg in self.NEGATIVE_CONTROLS):
+        if any(neg in text for neg in self.NEGATIVE_CONTROLS) and not any(
+            pat in text for pat in self.HTTP_SOURCE_PATTERNS
+        ):
             return None
         patterns: list[str] = []
         if language and language in self.sources:
@@ -123,7 +149,7 @@ class SourceRegistry:
             return None
 
         if "customRequest" in text:
-            res = TaintSource(
+            return TaintSource(
                 name="customRequest",
                 language=language,
                 line_number=line_number,
@@ -132,21 +158,22 @@ class SourceRegistry:
                 framework="CustomWrapper",
                 is_user_controlled=True,
             )
-            return res
 
-        is_neg = any(neg in text for neg in self.NEGATIVE_CONTROLS)
-        cat = SourceCategory.DIRECT
-        fw = "Java Servlet"
+        matched = self.match_source(text=text, line_number=line_number, language=language)
+        is_neg = any(neg in text for neg in self.NEGATIVE_CONTROLS) and not any(
+            pat in text for pat in self.HTTP_SOURCE_PATTERNS
+        )
 
-        res = self.match_source(text=text, line_number=line_number, language=language)
-        if res is None:
-            res = TaintSource(name=text, language=language, line_number=line_number, pattern=text)
-            res.is_user_controlled = False
-        else:
-            res.is_user_controlled = not is_neg
+        if matched is not None:
+            matched.category = SourceCategory.DIRECT
+            matched.framework = "Java Servlet"
+            matched.is_user_controlled = not is_neg
+            return matched
 
-        res.category = cat
-        res.framework = fw
+        res = TaintSource(name=text, language=language, line_number=line_number, pattern=text)
+        res.category = SourceCategory.DIRECT
+        res.framework = "Java Servlet"
+        res.is_user_controlled = not is_neg
         return res
 
 

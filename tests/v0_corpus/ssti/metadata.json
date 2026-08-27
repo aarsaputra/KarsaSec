@@ -1,0 +1,8 @@
+{
+  "category": "ssti",
+  "name": "Server-Side Template Injection",
+  "vuln_class": "SSTI",
+  "expected_severity": "HIGH",
+  "expected_decision": "BLOCK",
+  "expected_admission": "BLOCKED"
+}

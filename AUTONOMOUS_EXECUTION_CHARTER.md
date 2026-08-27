@@ -9,9 +9,9 @@
 ## 1. Execution Principle
 The AI Agent operates strictly under the Single Source of Truth defined in [`PROGRAM_EXECUTION_SPEC.md`](PROGRAM_EXECUTION_SPEC.md).
 
-The AI Agent MUST NOT prompt the human operator for approval after completing individual sprints.
+The AI Agent MUST NOT prompt the human operator for approval during routine sub-sprint iterations. However, formal external production deployment sign-off and final E21 certification REQUIRE explicit independent human review approval as specified in [`FINAL_ROADMAP_LOCK.md`](FINAL_ROADMAP_LOCK.md) §3.2.
 
-The AI Agent MUST automatically advance to the next dependent node in the Fixed Roadmap DAG until `KARSASEC_PLATFORM_CERTIFIED` is reached.
+The AI Agent automatically advances through the Fixed Roadmap DAG nodes up to internal readiness assessment, whereupon execution halts for human operator verification.
 
 ---
 

@@ -1,0 +1,8 @@
+{
+  "category": "xss",
+  "name": "Reflected Cross-Site Scripting",
+  "vuln_class": "XSS",
+  "expected_severity": "HIGH",
+  "expected_decision": "BLOCK",
+  "expected_admission": "BLOCKED"
+}

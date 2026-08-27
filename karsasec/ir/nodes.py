@@ -77,6 +77,7 @@ class IRAssignment(IRStatement):
 
     target: str | IRVar = ""
     value_expression: Any = ""
+    operator: str = "="
 
     @property
     def value(self) -> Any:
@@ -90,6 +91,7 @@ class IRAssignment(IRStatement):
         d = super().to_dict()
         d["target"] = self.target.name if isinstance(self.target, IRVar) else self.target
         d["value_expression"] = str(self.value_expression)
+        d["operator"] = self.operator
         return d
 
 

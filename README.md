@@ -9,11 +9,19 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/aarsaputra/KarsaSec"><img src="https://img.shields.io/badge/Status-Sprint%20F10%20Completed-brightgreen?style=for-the-badge" alt="Status"></a>
+  <a href="https://github.com/aarsaputra/KarsaSec"><img src="https://img.shields.io/badge/Status-E9--E21%20Internal%20Readiness%20Certified-brightgreen?style=for-the-badge" alt="Status"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue?style=for-the-badge" alt="License"></a>
   <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python" alt="Python"></a>
-  <a href="docs/IMPLEMENTATION_ROADMAP.md"><img src="https://img.shields.io/badge/Rules-Schema%20v2-orange?style=for-the-badge" alt="Schema v2"></a>
+  <a href="docs/README.md"><img src="https://img.shields.io/badge/V0--E21-Certified-orange?style=for-the-badge" alt="V0-E21 Certified"></a>
 </p>
+
+---
+
+## 🇮🇩 Filosofi & Arti Nama "KarsaSec"
+
+> **Karsa** *(Bahasa Kawi / Sansekerta / Indonesia)*: **Niat Luhur, Kehendak Kuat, Cita-Cita, dan Daya Cipta**.
+
+**KarsaSec** melambangkan **"Kehendak Luhur & Tekad Kuat untuk Membangun Benteng Keamanan Siber yang Mandiri, Tangguh, Presisi, dan Otonom"**. Platform ini dirancang bukan sekadar sebagai alat pemindai kode biasa, melainkan sebagai manifestasi tekad untuk melindungi ekosistem perangkat lunak di Indonesia dan dunia dari ancaman kerentanan siber melalui pendekatan analisis deterministik yang digabungkan dengan kecerdasan buatan terpadu.
 
 ---
 
@@ -45,6 +53,9 @@
 
 ## 📊 Supported Vulnerability Taxonomies (Rule Pack)
 
+> [!NOTE]
+> Below is a **representative sample** of supported rule patterns. KarsaSec includes **143+ deterministic YAML rules** spanning 6 programming languages and 5 Infrastructure-as-Code formats located in `karsasec/rules/patterns/`.
+
 | Language / Format | Rule ID | Vulnerability | CWE | OWASP |
 | :--- | :--- | :--- | :--- | :--- |
 | **Python** | `KS-PY-0001` | SQL Injection (`sqlite3`, `psycopg2`) | CWE-89 | A03:2021-Injection |
@@ -65,39 +76,75 @@
 
 ---
 
-## ⚡ Quick Start
+## ⚡ CLI Usage & Command Reference
 
-### Installation
+KarsaSec provides a powerful, intuitive CLI interface:
 
-```bash
-# Clone the repository
-git clone https://github.com/aarsaputra/KarsaSec.git
-cd KarsaSec
-
-# Install in editable mode
-pip install -e .
-```
-
-### Usage
+### 1. `karsasec scan [PATH]` — Fast Static Security Scan
+Runs deterministic AST scanning and incremental dataflow analysis on the target directory.
 
 ```bash
-# Scan a project workspace
+# Basic workspace scan
 karsasec scan .
 
-# Run a scan with hybrid context retrieval from local RAG corpus
+# Scan with hybrid context retrieval from local security RAG corpus
 karsasec scan . --rag
+
+# Scan with specific RAG query context
 karsasec scan . --rag --rag-query "server-side request forgery"
 
-# Export scan results to SARIF or JSON
+# Export report to SARIF 2.1.0 or JSON format
 karsasec scan . -f sarif -o report.sarif.json
 karsasec scan . -f json -o report.json
+```
 
-# System & diagnostic check
+### 2. `karsasec review [PATH]` — Autonomous 4-Agent Security Audit
+Runs a full multi-agent security audit pipeline (**Planner → Analyzer → Remediator → Reporter**).
+
+```bash
+karsasec review ./src
+```
+
+### 3. `karsasec patch` — AI Remediation & Visual Diff Review
+Generates and applies proven secure patches with **GitHub-Style Visual Diff** previews (`-` red, `+` green) and **SAST Rescan Certification (Invariant L7)**.
+
+```bash
+# Preview remediation diff for a scan proposal
+karsasec patch apply proposal.json
+
+# Apply patch to an isolated Git branch (e.g. fix/karsasec-finding-KS-PHP-0001)
+karsasec patch apply proposal.json --create-branch
+```
+
+### 4. `karsasec qualify` — Benchmark Qualification Verification
+Verifies detector precision and false-positive rates against benchmark targets (e.g., DVWA).
+
+```bash
+karsasec qualify --benchmark dvwa
+```
+
+### 5. `karsasec rules` — Rule Registry Management
+Inspects and validates rule packs.
+
+```bash
+# List all active rules
+karsasec rules list
+
+# Validate rule definitions syntax
+karsasec rules validate
+```
+
+### 6. `karsasec doctor` & `karsasec init` — System Health & Configuration
+Diagnoses environment readiness or generates `karsasec.yaml`.
+
+```bash
+# Run system diagnostic check
 karsasec doctor
 
-# Check version
-karsasec --version
+# Generate default configuration file
+karsasec init
 ```
+
 
 ### Run Tests & Platform Verification
 
@@ -121,16 +168,26 @@ KarsaSec menganalisis berkas kode melalui tahapan eksekusi deterministik:
 
 ## 📚 Documentation Directory
 
-Detailed architectural & sprint audit documentation is organized in `docs/`:
+Detailed architectural & sprint audit documentation is organized in **[docs/](docs/README.md)**:
 
-- 🛡️ **[Sprint F10 Final Adversarial Audit Report](docs/f10_final_adversarial_audit.md)** — Forensic crash boundary matrix & F9 immutability audit report
-- 📤 **[Sprint F10 Transactional Audit & Outbox](docs/f10_phase4_transactional_audit.md)** — Transactional outbox & audit ledger integration specification
-- 🔀 **[Sprint F10 Cost-Aware Provider Router](docs/f10_phase3_provider_router.md)** — Multi-provider routing policy & health failover
-- 💰 **[Sprint F10 Budget Fencing & State Machine](docs/f10_phase2_budget_fencing.md)** — Token-budget reservation & request state machine
-- 🗄️ **[Sprint F10 Database Schema](docs/f10_database_schema.md)** — PostgreSQL/SQLAlchemy ORM specifications
-- 🏗️ **[Sprint F10 Architecture Audit](docs/f10_architecture_audit.md)** — Distributed AI Gateway architecture audit
-- 🛡️ **[Sprint F9 Security Baseline Audit](docs/f9_final_adversarial_audit.md)** — Disaster recovery & snapshot replay audit
+- 🟢 **[Master Documentation Hub & Index](docs/README.md)** — Complete master index of all PRDs, ADRs, and audit reports
+- 🔒 **[Governing Roadmap Lock](FINAL_ROADMAP_LOCK.md)** — Formal governance lock for E9–E21 & Phase V0
+- 🛡️ **[Sprint E21 Internal Readiness Review](docs/e21_internal_readiness_review.md)** — Final certification audit report
+- 📊 **[Risk-Coverage Matrix](docs/RISK_COVERAGE_MATRIX.md)** — Failure mode to adversarial test mapping
+- 🛡️ **[Phase V0 Validation Verdict Report](docs/v0_validation_report.md)** — Real-world vulnerability benchmark scorecard
 - 🗺️ **[Implementation Roadmap](docs/IMPLEMENTATION_ROADMAP.md)** — Master execution strategy
+
+---
+
+## 🙏 Acknowledgments & Research Foundation
+
+KarsaSec incorporates conceptual research, taxonomy patterns, and benchmark methodologies derived from pioneering open-source security analysis tools and research repositories:
+
+- **[Semgrep](https://github.com/semgrep/semgrep)** — Structural AST pattern matching, rule syntax ergonomics, and interprocedural taint flow analysis concepts.
+- **`sast-skills` & `sast-scan`** — Real-world vulnerability corpus patterns, static analysis benchmarks, and multi-language sink/source taxonomies.
+- **`awesome-ai-security-tools` & `static-analysis`** — Open security research indexes and static code analysis paradigms.
+
+We express our sincere gratitude to the global open-source security community, researchers, and maintainers whose work provided invaluable foundation benchmarks and conceptual inspiration for KarsaSec.
 
 ---
 

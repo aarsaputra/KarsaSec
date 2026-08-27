@@ -42,6 +42,7 @@ _PHP_SINKS: dict[str, SinkCategory] = {
     "echo": SinkCategory.HTML_OUTPUT,
     "print": SinkCategory.HTML_OUTPUT,
     "printf": SinkCategory.HTML_OUTPUT,
+    "dvwaHtmlEcho": SinkCategory.HTML_OUTPUT,
     "mysqli_query": SinkCategory.SQL_EXECUTION,
     "mysql_query": SinkCategory.SQL_EXECUTION,
     "pg_query": SinkCategory.SQL_EXECUTION,

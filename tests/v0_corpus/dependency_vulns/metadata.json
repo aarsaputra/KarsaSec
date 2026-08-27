@@ -1,0 +1,8 @@
+{
+  "category": "dependency_vulns",
+  "name": "Known Vulnerable Dependency Import",
+  "vuln_class": "DEPENDENCY_VULN",
+  "expected_severity": "HIGH",
+  "expected_decision": "BLOCK",
+  "expected_admission": "BLOCKED"
+}

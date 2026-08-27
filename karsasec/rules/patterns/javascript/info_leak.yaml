@@ -1,0 +1,44 @@
+rule:
+  id: KS-JS-0030
+
+metadata:
+  name: JavaScript Sensitive Information Disclosure in Console
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-532
+  owasp: A09:2021-Security Logging and Monitoring Failures
+  created: "2026-08-27"
+  references:
+    - https://cwe.mitre.org/data/definitions/532.html
+  tags:
+    - info_disclosure
+    - logging
+    - javascript
+
+target:
+  languages:
+    - JavaScript
+    - TypeScript
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: JavaScript
+  ast_node_types:
+    - call_expression
+    - expression_statement
+
+condition:
+  symbol_triggers:
+    - console.log
+    - console.debug
+    - console.info
+  pattern: "(?i)console\\.(log|debug|info)\\([^)]*(token|password|secret|key|auth)"
+
+output:
+  severity: LOW
+  confidence: CONFIDENT
+  message: Sensitive information printed to browser console or application logs.
+  remediation: Remove sensitive variable logging prior to production deployment.

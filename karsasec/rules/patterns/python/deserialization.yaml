@@ -32,6 +32,8 @@ condition:
   symbol_triggers:
     - pickle.loads
     - pickle.load
+    - _pickle.loads
+    - _pickle.load
     - yaml.load
 
 evidence:

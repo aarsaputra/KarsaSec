@@ -28,6 +28,8 @@ match:
   language: JavaScript
   ast_node_types:
     - call
+    - call_expression
+    - expression_statement
     - assignment_expression
     - assignment
 
@@ -36,7 +38,7 @@ condition:
     - cors
     - app.use
   pattern: >-
-    (?i)(app\.use\(\s*cors\(|cors\(\s*\{[^}]*origin\s*:\s*(?:\*|true))
+    (?i)(app\.use\(\s*cors\(\s*\)|cors\(\s*\{[^}]*origin\s*:\s*(?:\*|true|'\*'|"\*"))
 
 evidence:
   score_weights:

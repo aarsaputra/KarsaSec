@@ -1,0 +1,8 @@
+{
+  "category": "prototype_pollution",
+  "name": "Object Prototype Pollution",
+  "vuln_class": "PROTOTYPE_POLLUTION",
+  "expected_severity": "HIGH",
+  "expected_decision": "BLOCK",
+  "expected_admission": "BLOCKED"
+}

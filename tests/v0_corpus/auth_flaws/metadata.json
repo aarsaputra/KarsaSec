@@ -1,0 +1,8 @@
+{
+  "category": "auth_flaws",
+  "name": "Authentication Bypass Flaw",
+  "vuln_class": "AUTH_BYPASS",
+  "expected_severity": "HIGH",
+  "expected_decision": "BLOCK",
+  "expected_admission": "BLOCKED"
+}

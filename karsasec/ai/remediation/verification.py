@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
+from pathlib import Path
 from typing import Any
 import uuid
 
@@ -159,3 +160,87 @@ class PostApplyVerificationEngine:
             matching_findings_count=match_count,
             details=details,
         )
+
+
+def execute_business_test_suite(project_root: Path | str) -> tuple[bool, str]:
+    """Runs the project's native test suite (pytest, npm test, or go test) to prevent regression.
+
+    Returns:
+        (success: bool, output: str)
+    """
+    import subprocess
+    import json
+
+    root_path = Path(project_root).resolve()
+
+    # 1. Go project check
+    if (root_path / "go.mod").exists():
+        try:
+            res = subprocess.run(
+                ["go", "test", "./..."],
+                capture_output=True,
+                text=True,
+                cwd=root_path,
+                timeout=180
+            )
+            output = (res.stdout or "") + "\n" + (res.stderr or "")
+            return res.returncode == 0, output
+        except (subprocess.TimeoutExpired, FileNotFoundError) as e:
+            return False, f"Go test execution failed or timed out: {e}"
+
+    # 2. Node/JS project check
+    if (root_path / "package.json").exists():
+        try:
+            with open(root_path / "package.json", "r", encoding="utf-8") as f:
+                pkg = json.load(f)
+            if "scripts" in pkg and "test" in pkg["scripts"]:
+                res = subprocess.run(
+                    ["npm", "test"],
+                    capture_output=True,
+                    text=True,
+                    cwd=root_path,
+                    timeout=180
+                )
+                output = (res.stdout or "") + "\n" + (res.stderr or "")
+                return res.returncode == 0, output
+        except Exception as e:
+            return False, f"Node test execution failed or parsed incorrectly: {e}"
+
+    # 3. Python project check
+    is_python = (
+        (root_path / "pytest.ini").exists()
+        or (root_path / "conftest.py").exists()
+        or (root_path / "pyproject.toml").exists()
+        or (root_path / "tox.ini").exists()
+        or (root_path / "tests").is_dir()
+    )
+    if is_python:
+        try:
+            res = subprocess.run(
+                ["pytest"],
+                capture_output=True,
+                text=True,
+                cwd=root_path,
+                timeout=180
+            )
+            output = (res.stdout or "") + "\n" + (res.stderr or "")
+            return res.returncode == 0, output
+        except FileNotFoundError:
+            # Fallback to unittest
+            try:
+                res = subprocess.run(
+                    ["python3", "-m", "unittest", "discover"],
+                    capture_output=True,
+                    text=True,
+                    cwd=root_path,
+                    timeout=180
+                )
+                output = (res.stdout or "") + "\n" + (res.stderr or "")
+                return res.returncode == 0, output
+            except Exception as e:
+                return False, f"Python unittest execution failed: {e}"
+        except subprocess.TimeoutExpired as e:
+            return False, f"Python test execution timed out: {e}"
+
+    return True, "No native test suite detected; skipping business test suite execution."
+

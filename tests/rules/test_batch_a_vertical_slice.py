@@ -257,13 +257,18 @@ def test_determinism_and_order_invariance() -> None:
     assert r1.output.confidence == r2.output.confidence
 
 
+from tests._helpers.git_check import require_git_repo_or_skip
+
+
 def test_frozen_f9_paths_zero_diff() -> None:
     """Verifies absolute zero diff on protected F9 recovery and audit ledger paths."""
+    require_git_repo_or_skip(REPO_ROOT)
+
     res = subprocess.run(
         [
             "git",
             "diff",
-            "--name-only",
+            "HEAD",
             "--",
             "karsasec/recovery/",
             "karsasec/events/audit_ledger.py",
@@ -272,6 +277,7 @@ def test_frozen_f9_paths_zero_diff() -> None:
         cwd=str(REPO_ROOT),
         capture_output=True,
         text=True,
+        check=False,
     )
     assert res.returncode == 0
     assert res.stdout.strip() == "", f"Frozen F9 paths mutated: {res.stdout}"

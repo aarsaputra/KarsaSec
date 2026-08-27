@@ -33,7 +33,7 @@ condition:
     - open
     - send_file
     - send_from_directory
-  pattern: "(?i)(open\\([^)]*\\+|open\\([^)]*user_input|send_file\\([^)]*user_input|os\\.path\\.join\\([^)]*user)"
+  pattern: "(?i)(open\\(|send_file\\(|send_from_directory\\(|os\\.path\\.join\\()"
 
 evidence:
   require:

@@ -1,0 +1,8 @@
+{
+  "category": "idor",
+  "name": "Insecure Direct Object Reference",
+  "vuln_class": "IDOR",
+  "expected_severity": "HIGH",
+  "expected_decision": "BLOCK",
+  "expected_admission": "BLOCKED"
+}

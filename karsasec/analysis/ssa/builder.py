@@ -59,6 +59,12 @@ class SSABuilder:
                         if vname in str(stmt.value_expression):
                             use_vars.append(get_current_version(vname))
 
+                    # If this is an augmented assignment (e.g. .=, +=), the target variable itself
+                    # is a dependency. Link its current/previous version to use_vars.
+                    if getattr(stmt, "operator", "=") != "=" and target_name in var_counters:
+                        if target_name not in [uv.base_name for uv in use_vars]:
+                            use_vars.append(get_current_version(target_name))
+
                     target_var = get_new_version(target_name)
                     ssa_node = SSANode(
                         id=stmt.id,

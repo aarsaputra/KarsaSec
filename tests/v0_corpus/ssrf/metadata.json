@@ -1,0 +1,8 @@
+{
+  "category": "ssrf",
+  "name": "Server-Side Request Forgery",
+  "vuln_class": "SSRF",
+  "expected_severity": "HIGH",
+  "expected_decision": "BLOCK",
+  "expected_admission": "BLOCKED"
+}

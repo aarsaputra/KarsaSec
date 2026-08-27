@@ -16,6 +16,7 @@ from karsasec.cli.commands.framework import framework_app
 from karsasec.cli.commands.interprocedural import interprocedural_app
 from karsasec.cli.commands.qualify import qualify_app
 from karsasec.cli.commands.query import query_app
+from karsasec.cli.commands.patch import patch_app
 from karsasec.cli.commands.remediation import remediation_app
 from karsasec.cli.commands.rules import rules_app
 from karsasec.cli.commands.scan import execute_scan_command
@@ -41,6 +42,7 @@ app.add_typer(query_app, name="query")
 app.add_typer(framework_app, name="framework")
 app.add_typer(explain_app, name="explain")
 app.add_typer(remediation_app, name="remediation")
+app.add_typer(patch_app, name="patch")
 
 
 def version_callback(value: bool) -> None:
@@ -148,17 +150,39 @@ def review(
         help="Path to project directory for AI Agentic security review.",
         exists=True,
     ),
+    format: str = typer.Option(
+        "console",
+        "--format",
+        "-f",
+        help="Report format: console, json, sarif.",
+    ),
 ) -> None:
-    """Run full AI-Agentic multi-agent security audit."""
+    """Run full 4-Agent security audit (Planner -> Analyzer -> Remediator -> Reporter)."""
+    from karsasec.agents.models import AgentInput
+    from karsasec.agents.orchestrator import AgentOrchestrator
+    from karsasec.cli.commands.scan import _run_scan_pipeline
+
     console.print(
         Panel(
             f"[bold green]KarsaSec 4-Agent Security Review[/bold green]\nTarget: [bold]{path.resolve()}[/bold]",
             border_style="green",
         )
     )
-    console.print(
-        "🚀 State Machine Pipeline: [cyan]INIT[/cyan] → [cyan]PLAN[/cyan] → [cyan]ANALYZE[/cyan] → [cyan]FIX[/cyan] → [cyan]REPORT[/cyan]"
+
+    findings_obj, _, _ = _run_scan_pipeline(path)
+    raw_findings = list(findings_obj) if findings_obj else []
+
+    agent_input = AgentInput(
+        target_path=str(path.resolve()),
+        findings_raw=raw_findings,
     )
+
+    repo_root = Path(__file__).resolve().parents[2]
+    rag_corpus = repo_root / "security_corpus"
+
+    orchestrator = AgentOrchestrator(rag_corpus_path=rag_corpus if rag_corpus.exists() else None)
+    res = orchestrator.run_review(agent_input, output_format=format)
+    console.print(res.formatted_report)
 
 
 @app.command("doctor")

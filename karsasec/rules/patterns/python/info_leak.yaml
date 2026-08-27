@@ -1,0 +1,43 @@
+rule:
+  id: KS-PY-0032
+
+metadata:
+  name: Sensitive Information Disclosure in Logging
+  author: KarsaSec Team
+  version: "2.0"
+  cwe: CWE-532
+  owasp: A09:2021-Security Logging and Monitoring Failures
+  created: "2026-08-27"
+  references:
+    - https://cwe.mitre.org/data/definitions/532.html
+  tags:
+    - info_disclosure
+    - logging
+    - python
+
+target:
+  languages:
+    - Python
+
+analysis:
+  engine: AST
+  behavior: SINK
+
+match:
+  language: Python
+  ast_node_types:
+    - call
+
+condition:
+  symbol_triggers:
+    - print
+    - logger.debug
+    - logger.info
+    - logging.debug
+  pattern: '(?i)(print\([^)]*(token|password|secret|key|credit_card)|logger\.(debug|info)\([^)]*(token|password|secret|key))'
+
+output:
+  severity: LOW
+  confidence: CONFIDENT
+  message: Sensitive information such as passwords or tokens printed to application logs.
+  remediation: Redact or sanitize sensitive attributes before logging.

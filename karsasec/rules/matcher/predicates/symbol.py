@@ -91,7 +91,7 @@ class SymbolPredicate(BasePredicate):
         # Step 2: Exact or word-boundary text search for symbol trigger in node_text
         for trigger in triggers:
             if any(separator in trigger for separator in (".", "->", "::")):
-                pattern = re.escape(trigger)
+                pattern = re.escape(trigger).replace(r"\-\>", r"\s*->\s*").replace(r"\:\:", r"\s*::\s*")
             else:
                 pattern = r"(?<!\w)" + re.escape(trigger) + r"(?!\w)"
             if re.search(pattern, node_text):

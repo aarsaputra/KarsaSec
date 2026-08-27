@@ -4,12 +4,13 @@ import subprocess
 from pathlib import Path
 
 
+from tests._helpers.git_check import require_git_repo_or_skip
+
+
 def test_f9_protected_files_are_unmodified():
     """INV-F10-AUDIT-14: Git diff check to guarantee ZERO modifications to frozen F9 files."""
-    import pytest
     repo_root = Path(__file__).resolve().parents[2]
-    if not (repo_root / ".git").exists():
-        pytest.skip("Not a git repository (e.g. extracted zip archive)")
+    require_git_repo_or_skip(repo_root)
 
     protected_paths = [
         "karsasec/recovery",

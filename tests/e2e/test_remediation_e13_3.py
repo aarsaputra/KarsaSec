@@ -100,7 +100,7 @@ def test_e2e_01_full_remediation_pipeline() -> None:
 # E13-3-02: XSS remediation strategy & patch proposal
 def test_e2e_02_xss_proposal_generation() -> None:
     finding, verdict = _create_e2e_finding(
-        "E2E-REM-02", "CWE-79-XSS", VerdictStatus.VULNERABLE, sink_category="HTML_OUTPUT"
+        "E2E-REM-02", "CWE-79-XSS", VerdictStatus.VULNERABLE, file_path="app.php", sink_category="HTML_OUTPUT"
     )
     rca = RCAAgent().analyze(finding, verdict=verdict)
 
@@ -108,7 +108,7 @@ def test_e2e_02_xss_proposal_generation() -> None:
     strategy, proposal = agent.plan_and_propose(finding=finding, verdict=verdict, rca=rca)
 
     assert strategy.strategy_type == RemediationStrategyType.ADD_OUTPUT_ENCODING
-    assert "htmlspecialchars" in proposal.unified_diff or "ENCODING" in proposal.unified_diff
+    assert "htmlspecialchars" in proposal.unified_diff or "html.escape" in proposal.unified_diff
 
 
 # E13-3-03: JSON serialization contract validation
@@ -162,7 +162,7 @@ def test_e2e_04_sarif_export_integration(tmp_path: Path) -> None:
 
 # E13-3-05: Multi-file project scan proposal generation
 def test_e2e_05_multi_file_proposal() -> None:
-    prov = ("controllers/auth.py:15", "db/queries.py:42")
+    prov = ("controllers/auth.py", "db/queries.py:42")
     finding, verdict = _create_e2e_finding(
         "E2E-REM-05", "CWE-89-SQLI", VerdictStatus.VULNERABLE, file_path="db/queries.py", provenance=prov
     )
@@ -212,7 +212,7 @@ def test_e2e_08_offline_fallback() -> None:
     strategy, proposal = agent.plan_and_propose(finding, verdict, rca=rca)
 
     assert strategy.strategy_type == RemediationStrategyType.ADD_PARAMETERIZATION
-    assert "SAFE PARAMETERIZED" in proposal.unified_diff
+    assert "cursor.execute" in proposal.unified_diff or "mysqli_prepare" in proposal.unified_diff
 
 
 # E13-3-09: Prompt injection defense payload

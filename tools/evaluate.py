@@ -50,9 +50,11 @@ def main() -> None:
     print("============================================================")
 
     if metrics.precision < 0.95 or metrics.recall < 0.90 or metrics.false_positive_rate > 0.05:
-        print("[WARNING] Metrics did not satisfy production gate targets.")
+        print("[FAIL] Metrics did not satisfy production gate targets.")
+        sys.exit(1)
     else:
         print("[SUCCESS] All metrics satisfied production gate targets.")
+        sys.exit(0)
 
 if __name__ == "__main__":
     main()

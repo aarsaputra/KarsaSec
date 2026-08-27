@@ -125,12 +125,12 @@ def apply_command(
 
     # SAST scan callback
     def _rescan():
-        result = _run_scan_pipeline(target_path=repo_path, config_file=None, rules_dir=None, diff_scan=False)
-        return result.findings
+        findings, _, _ = _run_scan_pipeline(target_path=repo_path)
+        return findings
 
     # Finding placeholder
-    first_res = _run_scan_pipeline(target_path=repo_path, config_file=None, rules_dir=None, diff_scan=False)
-    finding = first_res.findings[0] if first_res.findings else None
+    findings, _, _ = _run_scan_pipeline(target_path=repo_path)
+    finding = findings[0] if findings else None
 
     if not finding:
         console.print("[bold yellow]No findings detected in target repository for initial contract.[/bold yellow]")

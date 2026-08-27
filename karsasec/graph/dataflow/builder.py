@@ -51,13 +51,14 @@ class DefUseExtractor:
         assignments: list[VariableAssignmentDef] = []
         lines = source_text.splitlines()
 
-        # Regular expressions for assignment parsing
-        # Matches: $var = expr; or var = expr;
+        # Regular expressions for assignment parsing, allowing optional array subscripts like $page['body']
         if lang == "php":
-            var_pattern = re.compile(r"(\$[a-zA-Z_][a-zA-Z0-9_]*)\s*(?<![=!<>])(\.|\+|\-|\*|/)?=(?![=~])\s*([^;]+);?")
+            var_pattern = re.compile(
+                r"(\$[a-zA-Z_][a-zA-Z0-9_]*)(?:\[[^\]]*\])*\s*(?<![=!<>])(\.|\+|\-|\*|/)?=(?![=~])\s*([^;]+);?"
+            )
         else:
             var_pattern = re.compile(
-                r"(?:let|const|var|\b)?\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*(?<![=!<>])(\.|\+|\-|\*|/)?=(?![=~])\s*([^;]+);?"
+                r"(?:let|const|var|\b)?\s*([a-zA-Z_][a-zA-Z0-9_]*)(?:\[[^\]]*\])*\s*(?<![=!<>])(\.|\+|\-|\*|/)?=(?![=~])\s*([^;]+);?"
             )
 
         for idx, line_content in enumerate(lines, start=1):
@@ -77,6 +78,10 @@ class DefUseExtractor:
                     ref_vars = set(re.findall(r"\$[a-zA-Z_][a-zA-Z0-9_]*", rhs_expr))
                 else:
                     ref_vars = set(re.findall(r"\b[a-zA-Z_][a-zA-Z0-9_]*\b", rhs_expr))
+
+                # For augmented assignments (e.g., .=, +=), the target variable itself is read.
+                if op_prefix:
+                    ref_vars.add(var_name)
 
                 # Check if RHS contains untrusted source
                 has_source = source_registry.contains_source(rhs_expr, language=lang)

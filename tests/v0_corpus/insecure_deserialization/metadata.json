@@ -1,0 +1,8 @@
+{
+  "category": "insecure_deserialization",
+  "name": "Unsafe Pickle Deserialization",
+  "vuln_class": "INSECURE_DESERIALIZATION",
+  "expected_severity": "CRITICAL",
+  "expected_decision": "BLOCK",
+  "expected_admission": "BLOCKED"
+}

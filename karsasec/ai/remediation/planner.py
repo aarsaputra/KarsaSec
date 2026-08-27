@@ -95,7 +95,7 @@ class RemediationPlanner:
         rca_cat = rca.root_cause_category if rca else RootCauseCategory.MISSING_SANITIZATION
         sink_cat = ctx.sink_category.upper() if ctx.sink_category else ""
 
-        strat_type = RemediationPlanner._derive_strategy_type(sink_cat, rca_cat, ctx.rule_id)
+        strat_type = RemediationPlanner._derive_strategy_type(sink_cat, rca_cat, ctx.rule_id, ctx.cwe_id)
         rationale = (
             f"Remediation strategy '{strat_type.value}' selected for sink category '{sink_cat}' "
             f"and root cause mechanism '{rca_cat.value if hasattr(rca_cat, 'value') else str(rca_cat)}' at {ctx.sink_location}."
@@ -146,9 +146,16 @@ class RemediationPlanner:
         sink_category: str,
         rca_category: RootCauseCategory | str,
         rule_id: str,
+        cwe_id: str = "",
     ) -> RemediationStrategyType:
-        """Derive strategy type based on sink semantics and RCA mechanism."""
+        rule_u = rule_id.upper()
+        sink_u = sink_category.upper()
+        cwe_u = cwe_id.upper()
         rca_str = rca_category.value if hasattr(rca_category, "value") else str(rca_category)
+
+        # 1. Hardcoded secrets / credentials MUST map to REMOVE_SECRET
+        if "SECRET" in sink_u or "SECRET" in rule_u or "CRED" in rule_u or "798" in rule_u or "798" in cwe_u:
+            return RemediationStrategyType.REMOVE_SECRET
 
         if rca_str == RootCauseCategory.INCOMPATIBLE_SANITIZATION.value:
             return RemediationStrategyType.REPLACE_UNSAFE_API
@@ -156,28 +163,29 @@ class RemediationPlanner:
         if rca_str in (RootCauseCategory.SSA_REASSIGNMENT.value, RootCauseCategory.UNSAFE_ASSIGNMENT.value):
             return RemediationStrategyType.CONSTRAIN_DATA_FLOW
 
-        if "SQL" in sink_category or "SQL" in rule_id.upper():
-            return RemediationStrategyType.ADD_PARAMETERIZATION
-
-        if "HTML" in sink_category or "XSS" in sink_category or "XSS" in rule_id.upper():
+        # 2. Direct vulnerability mapping based on rule_id, sink_category, and cwe_id
+        if "XSS" in sink_u or "XSS" in rule_u or "79" in rule_u or "79" in cwe_u:
             return RemediationStrategyType.ADD_OUTPUT_ENCODING
 
-        if "AUTH" in sink_category or "AUTHORIZATION" in rule_id.upper() or "PERM" in rule_id.upper():
+        if "SQL" in sink_u or "SQL" in rule_u or "89" in rule_u or ("89" in cwe_u and "89" in rule_u):
+            return RemediationStrategyType.ADD_PARAMETERIZATION
+
+        if "COMMAND" in sink_u or "EXEC" in sink_u or "SHELL" in sink_u or "CMD" in rule_u or "78" in rule_u or "78" in cwe_u:
+            return RemediationStrategyType.REPLACE_UNSAFE_API
+
+        if "AUTH" in sink_u or "AUTHORIZATION" in rule_u or "PERM" in rule_u or "250" in rule_u or "285" in rule_u or "285" in cwe_u:
             return RemediationStrategyType.ADD_AUTHORIZATION_CHECK
 
-        if "CSRF" in sink_category or "CSRF" in rule_id.upper():
+        if "CSRF" in sink_u or "CSRF" in rule_u or "352" in rule_u or "352" in cwe_u:
             return RemediationStrategyType.ADD_CSRF_PROTECTION
 
-        if "SECRET" in sink_category or "SECRET" in rule_id.upper() or "CRED" in rule_id.upper():
-            return RemediationStrategyType.REMOVE_SECRET
+        if "PATH" in sink_u or "TRAVERSAL" in rule_u or "FILE" in sink_u or "98" in rule_u or "22" in rule_u or "22" in cwe_u:
+            return RemediationStrategyType.ADD_INPUT_VALIDATION
 
-        if "HEADER" in sink_category or "HEADER" in rule_id.upper():
-            return RemediationStrategyType.ADD_SECURITY_HEADER
+        if "SSRF" in sink_u or "SSRF" in rule_u or "918" in rule_u or "918" in cwe_u:
+            return RemediationStrategyType.ADD_INPUT_VALIDATION
 
-        if "CONFIG" in sink_category or "CONFIG" in rule_id.upper():
+        if "CONFIG" in sink_u or "CONFIG" in rule_u or "16" in rule_u or "16" in cwe_u:
             return RemediationStrategyType.FIX_INSECURE_CONFIGURATION
-
-        if "COMMAND" in sink_category or "EXEC" in sink_category or "SHELL" in sink_category:
-            return RemediationStrategyType.REPLACE_UNSAFE_API
 
         return RemediationStrategyType.ADD_INPUT_VALIDATION
