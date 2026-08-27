@@ -19,16 +19,16 @@ This document serves as the authoritative guide for **AI Agents** (Claude, Gemin
 
 ## 🗺️ AI Agent Skill Matrix & Token Fencing Roadmap
 
-To eliminate token waste and prevent prompt hallucination:
+To eliminate token waste and prevent prompt hallucination, AI agents must adhere to the 4 open-source skill paradigms:
 
 1. **Ephemeral Sandbox Isolation ([Daytona](https://github.com/daytonaio/daytona))**:
-   - Always run mutations and patch applications in isolated git branches via `--create-branch`.
-2. **Token Window Budgeting & Pruning ([Agent Skills](https://github.com/tech-leads-club/agent-skills))**:
-   - Never ingest entire multi-thousand line files raw. Query specific line ranges and AST nodes.
-3. **Defensive Secure Coding Rules ([Claude Secure Coding Rules](https://github.com/TikiTribe/claude-secure-coding-rules))**:
-   - Enforce parameterized query bindings (`:id` or `%s` tuples), array-form subprocess execution, context-aware escaping, and atomic path normalization.
-4. **AI Safety & Patch Integrity ([Project CodeGuard](https://github.com/cosai-oasis/project-codeguard))**:
-   - Validate symbol existence in AST store before outputting patch hunks to guarantee zero non-existent API calls.
+   - Sub-second execution sandboxing. Always run patch applications in isolated git branches via `--create-branch` (`fix/karsasec-finding-<id>`).
+2. **Token Window Budgeting & Typed Contracts ([Agent Skills](https://github.com/tech-leads-club/agent-skills))**:
+   - Spec-Driven Execution (Specify → Design → Tasks → Execute). Prune file context using line-bounded views rather than raw file ingests.
+3. **Proactive Secure Coding Rules ([Claude Secure Coding Rules](https://github.com/TikiTribe/claude-secure-coding-rules))**:
+   - Security-by-Default: Enforce parameterized query bindings (`:id` or `%s` tuples), array-form subprocess execution, context-aware escaping (`htmlspecialchars`), and atomic path normalization (`os.path.basename`).
+4. **AI Safety & Anti-Hallucination Guardrails ([Project CodeGuard - CoSAI / OASIS](https://github.com/cosai-oasis/project-codeguard))**:
+   - Perform AST symbol validation before emitting patch proposals to guarantee zero hallucinated imports or non-existent function calls.
 
 ---
 

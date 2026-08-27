@@ -25,39 +25,48 @@ When operating as an AI Agent within KarsaSec, you MUST adhere to the following 
 
 ## 🗺️ AI Agent Skill Matrix & Token Budget Roadmap (Peta Skill AI)
 
-To prevent AI agents from blindly ingesting massive prompts or "swallowing context raw" (causing token budget waste and API hallucination), all AI agents MUST follow this 4-Pillar Skill Matrix inspired by leading open-source frameworks:
+To prevent AI agents from blindly ingesting massive prompts or "swallowing context raw" (causing token budget waste and API hallucination), all AI agents MUST follow this 4-Pillar Skill Matrix extracted from leading open-source frameworks:
 
 ```text
 +-----------------------------------------------------------------------------------+
 |                        KARSASEC AI AGENT SKILL MATRIX                             |
 +--------------------------+--------------------------+-----------------------------+
-| 1. Daytona Paradigm      | 2. Agent Skills Paradigm | 3. Secure Coding (TikiTribe)|
-| Sandbox & Env Isolation  | Token Budget & Pruning   | Zero-Trust & Defensive Code |
+| 1. Daytona Sandbox       | 2. Agent Skills Registry | 3. Claude Secure Coding     |
+| Ephemeral Isolation      | Token Window & Typed Spec| Proactive Security-by-Default|
 +--------------------------+--------------------------+-----------------------------+
-| 4. CodeGuard Paradigm    | 5. 5-Step CoR Pipeline   | 6. Invariant L7 Rescan      |
-| Safety & Anti-Hallucinate| Evidence -> Minimal Hunk | Deterministic RTPReceipt    |
+| 4. CoSAI CodeGuard       | 5. 5-Step CoR Pipeline   | 6. Invariant L7 Rescan      |
+| AI Safety & Anti-Halluc. | Evidence -> Minimal Hunk | Deterministic RTPReceipt    |
 +--------------------------+--------------------------+-----------------------------+
 ```
 
 ### Pillar 1: Ephemeral Sandbox Isolation ([Daytona](https://github.com/daytonaio/daytona) Paradigm)
-- **Rule**: Never run non-deterministic or mutating code directly on main working environment without isolation.
-- **Action**: When applying remediation proposals, always specify `--create-branch` (`fix/karsasec-finding-<id>`) to fence execution state into isolated git branches.
+- **Concept**: Sub-second ephemeral execution sandboxing with kernel, filesystem, and process isolation.
+- **Rule**: Never run mutating, non-deterministic, or testing commands directly on main working environment without isolation.
+- **Skill Execution**:
+  - **Git Branch Fencing**: When generating or applying patch proposals, always use `--create-branch` (`fix/karsasec-finding-<id>`) to isolate execution state.
+  - **Process Fencing**: Execute sub-commands inside containerized or virtualenv sandboxes with strict I/O boundaries.
 
-### Pillar 2: Token Window Budgeting & Pruning ([Agent Skills](https://github.com/tech-leads-club/agent-skills) Paradigm)
-- **Rule**: Avoid reading multi-thousand line source files in full. Prune context window to target vulnerability lines.
-- **Action**: Use targeted grep/AST line range queries (e.g. `view_file` with line range boundaries) rather than ingesting entire files into LLM context window.
+### Pillar 2: Token Window Budgeting & Typed Spec ([Agent Skills](https://github.com/tech-leads-club/agent-skills) Paradigm)
+- **Concept**: Typed skill contracts with adaptive execution phases (Specify → Design → Tasks → Execute) to prevent token waste.
+- **Rule**: Avoid reading multi-thousand line source files in full context. Prune context window to target vulnerability lines.
+- **Skill Execution**:
+  - **Line Range Pruning**: Use line-bounded file views (`view_file` with `StartLine`/`EndLine`) and ripgrep/AST symbol lookups rather than raw file ingests.
+  - **Structured Contracts**: Strictly follow typed JSON input/output contracts (`PatchProposal`, `PatchHunk`) without verbose conversational wrappers.
 
-### Pillar 3: Defensive Secure Coding Rules ([Claude Secure Coding Rules](https://github.com/TikiTribe/claude-secure-coding-rules) Paradigm)
-- **Rule**: Enforce strict zero-trust input sanitization, parameterized queries, memory-safe abstractions, and cryptographic integrity.
-- **Action**:
-  - SQL Injection: Use parameterized PDO / cursor statements (`%s` with tuple or `:id` binding). Never use raw string formatting (`f"SELECT ... {var}"`).
-  - Command Injection: Use array-form subprocess execution (`['ls', path]`). Never use `shell=True` or raw shell string concatenation.
-  - XSS: Use context-aware HTML escaping (`htmlspecialchars` or DOMPurify).
-  - Path Traversal: Apply atomic `os.path.basename` & `abspath` validation.
+### Pillar 3: Proactive Secure Coding Rules ([Claude Secure Coding Rules](https://github.com/TikiTribe/claude-secure-coding-rules) Paradigm)
+- **Concept**: Proactive security enforcement during code generation ("Security-by-Default"), refusing vulnerable code patterns.
+- **Skill Execution**:
+  - **SQL Injection (CWE-89)**: Enforce parameterized queries (`cursor.execute("SELECT ... %s", (var,))` or PDO `:id`). Reject raw string formatting (`f"SELECT ... {var}"`).
+  - **Command Injection (CWE-78)**: Enforce array-form execution (`subprocess.run(['ls', path])`). Reject `shell=True` or string concatenation.
+  - **Cross-Site Scripting (CWE-79)**: Enforce context-aware escaping (`htmlspecialchars($input, ENT_QUOTES, 'UTF-8')` or DOMPurify).
+  - **Path Traversal (CWE-22)**: Enforce `os.path.basename()` & strict `abspath` validation against target directory.
+  - **Hardcoded Secrets (CWE-798)**: Reject plain-text credentials in code; enforce environment variable or vault retrieval.
 
-### Pillar 4: AI Safety & Anti-Hallucination Guardrails ([Project CodeGuard](https://github.com/cosai-oasis/project-codeguard) Paradigm)
-- **Rule**: Verify that all imported packages, functions, and symbols exist in target repository before generating patch proposals.
-- **Action**: Perform symbol check against `karsasec/index/` or AST symbol store. If symbol is missing, fail-closed and reject proposal generation.
+### Pillar 4: AI Safety & Anti-Hallucination Guardrails ([Project CodeGuard - CoSAI / OASIS](https://github.com/cosai-oasis/project-codeguard))
+- **Concept**: Open-source model-agnostic AI safety framework for pre-, in-, and post-generation code review.
+- **Skill Execution**:
+  - **Symbol Existence Check**: Verify that all imported packages, functions, and symbols exist in the target repository's AST symbol store before emitting patch hunks.
+  - **Fail-Closed Verification**: If a proposed import or API is unverified, reject proposal generation immediately. Zero silent assumptions.
 
 ---
 
