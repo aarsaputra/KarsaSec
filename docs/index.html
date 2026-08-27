@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KarsaSec — Autonomous Application Security Operating System (SecOS)</title>
+  <meta name="description" content="Platform SAST otonom berbasis AI dengan Invarian L7 (Zero-LLM Authority), 5-Step Chain-of-Remediation (CoR), dan analisis AST deterministik untuk deteksi & perbaikan kerentanan kode.">
+  <meta name="keywords" content="KarsaSec, SAST, SecOS, AppSec, Static Analysis, AI Remediation, Cybersecurity, Indonesia, Zero-LLM Authority">
+  
+  <!-- Open Graph / Meta -->
+  <meta property="og:title" content="KarsaSec — Autonomous Application Security Operating System">
+  <meta property="og:description" content="Platform SAST & Remediasi Otonom berbasis AI dengan prinsip Zero-LLM Authority dan 5-Step Chain-of-Remediation.">
+  <meta property="og:image" content="./img/KarsaSec.webp">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-dark: #080C14;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --bg-card-hover: rgba(30, 41, 59, 0.85);
+      --border-color: rgba(56, 189, 248, 0.15);
+      --border-glow: rgba(0, 242, 254, 0.4);
+      --primary-cyan: #00F2FE;
+      --primary-blue: #3B82F6;
+      --accent-teal: #06B6D4;
+      --emerald: #10B981;
+      --crimson: #EF4444;
+      --amber: #F59E0B;
+      --purple: #8B5CF6;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --text-dim: #64748B;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'Fira Code', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Background Glow Effects */
+    .bg-glow-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(140px);
+      opacity: 0.18;
+      animation: floatOrb 20s infinite alternate ease-in-out;
+    }
+
+    .orb-1 {
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--primary-cyan), var(--primary-blue));
+      top: -100px;
+      left: -100px;
+    }
+
+    .orb-2 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, var(--purple), var(--primary-blue));
+      bottom: -150px;
+      right: -100px;
+      animation-delay: -10s;
+    }
+
+    @keyframes floatOrb {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(80px, 60px) scale(1.1); }
+    }
+
+    /* Grid Overlay */
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Header / Navbar */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(8, 12, 20, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+    }
+
+    .nav-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--primary-cyan), var(--primary-blue));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #080C14;
+      font-size: 1.2rem;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+    }
+
+    .logo-text {
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FFFFFF, var(--primary-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .badge-indonesia {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #F87171;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      list-style: none;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--primary-cyan);
+    }
+
+    .btn-github {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .btn-github:hover {
+      border-color: var(--primary-cyan);
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+      transform: translateY(-2px);
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 4rem 2rem 6rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(0, 242, 254, 0.08);
+      border: 1px solid var(--border-glow);
+      color: var(--primary-cyan);
+      padding: 0.4rem 1rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      width: fit-content;
+    }
+
+    .hero-title {
+      font-size: 3.2rem;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -1px;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, var(--primary-cyan), var(--primary-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: linear-gradient(135deg, var(--primary-cyan), var(--primary-blue));
+      color: #080C14;
+      padding: 0.85rem 1.8rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      text-decoration: none;
+      box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 35px rgba(0, 242, 254, 0.6);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.85rem 1.8rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary-cyan);
+      transform: translateY(-3px);
+    }
+
+    /* Hero Banner Image Card */
+    .hero-image-card {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--border-glow);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 242, 254, 0.2);
+      background: rgba(15, 23, 42, 0.9);
+      transition: all 0.4s ease;
+    }
+
+    .hero-image-card:hover {
+      transform: translateY(-5px) scale(1.01);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 242, 254, 0.4);
+    }
+
+    .hero-image-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+    }
+
+    /* Stats Ribbon */
+    .stats-ribbon {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: -2rem auto 4rem;
+      padding: 0 2rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2rem;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .stat-item:last-child {
+      border-right: none;
+    }
+
+    .stat-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FFFFFF, var(--primary-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-family: var(--font-mono);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 0.25rem;
+    }
+
+    /* Interactive Terminal Section */
+    .section-container {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: 0 auto 6rem;
+      padding: 0 2rem;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-subtitle {
+      color: var(--primary-cyan);
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-size: 2.4rem;
+      font-weight: 800;
+    }
+
+    /* Terminal Simulator */
+    .terminal-window {
+      background: #0D1117;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 25px rgba(0, 242, 254, 0.15);
+    }
+
+    .terminal-header {
+      background: #161B22;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .dot-red { background: #FF5F56; }
+    .dot-yellow { background: #FFBD2E; }
+    .dot-green { background: #27C93F; }
+
+    .terminal-tabs {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      padding: 0.35rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active, .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--primary-cyan);
+    }
+
+    .terminal-body {
+      padding: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      min-height: 380px;
+      max-height: 500px;
+      overflow-y: auto;
+      color: #C9D1D9;
+    }
+
+    .cmd-line {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .prompt {
+      color: var(--emerald);
+      font-weight: bold;
+    }
+
+    .cmd-text {
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    .term-out {
+      margin-bottom: 1rem;
+    }
+
+    .out-info { color: var(--primary-blue); }
+    .out-success { color: var(--emerald); }
+    .out-warning { color: var(--amber); }
+    .out-danger { color: var(--crimson); }
+    .out-muted { color: var(--text-dim); }
+
+    /* Visual Diff Renderer */
+    .diff-box {
+      background: #090D16;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    .diff-del {
+      background: rgba(239, 68, 68, 0.15);
+      color: #F87171;
+      padding: 0.15rem 0.5rem;
+      border-left: 3px solid var(--crimson);
+      display: block;
+    }
+
+    .diff-add {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34D399;
+      padding: 0.15rem 0.5rem;
+      border-left: 3px solid var(--emerald);
+      display: block;
+    }
+
+    /* Core Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .feature-card:hover {
+      border-color: var(--border-glow);
+      background: var(--bg-card-hover);
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 242, 254, 0.15);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid var(--border-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-cyan);
+      font-size: 1.3rem;
+    }
+
+    .feature-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .feature-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Invariant Pillar Ribbon */
+    .pillar-card {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.05), rgba(59, 130, 246, 0.05));
+      border: 1px solid var(--border-glow);
+      border-radius: 20px;
+      padding: 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      margin-bottom: 6rem;
+    }
+
+    .pillar-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .pillar-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .pillar-bullet {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--emerald);
+      color: #080C14;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: bold;
+      flex-shrink: 0;
+      margin-top: 0.2rem;
+    }
+
+    .pillar-text h4 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .pillar-text p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Taxonomy Filter & Cards */
+    .taxonomy-filters {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.5rem 1.25rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--primary-cyan);
+      color: #080C14;
+      border-color: var(--primary-cyan);
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+    }
+
+    .taxonomy-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .tax-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      transition: all 0.3s ease;
+    }
+
+    .tax-card:hover {
+      border-color: var(--primary-cyan);
+      transform: translateY(-3px);
+    }
+
+    .tax-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .tax-lang {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .lang-php { background: rgba(137, 147, 190, 0.2); color: #8993BE; }
+    .lang-python { background: rgba(53, 114, 165, 0.2); color: #4B8BBE; }
+    .lang-js { background: rgba(241, 224, 90, 0.2); color: #F7DF1E; }
+    .lang-go { background: rgba(0, 173, 216, 0.2); color: #00ADD8; }
+
+    .tax-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+
+    .tax-cwe {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--primary-cyan);
+    }
+
+    /* Philosophy Banner (Indonesian Heritage) */
+    .philosophy-banner {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(15, 23, 42, 0.95));
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 20px;
+      padding: 3.5rem;
+      text-align: center;
+      margin-bottom: 6rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .philosophy-banner::before {
+      content: 'KARSA';
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 8rem;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.02);
+      pointer-events: none;
+      letter-spacing: 10px;
+    }
+
+    .philosophy-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+
+    .philosophy-desc {
+      max-width: 800px;
+      margin: 0 auto 2rem;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    /* Quick Install Section */
+    .install-box {
+      background: #0D1117;
+      border: 1px solid var(--border-glow);
+      border-radius: 14px;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 700px;
+      margin: 0 auto;
+      font-family: var(--font-mono);
+    }
+
+    .install-code {
+      color: var(--primary-cyan);
+      font-size: 1.05rem;
+    }
+
+    .btn-copy {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .btn-copy:hover {
+      background: var(--primary-cyan);
+      color: #080C14;
+    }
+
+    /* Footer */
+    footer {
+      background: #05080F;
+      border-top: 1px solid var(--border-color);
+      padding: 4rem 2rem 2rem;
+      color: var(--text-muted);
+    }
+
+    .footer-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 4rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-brand p {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      max-width: 400px;
+    }
+
+    .footer-heading {
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary-cyan);
+    }
+
+    .footer-bottom {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .hero { grid-template-columns: 1fr; text-align: center; }
+      .hero-actions { justify-content: center; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .taxonomy-grid { grid-template-columns: repeat(2, 1fr); }
+      .pillar-card { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+      .stat-item { border-right: none; }
+    }
+
+    @media (max-width: 640px) {
+      .hero-title { font-size: 2.2rem; }
+      .features-grid { grid-template-columns: 1fr; }
+      .taxonomy-grid { grid-template-columns: 1fr; }
+      .footer-container { grid-template-columns: 1fr; gap: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Orbs & Grid -->
+  <div class="bg-glow-container">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+  </div>
+  <div class="grid-overlay"></div>
+
+  <!-- Header / Navbar -->
+  <header>
+    <div class="nav-container">
+      <a href="#" class="logo-group">
+        <div class="logo-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="logo-text">KarsaSec</div>
+        <span class="badge-indonesia">SecOS</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#features" class="nav-link">Fitur Utama</a></li>
+        <li><a href="#terminal" class="nav-link">CLI Simulator</a></li>
+        <li><a href="#taxonomies" class="nav-link">Rule Packs</a></li>
+        <li><a href="#philosophy" class="nav-link">Filosofi</a></li>
+        <li>
+          <a href="https://github.com/aarsaputra/KarsaSec" target="_blank" class="btn-github">
+            <i class="fa-brands fa-github"></i> GitHub Repo
+          </a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-tag">
+        <i class="fa-solid fa-bolt"></i> Autonomous Application Security Platform
+      </div>
+      <h1 class="hero-title">
+        Deteksi & Remediasi Kode <span>Secara Otonom</span> Tanpa Hallucination.
+      </h1>
+      <p class="hero-desc">
+        KarsaSec adalah **Application Security Operating System (SecOS)** generasi baru yang mengombinasikan **Analisis AST Deterministik**, **Invarian L7 (Zero-LLM Authority)**, dan **5-Step Chain-of-Remediation (CoR)** untuk mengamankan repositori secara presisi.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#terminal" class="btn-primary">
+          <i class="fa-solid fa-terminal"></i> Coba CLI Simulator
+        </a>
+        <a href="https://github.com/aarsaputra/KarsaSec#readme" target="_blank" class="btn-secondary">
+          <i class="fa-solid fa-book"></i> Dokumentasi Resmi
+        </a>
+      </div>
+    </div>
+
+    <!-- Hero Banner Card (Menggunakan img/KarsaSec.webp) -->
+    <div class="hero-image-card">
+      <img src="./img/KarsaSec.webp" alt="KarsaSec Platform Architectural Showcase">
+    </div>
+  </section>
+
+  <!-- Stats Ribbon -->
+  <div class="stats-ribbon">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-number">143+</div>
+        <div class="stat-label">Rule Packs Deterministik</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">100%</div>
+        <div class="stat-label">Zero-LLM Authority Invariant</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">1,062</div>
+        <div class="stat-label">Unit Test Pass Rate</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">&lt; 0.1s</div>
+        <div class="stat-label">Rescan Verification Receipt</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Terminal Simulator Section -->
+  <section id="terminal" class="section-container">
+    <div class="section-header">
+      <div class="section-subtitle">Developer Experience</div>
+      <h2 class="section-title">Interaktif CLI Terminal Simulator</h2>
+    </div>
+
+    <div class="terminal-window">
+      <div class="terminal-header">
+        <div class="terminal-dots">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+        </div>
+        <div class="terminal-tabs">
+          <button class="tab-btn active" onclick="switchTermTab('scan')">karsasec scan</button>
+          <button class="tab-btn" onclick="switchTermTab('review')">karsasec review</button>
+          <button class="tab-btn" onclick="switchTermTab('patch')">karsasec patch apply</button>
+        </div>
+      </div>
+
+      <div class="terminal-body" id="term-body">
+        <!-- Content injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Invariants & Features -->
+  <section id="features" class="section-container">
+    <div class="section-header">
+      <div class="section-subtitle">Security Guarantees</div>
+      <h2 class="section-title">6 Arsitektur Unggulan KarsaSec</h2>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-gavel"></i></div>
+        <h3 class="feature-title">Zero-LLM Authority (L7)</h3>
+        <p class="feature-desc">AI hanya berstatus proposal-only. Status `VERIFIED_FIXED` HANYA dapat diterbitkan via rescan deterministik SAST receipt (`RTPReceipt`).</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-link"></i></div>
+        <h3 class="feature-title">5-Step Chain-of-Remediation</h3>
+        <p class="feature-desc">Alur kerja remediasi ketat: Evidence Extraction → Strategy Matching → Minimal Hunk Generation → Anti-Hallucination Check → Rescan Verification.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-git-alt"></i></div>
+        <h3 class="feature-title">Git-Native Branch Exporter</h3>
+        <p class="feature-desc">Dukungan opsi `--create-branch` untuk mengekspor proposal perbaikan secara terisolasi ke cabang Git `fix/karsasec-finding-<id>` secara otomatis.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-database"></i></div>
+        <h3 class="feature-title">Hybrid Local RAG Retrieval</h3>
+        <p class="feature-desc">Kombinasi pencarian teks BM25 dan Model2Vec embedding lokal untuk menemukan konteks kode & pola remediasi terbaik tanpa dependensi cloud.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-shield-cat"></i></div>
+        <h3 class="feature-title">Fail-Closed Security Gate</h3>
+        <p class="feature-desc">Gerbang keamanan ketat E15/E16 yang akan memblokir rilis secara otomatis jika ditemukan bukti ketidakpastian atau percobaan bypass.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-code-compare"></i></div>
+        <h3 class="feature-title">Visual Diff Console Formatter</h3>
+        <p class="feature-desc">Tampilan perbedaan kode (*diff*) bergaya GitHub dengan warna `-` merah dan `+` hijau langsung di terminal konsol Anda.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Taxonomy / Supported Rules -->
+  <section id="taxonomies" class="section-container">
+    <div class="section-header">
+      <div class="section-subtitle">Vulnerability Taxonomies</div>
+      <h2 class="section-title">143+ Supported Rule Packs</h2>
+    </div>
+
+    <div class="taxonomy-filters">
+      <button class="filter-btn active" onclick="filterTax('all')">Semua Bahasa</button>
+      <button class="filter-btn" onclick="filterTax('php')">PHP</button>
+      <button class="filter-btn" onclick="filterTax('python')">Python</button>
+      <button class="filter-btn" onclick="filterTax('js')">JavaScript / TS</button>
+      <button class="filter-btn" onclick="filterTax('go')">Go</button>
+    </div>
+
+    <div class="taxonomy-grid" id="tax-grid">
+      <!-- Items generated by JS -->
+    </div>
+  </section>
+
+  <!-- Philosophy Banner -->
+  <section id="philosophy" class="section-container">
+    <div class="philosophy-banner">
+      <h2 class="philosophy-title">Filosofi "KarsaSec": Niat Luhur & Daya Cipta</h2>
+      <p class="philosophy-desc">
+        Kata **"Karsa"** berasal dari Bahasa Indonesia yang bermakna **Niat Luhur, Kehendak Kuat, dan Daya Cipta Jiwa**. KarsaSec dibangun dengan niat luhur untuk menciptakan ekosistem keamanan perangkat lunak yang mandiri, jujur, tangguh, dan menjunjung tinggi kedaulatan teknologi nasional.
+      </p>
+      <div class="hero-tag" style="margin: 0 auto;">
+        <i class="fa-solid fa-heart-pulse"></i> Built with Pride for Global AppSec Engineering
+      </div>
+    </div>
+  </section>
+
+  <!-- Installation Box -->
+  <section class="section-container">
+    <div class="section-header">
+      <div class="section-subtitle">Quick Start</div>
+      <h2 class="section-title">Instalasi KarsaSec Dalam 1 Langkah</h2>
+    </div>
+
+    <div class="install-box">
+      <div class="install-code">$ pip install karsasec</div>
+      <button class="btn-copy" onclick="copyInstallCmd()"><i class="fa-regular fa-copy"></i> Salin</button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="#" class="logo-group">
+          <div class="logo-icon"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="logo-text">KarsaSec</div>
+        </a>
+        <p>Autonomous Application Security Operating System (SecOS) — Zero-LLM Security Authority Engine.</p>
+      </div>
+
+      <div>
+        <h4 class="footer-heading">Navigasi Hub</h4>
+        <ul class="footer-links">
+          <li><a href="https://github.com/aarsaputra/KarsaSec#readme" target="_blank">User Guide (README)</a></li>
+          <li><a href="https://github.com/aarsaputra/KarsaSec/blob/main/AGENTS.md" target="_blank">AI Agent Instructions</a></li>
+          <li><a href="https://github.com/aarsaputra/KarsaSec/tree/main/docs" target="_blank">Architecture Specs</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="footer-heading">Komunitas & Lisensi</h4>
+        <ul class="footer-links">
+          <li><a href="https://github.com/aarsaputra/KarsaSec" target="_blank">GitHub Repository</a></li>
+          <li><a href="https://github.com/aarsaputra/KarsaSec/blob/main/LICENSE" target="_blank">Apache-2.0 License</a></li>
+          <li><a href="#">Report Security Issue</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>© 2026 KarsaSec Core Security Team. All Rights Reserved.</div>
+      <div>Designed with Precision & Niat Luhur.</div>
+    </div>
+  </footer>
+
+  <script>
+    // Terminal Tab switching logic
+    const termTabContent = {
+      scan: `
+        <div class="cmd-line">
+          <span class="prompt">karsasec@secos:~$</span>
+          <span class="cmd-text">karsasec scan ./target_project --rag -f json -o scan_findings.json</span>
+        </div>
+        <div class="term-out out-info">[INFO] Initializing KarsaSec Engine v0.1.0...</div>
+        <div class="term-out out-info">[INFO] Tree-sitter AST parser loaded: PHP, Python, JavaScript, Go.</div>
+        <div class="term-out out-info">[INFO] Hybrid Local RAG indexing target repository...</div>
+        <div class="term-out out-warning">[VULN] Target: app/auth.php:42 | CWE-89 (SQL Injection)</div>
+        <div class="term-out out-muted">       Evidence: Unsanitized parameter '$user_id' in query string.</div>
+        <div class="term-out out-success">[SUCCESS] 1 Finding exported to scan_findings.json</div>
+      `,
+      review: `
+        <div class="cmd-line">
+          <span class="prompt">karsasec@secos:~$</span>
+          <span class="cmd-text">karsasec review ./target_project</span>
+        </div>
+        <div class="term-out out-info">[INFO] Running 4-Agent Autonomous Security Audit...</div>
+        <div class="term-out out-info">[AGENT 1/4] Evidence Extractor — Parsed CWE-89 finding.</div>
+        <div class="term-out out-info">[AGENT 2/4] Strategy Matcher — Applied canonical PDO prepared statement.</div>
+        <div class="term-out out-info">[AGENT 3/4] Remediation Generator — Generating minimal diff hunk...</div>
+        <div class="term-out out-success">[AGENT 4/4] SAST Rescan Verification — RTPReceipt Issued (VERIFIED_FIXED)</div>
+      `,
+      patch: `
+        <div class="cmd-line">
+          <span class="prompt">karsasec@secos:~$</span>
+          <span class="cmd-text">karsasec patch apply proposal.json --create-branch</span>
+        </div>
+        <div class="term-out out-info">[INFO] Creating Git Branch: fix/karsasec-finding-sql-inj-01</div>
+        <div class="diff-box">
+          <span class="diff-del">- $stmt = $db->query("SELECT * FROM users WHERE id = " . $_GET['id']);</span>
+          <span class="diff-add">+ $stmt = $db->prepare("SELECT * FROM users WHERE id = :id");</span>
+          <span class="diff-add">+ $stmt->execute(['id' => $_GET['id']]);</span>
+        </div>
+        <div class="term-out out-success">[SUCCESS] Patch successfully applied & committed to branch!</div>
+      `
+    };
+
+    function switchTermTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('term-body').innerHTML = termTabContent[tab];
+    }
+
+    // Initialize default tab
+    document.getElementById('term-body').innerHTML = termTabContent['scan'];
+
+    // Taxonomy Data
+    const taxData = [
+      { name: 'PDO Prepared Statements', cwe: 'CWE-89 (SQLi)', lang: 'php', cat: 'Database' },
+      { name: 'Parameterized Cursor Queries', cwe: 'CWE-89 (SQLi)', lang: 'python', cat: 'Database' },
+      { name: 'Subprocess Argument Array', cwe: 'CWE-78 (Cmd Injection)', lang: 'python', cat: 'System' },
+      { name: 'DOMPurify HTML Sanitization', cwe: 'CWE-79 (XSS)', lang: 'js', cat: 'Frontend' },
+      { name: 'Atomic Path Normalization', cwe: 'CWE-22 (Path Traversal)', lang: 'go', cat: 'FileSystem' },
+      { name: 'JWT Alg Verification Enforcer', cwe: 'CWE-347 (JWT Alg None)', lang: 'python', cat: 'Auth' },
+      { name: 'OAuth State Nonce Checker', cwe: 'CWE-352 (CSRF)', lang: 'php', cat: 'Auth' },
+      { name: 'Safe Object Freeze & Prototype', cwe: 'CWE-1321 (Proto Pollution)', lang: 'js', cat: 'Runtime' }
+    ];
+
+    function renderTax(filter) {
+      const grid = document.getElementById('tax-grid');
+      grid.innerHTML = '';
+      const items = filter === 'all' ? taxData : taxData.filter(d => d.lang === filter);
+      
+      items.forEach(item => {
+        grid.innerHTML += `
+          <div class="tax-card">
+            <div class="tax-header">
+              <span class="tax-lang lang-${item.lang}">${item.lang}</span>
+              <span style="color:var(--text-dim); font-size:0.75rem;">${item.cat}</span>
+            </div>
+            <div class="tax-title">${item.name}</div>
+            <div class="tax-cwe">${item.cwe}</div>
+          </div>
+        `;
+      });
+    }
+
+    function filterTax(lang) {
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderTax(lang);
+    }
+
+    renderTax('all');
+
+    function copyInstallCmd() {
+      navigator.clipboard.writeText('pip install karsasec');
+      alert('Perintah "pip install karsasec" berhasil disalin!');
+    }
+  </script>
+</body>
+</html>
